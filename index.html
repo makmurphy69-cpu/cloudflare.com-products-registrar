@@ -1020,7 +1020,7 @@
   // ---------- provider switch ----------
   const modelOptions = {
     gemini: [
-      { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash-Lite (free tier)' },
+      { value: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (free tier)' },
       { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (free tier)' }
     ],
     openai: [
@@ -1069,7 +1069,7 @@
   // The real Gemini key lives server-side as a Cloudflare Worker secret — see
   // cloudflare-worker/README.md. Never put an actual key on this line; this
   // file is public and anyone can view its source.
-  const GEMINI_PROXY_URL = 'REPLACE_WITH_YOUR_WORKER_URL';
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
 
   function currentImageApiKey() {
     const provider = providerSelect.value;

@@ -14,7 +14,7 @@ const ALLOWED_ORIGINS = [
 ];
 
 const ALLOWED_MODELS = [
-  'gemini-2.5-flash-lite',
+  'gemini-3.5-flash-lite',
   'gemini-3.5-flash'
 ];
 
