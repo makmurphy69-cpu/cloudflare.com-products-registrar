@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maze Forge — free maze game generator</title>
+<meta name="description" content="Pick a skin and a size, play a freshly generated maze right now, or download it as a single HTML file to keep, share, or upload anywhere.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:#eef1f7; color:#171b26; font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  @media (prefers-color-scheme: dark){ body{ background:#11141d; color:#e7eaf3; } }
+  .topbar{ max-width:640px; margin-inline:auto; padding:16px 16px 0; }
+  .topbar a{ color:#0f8f83; text-decoration:none; font-size:13px; font-weight:600; }
+  @media (prefers-color-scheme: dark){ .topbar a{ color:#3fe0c9; } }
+  .page{ max-width:640px; margin-inline:auto; padding:12px 16px 48px; display:flex; flex-direction:column; gap:22px; }
+  .eyebrow{ font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#0f8f83; }
+  @media (prefers-color-scheme: dark){ .eyebrow{ color:#3fe0c9; } }
+  h1{ margin:0; font-family:'Silkscreen','IBM Plex Sans',sans-serif; font-weight:700; font-size:clamp(28px,6vw,42px); line-height:1.15; }
+  .lede{ margin:0; font-size:15px; line-height:1.6; color:#535d76; max-width:52ch; }
+  @media (prefers-color-scheme: dark){ .lede{ color:#9aa3ba; } }
+  .toolbar{ display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field-label{ font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#535d76; }
+  @media (prefers-color-scheme: dark){ .field-label{ color:#9aa3ba; } }
+  select{ font:500 14px 'IBM Plex Sans',system-ui,sans-serif; color:#171b26; background:#fff; border:1px solid #c7cfe2; border-radius:10px; padding:.6em .8em; min-width:150px; }
+  @media (prefers-color-scheme: dark){ select{ color:#e7eaf3; background:#181c29; border-color:#323c58; } }
+  .forge-btn{ font:600 14px 'IBM Plex Sans',system-ui,sans-serif; color:#341000; background:#ff6b35; border:none; border-radius:999px; padding:.75em 1.5em; cursor:pointer; }
+  .forge-btn.secondary{ color:#171b26; background:#fff; border:1px solid #c7cfe2; }
+  @media (prefers-color-scheme: dark){ .forge-btn.secondary{ color:#e7eaf3; background:#181c29; border-color:#323c58; } }
+  .card{ background:#fff; border:1px solid #c7cfe2; border-radius:18px; padding:16px; display:flex; flex-direction:column; gap:14px; }
+  @media (prefers-color-scheme: dark){ .card{ background:#181c29; border-color:#323c58; } }
+  .hud{ display:flex; gap:20px; }
+  .hud-stat{ display:flex; flex-direction:column; gap:2px; }
+  .hud-label{ font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#535d76; }
+  @media (prefers-color-scheme: dark){ .hud-label{ color:#9aa3ba; } }
+  .hud-value{ font-family:'VT323','IBM Plex Sans',monospace; font-size:28px; line-height:1; font-variant-numeric:tabular-nums; }
+  .stage{ position:relative; }
+  canvas{ display:block; width:100%; aspect-ratio:1/1; border-radius:12px; touch-action:none; cursor:pointer; }
+  .win-overlay{ position:absolute; inset:0; border-radius:12px; background:rgba(8,10,18,.74); display:flex; align-items:center; justify-content:center; text-align:center; }
+  .win-overlay[hidden]{ display:none; }
+  .win-card{ display:flex; flex-direction:column; gap:6px; align-items:center; padding:20px; }
+  .win-eyebrow{ margin:0; font-size:12px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:#3fe0c9; }
+  .win-time{ margin:0; font-family:'Silkscreen','IBM Plex Sans',sans-serif; font-size:clamp(26px,7vw,36px); color:#fff; }
+  .win-moves{ margin:0 0 10px; font-size:14px; color:#c9d0e6; }
+  .dpad{ justify-self:center; display:grid; grid-template-columns:repeat(3,44px); grid-template-rows:repeat(3,44px); gap:6px; margin-inline:auto; }
+  .dpad-btn{ font-size:16px; color:#171b26; background:#eef1f7; border:1px solid #c7cfe2; border-radius:10px; cursor:pointer; }
+  @media (prefers-color-scheme: dark){ .dpad-btn{ color:#e7eaf3; background:#11141d; border-color:#323c58; } }
+  .dpad-btn:active{ background:#ff6b35; color:#341000; }
+  .dpad-up{ grid-column:2; grid-row:1; }
+  .dpad-left{ grid-column:1; grid-row:2; }
+  .dpad-right{ grid-column:3; grid-row:2; }
+  .dpad-down{ grid-column:2; grid-row:3; }
+  footer{ max-width:640px; margin-inline:auto; padding:0 16px 40px; font-size:12.5px; color:#535d76; }
+  @media (prefers-color-scheme: dark){ footer{ color:#9aa3ba; } }
+</style>
+</head>
+<body>
+
+<div class="topbar"><a href="index.html">← MigaBuilder</a></div>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">Free Game Generator</p>
+    <h1>Maze Forge</h1>
+    <p class="lede">Pick a skin and a size, forge a fresh labyrinth, then race the clock from the top-left corner to the glowing exit. Play it right here, or download it as one HTML file to keep, share, or upload anywhere.</p>
+  </header>
+
+  <div class="toolbar">
+    <label class="field"><span class="field-label">Skin</span>
+      <select id="themeSelect">
+        <option value="graph">Ink &amp; Graph</option>
+        <option value="circuit">Circuit Board</option>
+        <option value="jungle">Jungle Vine</option>
+        <option value="void">Deep Void</option>
+      </select>
+    </label>
+    <label class="field"><span class="field-label">Size</span>
+      <select id="sizeSelect">
+        <option value="easy">Easy · 10×10</option>
+        <option value="normal" selected>Normal · 16×16</option>
+        <option value="hard">Hard · 22×22</option>
+      </select>
+    </label>
+    <button id="forgeBtn" class="forge-btn" type="button">⚒ Forge Maze</button>
+    <button id="downloadBtn" class="forge-btn secondary" type="button">⭳ Download this maze</button>
+  </div>
+
+  <div class="card">
+    <div class="hud">
+      <div class="hud-stat"><span class="hud-label">Time</span><span class="hud-value" id="timerDisplay">00:00</span></div>
+      <div class="hud-stat"><span class="hud-label">Moves</span><span class="hud-value" id="movesDisplay">0</span></div>
+      <div class="hud-stat"><span class="hud-label">Best</span><span class="hud-value" id="bestDisplay">—</span></div>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="mazeCanvas" tabindex="0" aria-label="Maze board. Use arrow keys or WASD to move the token to the glowing exit."></canvas>
+      <div class="win-overlay" id="winOverlay" hidden>
+        <div class="win-card">
+          <p class="win-eyebrow">Exit found</p>
+          <p class="win-time" id="winTime">00:12</p>
+          <p class="win-moves" id="winMoves">14 moves</p>
+          <button class="forge-btn" id="playAgainBtn" type="button">Forge Another</button>
+        </div>
+      </div>
+    </div>
+    <div class="dpad" aria-label="Movement controls">
+      <button class="dpad-btn dpad-up" data-dir="N" type="button" aria-label="Move up">▲</button>
+      <button class="dpad-btn dpad-left" data-dir="W" type="button" aria-label="Move left">◀</button>
+      <button class="dpad-btn dpad-right" data-dir="E" type="button" aria-label="Move right">▶</button>
+      <button class="dpad-btn dpad-down" data-dir="S" type="button" aria-label="Move down">▼</button>
+    </div>
+  </div>
+</div>
+
+<footer>Built with <a href="index.html" style="color:inherit;">MigaBuilder</a>. Free to play, free to download, no account needed.</footer>
+
+<script>
+(function(){
+  "use strict";
+  var SIZES = { easy:{n:10}, normal:{n:16}, hard:{n:22} };
+  var THEMES = {
+    graph:   { bg:'#eef2fb', wall:'#1c2440', glow:null,      player:'#0f8f83', goal:'#ff6b35' },
+    circuit: { bg:'#05080a', wall:'#18e0c9', glow:'#18e0c9', player:'#ffd23f', goal:'#ff2fb0' },
+    jungle:  { bg:'#0d2415', wall:'#7ee081', glow:null,      player:'#ffd23f', goal:'#ff5757' },
+    void:    { bg:'#080714', wall:'#5b6fd6', glow:'#5b6fd6', player:'#3fe0ff', goal:'#ff5cc8' }
+  };
+  var DIRS = [
+    { d:'N', dx:0, dy:-1, o:'S' },
+    { d:'E', dx:1, dy:0, o:'W' },
+    { d:'S', dx:0, dy:1, o:'N' },
+    { d:'W', dx:-1, dy:0, o:'E' }
+  ];
+  var canvas = document.getElementById('mazeCanvas');
+  var ctx = canvas.getContext('2d');
+  var stage = document.getElementById('stage');
+  var themeSelect = document.getElementById('themeSelect');
+  var sizeSelect = document.getElementById('sizeSelect');
+  var forgeBtn = document.getElementById('forgeBtn');
+  var downloadBtn = document.getElementById('downloadBtn');
+  var playAgainBtn = document.getElementById('playAgainBtn');
+  var winOverlay = document.getElementById('winOverlay');
+  var winTimeEl = document.getElementById('winTime');
+  var winMovesEl = document.getElementById('winMoves');
+  var timerDisplay = document.getElementById('timerDisplay');
+  var movesDisplay = document.getElementById('movesDisplay');
+  var bestDisplay = document.getElementById('bestDisplay');
+  var state = { n:16, cells:null, player:{x:0,y:0}, moves:0, startTime:null, elapsed:0, won:false, cellSize:20 };
+
+  function idx(x,y,n){ return y*n+x; }
+  function generateMaze(n){
+    var cells = [];
+    for (var i=0;i<n*n;i++) cells.push({ N:true,E:true,S:true,W:true,visited:false });
+    var stack=[]; var cx=0, cy=0;
+    cells[idx(cx,cy,n)].visited = true;
+    var visitedCount=1, total=n*n;
+    while (visitedCount<total) {
+      var neighbors=[];
+      for (var k=0;k<DIRS.length;k++){
+        var dir=DIRS[k]; var nx=cx+dir.dx, ny=cy+dir.dy;
+        if (nx>=0 && nx<n && ny>=0 && ny<n && !cells[idx(nx,ny,n)].visited) neighbors.push({dir:dir,nx:nx,ny:ny});
+      }
+      if (neighbors.length) {
+        var choice = neighbors[Math.floor(Math.random()*neighbors.length)];
+        cells[idx(cx,cy,n)][choice.dir.d] = false;
+        cells[idx(choice.nx,choice.ny,n)][choice.dir.o] = false;
+        stack.push({x:cx,y:cy});
+        cx=choice.nx; cy=choice.ny;
+        cells[idx(cx,cy,n)].visited = true;
+        visitedCount++;
+      } else if (stack.length) {
+        var prev = stack.pop(); cx=prev.x; cy=prev.y;
+      } else break;
+    }
+    return cells;
+  }
+  function bestKey(){ return 'mazeforge:best:' + themeSelect.value + ':' + sizeSelect.value; }
+  function loadBest(){
+    try { var raw = window.localStorage.getItem(bestKey()); bestDisplay.textContent = raw ? formatTime(parseFloat(raw)) : '—'; }
+    catch (e) { bestDisplay.textContent = '—'; }
+  }
+  function maybeSaveBest(seconds){
+    try {
+      var raw = window.localStorage.getItem(bestKey());
+      var prev = raw ? parseFloat(raw) : null;
+      if (prev === null || seconds < prev) { window.localStorage.setItem(bestKey(), String(seconds)); bestDisplay.textContent = formatTime(seconds); }
+    } catch (e) {}
+  }
+  function formatTime(seconds){
+    var s = Math.max(0, Math.floor(seconds)); var m = Math.floor(s/60); var r = s%60;
+    return (m<10?'0':'')+m+':'+(r<10?'0':'')+r;
+  }
+  function resizeCanvas(){
+    var displaySize = stage.clientWidth; var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(displaySize*dpr); canvas.height = Math.round(displaySize*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    state.cellSize = displaySize/state.n;
+    draw();
+  }
+  function draw(){
+    var n=state.n, theme=THEMES[themeSelect.value], size=state.cellSize, w=size*n, h=size*n;
+    ctx.clearRect(0,0,w,h); ctx.fillStyle=theme.bg; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle=theme.wall; ctx.lineWidth=Math.max(2,size*0.09); ctx.lineCap='round';
+    if (theme.glow) { ctx.shadowColor=theme.glow; ctx.shadowBlur=6; } else { ctx.shadowBlur=0; }
+    ctx.beginPath();
+    for (var y=0;y<n;y++) for (var x=0;x<n;x++){
+      var cell=state.cells[idx(x,y,n)]; var px=x*size, py=y*size;
+      if (cell.N) { ctx.moveTo(px,py); ctx.lineTo(px+size,py); }
+      if (cell.W) { ctx.moveTo(px,py); ctx.lineTo(px,py+size); }
+      if (x===n-1 && cell.E) { ctx.moveTo(px+size,py); ctx.lineTo(px+size,py+size); }
+      if (y===n-1 && cell.S) { ctx.moveTo(px,py+size); ctx.lineTo(px+size,py+size); }
+    }
+    ctx.stroke(); ctx.shadowBlur=0;
+    var goalCx=(n-1+0.5)*size, goalCy=(n-1+0.5)*size, gr=size*0.24;
+    ctx.save(); ctx.translate(goalCx,goalCy); ctx.rotate(Math.PI/4);
+    ctx.fillStyle=theme.goal; ctx.shadowColor=theme.goal; ctx.shadowBlur=10;
+    ctx.fillRect(-gr,-gr,gr*2,gr*2); ctx.restore(); ctx.shadowBlur=0;
+    var pcx=(state.player.x+0.5)*size, pcy=(state.player.y+0.5)*size;
+    ctx.beginPath(); ctx.fillStyle=theme.player; ctx.shadowColor=theme.player; ctx.shadowBlur=8;
+    ctx.arc(pcx,pcy,size*0.28,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+  }
+  function updateHud(){ movesDisplay.textContent = String(state.moves); }
+  function tick(){
+    if (state.startTime === null || state.won) return;
+    var seconds = (performance.now()-state.startTime)/1000 + state.elapsed;
+    timerDisplay.textContent = formatTime(seconds);
+  }
+  function newMaze(){
+    var n = SIZES[sizeSelect.value].n;
+    state.n = n; state.cells = generateMaze(n); state.player = {x:0,y:0}; state.moves = 0;
+    state.startTime = null; state.elapsed = 0; state.won = false;
+    winOverlay.hidden = true; timerDisplay.textContent = '00:00';
+    loadBest(); updateHud(); resizeCanvas();
+  }
+  function move(dirKey){
+    if (state.won || !state.cells) return;
+    var cell = state.cells[idx(state.player.x, state.player.y, state.n)];
+    if (cell[dirKey]) return;
+    var dir=null; for (var i=0;i<DIRS.length;i++) if (DIRS[i].d===dirKey) dir=DIRS[i];
+    var nx=state.player.x+dir.dx, ny=state.player.y+dir.dy;
+    if (nx<0 || nx>=state.n || ny<0 || ny>=state.n) return;
+    if (state.startTime === null) state.startTime = performance.now();
+    state.player.x=nx; state.player.y=ny; state.moves++; updateHud(); draw();
+    if (nx===state.n-1 && ny===state.n-1) {
+      state.won = true;
+      var seconds = (performance.now()-state.startTime)/1000 + state.elapsed;
+      winTimeEl.textContent = formatTime(seconds);
+      winMovesEl.textContent = state.moves + (state.moves===1 ? ' move' : ' moves');
+      winOverlay.hidden = false;
+      maybeSaveBest(seconds);
+    }
+  }
+  var KEY_MAP = { ArrowUp:'N', w:'N', W:'N', ArrowDown:'S', s:'S', S:'S', ArrowLeft:'W', a:'W', A:'W', ArrowRight:'E', d:'E', D:'E' };
+  window.addEventListener('keydown', function(e){
+    var dir = KEY_MAP[e.key]; if (!dir) return;
+    if (document.activeElement && ['SELECT','INPUT','TEXTAREA'].indexOf(document.activeElement.tagName) !== -1) return;
+    e.preventDefault(); move(dir);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.dpad-btn'), function(btn){
+    btn.addEventListener('click', function(){ move(btn.getAttribute('data-dir')); canvas.focus(); });
+  });
+  canvas.addEventListener('click', function(){ canvas.focus(); });
+  forgeBtn.addEventListener('click', newMaze);
+  playAgainBtn.addEventListener('click', newMaze);
+  themeSelect.addEventListener('change', function(){ loadBest(); draw(); });
+  sizeSelect.addEventListener('change', newMaze);
+  new ResizeObserver(function(){ resizeCanvas(); }).observe(stage);
+  setInterval(tick, 100);
+  newMaze();
+
+  downloadBtn.addEventListener('click', function(){
+    var doc = document.documentElement.outerHTML;
+    var blob = new Blob(['<!DOCTYPE html>\n' + doc], { type: 'text/html' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'maze-forge-' + themeSelect.value + '-' + sizeSelect.value + '.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+})();
+</script>
+</body>
+</html>
