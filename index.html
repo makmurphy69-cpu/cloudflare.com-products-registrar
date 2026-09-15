@@ -1850,14 +1850,14 @@
       let replacement = null;
       if (token.startsWith('STOCK:')) {
         const keywords = token.slice(6).trim().split(/[,\s]+/).filter(Boolean).join(',');
-        replacement = 'https://loremflickr.com/1200/800/' + encodeURIComponent(keywords || 'business');
+        replacement = 'https://loremflickr.com/1200/800/' + encodeURIComponent(keywords || 'business') + '?random=' + Math.floor(Math.random() * 100000);
       } else if (token.startsWith('AI:')) {
         const description = token.slice(3).trim();
         try {
           replacement = await generateAiImage(apiKey, description);
         } catch (e) {
           const keywords = description.split(/\s+/).slice(0, 3).join(',');
-          replacement = 'https://loremflickr.com/1200/800/' + encodeURIComponent(keywords || 'business');
+          replacement = 'https://loremflickr.com/1200/800/' + encodeURIComponent(keywords || 'business') + '?random=' + Math.floor(Math.random() * 100000);
         }
       } else {
         const uploaded = uploadedImages.find(u => u.id === token);
