@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sample: drawings → video → cut → music — the full pipeline</title>
+<meta name="description" content="A real, unedited walkthrough of Video Forge, Clip Forge, Music Forge, and Merge Forge working together — every clip here is genuine output from those tools, not a mockup.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0E2A47; --navy-deep: #081826; --paper: #EDEAE0; --paper-dim: #E2DECE; --ink: #16202B;
+    --line-cyan: #6FD1E0; --line-cyan-dim: rgba(111, 209, 224, 0.28); --amber: #E2A63B; --amber-ink: #4A3410; --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px); opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+  .topbar { max-width: 760px; margin: 0 auto; padding: 14px clamp(20px, 4vw, 48px) 0; }
+  .topbar a { font-size: 13px; font-weight: 600; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 20px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 28px; }
+  .intro { font-size: 15px; line-height: 1.6; color: rgba(237,234,224,0.85); }
+  .intro strong { color: #fff; }
+  .stage {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 20px 22px 22px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .stage-eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(22,32,43,0.5);
+  }
+  .stage h2 { margin: 0; font-family: 'Space Grotesk', sans-serif; font-size: 19px; }
+  .stage p { margin: 0; font-size: 14px; line-height: 1.55; color: rgba(22,32,43,0.75); }
+  .stage video, .stage audio { width: 100%; border-radius: 2px; background: #000; }
+  .stage-link { font-size: 13px; font-weight: 600; }
+  .arrow { text-align: center; font-size: 22px; color: rgba(237,234,224,0.4); }
+  footer { max-width: 760px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><a href="../../index.html">← MigaBuilder</a></div>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Drawings → video → cut → music: the full pipeline</h1>
+    <p>Every file on this page is genuine, unedited output from the tools it names — nothing here was touched up by hand.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">
+    This walks through four tools working together end to end: <strong>Video Forge</strong> turns a set of
+    drawings into an animated video, <strong>Clip Forge</strong> trims it and adds a caption, <strong>Music
+    Forge</strong> generates an original instrumental track from scratch, and <strong>Merge Forge</strong>
+    combines the trimmed clip with that music into one final video. Each stage below plays the actual file
+    produced at that step.
+  </p>
+
+  <div class="stage">
+    <span class="stage-eyebrow">Stage 1 — Video Forge</span>
+    <h2>Three sample drawings become a video</h2>
+    <p>Video Forge's built-in "Try a sample" doodles (a sunny day, a house, a waving figure), animated with
+    Ken Burns pan/zoom, a crossfade between each, and a title card — rendered straight to a downloadable video,
+    no music yet.</p>
+    <video src="stage1-video-forge.webm" controls preload="metadata"></video>
+    <a class="stage-link" href="../../video-forge.html">Try Video Forge yourself →</a>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="stage-eyebrow">Stage 2 — Clip Forge</span>
+    <h2>The video gets trimmed and captioned</h2>
+    <p>That video, uploaded into Clip Forge: the first 0.3 seconds trimmed off, and a text overlay added
+    ("Cut and captioned in Clip Forge") — the same tool also handles speed, volume, watermarks, and
+    AI-assisted caption translation, not used here to keep this sample simple.</p>
+    <video src="stage2-clip-forge.webm" controls preload="metadata"></video>
+    <a class="stage-link" href="../../clip-forge.html">Try Clip Forge yourself →</a>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="stage-eyebrow">Stage 3 — Music Forge</span>
+    <h2>An original soundtrack, generated from scratch</h2>
+    <p>A 10-second "Calm / Ambient" track — a real algorithmic composition (chord progression, sustained pad
+    tones, a bass line) rendered by Music Forge, not a sample or loop of existing music.</p>
+    <audio src="stage3-music-forge.wav" controls preload="metadata"></audio>
+    <a class="stage-link" href="../../music-forge.html">Try Music Forge yourself →</a>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="stage-eyebrow">Stage 4 — Merge Forge</span>
+    <h2>The trimmed clip and the generated music, combined</h2>
+    <p>The Stage 2 clip and the Stage 3 track, dropped into Merge Forge and rendered as one final video —
+    this is exactly the "drop your files in and merge them" workflow, just with a video clip and a music
+    track instead of PowerPoint slide images.</p>
+    <video src="stage4-merge-forge-final.webm" controls preload="metadata"></video>
+    <a class="stage-link" href="../../merge-forge.html">Try Merge Forge yourself →</a>
+  </div>
+</div>
+
+<footer>Part of <a href="../../index.html">MigaBuilder</a>. Generated by chaining the four tools' actual rendering pipelines — this page is a record of what came out, not a recreation.</footer>
+
+</body>
+</html>
