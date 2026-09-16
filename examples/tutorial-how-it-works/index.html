@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How the video tools work — a 30-second tour</title>
+<meta name="description" content="A 30-second tutorial video, made with Video Forge itself, walking through Video Forge, Clip Forge, Music Forge, Merge Forge, and Screen Share Forge.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --navy: #0E2A47; --paper: #EDEAE0; --line-cyan: #6FD1E0; --line-cyan-dim: rgba(111, 209, 224, 0.28); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  .topbar { max-width: 760px; margin: 0 auto; padding: 20px clamp(20px, 4vw, 48px) 0; }
+  .topbar a { font-size: 13px; font-weight: 600; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 16px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 18px; }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(24px, 4vw, 32px); margin: 0; }
+  p.lede { font-size: 15px; line-height: 1.6; color: rgba(237,234,224,0.8); max-width: 60ch; margin: 0; }
+  video { width: 100%; border-radius: 4px; background: #000; }
+  .links { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; margin-top: 4px; }
+  footer { max-width: 760px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><a href="../../index.html">← MigaBuilder</a></div>
+
+<div class="wrap">
+  <h1>How the video tools work — a 30-second tour</h1>
+  <p class="lede">This tutorial video was made entirely with Video Forge — the drawings, pan &amp; zoom, captions,
+  and background music are the tool's own real features, used on itself to explain the rest of the toolkit.</p>
+  <video src="tutorial-how-it-works.webm" controls preload="metadata"></video>
+  <div class="links">
+    <a href="../../video-forge.html">Video Forge</a>
+    <a href="../../clip-forge.html">Clip Forge</a>
+    <a href="../../music-forge.html">Music Forge</a>
+    <a href="../../merge-forge.html">Merge Forge</a>
+    <a href="../../screen-forge.html">Screen Share Forge</a>
+    <a href="../sample-pipeline-demo/index.html">See the tools chained together →</a>
+  </div>
+</div>
+
+<footer>Part of <a href="../../index.html">MigaBuilder</a>. Made with Video Forge — background music is a real Music Forge stock track, not a licensed recording.</footer>
+
+</body>
+</html>
