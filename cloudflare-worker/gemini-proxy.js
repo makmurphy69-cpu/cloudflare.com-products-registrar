@@ -1,9 +1,14 @@
 /**
  * MigaBuilder's Gemini proxy.
  *
- * Holds the real Gemini API key as a Worker secret (env.GEMINI_API_KEY) so it
- * never reaches the browser. The site's free tier calls this Worker instead
- * of generativelanguage.googleapis.com directly.
+ * Holds the real Gemini API key(s) as a Worker secret (env.GEMINI_API_KEY) so
+ * they never reach the browser. The site's free tier calls this Worker
+ * instead of generativelanguage.googleapis.com directly.
+ *
+ * GEMINI_API_KEY can hold one key, or several comma-separated keys (e.g.
+ * from separate free-tier Google accounts) to multiply the effective rate
+ * limit: each request picks a random starting key and, if that one comes
+ * back rate-limited, automatically retries the next one before giving up.
  *
  * Deploy steps are in cloudflare-worker/README.md.
  */
@@ -35,6 +40,22 @@ function json(body, status, origin) {
   });
 }
 
+// A key that's rate-limited (429) or over its quota (403) is worth retrying
+// with a different key; anything else (400 bad request, a real 200, etc.) is
+// not a key problem, so it's returned immediately without trying more keys.
+const RETRYABLE_STATUSES = [403, 429];
+
+function parseApiKeys(raw) {
+  return (raw || '').split(',').map(key => key.trim()).filter(Boolean);
+}
+
+// Randomize which key each request tries first, so load spreads evenly
+// across all of them instead of always hammering the first one.
+function rotate(keys) {
+  const start = Math.floor(Math.random() * keys.length);
+  return keys.slice(start).concat(keys.slice(0, start));
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -48,7 +69,8 @@ export default {
     if (!ALLOWED_ORIGINS.includes(origin)) {
       return json({ error: 'Origin not allowed' }, 403, origin);
     }
-    if (!env.GEMINI_API_KEY) {
+    const apiKeys = parseApiKeys(env.GEMINI_API_KEY);
+    if (!apiKeys.length) {
       return json({ error: 'Worker is missing the GEMINI_API_KEY secret.' }, 500, origin);
     }
 
@@ -70,24 +92,27 @@ export default {
       return json({ error: 'Missing userPrompt' }, 400, origin);
     }
 
-    const upstream = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': env.GEMINI_API_KEY
-        },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ parts: [{ text: userPrompt }] }]
-        })
-      }
-    );
+    const requestBody = JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ parts: [{ text: userPrompt }] }]
+    });
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
 
-    const text = await upstream.text();
-    return new Response(text, {
-      status: upstream.status,
+    let lastText = '';
+    let lastStatus = 500;
+    for (const key of rotate(apiKeys)) {
+      const upstream = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: requestBody
+      });
+      lastStatus = upstream.status;
+      lastText = await upstream.text();
+      if (!RETRYABLE_STATUSES.includes(upstream.status)) break; // success, or a non-key-related error
+    }
+
+    return new Response(lastText, {
+      status: lastStatus,
       headers: Object.assign({ 'Content-Type': 'application/json' }, corsHeaders(origin))
     });
   }

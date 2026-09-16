@@ -25,6 +25,21 @@ If you ever need to rotate the key: generate a new one at
 aistudio.google.com/apikey, update the Worker secret in step 5, and delete
 the old key from Google AI Studio. No code changes needed.
 
+## Getting more free-tier headroom (multiple keys)
+
+Free-tier Gemini keys have a fairly low requests-per-minute cap. If the free
+tier is hitting that limit under real traffic, you can pool several keys
+(e.g. from separate Google accounts) instead of just one:
+
+- In step 5 above, set the `GEMINI_API_KEY` secret's value to a
+  **comma-separated list**, e.g. `key-one,key-two,key-three`.
+- The Worker picks a random key per request and automatically retries the
+  next one if the first comes back rate-limited — so a request only fails
+  once *every* key is exhausted at the same moment. Three keys roughly
+  triples your effective throughput.
+- This is fully backward-compatible: a single key with no commas behaves
+  exactly as before, no other changes needed.
+
 # Screen share signaling relay — deploy steps
 
 Screen Share Forge (`screen-forge.html`) lets one person watch another
