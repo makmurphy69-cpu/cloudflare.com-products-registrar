@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Music Forge — generate original instrumental music</title>
+<meta name="description" content="Pick a mood, set the length, and generate an original instrumental track right in your browser — free to use, no attribution needed, download as a real WAV file.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 20px; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  input[type="number"], select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .preset-btn {
+    background: #fff; border: 1px solid rgba(22, 32, 43, 0.25); border-radius: var(--radius);
+    padding: 12px 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; text-align: left;
+  }
+  .preset-btn .sub { display: block; font-weight: 400; font-size: 11.5px; color: rgba(22, 32, 43, 0.6); margin-top: 3px; }
+  .preset-btn.active { border-color: var(--amber); background: rgba(226, 166, 59, 0.14); box-shadow: 0 0 0 1px var(--amber); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none;
+  }
+  .error-box.show { display: block; }
+
+  .result-card { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px; display: none; }
+  .result-card.show { display: block; }
+  .result-card audio { width: 100%; margin-bottom: 16px; }
+  .result-label { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .result-sub { font-size: 12.5px; color: rgba(22, 32, 43, 0.6); margin-bottom: 16px; }
+
+  footer { padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 560px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Music Forge</h1>
+    <p>Pick a mood, set the length, and generate an original instrumental track — right in your browser.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+    <div class="field">
+      <label>Mood</label>
+      <div class="preset-grid" id="presetGrid"></div>
+    </div>
+
+    <div class="field">
+      <div class="row-2">
+        <div>
+          <label for="durationInput">Length (seconds)</label>
+          <input type="number" id="durationInput" value="24" min="5" max="180" step="1">
+        </div>
+        <div>
+          <label for="tempoInput">Tempo (BPM)</label>
+          <input type="number" id="tempoInput" value="100" min="40" max="200" step="1">
+        </div>
+      </div>
+      <p class="hint">Tempo defaults to a good fit for the mood you pick — feel free to override it.</p>
+    </div>
+
+    <div class="field">
+      <label class="hint" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+        <input type="checkbox" id="drumsOverride" style="width:auto;"> Force a simple drum beat on (even for ambient moods)
+      </label>
+    </div>
+
+    <button type="button" class="draft-btn" id="generateBtn">🎵 Generate track</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-label" id="resultLabel">Your track</div>
+    <div class="result-sub" id="resultSub"></div>
+    <audio id="resultAudio" controls></audio>
+    <div class="btn-grid">
+      <button type="button" class="draft-btn secondary" id="regenerateBtn">🔁 Regenerate (new variation)</button>
+      <button type="button" class="draft-btn secondary" id="downloadBtn">⬇ Download .wav</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Part of <a href="index.html">MigaBuilder</a>. Every track is an original algorithmic composition generated on the
+  spot from simple music-theory rules — not a sample, loop, or clip of existing music — so it's yours to use however
+  you like, with no attribution or licensing needed. Nothing is uploaded; generation happens entirely in your browser.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const presetGrid = document.getElementById('presetGrid');
+  const durationInput = document.getElementById('durationInput');
+  const tempoInput = document.getElementById('tempoInput');
+  const drumsOverride = document.getElementById('drumsOverride');
+  const generateBtn = document.getElementById('generateBtn');
+  const errorBox = document.getElementById('errorBox');
+  const resultCard = document.getElementById('resultCard');
+  const resultLabel = document.getElementById('resultLabel');
+  const resultSub = document.getElementById('resultSub');
+  const resultAudio = document.getElementById('resultAudio');
+  const regenerateBtn = document.getElementById('regenerateBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  const ROOT_FREQ = 220; // A3
+  const PROGRESSIONS = {
+    major: { offsets: [0, 7, 9, 5], qualities: ['maj', 'maj', 'min', 'maj'] }, // I V vi IV
+    minor: { offsets: [0, 8, 3, 10], qualities: ['min', 'maj', 'maj', 'maj'] } // i VI III VII
+  };
+  const TRIADS = { maj: [0, 4, 7], min: [0, 3, 7] };
+
+  const PRESETS = [
+    { id: 'cheerful', label: '🎉 Cheerful', sub: 'Upbeat & major', mode: 'major', wave: 'triangle', bpm: 120, style: 'arp', stepsPerChord: 4, drums: true },
+    { id: 'calm', label: '🌙 Calm / Ambient', sub: 'Slow pads, no beat', mode: 'major', wave: 'sine', bpm: 66, style: 'pad', drums: false },
+    { id: 'cinematic', label: '🎬 Cinematic', sub: 'Minor, sweeping', mode: 'minor', wave: 'sawtooth', bpm: 76, style: 'pad', drums: false },
+    { id: 'lofi', label: '☕ Lo-fi Chill', sub: 'Laid-back, swung', mode: 'minor', wave: 'triangle', bpm: 84, style: 'arp', stepsPerChord: 6, drums: true, swing: true },
+    { id: 'chiptune', label: '👾 Chiptune', sub: 'Fast, 8-bit style', mode: 'major', wave: 'square', bpm: 150, style: 'arp', stepsPerChord: 8, drums: true },
+    { id: 'piano', label: '🎹 Piano Ballad', sub: 'Soft, minor, sparse', mode: 'minor', wave: 'triangle', bpm: 60, style: 'arp', stepsPerChord: 3, drums: false, soft: true }
+  ];
+
+  let activePreset = PRESETS[0];
+  let lastBuffer = null;
+
+  function renderPresetGrid() {
+    presetGrid.innerHTML = '';
+    PRESETS.forEach(preset => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'preset-btn' + (preset.id === activePreset.id ? ' active' : '');
+      btn.innerHTML = preset.label + '<span class="sub">' + preset.sub + '</span>';
+      btn.addEventListener('click', () => {
+        activePreset = preset;
+        tempoInput.value = preset.bpm;
+        renderPresetGrid();
+      });
+      presetGrid.appendChild(btn);
+    });
+  }
+  renderPresetGrid();
+
+  function midiFreq(semitoneOffset) {
+    return ROOT_FREQ * Math.pow(2, semitoneOffset / 12);
+  }
+
+  function makeNoiseBuffer(ctx, durationSec) {
+    const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * durationSec), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    return buffer;
+  }
+
+  function playNote(ctx, dest, freq, start, dur, wave, peakGain, longEnvelope) {
+    const osc = ctx.createOscillator();
+    osc.type = wave;
+    osc.frequency.value = freq;
+    const gain = ctx.createGain();
+    const attack = longEnvelope ? Math.min(0.3, dur * 0.2) : Math.min(0.02, dur * 0.3);
+    const release = longEnvelope ? Math.min(0.5, dur * 0.3) : Math.min(dur * 0.4, 0.15);
+    const holdStart = Math.max(start + attack, start + dur - release);
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(peakGain, start + attack);
+    gain.gain.setValueAtTime(peakGain, holdStart);
+    gain.gain.linearRampToValueAtTime(0, start + dur);
+    osc.connect(gain).connect(dest);
+    osc.start(start);
+    osc.stop(start + dur + 0.02);
+  }
+
+  function playKick(ctx, dest, t) {
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    osc.connect(gain).connect(dest);
+    osc.start(t);
+    osc.stop(t + 0.16);
+  }
+
+  function playHihat(ctx, dest, noiseBuffer, t) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 7000;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.12, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    src.connect(filter).connect(gain).connect(dest);
+    src.start(t);
+    src.stop(t + 0.06);
+  }
+
+  async function generateMusic(preset, durationSec, bpm, forceDrums) {
+    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const sampleRate = 44100;
+    const ctx = new AC(2, Math.ceil(sampleRate * durationSec), sampleRate);
+    const masterGain = ctx.createGain();
+    masterGain.gain.value = 0.8;
+    masterGain.connect(ctx.destination);
+
+    const prog = PROGRESSIONS[preset.mode];
+    const secPerBeat = 60 / Math.max(20, bpm);
+    const chordDur = secPerBeat * 4; // one chord per 4-beat bar
+    const useDrums = forceDrums || preset.drums;
+    const noiseBuffer = useDrums ? makeNoiseBuffer(ctx, 0.2) : null;
+
+    let t = 0, chordIndex = 0;
+    while (t < durationSec) {
+      const rootOffset = prog.offsets[chordIndex % prog.offsets.length];
+      const quality = prog.qualities[chordIndex % prog.qualities.length];
+      const triad = TRIADS[quality];
+      const dur = Math.min(chordDur, durationSec - t);
+
+      playNote(ctx, masterGain, midiFreq(rootOffset - 12), t, dur, 'sine', 0.18, true);
+
+      if (preset.style === 'pad') {
+        triad.forEach(iv => playNote(ctx, masterGain, midiFreq(rootOffset + iv), t, dur, preset.wave, 0.14, true));
+      } else {
+        const steps = preset.stepsPerChord || 4;
+        const stepDur = dur / steps;
+        for (let s = 0; s < steps; s++) {
+          if (Math.random() < 0.12) continue;
+          const octaveUp = Math.random() < 0.3 ? 12 : 0;
+          const tone = triad[Math.floor(Math.random() * triad.length)];
+          const swingOffset = preset.swing && s % 2 === 1 ? stepDur * 0.15 : 0;
+          const noteStart = Math.min(t + s * stepDur + swingOffset, t + dur - 0.05);
+          playNote(ctx, masterGain, midiFreq(rootOffset + tone + octaveUp), noteStart, stepDur * 0.85, preset.wave, preset.soft ? 0.22 : 0.26, false);
+        }
+      }
+
+      if (useDrums && noiseBuffer) {
+        const eighth = secPerBeat / 2;
+        const hits = Math.round(dur / eighth);
+        for (let b = 0; b < hits; b++) {
+          const bt = t + b * eighth;
+          if (bt >= durationSec) break;
+          if (b % 4 === 0) playKick(ctx, masterGain, bt);
+          else playHihat(ctx, masterGain, noiseBuffer, bt);
+        }
+      }
+
+      t += dur;
+      chordIndex++;
+    }
+
+    return ctx.startRendering();
+  }
+
+  function audioBufferToWav(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+    const numFrames = buffer.length;
+    const dataSize = numFrames * blockAlign;
+    const arrayBuffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(arrayBuffer);
+
+    function writeString(offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    const channelData = [];
+    for (let c = 0; c < numChannels; c++) channelData.push(buffer.getChannelData(c));
+
+    let offset = 44;
+    for (let i = 0; i < numFrames; i++) {
+      for (let c = 0; c < numChannels; c++) {
+        let sample = Math.max(-1, Math.min(1, channelData[c][i]));
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
+    }
+    return new Blob([arrayBuffer], { type: 'audio/wav' });
+  }
+
+  async function runGenerate() {
+    clearError();
+    if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) {
+      showError('Your browser does not support the audio technology this tool needs.');
+      return;
+    }
+    const durationSec = Math.min(180, Math.max(5, parseFloat(durationInput.value) || 24));
+    const bpm = Math.min(200, Math.max(40, parseInt(tempoInput.value, 10) || activePreset.bpm));
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Generating…';
+    try {
+      const buffer = await generateMusic(activePreset, durationSec, bpm, drumsOverride.checked);
+      lastBuffer = buffer;
+      const blob = audioBufferToWav(buffer);
+      const url = URL.createObjectURL(blob);
+      resultAudio.src = url;
+      resultLabel.textContent = activePreset.label + ' — ' + Math.round(durationSec) + 's at ' + bpm + ' BPM';
+      resultSub.textContent = 'A fresh original variation — click Regenerate for a different take on the same mood.';
+      resultCard.classList.add('show');
+    } catch (err) {
+      showError('Could not generate a track: ' + err.message);
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = '🎵 Generate track';
+    }
+  }
+
+  generateBtn.addEventListener('click', runGenerate);
+  regenerateBtn.addEventListener('click', runGenerate);
+
+  downloadBtn.addEventListener('click', function () {
+    if (!lastBuffer) return;
+    const blob = audioBufferToWav(lastBuffer);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'music-forge-' + activePreset.id + '.wav';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+})();
+</script>
+</body>
+</html>
