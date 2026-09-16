@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QR Forge — free QR code generator</title>
+<meta name="description" content="Turn any link or text into a downloadable QR code — free, no account, works offline once loaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 20px; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="text"], select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type="color"] { width: 100%; height: 42px; padding: 3px; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; cursor: pointer; }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .preview-card {
+    background: var(--paper); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  }
+  #qrTarget { background: #fff; padding: 16px; border-radius: 4px; line-height: 0; }
+  #qrTarget img, #qrTarget canvas { display: block; max-width: 100%; height: auto; }
+  .preview-empty { color: rgba(22, 32, 43, 0.45); font-size: 13.5px; text-align: center; padding: 40px 20px; }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none;
+  }
+  .error-box.show { display: block; }
+
+  footer { padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 560px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>QR Forge</h1>
+    <p>Turn any link or text into a downloadable QR code — instantly, in your browser.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+    <div class="section-title">Content</div>
+    <div class="field">
+      <label for="qrText">Link or text to encode</label>
+      <input type="text" id="qrText" placeholder="https://yourbusiness.com or any text" value="https://migabuilder.com">
+      <p class="hint">Works for URLs, phone numbers, plain text — anything a QR scanner can read.</p>
+    </div>
+
+    <div class="section-title">Style</div>
+    <div class="field row-2">
+      <div>
+        <label for="qrSize">Size</label>
+        <select id="qrSize">
+          <option value="200">200 × 200 (web)</option>
+          <option value="400" selected>400 × 400 (standard)</option>
+          <option value="800">800 × 800 (print)</option>
+        </select>
+      </div>
+      <div>
+        <label for="qrLevel">Error correction</label>
+        <select id="qrLevel">
+          <option value="L">Low — smallest pattern</option>
+          <option value="M" selected>Medium — recommended</option>
+          <option value="Q">Quartile — sturdier</option>
+          <option value="H">High — best for logos overlaid</option>
+        </select>
+      </div>
+    </div>
+    <div class="field row-2">
+      <div>
+        <label for="qrDark">Code color</label>
+        <input type="color" id="qrDark" value="#0e2a47">
+      </div>
+      <div>
+        <label for="qrLight">Background color</label>
+        <input type="color" id="qrLight" value="#ffffff">
+      </div>
+    </div>
+
+    <button type="button" class="draft-btn" id="downloadBtn">Download PNG</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="preview-card">
+    <div id="qrTarget"></div>
+  </div>
+</div>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Everything is generated locally — nothing you type is sent anywhere.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const qrText = document.getElementById('qrText');
+  const qrSize = document.getElementById('qrSize');
+  const qrLevel = document.getElementById('qrLevel');
+  const qrDark = document.getElementById('qrDark');
+  const qrLight = document.getElementById('qrLight');
+  const qrTarget = document.getElementById('qrTarget');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const errorBox = document.getElementById('errorBox');
+
+  function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  const LEVELS = { L: 'L', M: 'M', Q: 'Q', H: 'H' };
+
+  function render() {
+    clearError();
+    const text = qrText.value.trim();
+    qrTarget.innerHTML = '';
+    if (!text) {
+      qrTarget.innerHTML = '<div class="preview-empty">Type something above to see the code</div>';
+      downloadBtn.disabled = true;
+      return;
+    }
+    try {
+      new QRCode(qrTarget, {
+        text: text,
+        width: parseInt(qrSize.value, 10),
+        height: parseInt(qrSize.value, 10),
+        colorDark: qrDark.value,
+        colorLight: qrLight.value,
+        correctLevel: QRCode.CorrectLevel[LEVELS[qrLevel.value]]
+      });
+      downloadBtn.disabled = false;
+    } catch (err) {
+      showError('Could not generate a QR code for that input — try shorter text.');
+      downloadBtn.disabled = true;
+    }
+  }
+
+  [qrText, qrSize, qrLevel, qrDark, qrLight].forEach(el => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+
+  downloadBtn.addEventListener('click', () => {
+    const canvas = qrTarget.querySelector('canvas');
+    if (!canvas) { showError('Nothing to download yet.'); return; }
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'qr-code.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

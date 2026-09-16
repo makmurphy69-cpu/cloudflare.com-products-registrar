@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Logo Forge — free logo &amp; favicon generator</title>
+<meta name="description" content="Describe a business, get a simple logo, a color palette, a printable business card, and ready-to-use favicon sizes — free, built live in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 20px; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="password"], input[type="text"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+  .toggle-key {
+    background: transparent; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius);
+    padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink);
+  }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none;
+  }
+  .error-box.show { display: block; }
+
+  .result-card { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px; display: none; }
+  .result-card.show { display: block; }
+  .logo-preview { width: 96px; height: 96px; margin: 0 auto 16px; }
+  .logo-preview svg { width: 100%; height: 100%; }
+  .swatches { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+  .swatch { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); }
+
+  .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 420px) { .btn-grid { grid-template-columns: 1fr; } }
+
+  footer { padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 560px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Logo Forge</h1>
+    <p>Describe a business. Get a logo, a palette, a business card, and favicon files — built live in your browser.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+    <div class="section-title">Connection</div>
+    <div class="field">
+      <label for="provider">AI provider</label>
+      <select id="provider">
+        <option value="gemini" selected>Gemini — free, no key needed</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+    <div class="field" id="apiKeyField">
+      <label for="apiKey" id="apiKeyLabel">Your OpenAI API key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="hint">Used only to call the provider above directly from your browser. Never stored, never sent anywhere else.</p>
+    </div>
+    <div class="field" id="freeNoticeField" style="display:none;">
+      <p class="hint" style="margin-top:0;">✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.</p>
+    </div>
+    <div class="field">
+      <label for="model">Text model</label>
+      <select id="model">
+        <option value="gpt-4o-mini" selected>gpt-4o-mini (fast, cheap)</option>
+        <option value="gpt-4o">gpt-4o (higher quality)</option>
+        <option value="gpt-4.1">gpt-4.1</option>
+      </select>
+    </div>
+
+    <div class="section-title">The business</div>
+    <div class="field">
+      <label for="brief">Describe the business</label>
+      <textarea id="brief" placeholder="e.g. A family-run plumbing company in Austin, TX. Friendly but no-nonsense tone."></textarea>
+    </div>
+    <div class="field">
+      <label for="bizName">Business name (optional)</label>
+      <input type="text" id="bizName" placeholder="Leave blank to let the AI suggest one in the logo">
+    </div>
+
+    <button type="button" class="draft-btn" id="brandKitBtn">Generate a logo &amp; brand kit</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="logo-preview" id="logoPreview"></div>
+    <div class="swatches" id="swatches"></div>
+
+    <div class="section-title" style="border-top:none;padding-top:0;margin-top:0;">Downloads</div>
+    <div class="btn-grid">
+      <button type="button" class="draft-btn secondary" id="downloadSvgBtn">Logo (.svg)</button>
+      <button type="button" class="draft-btn secondary" id="downloadCardBtn">Business card (.html)</button>
+    </div>
+
+    <div class="section-title">Favicon sizes</div>
+    <div class="btn-grid">
+      <button type="button" class="draft-btn secondary" data-size="32">32×32 (browser tab)</button>
+      <button type="button" class="draft-btn secondary" data-size="180">180×180 (Apple touch)</button>
+      <button type="button" class="draft-btn secondary" data-size="192">192×192 (Android)</button>
+      <button type="button" class="draft-btn secondary" data-size="512">512×512 (PWA / app store)</button>
+    </div>
+    <p class="hint">Each button downloads a PNG at that exact size. For a browser tab icon, save the 32×32 file as <code>favicon.png</code> and add <code>&lt;link rel="icon" href="favicon.png"&gt;</code> to your site's <code>&lt;head&gt;</code>.</p>
+  </div>
+</div>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Nothing you type here is stored anywhere.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const providerSelect = document.getElementById('provider');
+  const apiKeyField = document.getElementById('apiKeyField');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabel = document.getElementById('apiKeyLabel');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+  const freeNoticeField = document.getElementById('freeNoticeField');
+  const modelSelect = document.getElementById('model');
+  const briefInput = document.getElementById('brief');
+  const bizNameInput = document.getElementById('bizName');
+  const brandKitBtn = document.getElementById('brandKitBtn');
+  const errorBox = document.getElementById('errorBox');
+  const resultCard = document.getElementById('resultCard');
+  const logoPreview = document.getElementById('logoPreview');
+  const swatchesEl = document.getElementById('swatches');
+  const downloadSvgBtn = document.getElementById('downloadSvgBtn');
+  const downloadCardBtn = document.getElementById('downloadCardBtn');
+
+  function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  const modelOptions = {
+    gemini: [
+      { value: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (free tier)' },
+      { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (free tier)' }
+    ],
+    openai: [
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (fast, cheap)' },
+      { value: 'gpt-4o', label: 'gpt-4o (higher quality)' },
+      { value: 'gpt-4.1', label: 'gpt-4.1' }
+    ],
+    anthropic: [
+      { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (fast, cheap)' },
+      { value: 'claude-sonnet-5', label: 'Claude Sonnet 5 (recommended)' },
+      { value: 'claude-opus-5', label: 'Claude Opus 5 (highest quality)' }
+    ]
+  };
+
+  function applyProvider() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      apiKeyField.style.display = 'none';
+      freeNoticeField.style.display = 'block';
+    } else {
+      apiKeyField.style.display = 'block';
+      freeNoticeField.style.display = 'none';
+      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+    }
+    modelSelect.innerHTML = '';
+    const defaultIndex = provider === 'anthropic' ? 1 : 0;
+    modelOptions[provider].forEach((opt, i) => {
+      const el = document.createElement('option');
+      el.value = opt.value;
+      el.textContent = opt.label;
+      if (i === defaultIndex) el.selected = true;
+      modelSelect.appendChild(el);
+    });
+  }
+  providerSelect.addEventListener('change', applyProvider);
+  applyProvider();
+
+  // The real Gemini key lives server-side as a Cloudflare Worker secret — see
+  // cloudflare-worker/README.md. Never put an actual key on this line; this
+  // file is public and anyone can view its source.
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
+
+  function currentTextApiKey() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') return 'via-proxy';
+    return apiKeyInput.value.trim();
+  }
+
+  function stripCodeFence(text) {
+    const trimmed = text.trim();
+    const fenceMatch = trimmed.match(/^```(?:html|json)?\s*([\s\S]*?)\s*```$/i);
+    return fenceMatch ? fenceMatch[1] : trimmed;
+  }
+
+  async function callChat(apiKey, model, systemPrompt, userPrompt) {
+    const provider = providerSelect.value;
+
+    if (provider === 'gemini') {
+      const response = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, systemPrompt: systemPrompt, userPrompt: userPrompt })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.');
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const cand = data.candidates && data.candidates[0];
+      const raw = cand && cand.content && cand.content.parts && cand.content.parts[0]
+        ? cand.content.parts[0].text
+        : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    if (provider === 'anthropic') {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: model,
+          max_tokens: 8000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : ('Request failed with status ' + response.status);
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const block = data.content && data.content.find(b => b.type === 'text');
+      const raw = block ? block.text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.8
+      })
+    });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => null);
+      const msg = errBody && errBody.error && errBody.error.message
+        ? errBody.error.message
+        : ('Request failed with status ' + response.status);
+      throw new Error(msg);
+    }
+    const data = await response.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('The model returned an empty response.');
+    return stripCodeFence(raw);
+  }
+
+  function downloadTextAsFile(text, filename, mime) {
+    const blob = new Blob([text], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  let currentLogoSvg = '';
+  let currentCardHtml = '';
+
+  async function runBrandKit() {
+    clearError();
+    const key = currentTextApiKey();
+    const brief = briefInput.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!brief) { showError('Describe the business first.'); return; }
+
+    brandKitBtn.disabled = true;
+    brandKitBtn.textContent = 'Designing…';
+    const model = modelSelect.value;
+    const nameHint = bizNameInput.value.trim();
+    const rules = [
+      'You are a brand designer. Given a business brief, design a simple, professional wordmark-style logo as inline SVG, a 3-color palette, and a printable business card.',
+      nameHint ? ('The business is named "' + nameHint + '" — use this exact name.') : 'Invent a fitting business name if one is not implied by the brief.',
+      'Respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
+      '{"logoSvg": "<svg viewBox=\\"0 0 200 200\\" xmlns=\\"http://www.w3.org/2000/svg\\">...</svg>", "colors": ["#hex1","#hex2","#hex3"], "cardHtml": "<!DOCTYPE html>...a complete, self-contained, printable business-card-sized HTML page, 3.5in x 2in, with inline CSS, using the business name, slogan if any, and contact info if given"}',
+      'The logo must be a simple geometric mark or monogram (not a photo), must look correct on a light background, and must use only the given palette. Keep the SVG under 2000 characters.'
+    ].join('\n');
+
+    try {
+      const json = await callChat(key, model, rules, brief);
+      const kit = JSON.parse(json);
+      currentLogoSvg = kit.logoSvg;
+      currentCardHtml = kit.cardHtml;
+
+      logoPreview.innerHTML = kit.logoSvg;
+      swatchesEl.innerHTML = '';
+      (kit.colors || []).forEach(hex => {
+        const sw = document.createElement('div');
+        sw.className = 'swatch';
+        sw.style.background = hex;
+        sw.title = hex;
+        swatchesEl.appendChild(sw);
+      });
+      resultCard.classList.add('show');
+    } catch (err) {
+      showError(err.message || 'Could not generate a brand kit.');
+    } finally {
+      brandKitBtn.disabled = false;
+      brandKitBtn.textContent = 'Generate a logo & brand kit';
+    }
+  }
+  brandKitBtn.addEventListener('click', runBrandKit);
+
+  downloadSvgBtn.addEventListener('click', () => {
+    if (currentLogoSvg) downloadTextAsFile(currentLogoSvg, 'logo.svg', 'image/svg+xml');
+  });
+  downloadCardBtn.addEventListener('click', () => {
+    if (currentCardHtml) downloadTextAsFile(currentCardHtml, 'business-card.html', 'text/html');
+  });
+
+  function downloadFaviconSize(size) {
+    if (!currentLogoSvg) return;
+    const svgBlob = new Blob([currentLogoSvg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      canvas.toBlob((blob) => {
+        if (!blob) { showError('Could not render that favicon size.'); return; }
+        const dlUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dlUrl;
+        a.download = 'favicon-' + size + 'x' + size + '.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(dlUrl), 4000);
+      }, 'image/png');
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); showError('Could not render that favicon size.'); };
+    img.src = url;
+  }
+
+  document.querySelectorAll('[data-size]').forEach(btn => {
+    btn.addEventListener('click', () => downloadFaviconSize(parseInt(btn.getAttribute('data-size'), 10)));
+  });
+})();
+</script>
+</body>
+</html>
