@@ -138,6 +138,21 @@
   .frame-actions button.remove { color: var(--error); }
   .frames-empty { font-size: 12.5px; color: rgba(22,32,43,0.55); padding: 10px 0; }
 
+  /* sound clip list */
+  .clip-row {
+    display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: start;
+    background: #fff; border: 1px solid rgba(22, 32, 43, 0.18); border-radius: var(--radius); padding: 9px;
+  }
+  .clip-icon { width: 34px; height: 34px; border-radius: 2px; background: var(--paper-dim); display: flex; align-items: center; justify-content: center; font-size: 15px; flex: none; }
+  .clip-meta { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .clip-name { font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .clip-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11.5px; color: rgba(22,32,43,0.6); }
+  .clip-controls > label { display: flex; align-items: center; gap: 4px; }
+  .clip-controls select, .clip-controls input[type="number"] { width: auto; padding: 4px 6px; font-size: 11.5px; }
+  .clip-controls input[type="range"] { width: 70px; }
+  .clip-actions { display: flex; flex-direction: column; gap: 3px; }
+  .clip-actions button { background: transparent; border: none; cursor: pointer; font-size: 14px; padding: 2px 4px; color: var(--error); }
+
   /* ---------- Preview / stage ---------- */
   .table {
     background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
@@ -206,6 +221,10 @@
 
     <div class="section-title">Your drawings</div>
     <div class="field">
+      <button type="button" class="draft-btn secondary" id="sampleBtn">▶ Try a sample first</button>
+      <p class="hint">Loads 3 generated sample doodles, a title card, and a short generated tune, so you can see how everything fits together before uploading your own art.</p>
+    </div>
+    <div class="field">
       <label class="upload-btn" for="drawingInput">+ Add drawings (photos or scans, in order)</label>
       <input type="file" id="drawingInput" accept="image/*" multiple style="display:none;">
       <p class="hint">Add as many as you like. Reorder with the arrows, set how long each one stays on screen, or remove one.</p>
@@ -258,27 +277,17 @@
       <div class="field"><label for="titleDuration">Seconds on screen</label><input type="number" id="titleDuration" value="3" min="1" max="10" step="0.5"></div>
     </div>
 
-    <div class="section-title">Music &amp; narration (optional)</div>
+    <div class="section-title">Sound clips (optional)</div>
     <div class="field">
-      <label class="upload-btn" for="musicInput">+ Add background music</label>
-      <input type="file" id="musicInput" accept="audio/*" style="display:none;">
-      <div class="hint" id="musicFileName"></div>
-    </div>
-    <div class="field" id="musicVolumeField" style="display:none;">
-      <label for="musicVolume">Music volume</label>
-      <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.5">
-    </div>
-    <div class="field">
-      <label class="check-row"><input type="checkbox" id="loopMusic" checked><span>Loop music if it's shorter than the video</span></label>
-    </div>
-    <div class="field">
-      <label>Record a spoken narration</label>
+      <p class="hint" style="margin:0 0 8px;">Add your own narration or music — upload sound clips you've already made yourself, or record narration live. Add as many as you like, and set when each one starts.</p>
       <div class="btn-row">
-        <button type="button" class="draft-btn secondary" id="recordBtn">🎙️ Record</button>
-        <button type="button" class="draft-btn secondary" id="removeNarrationBtn" style="display:none;">✕ Remove</button>
+        <label class="upload-btn" for="soundInput" style="flex:1;">+ Upload clip(s)</label>
+        <button type="button" class="draft-btn secondary" id="recordClipBtn" style="flex:1;">🎙️ Record a clip</button>
       </div>
-      <div class="hint" id="narrationStatus"></div>
+      <input type="file" id="soundInput" accept="audio/*" multiple style="display:none;">
     </div>
+    <div class="frames" id="soundClips"></div>
+    <p class="frames-empty" id="soundClipsEmpty">No sound clips added — the video will be silent unless you add one.</p>
 
     <button type="button" class="draft-btn" id="renderBtn" style="margin-top:6px;">🎬 Render video</button>
     <div class="error-box" id="errorBox"></div>
@@ -391,14 +400,11 @@
   const titleText = document.getElementById('titleText');
   const titleSubtext = document.getElementById('titleSubtext');
   const titleDuration = document.getElementById('titleDuration');
-  const musicInput = document.getElementById('musicInput');
-  const musicFileName = document.getElementById('musicFileName');
-  const musicVolumeField = document.getElementById('musicVolumeField');
-  const musicVolume = document.getElementById('musicVolume');
-  const loopMusic = document.getElementById('loopMusic');
-  const recordBtn = document.getElementById('recordBtn');
-  const removeNarrationBtn = document.getElementById('removeNarrationBtn');
-  const narrationStatus = document.getElementById('narrationStatus');
+  const sampleBtn = document.getElementById('sampleBtn');
+  const soundInput = document.getElementById('soundInput');
+  const recordClipBtn = document.getElementById('recordClipBtn');
+  const soundClipsEl = document.getElementById('soundClips');
+  const soundClipsEmpty = document.getElementById('soundClipsEmpty');
   const renderBtn = document.getElementById('renderBtn');
   const errorBox = document.getElementById('errorBox');
   const titleBlockRight = document.getElementById('titleBlockRight');
@@ -433,12 +439,11 @@
   // ---------- state ----------
   let frames = []; // {id, img, name, duration}
   let frameIdCounter = 0;
-  let musicBuffer = null; // decoded AudioBuffer
-  let narrationBuffer = null;
-  let narrationBlob = null;
+  let soundClips = []; // {id, name, type, buffer, start, volume, loop}
+  let clipIdCounter = 0;
   let mediaRecorderMic = null;
   let micChunks = [];
-  let isRecordingNarration = false;
+  let isRecordingClip = false;
   let previewRaf = null;
   let previewStart = null;
   let previewAudioCtx = null;
@@ -521,6 +526,107 @@
     renderFrameList();
   }
 
+  // ---------- sample content ----------
+  function loadImageFromCanvas(canvas) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.src = canvas.toDataURL('image/png');
+    });
+  }
+  function drawSampleCanvas(drawFn) {
+    const c = document.createElement('canvas');
+    c.width = 800; c.height = 600;
+    const g = c.getContext('2d');
+    g.fillStyle = '#FAF6EA'; g.fillRect(0, 0, c.width, c.height);
+    drawFn(g, c.width, c.height);
+    return c;
+  }
+  const SAMPLE_DRAWINGS = [
+    { name: 'Sample: sunny day.png', draw(g, w, h) {
+      g.fillStyle = '#8FD3F4'; g.fillRect(0, 0, w, h * 0.7);
+      g.fillStyle = '#FFC93C'; g.beginPath(); g.arc(w * 0.78, h * 0.22, 70, 0, Math.PI * 2); g.fill();
+      g.fillStyle = '#7CC576'; g.fillRect(0, h * 0.7, w, h * 0.3);
+      g.strokeStyle = '#2E5339'; g.lineWidth = 6; g.beginPath();
+      g.moveTo(w * 0.2, h * 0.7); g.lineTo(w * 0.2, h * 0.5); g.stroke();
+      g.fillStyle = '#3E8E4F'; g.beginPath(); g.arc(w * 0.2, h * 0.42, 55, 0, Math.PI * 2); g.fill();
+    } },
+    { name: 'Sample: my house.png', draw(g, w, h) {
+      g.fillStyle = '#8FD3F4'; g.fillRect(0, 0, w, h * 0.7);
+      g.fillStyle = '#7CC576'; g.fillRect(0, h * 0.7, w, h * 0.3);
+      g.fillStyle = '#E8C07D'; g.fillRect(w * 0.3, h * 0.4, w * 0.4, h * 0.3);
+      g.fillStyle = '#C1443C'; g.beginPath();
+      g.moveTo(w * 0.28, h * 0.4); g.lineTo(w * 0.5, h * 0.22); g.lineTo(w * 0.72, h * 0.4); g.closePath(); g.fill();
+      g.fillStyle = '#6B4226'; g.fillRect(w * 0.46, h * 0.55, w * 0.08, h * 0.15);
+      g.fillStyle = '#FDE74C'; g.fillRect(w * 0.34, h * 0.46, w * 0.08, w * 0.08);
+    } },
+    { name: 'Sample: waving hello.png', draw(g, w, h) {
+      g.fillStyle = '#F6E7C7'; g.fillRect(0, 0, w, h);
+      g.strokeStyle = '#2B2118'; g.lineWidth = 8; g.lineCap = 'round';
+      g.beginPath(); g.arc(w * 0.5, h * 0.32, 45, 0, Math.PI * 2); g.stroke();
+      g.beginPath(); g.moveTo(w * 0.5, h * 0.38); g.lineTo(w * 0.5, h * 0.65); g.stroke();
+      g.beginPath(); g.moveTo(w * 0.5, h * 0.65); g.lineTo(w * 0.4, h * 0.85); g.stroke();
+      g.beginPath(); g.moveTo(w * 0.5, h * 0.65); g.lineTo(w * 0.6, h * 0.85); g.stroke();
+      g.beginPath(); g.moveTo(w * 0.5, h * 0.44); g.lineTo(w * 0.34, h * 0.3); g.stroke();
+      g.beginPath(); g.moveTo(w * 0.5, h * 0.44); g.lineTo(w * 0.68, h * 0.24); g.stroke();
+    } }
+  ];
+
+  async function generateSampleTune(durationSec) {
+    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    const sampleRate = 44100;
+    const offlineCtx = new AC(2, Math.ceil(sampleRate * durationSec), sampleRate);
+    const notes = [261.63, 329.63, 392.0, 523.25];
+    const step = durationSec / notes.length;
+    notes.forEach((freq, i) => {
+      const osc = offlineCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const gain = offlineCtx.createGain();
+      const start = i * step;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.35, start + 0.05);
+      gain.gain.linearRampToValueAtTime(0, start + step);
+      osc.connect(gain).connect(offlineCtx.destination);
+      osc.start(start);
+      osc.stop(start + step);
+    });
+    return offlineCtx.startRendering();
+  }
+
+  sampleBtn.addEventListener('click', async function () {
+    clearError();
+    if (frames.length && !window.confirm("Replace your current drawings with the sample? This can't be undone.")) return;
+    sampleBtn.disabled = true;
+    sampleBtn.textContent = 'Loading sample…';
+    try {
+      frames = [];
+      for (const sample of SAMPLE_DRAWINGS) {
+        const canvas = drawSampleCanvas(sample.draw);
+        const img = await loadImageFromCanvas(canvas);
+        frames.push({ id: ++frameIdCounter, img, dataUrl: canvas.toDataURL('image/png'), name: sample.name, duration: 3 });
+      }
+      renderFrameList();
+
+      titleEnabled.checked = true;
+      titleFields.style.display = 'block';
+      titleText.value = 'My Sample Adventure';
+      titleSubtext.value = 'Made with Video Forge';
+
+      if (window.OfflineAudioContext || window.webkitOfflineAudioContext) {
+        const buffer = await generateSampleTune(9);
+        soundClips = soundClips.filter(c => c.name !== 'Sample tune (generated)');
+        soundClips.push({ id: ++clipIdCounter, name: 'Sample tune (generated)', type: 'music', buffer, start: 0, volume: 0.4, loop: true });
+        renderSoundClipsList();
+      }
+    } catch (err) {
+      showError('Could not load the sample: ' + err.message);
+    } finally {
+      sampleBtn.disabled = false;
+      sampleBtn.textContent = '▶ Try a sample first';
+    }
+  });
+
   // ---------- mode / UI toggles ----------
   const MODE_HINTS = {
     kenburns: 'Each drawing slowly pans and zooms for a cinematic feel.',
@@ -540,26 +646,37 @@
 
   titleEnabled.addEventListener('change', () => { titleFields.style.display = titleEnabled.checked ? 'block' : 'none'; });
 
-  musicInput.addEventListener('change', async function (e) {
-    const file = (e.target.files || [])[0];
-    if (!file) return;
-    musicFileName.textContent = 'Loading "' + file.name + '"…';
+  // ---------- sound clips (uploaded or recorded) ----------
+  async function decodeAudioFile(fileOrBlob) {
+    const arrayBuffer = await fileOrBlob.arrayBuffer();
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const ac = new (window.AudioContext || window.webkitAudioContext)();
-      musicBuffer = await ac.decodeAudioData(arrayBuffer.slice(0));
+      return await ac.decodeAudioData(arrayBuffer);
+    } finally {
       ac.close();
-      musicFileName.textContent = 'Added: ' + file.name + ' (' + musicBuffer.duration.toFixed(1) + 's)';
-      musicVolumeField.style.display = 'block';
-    } catch (err) {
-      musicFileName.textContent = '';
-      showError('Could not read that audio file: ' + err.message);
     }
+  }
+
+  function addSoundClip(name, buffer, type) {
+    soundClips.push({ id: ++clipIdCounter, name, buffer, type: type || 'music', start: 0, volume: type === 'narration' ? 1 : 0.5, loop: type === 'music' });
+    renderSoundClipsList();
+  }
+
+  soundInput.addEventListener('change', async function (e) {
+    const files = Array.from(e.target.files || []);
+    for (const file of files) {
+      try {
+        const buffer = await decodeAudioFile(file);
+        addSoundClip(file.name, buffer, 'music');
+      } catch (err) {
+        showError('Could not read "' + file.name + '": ' + err.message);
+      }
+    }
+    soundInput.value = '';
   });
 
-  // ---------- narration recording ----------
-  recordBtn.addEventListener('click', async function () {
-    if (isRecordingNarration) {
+  recordClipBtn.addEventListener('click', async function () {
+    if (isRecordingClip) {
       mediaRecorderMic.stop();
       return;
     }
@@ -570,34 +687,69 @@
       mediaRecorderMic.ondataavailable = e => { if (e.data.size) micChunks.push(e.data); };
       mediaRecorderMic.onstop = async function () {
         stream.getTracks().forEach(t => t.stop());
-        isRecordingNarration = false;
-        recordBtn.textContent = '🎙️ Record';
-        narrationBlob = new Blob(micChunks, { type: 'audio/webm' });
+        isRecordingClip = false;
+        recordClipBtn.textContent = '🎙️ Record a clip';
+        const blob = new Blob(micChunks, { type: 'audio/webm' });
         try {
-          const arrayBuffer = await narrationBlob.arrayBuffer();
-          const ac = new (window.AudioContext || window.webkitAudioContext)();
-          narrationBuffer = await ac.decodeAudioData(arrayBuffer);
-          ac.close();
-          narrationStatus.textContent = 'Narration recorded (' + narrationBuffer.duration.toFixed(1) + 's).';
-          removeNarrationBtn.style.display = 'inline-block';
+          const buffer = await decodeAudioFile(blob);
+          addSoundClip('Recorded narration ' + (soundClips.length + 1), buffer, 'narration');
         } catch (err) {
-          showError('Could not process the recorded narration: ' + err.message);
+          showError('Could not process the recorded clip: ' + err.message);
         }
       };
       mediaRecorderMic.start();
-      isRecordingNarration = true;
-      recordBtn.textContent = '⏹ Stop recording';
-      narrationStatus.textContent = 'Recording…';
+      isRecordingClip = true;
+      recordClipBtn.textContent = '⏹ Stop recording';
     } catch (err) {
       showError('Could not access your microphone: ' + err.message);
     }
   });
-  removeNarrationBtn.addEventListener('click', function () {
-    narrationBuffer = null;
-    narrationBlob = null;
-    narrationStatus.textContent = '';
-    removeNarrationBtn.style.display = 'none';
-  });
+
+  function renderSoundClipsList() {
+    soundClipsEl.innerHTML = '';
+    soundClipsEmpty.style.display = soundClips.length ? 'none' : 'block';
+    soundClips.forEach(clip => {
+      const row = document.createElement('div');
+      row.className = 'clip-row';
+      row.innerHTML =
+        '<div class="clip-icon">' + (clip.type === 'narration' ? '🎙️' : clip.type === 'sfx' ? '🔔' : '🎵') + '</div>' +
+        '<div class="clip-meta">' +
+          '<span class="clip-name">' + clip.name.replace(/</g, '&lt;') + ' (' + clip.buffer.duration.toFixed(1) + 's)</span>' +
+          '<div class="clip-controls">' +
+            '<label>Type: <select class="clip-type" data-id="' + clip.id + '">' +
+              '<option value="music"' + (clip.type === 'music' ? ' selected' : '') + '>Music</option>' +
+              '<option value="narration"' + (clip.type === 'narration' ? ' selected' : '') + '>Narration / speech</option>' +
+              '<option value="sfx"' + (clip.type === 'sfx' ? ' selected' : '') + '>Sound effect</option>' +
+            '</select></label>' +
+            '<label>Starts at: <input type="number" class="clip-start" data-id="' + clip.id + '" value="' + clip.start + '" min="0" step="0.5" style="width:52px;">s</label>' +
+            '<label>Vol: <input type="range" class="clip-volume" data-id="' + clip.id + '" min="0" max="1" step="0.05" value="' + clip.volume + '"></label>' +
+            '<label><input type="checkbox" class="clip-loop" data-id="' + clip.id + '" style="width:auto;"' + (clip.loop ? ' checked' : '') + '> Loop</label>' +
+          '</div>' +
+        '</div>' +
+        '<div class="clip-actions"><button type="button" data-remove="' + clip.id + '" title="Remove">✕</button></div>';
+      soundClipsEl.appendChild(row);
+    });
+    soundClipsEl.querySelectorAll('.clip-type').forEach(sel => sel.addEventListener('change', () => {
+      const clip = soundClips.find(c => c.id === Number(sel.dataset.id));
+      if (clip) clip.type = sel.value;
+    }));
+    soundClipsEl.querySelectorAll('.clip-start').forEach(inp => inp.addEventListener('change', () => {
+      const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
+      if (clip) clip.start = Math.max(0, parseFloat(inp.value) || 0);
+    }));
+    soundClipsEl.querySelectorAll('.clip-volume').forEach(inp => inp.addEventListener('input', () => {
+      const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
+      if (clip) clip.volume = parseFloat(inp.value);
+    }));
+    soundClipsEl.querySelectorAll('.clip-loop').forEach(inp => inp.addEventListener('change', () => {
+      const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
+      if (clip) clip.loop = inp.checked;
+    }));
+    soundClipsEl.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => {
+      soundClips = soundClips.filter(c => c.id !== Number(btn.dataset.remove));
+      renderSoundClipsList();
+    }));
+  }
 
   // ---------- timeline construction ----------
   function buildTimeline() {
@@ -766,24 +918,20 @@
   });
 
   function scheduleAudioSources(audioCtx, destNode, totalDuration) {
-    if (musicBuffer) {
+    soundClips.forEach(clip => {
+      if (!clip.buffer) return;
+      const remaining = totalDuration - clip.start;
+      if (remaining <= 0) return;
       const src = audioCtx.createBufferSource();
-      src.buffer = musicBuffer;
-      src.loop = loopMusic.checked && musicBuffer.duration < totalDuration;
+      src.buffer = clip.buffer;
+      src.loop = !!clip.loop && clip.buffer.duration < remaining;
       const gain = audioCtx.createGain();
-      gain.gain.value = parseFloat(musicVolume.value) || 0.5;
+      gain.gain.value = clip.volume;
       src.connect(gain).connect(destNode);
-      src.start(0);
-      if (!src.loop) { try { src.stop(audioCtx.currentTime + totalDuration); } catch (e) {} }
-    }
-    if (narrationBuffer) {
-      const src = audioCtx.createBufferSource();
-      src.buffer = narrationBuffer;
-      const gain = audioCtx.createGain();
-      gain.gain.value = 1;
-      src.connect(gain).connect(destNode);
-      src.start(0);
-    }
+      const when = audioCtx.currentTime + clip.start;
+      src.start(when);
+      if (!src.loop) { try { src.stop(when + remaining); } catch (e) {} }
+    });
   }
 
   // ---------- render to video file ----------
