@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Game Forge — free AI game generator</title>
+<meta name="description" content="Describe a game. Get something playable, built live in your browser — same idea as the MigaBuilder website generator, for games.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 24px; padding: 28px clamp(20px, 4vw, 48px) 56px; align-items: start; }
+  @media (max-width: 880px) { main { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; position: sticky; top: 20px; }
+  @media (max-width: 880px) { .panel { position: static; } }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 22px 0 12px; padding-top: 18px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="password"], input[type="text"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+  .toggle-key {
+    background: transparent; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius);
+    padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink);
+  }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none;
+  }
+  .error-box.show { display: block; }
+
+  .table { background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius); padding: 18px; min-height: 560px; display: flex; flex-direction: column; }
+  .title-block {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75);
+    padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim);
+  }
+  .sheet { flex: 1; background: #fff; border-radius: 2px; overflow: hidden; position: relative; min-height: 480px; display: flex; }
+  .sheet iframe { width: 100%; border: none; flex: 1; }
+  .sheet-empty { margin: auto; text-align: center; color: rgba(14, 42, 71, 0.45); font-size: 14px; max-width: 340px; padding: 20px; }
+  .sheet-empty strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; color: rgba(14, 42, 71, 0.75); margin-bottom: 6px; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Game Forge</h1>
+    <p>Describe a game. Get something playable — built live in your browser, the same way MigaBuilder writes a website.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="section-title">Connection</div>
+    <div class="field">
+      <label for="provider">AI provider</label>
+      <select id="provider">
+        <option value="gemini" selected>Gemini — free, no key needed</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+    <div class="field" id="apiKeyField">
+      <label for="apiKey" id="apiKeyLabel">Your OpenAI API key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="hint">Used only to call the provider above directly from your browser. Never stored.</p>
+    </div>
+    <div class="field" id="freeNoticeField" style="display:none;">
+      <p class="hint" style="margin-top:0;">✓ Free to use — shared key with a limited daily capacity. If it stops working, try again tomorrow, or switch to OpenAI/Anthropic with your own key.</p>
+    </div>
+    <div class="field">
+      <label for="model">Text model</label>
+      <select id="model">
+        <option value="gpt-4o-mini" selected>gpt-4o-mini (fast, cheap)</option>
+        <option value="gpt-4o">gpt-4o (higher quality)</option>
+        <option value="gpt-4.1">gpt-4.1</option>
+      </select>
+    </div>
+
+    <div class="section-title">The game</div>
+    <div class="field">
+      <label for="brief">Describe the game you want</label>
+      <textarea id="brief" placeholder="e.g. A ninja who fights other ninjas — arrow keys to move, space to attack, best of 3 rounds wins"></textarea>
+      <p class="hint">Be specific about controls and the win condition if you have one in mind — the AI follows what you give it. Expect simple, playable mechanics with shapes and emoji for characters, not illustrated art.</p>
+    </div>
+    <button type="button" class="draft-btn" id="draftBtn">Generate game</button>
+    <div class="error-box" id="errorBox"></div>
+  </section>
+
+  <section class="table">
+    <div class="title-block" id="titleBlock">GAME FORGE — NOTHING GENERATED YET</div>
+    <div class="sheet" id="sheet">
+      <div class="sheet-empty" id="sheetEmpty">
+        <strong>Nothing here yet.</strong>
+        Describe a game on the left and click Generate — it'll show up here, ready to play.
+      </div>
+      <iframe id="preview" style="display:none;" title="Generated game preview"></iframe>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label for="refineInput" style="color: var(--paper);">Refine this game</label>
+      <textarea id="refineInput" placeholder="e.g. Make the ninjas move faster, add a health bar, make attacks have a cooldown" style="min-height:60px;"></textarea>
+      <button type="button" class="draft-btn" id="refineBtn" disabled style="margin-top:8px;">Apply change</button>
+    </div>
+
+    <div class="table-actions">
+      <button type="button" id="viewSourceBtn" disabled>View source</button>
+      <button type="button" id="downloadBtn" disabled>Download as HTML</button>
+    </div>
+    <div class="source-view" id="sourceView" style="display:none;margin-top:14px;">
+      <textarea id="sourceText" readonly style="width:100%;height:220px;font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--navy-deep);color:var(--paper);border:1px solid var(--line-cyan-dim);"></textarea>
+    </div>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Every game is freshly written by an AI model from your description — expect some to need a "refine" pass, exactly like a generated web page would.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const providerSelect = document.getElementById('provider');
+  const apiKeyField = document.getElementById('apiKeyField');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabel = document.getElementById('apiKeyLabel');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+  const freeNoticeField = document.getElementById('freeNoticeField');
+  const modelSelect = document.getElementById('model');
+  const briefInput = document.getElementById('brief');
+  const draftBtn = document.getElementById('draftBtn');
+  const errorBox = document.getElementById('errorBox');
+  const titleBlock = document.getElementById('titleBlock');
+  const sheetEmpty = document.getElementById('sheetEmpty');
+  const preview = document.getElementById('preview');
+  const refineInput = document.getElementById('refineInput');
+  const refineBtn = document.getElementById('refineBtn');
+  const viewSourceBtn = document.getElementById('viewSourceBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const sourceView = document.getElementById('sourceView');
+  const sourceText = document.getElementById('sourceText');
+
+  function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  const modelOptions = {
+    gemini: [
+      { value: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (free tier)' },
+      { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (free tier, better quality)' }
+    ],
+    openai: [
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (fast, cheap)' },
+      { value: 'gpt-4o', label: 'gpt-4o (higher quality)' },
+      { value: 'gpt-4.1', label: 'gpt-4.1' }
+    ],
+    anthropic: [
+      { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (fast, cheap)' },
+      { value: 'claude-sonnet-5', label: 'Claude Sonnet 5 (recommended)' },
+      { value: 'claude-opus-5', label: 'Claude Opus 5 (highest quality)' }
+    ]
+  };
+
+  function applyProvider() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      apiKeyField.style.display = 'none';
+      freeNoticeField.style.display = 'block';
+    } else {
+      apiKeyField.style.display = 'block';
+      freeNoticeField.style.display = 'none';
+      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+    }
+    modelSelect.innerHTML = '';
+    const defaultIndex = provider === 'anthropic' ? 1 : (provider === 'gemini' ? 1 : 0);
+    modelOptions[provider].forEach((opt, i) => {
+      const el = document.createElement('option');
+      el.value = opt.value;
+      el.textContent = opt.label;
+      if (i === defaultIndex) el.selected = true;
+      modelSelect.appendChild(el);
+    });
+  }
+  providerSelect.addEventListener('change', applyProvider);
+  applyProvider();
+
+  // The real Gemini key lives server-side as a Cloudflare Worker secret — see
+  // cloudflare-worker/README.md. Never put an actual key on this line; this
+  // file is public and anyone can view its source.
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
+
+  function currentTextApiKey() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') return 'via-proxy';
+    return apiKeyInput.value.trim();
+  }
+
+  function stripCodeFence(text) {
+    const trimmed = text.trim();
+    const fenceMatch = trimmed.match(/^```(?:html|json)?\s*([\s\S]*?)\s*```$/i);
+    return fenceMatch ? fenceMatch[1] : trimmed;
+  }
+
+  async function callChat(apiKey, model, systemPrompt, userPrompt) {
+    const provider = providerSelect.value;
+
+    if (provider === 'gemini') {
+      const response = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, systemPrompt: systemPrompt, userPrompt: userPrompt })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.');
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const cand = data.candidates && data.candidates[0];
+      const raw = cand && cand.content && cand.content.parts && cand.content.parts[0]
+        ? cand.content.parts[0].text
+        : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    if (provider === 'anthropic') {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: model,
+          max_tokens: 8000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : ('Request failed with status ' + response.status);
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const block = data.content && data.content.find(b => b.type === 'text');
+      const raw = block ? block.text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.8
+      })
+    });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => null);
+      const msg = errBody && errBody.error && errBody.error.message
+        ? errBody.error.message
+        : ('Request failed with status ' + response.status);
+      throw new Error(msg);
+    }
+    const data = await response.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('The model returned an empty response.');
+    return stripCodeFence(raw);
+  }
+
+  let currentGameHtml = '';
+
+  function showGame(html) {
+    currentGameHtml = html;
+    sheetEmpty.style.display = 'none';
+    preview.style.display = 'block';
+    preview.srcdoc = html;
+    sourceText.value = html;
+    viewSourceBtn.disabled = false;
+    downloadBtn.disabled = false;
+    refineBtn.disabled = false;
+  }
+
+  const GAME_RULES = [
+    'You are a browser game developer. Given a short description, write ONE complete, self-contained HTML document implementing that game, playable immediately.',
+    'Requirements:',
+    '- A single <canvas> element, roughly 800x500 (responsive down to smaller screens), redrawn via requestAnimationFrame.',
+    '- All CSS and JavaScript inline in this one document. No external scripts, fonts, images, or network calls of any kind.',
+    '- Implement real, working mechanics that match the description: movement, the main action (attack/jump/shoot/collect/etc. as fitting), a clear win/lose or score condition, and a visible "Play again" control once the game ends.',
+    '- Keyboard controls (arrow keys or WASD for movement, Space or another key for the main action) — show the controls in a small on-screen legend.',
+    '- Draw characters and objects as clear canvas shapes combined with relevant emoji rendered via ctx.font + fillText (e.g. "🥷", "⚔️", "👾", "🏆") — this reads far better than plain rectangles with zero art assets.',
+    '- Keep logic self-contained and robust: no external asset loading, no external libraries, no eval.',
+    '- Output ONLY the complete HTML document — no markdown fences, no commentary, no explanation.'
+  ].join('\n');
+
+  async function generateGame() {
+    clearError();
+    const key = currentTextApiKey();
+    const brief = briefInput.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!brief) { showError('Describe the game you want.'); return; }
+
+    draftBtn.disabled = true;
+    draftBtn.textContent = 'Building…';
+    titleBlock.textContent = 'GAME FORGE — BUILDING…';
+    try {
+      const model = modelSelect.value;
+      const html = await callChat(key, model, GAME_RULES, brief);
+      showGame(html);
+      titleBlock.textContent = 'GAME FORGE — READY TO PLAY';
+    } catch (err) {
+      showError(err.message || 'Could not generate that game.');
+      titleBlock.textContent = 'GAME FORGE — GENERATION FAILED';
+    } finally {
+      draftBtn.disabled = false;
+      draftBtn.textContent = 'Generate game';
+    }
+  }
+  draftBtn.addEventListener('click', generateGame);
+
+  async function refineGame() {
+    clearError();
+    const key = currentTextApiKey();
+    const instruction = refineInput.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!currentGameHtml) { showError('Generate a game first.'); return; }
+    if (!instruction) { showError('Say what you want changed.'); return; }
+
+    refineBtn.disabled = true;
+    refineBtn.textContent = 'Applying…';
+    const model = modelSelect.value;
+    const rules = [
+      'You are editing an existing browser game.',
+      'Below is the current complete HTML document, followed by a requested change.',
+      'Apply ONLY the requested change. Keep everything else about the game the same unless the change requires it to differ.',
+      'Keep following the original rules: single self-contained HTML document, inline canvas game, no external assets, output ONLY the complete updated HTML document with no markdown fences or commentary.'
+    ].join('\n');
+    const userMsg = 'CURRENT GAME HTML:\n' + currentGameHtml + '\n\nREQUESTED CHANGE:\n' + instruction;
+
+    try {
+      const html = await callChat(key, model, rules, userMsg);
+      showGame(html);
+      refineInput.value = '';
+    } catch (err) {
+      showError(err.message || 'Could not apply that change.');
+    } finally {
+      refineBtn.disabled = false;
+      refineBtn.textContent = 'Apply change';
+    }
+  }
+  refineBtn.addEventListener('click', refineGame);
+
+  viewSourceBtn.addEventListener('click', function () {
+    sourceView.style.display = sourceView.style.display === 'none' ? 'block' : 'none';
+    viewSourceBtn.textContent = sourceView.style.display === 'block' ? 'Hide source' : 'View source';
+  });
+
+  downloadBtn.addEventListener('click', function () {
+    if (!currentGameHtml) return;
+    const blob = new Blob([currentGameHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'game.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+})();
+</script>
+</body>
+</html>
