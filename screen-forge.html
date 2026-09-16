@@ -239,7 +239,7 @@
 
   // Deploy cloudflare-worker/screenshare-signal.js (see cloudflare-worker/README.md)
   // and paste its URL here. window.__SIGNAL_URL_OVERRIDE is only used by tests.
-  const SIGNAL_URL = (typeof window !== 'undefined' && window.__SIGNAL_URL_OVERRIDE) || 'https://REPLACE-ME.workers.dev';
+  const SIGNAL_URL = (typeof window !== 'undefined' && window.__SIGNAL_URL_OVERRIDE) || 'https://migabuilder-screenshare.makmurphy69.workers.dev';
   const ICE_SERVERS = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
   const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // no 0/O/1/I/L — easier to read aloud
   const SESSION_TTL_SECONDS = 600; // must match TTL_SECONDS in cloudflare-worker/screenshare-signal.js
