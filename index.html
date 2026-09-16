@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <!--
   OPTIONAL: to track how many people use MigaBuilder itself (not the sites it
@@ -840,6 +841,15 @@
       <input type="file" id="loadPageInput" accept=".html,text/html" style="display:none;">
     </div>
 
+    <div class="field" style="margin-bottom:12px;">
+      <label style="color: var(--paper); font-size:13px;">Or import from a URL (only your own site)</label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="importUrlInput" placeholder="https://your-old-site.com" style="flex:1;">
+        <button type="button" id="importUrlBtn" style="white-space:nowrap;">Import</button>
+      </div>
+      <p class="hint" style="color: rgba(237,234,224,0.55);">Only works if that site allows cross-site requests (most don't, for security). If it fails, open the page yourself, press Ctrl/Cmd+S → "Webpage, HTML only", and upload that file above instead. Only import sites you own or have permission to reuse — copying someone else's live site's content isn't something to publish as your own.</p>
+    </div>
+
     <div class="sheet" id="sheet">
       <div class="sheet-empty" id="sheetEmpty">
         <strong>Nothing on the table yet.</strong>
@@ -861,6 +871,18 @@
       <button type="button" class="draft-btn" id="publishBtn" disabled>Push all pages &amp; enable hosting</button>
       <p class="hint" style="color: rgba(237,234,224,0.55);">Creates the repo if it doesn't exist, commits every page, and turns on GitHub Pages so you get a real public URL. Once it's in GitHub, tools like Claude Code can clone that same repo and keep editing it directly. Needs a token with "repo" access — create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>.</p>
       <div class="error-box" id="publishStatus" style="color: var(--success); background: rgba(78,158,115,0.14); border-color: rgba(78,158,115,0.4);"></div>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label style="color: var(--paper);">Instant hosting, no domain needed (optional)</label>
+      <button type="button" class="draft-btn" id="downloadZipBtn" disabled>⬇ Download all pages as .zip</button>
+      <p class="hint" style="color: rgba(237,234,224,0.55);">Unzip it, then drag the folder onto <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> or upload it in the <a href="https://developers.cloudflare.com/pages/get-started/direct-upload/" target="_blank" rel="noopener">Cloudflare Pages dashboard</a> — both give you a live public link in seconds, free, no domain purchase or GitHub account required.</p>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label style="color: var(--paper);">Embed a single page elsewhere (optional)</label>
+      <button type="button" id="copyEmbedBtn" disabled>📋 Copy embed code for this page</button>
+      <p class="hint" style="color: rgba(237,234,224,0.55);">Copies an <code>&lt;iframe&gt;</code> snippet for the page currently shown above. Paste it into Wix's "Embed a Widget → HTML iframe" or Squarespace's Code Block to show this page inside an existing site there. Wix/Squarespace can't import a whole multi-page site directly — this embeds one page as a block on a page you've already built.</p>
     </div>
 
     <div class="table-actions">
@@ -939,6 +961,10 @@
   const titleBlockRight = document.getElementById('titleBlockRight');
   const viewSourceBtn = document.getElementById('viewSourceBtn');
   const downloadBtn = document.getElementById('downloadBtn');
+  const downloadZipBtn = document.getElementById('downloadZipBtn');
+  const copyEmbedBtn = document.getElementById('copyEmbedBtn');
+  const importUrlInput = document.getElementById('importUrlInput');
+  const importUrlBtn = document.getElementById('importUrlBtn');
   const sourceView = document.getElementById('sourceView');
   const sourceText = document.getElementById('sourceText');
   const uploadInput = document.getElementById('uploadInput');
@@ -2106,6 +2132,8 @@
     sourceText.value = page.html;
     viewSourceBtn.disabled = false;
     downloadBtn.disabled = false;
+    downloadZipBtn.disabled = false;
+    copyEmbedBtn.disabled = false;
     refineBtn.disabled = false;
     publishBtn.disabled = false;
   }
@@ -2232,6 +2260,86 @@
     };
     reader.readAsText(file);
     loadPageInput.value = '';
+  });
+
+  // ---------- import a page from a URL ----------
+  importUrlBtn.addEventListener('click', async function () {
+    clearError();
+    const url = importUrlInput.value.trim();
+    if (!url) { showError('Paste a URL first.'); return; }
+    let parsed;
+    try { parsed = new URL(url); } catch (e) { showError('That doesn\'t look like a valid URL — include https://'); return; }
+
+    importUrlBtn.disabled = true;
+    importUrlBtn.textContent = 'Importing…';
+    try {
+      const response = await fetch(parsed.href, { mode: 'cors' });
+      if (!response.ok) throw new Error('That page responded with status ' + response.status + '.');
+      const html = await response.text();
+      if (!html || html.length < 20) throw new Error('That page returned no usable content.');
+
+      let slug = parsed.pathname.replace(/^\/|\/$/g, '').replace(/\.html?$/i, '').replace(/\//g, '-') || 'index';
+      slug = slug.toLowerCase().replace(/[^a-z0-9-]+/g, '-') || 'imported';
+      const navLabel = slug === 'index' ? 'Home' : slug.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const existingIndex = generatedPages.findIndex(p => p.slug === slug);
+      if (existingIndex >= 0) {
+        generatedPages[existingIndex].html = html;
+        activePageIndex = existingIndex;
+      } else {
+        generatedPages.push({ slug: slug, navLabel: navLabel, html: html });
+        activePageIndex = generatedPages.length - 1;
+      }
+      renderTabs();
+      showActivePage();
+      titleBlockRight.textContent = 'IMPORTED · ' + generatedPages.length + ' page' + (generatedPages.length === 1 ? '' : 's');
+      importUrlInput.value = '';
+    } catch (err) {
+      showError('Could not import that page — most sites block this for security (CORS). Open it yourself, press Ctrl/Cmd+S → "Webpage, HTML only", and upload that file with the button above instead.');
+    } finally {
+      importUrlBtn.disabled = false;
+      importUrlBtn.textContent = 'Import';
+    }
+  });
+
+  // ---------- download all pages as a zip ----------
+  downloadZipBtn.addEventListener('click', async function () {
+    if (typeof JSZip === 'undefined') { showError('The zip library failed to load — check your internet connection and reload the page.'); return; }
+    downloadZipBtn.disabled = true;
+    downloadZipBtn.textContent = 'Zipping…';
+    try {
+      const zip = new JSZip();
+      generatedPages.forEach(page => zip.file(page.slug + '.html', page.html));
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'site.zip';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError('Could not build the zip file.');
+    } finally {
+      downloadZipBtn.disabled = false;
+      downloadZipBtn.textContent = '⬇ Download all pages as .zip';
+    }
+  });
+
+  // ---------- copy an embeddable snippet for the current page ----------
+  copyEmbedBtn.addEventListener('click', async function () {
+    const page = generatedPages[activePageIndex];
+    if (!page) return;
+    const escaped = page.html.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const snippet = '<iframe srcdoc="' + escaped + '" style="width:100%;height:600px;border:0;" loading="lazy"></iframe>';
+    try {
+      await navigator.clipboard.writeText(snippet);
+      const original = copyEmbedBtn.textContent;
+      copyEmbedBtn.textContent = '✓ Copied!';
+      setTimeout(() => { copyEmbedBtn.textContent = original; }, 2000);
+    } catch (err) {
+      showError('Could not copy automatically — select the page source below (View source) and copy it manually into an iframe.');
+    }
   });
 
   // ---------- refine the active page ----------
