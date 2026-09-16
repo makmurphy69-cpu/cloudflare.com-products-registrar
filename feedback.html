@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Feedback &amp; Suggestions</title>
+<meta name="description" content="Report a bug, suggest a feature, or see what others have asked for — public, community feedback for every tool on the site.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Feedback & Suggestions">
+<meta property="og:description" content="Report a bug, suggest a feature, or see what others have asked for — public, community feedback for every tool on the site.">
+<meta property="og:url" content="https://migabuilder.com/feedback.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Feedback & Suggestions">
+<meta name="twitter:description" content="Report a bug, suggest a feature, or see what others have asked for — public, community feedback for every tool on the site.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px); opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .solo-wrap { max-width: 640px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 22px; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
+  .panel h2 { font-family: 'Space Grotesk', sans-serif; font-size: 16px; margin: 0 0 4px; }
+  .panel .sub { font-size: 13px; color: rgba(22,32,43,0.6); margin: 0 0 18px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  input[type="text"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-option { display: flex; align-items: center; gap: 6px; font-size: 13.5px; cursor: pointer; background: #fff; border: 1px solid rgba(22,32,43,0.25); border-radius: 999px; padding: 7px 13px; }
+  .radio-option input { margin: 0; }
+  .radio-option:has(input:checked) { border-color: var(--amber); background: rgba(226, 166, 59, 0.14); font-weight: 600; }
+
+  /* honeypot: visually hidden but present in the DOM/tab order avoided for real users */
+  .hp-field { position: absolute; left: -9999px; top: -9999px; }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .error-box, .status-box {
+    margin-top: 14px; padding: 12px 14px; border-radius: var(--radius); font-size: 13px; line-height: 1.5; display: none;
+  }
+  .error-box { background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4); color: #6E2418; }
+  .status-box { background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4); color: #244731; }
+  .error-box.show, .status-box.show { display: block; }
+
+  .feed-list { display: flex; flex-direction: column; gap: 8px; }
+  .feed-item {
+    background: #fff; border: 1px solid rgba(22, 32, 43, 0.18); border-radius: var(--radius);
+    padding: 12px 14px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .feed-item a.title { font-size: 13.5px; font-weight: 600; color: var(--navy); text-decoration: none; }
+  .feed-item a.title:hover { text-decoration: underline; }
+  .feed-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 11.5px; color: rgba(22,32,43,0.55); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+  .badge.bug { background: rgba(216, 96, 74, 0.18); color: #8a2f1e; }
+  .badge.enhancement { background: rgba(111, 209, 224, 0.25); color: #0E2A47; }
+  .badge.feedback { background: rgba(226, 166, 59, 0.22); color: var(--amber-ink); }
+  .badge.closed { background: rgba(78,158,115,0.2); color: #1f5c3d; }
+  .feed-empty, .feed-loading { font-size: 13px; color: rgba(237,234,224,0.55); padding: 4px 0; }
+  .refresh-btn { background: transparent; border: 1px solid var(--line-cyan-dim); color: var(--paper); border-radius: var(--radius); padding: 6px 12px; font-size: 12.5px; cursor: pointer; }
+
+  .panel-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+  .panel-header h2 { color: var(--paper); margin: 0; }
+
+  footer { padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 640px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Feedback &amp; Suggestions</h1>
+    <p>Report a bug, suggest a feature, or see what others have already asked for.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+    <h2>Send feedback</h2>
+    <p class="sub">Posts publicly as a GitHub issue on this project, so anyone can follow or comment on it — no account needed to submit.</p>
+
+    <div class="field">
+      <label>What kind of feedback is this?</label>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="fbType" value="suggestion" checked> 💡 Suggestion</label>
+        <label class="radio-option"><input type="radio" name="fbType" value="bug"> 🐛 Bug report</label>
+        <label class="radio-option"><input type="radio" name="fbType" value="other"> 💬 Other</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="fbTool">Which tool is this about?</label>
+      <select id="fbTool">
+        <option>General / the whole site</option>
+        <option>Video Forge</option>
+        <option>Clip Forge</option>
+        <option>Music Forge</option>
+        <option>Merge Forge</option>
+        <option>Screen Share Forge</option>
+        <option>Logo Forge</option>
+        <option>QR Forge</option>
+        <option>Maze Forge</option>
+        <option>Game Forge</option>
+        <option>Slide Forge</option>
+        <option>File Forge</option>
+        <option>Website builder (homepage)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="fbTitle">Short summary</label>
+      <input type="text" id="fbTitle" maxlength="150" placeholder="e.g. Add a way to reorder sound clips">
+    </div>
+
+    <div class="field">
+      <label for="fbDescription">Details</label>
+      <textarea id="fbDescription" maxlength="4000" placeholder="What happened, or what you'd like to see? The more specific, the easier it is to act on."></textarea>
+    </div>
+
+    <div class="field">
+      <label for="fbContact">Your name or email (optional)</label>
+      <input type="text" id="fbContact" maxlength="200" placeholder="So we can follow up — leave blank to stay anonymous">
+    </div>
+
+    <!-- honeypot: real visitors never see or fill this in -->
+    <div class="field hp-field" aria-hidden="true">
+      <label for="fbWebsite">Leave this field blank</label>
+      <input type="text" id="fbWebsite" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
+    <button type="button" class="draft-btn" id="submitBtn">Send feedback</button>
+    <div class="error-box" id="errorBox"></div>
+    <div class="status-box" id="statusBox"></div>
+  </div>
+
+  <div class="panel" style="background: var(--navy-deep, #081826); color: var(--paper);">
+    <div class="panel-header">
+      <h2>What others have suggested</h2>
+      <button type="button" class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+    </div>
+    <p class="sub" style="color: rgba(237,234,224,0.6);">The most recent public feedback — click any item to read or join the discussion on GitHub.</p>
+    <div class="feed-list" id="feedList"></div>
+    <p class="feed-loading" id="feedLoading">Loading…</p>
+    <p class="feed-empty" id="feedEmpty" style="display:none;">No feedback yet — be the first!</p>
+  </div>
+</div>
+
+<footer>
+  Part of <a href="index.html">MigaBuilder</a>. Feedback is posted as a public GitHub issue — please don't include
+  passwords, API keys, or other sensitive information. This needs a one-time setup by the site owner — see
+  <code>cloudflare-worker/README.md</code>.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // Deploy cloudflare-worker/feedback-relay.js (see cloudflare-worker/README.md)
+  // and paste its URL here. window.__FEEDBACK_API_URL_OVERRIDE is only used by tests.
+  const FEEDBACK_API_URL = (typeof window !== 'undefined' && window.__FEEDBACK_API_URL_OVERRIDE) || 'https://REPLACE-ME.workers.dev';
+
+  const submitBtn = document.getElementById('submitBtn');
+  const fbTool = document.getElementById('fbTool');
+  const fbTitle = document.getElementById('fbTitle');
+  const fbDescription = document.getElementById('fbDescription');
+  const fbContact = document.getElementById('fbContact');
+  const fbWebsite = document.getElementById('fbWebsite');
+  const errorBox = document.getElementById('errorBox');
+  const statusBox = document.getElementById('statusBox');
+  const feedList = document.getElementById('feedList');
+  const feedLoading = document.getElementById('feedLoading');
+  const feedEmpty = document.getElementById('feedEmpty');
+  const refreshBtn = document.getElementById('refreshBtn');
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); statusBox.classList.remove('show'); }
+  function clearMessages() { errorBox.classList.remove('show'); statusBox.classList.remove('show'); }
+  function apiConfigured() { return !/REPLACE-ME/.test(FEEDBACK_API_URL); }
+
+  submitBtn.addEventListener('click', async function () {
+    clearMessages();
+    if (!apiConfigured()) {
+      showError('Feedback needs a one-time setup by the site owner before it can be submitted — see cloudflare-worker/README.md.');
+      return;
+    }
+    const type = (document.querySelector('input[name="fbType"]:checked') || {}).value || 'other';
+    const title = fbTitle.value.trim();
+    const description = fbDescription.value.trim();
+    if (!title) { showError('Add a short summary first.'); return; }
+    if (!description) { showError('Add a few details first.'); return; }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    try {
+      const res = await fetch(FEEDBACK_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type, tool: fbTool.value, title, description,
+          contact: fbContact.value.trim(),
+          website: fbWebsite.value // honeypot
+        })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || ('Request failed with status ' + res.status));
+      statusBox.innerHTML = '✓ Thanks! Your feedback is posted — <a href="' + data.url + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">view it here</a>.';
+      statusBox.classList.add('show');
+      fbTitle.value = '';
+      fbDescription.value = '';
+      fbContact.value = '';
+      loadFeed();
+    } catch (err) {
+      showError(err.message || 'Could not send feedback right now.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send feedback';
+    }
+  });
+
+  function labelBadgeClass(labels) {
+    if (labels.includes('bug')) return 'bug';
+    if (labels.includes('enhancement')) return 'enhancement';
+    return 'feedback';
+  }
+  function labelBadgeText(labels) {
+    if (labels.includes('bug')) return 'Bug';
+    if (labels.includes('enhancement')) return 'Suggestion';
+    return 'Feedback';
+  }
+
+  async function loadFeed() {
+    if (!apiConfigured()) {
+      feedLoading.style.display = 'none';
+      feedEmpty.style.display = 'block';
+      feedEmpty.textContent = 'Feedback list needs a one-time setup by the site owner.';
+      return;
+    }
+    feedList.innerHTML = '';
+    feedEmpty.style.display = 'none';
+    feedLoading.style.display = 'block';
+    try {
+      const res = await fetch(FEEDBACK_API_URL);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not load feedback.');
+      feedLoading.style.display = 'none';
+      if (!data.issues || !data.issues.length) {
+        feedEmpty.style.display = 'block';
+        return;
+      }
+      data.issues.forEach(issue => {
+        const item = document.createElement('div');
+        item.className = 'feed-item';
+        const badgeClass = labelBadgeClass(issue.labels || []);
+        const closedBadge = issue.state === 'closed' ? '<span class="badge closed">Resolved</span>' : '';
+        item.innerHTML =
+          '<a class="title" href="' + issue.url + '" target="_blank" rel="noopener">' + issue.title.replace(/</g, '&lt;') + '</a>' +
+          '<div class="feed-meta">' +
+            '<span class="badge ' + badgeClass + '">' + labelBadgeText(issue.labels || []) + '</span>' +
+            closedBadge +
+            '<span>' + issue.comments + (issue.comments === 1 ? ' comment' : ' comments') + '</span>' +
+          '</div>';
+        feedList.appendChild(item);
+      });
+    } catch (err) {
+      feedLoading.style.display = 'none';
+      feedEmpty.style.display = 'block';
+      feedEmpty.textContent = 'Could not load feedback right now.';
+    }
+  }
+  refreshBtn.addEventListener('click', loadFeed);
+  loadFeed();
+})();
+</script>
+</body>
+</html>

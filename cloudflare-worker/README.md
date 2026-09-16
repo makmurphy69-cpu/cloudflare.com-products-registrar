@@ -73,3 +73,48 @@ Note: peer-to-peer connections can fail to establish directly on some
 restrictive corporate or public Wi-Fi networks (this needs a TURN relay
 server to work around, which isn't included here). If a connection seems
 stuck, try a different network on one side.
+
+# Feedback relay — deploy steps
+
+`feedback.html` lets visitors report bugs or suggest features without
+needing their own GitHub account — this Worker posts their submission as a
+real GitHub issue on your repo using your own token, and lists recent ones
+back so the page reads like a small public community board.
+
+1. **Create a fine-grained GitHub token**, scoped as narrowly as possible:
+   - Go to https://github.com/settings/personal-access-tokens/new
+   - Under **Repository access**, choose **Only select repositories** and
+     pick this repo.
+   - Under **Permissions → Repository permissions**, set **Issues** to
+     **Read and write**. Leave everything else as "No access".
+   - Set an expiration (90 days is reasonable — you'll get an email
+     reminder to renew it before it lapses) and generate the token.
+2. Go to https://dash.cloudflare.com → **Workers & Pages** → **Create** →
+   **Create Worker**. Give it a name (e.g. `migabuilder-feedback`) and
+   **Deploy** to create the placeholder.
+3. Click **Edit code**. Delete the sample code and paste in the contents of
+   `feedback-relay.js` from this folder. Click **Deploy**.
+4. Go to the Worker's **Settings → Variables and Secrets**. Add:
+   - A **secret** named `GITHUB_TOKEN` — the token from step 1.
+   - A regular **variable** named `GITHUB_OWNER` — your GitHub username or
+     org (e.g. `makmurphy69-cpu`).
+   - A regular **variable** named `GITHUB_REPO` — the repo name (e.g.
+     `cloudflare.com-products-registrar`).
+5. Copy the Worker's URL and paste it into `feedback.html` as the value of
+   `FEEDBACK_API_URL` (near the top of the `<script>` block — currently a
+   placeholder).
+6. In your GitHub repo, it helps (but isn't required) to create three
+   labels ahead of time so they show their intended colors: `feedback`,
+   `bug`, `enhancement`. GitHub will still accept the labels without this
+   step, just in a default color.
+7. Commit and push.
+
+Two things worth knowing:
+- This lets **any anonymous visitor** create an issue on your repo through
+  a shared token — there's a honeypot field to deter basic bots, and
+  reasonable length limits on submissions, but no CAPTCHA. If it ever gets
+  abused, the simplest fix is deleting the spam issues and, if it keeps
+  happening, rotating out the Worker's token to shut it off entirely.
+- Submitted feedback is genuinely public — it's a real GitHub issue anyone
+  can read, comment on, or react to. Don't put anything in the form you
+  wouldn't want visible on a public issue tracker.
