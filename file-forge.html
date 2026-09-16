@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>File Forge — free image converter</title>
+<meta name="description" content="Convert images between PNG, JPG, and WebP right in your browser — nothing uploaded, nothing stored.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--navy);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      linear-gradient(var(--line-cyan-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--line-cyan);
+    outline-offset: 2px;
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 26px clamp(20px, 4vw, 48px) 22px;
+    position: relative;
+  }
+  header.masthead::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--line-cyan) 0, var(--line-cyan) 1px,
+      transparent 1px, transparent 9px
+    );
+    opacity: 0.55;
+  }
+
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
+
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5);
+    margin: 22px 0 12px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  select, input[type="range"] {
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink);
+  }
+  input[type="range"] { padding: 0; height: 36px; }
+
+  .upload-drop {
+    display: block;
+    background: #fff;
+    border: 2px dashed rgba(22, 32, 43, 0.3);
+    border-radius: var(--radius);
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: rgba(22, 32, 43, 0.7);
+  }
+  .upload-drop.dragover { border-color: var(--line-cyan); background: rgba(111, 209, 224, 0.08); }
+  .upload-drop strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+
+  .file-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .file-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid rgba(22, 32, 43, 0.18);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+  }
+  .file-row img { width: 40px; height: 40px; object-fit: cover; border-radius: 2px; flex: none; background: #eee; }
+  .file-row .file-meta { flex: 1; min-width: 0; }
+  .file-row .file-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-row .file-size { font-size: 11.5px; color: rgba(22, 32, 43, 0.55); }
+  .file-row .file-status { font-size: 11.5px; flex: none; }
+  .file-row .remove-file { background: transparent; border: none; color: var(--error); font-size: 16px; cursor: pointer; flex: none; padding: 2px 6px; }
+
+  .draft-btn {
+    width: 100%;
+    background: var(--amber);
+    color: var(--amber-ink);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 13px;
+    cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14);
+    border: 1px solid rgba(216, 96, 74, 0.4); border-radius: var(--radius);
+    font-size: 13px; color: #6E2418; display: none;
+  }
+  .error-box.show { display: block; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 560px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>File Forge</h1>
+    <p>Convert images between PNG, JPG, and WebP — entirely in your browser.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+
+    <div class="section-title">Your images</div>
+    <div class="field">
+      <label class="upload-drop" for="fileInput" id="dropZone">
+        <strong>Click to choose files, or drag them here</strong>
+        PNG, JPG, WebP, GIF, or BMP — as many as you like
+      </label>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+      <div class="file-list" id="fileList"></div>
+    </div>
+
+    <div class="section-title">Convert to</div>
+    <div class="field">
+      <label for="formatSelect">Output format</label>
+      <select id="formatSelect">
+        <option value="image/png">PNG — lossless, supports transparency</option>
+        <option value="image/jpeg" selected>JPG — smaller, no transparency</option>
+        <option value="image/webp">WebP — smaller still, supports transparency</option>
+      </select>
+    </div>
+    <div class="field" id="qualityField">
+      <label for="qualitySlider">Quality: <span id="qualityValue">85%</span></label>
+      <input type="range" id="qualitySlider" min="10" max="100" value="85" step="5">
+      <p class="hint">Lower quality means a smaller file. 100% keeps the most detail.</p>
+    </div>
+
+    <button type="button" class="draft-btn" id="convertBtn" disabled>Convert &amp; download all</button>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+</div>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your images never leave your device — everything happens locally in the browser.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const fileInput = document.getElementById('fileInput');
+  const dropZone = document.getElementById('dropZone');
+  const fileListEl = document.getElementById('fileList');
+  const formatSelect = document.getElementById('formatSelect');
+  const qualityField = document.getElementById('qualityField');
+  const qualitySlider = document.getElementById('qualitySlider');
+  const qualityValue = document.getElementById('qualityValue');
+  const convertBtn = document.getElementById('convertBtn');
+  const errorBox = document.getElementById('errorBox');
+
+  let files = [];
+
+  function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function renderFileList() {
+    fileListEl.innerHTML = '';
+    files.forEach((f, i) => {
+      const row = document.createElement('div');
+      row.className = 'file-row';
+      const img = document.createElement('img');
+      img.src = f.previewUrl;
+      const meta = document.createElement('div');
+      meta.className = 'file-meta';
+      meta.innerHTML = '<div class="file-name">' + f.file.name + '</div><div class="file-size">' + formatBytes(f.file.size) + '</div>';
+      const status = document.createElement('div');
+      status.className = 'file-status';
+      status.textContent = f.status || '';
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-file';
+      removeBtn.title = 'Remove';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => {
+        URL.revokeObjectURL(f.previewUrl);
+        files.splice(i, 1);
+        renderFileList();
+        convertBtn.disabled = files.length === 0;
+      });
+      row.appendChild(img);
+      row.appendChild(meta);
+      row.appendChild(status);
+      row.appendChild(removeBtn);
+      fileListEl.appendChild(row);
+    });
+  }
+
+  function addFiles(fileListArg) {
+    clearError();
+    const incoming = Array.from(fileListArg).filter(f => f.type.startsWith('image/'));
+    if (!incoming.length) { showError('Please choose image files (PNG, JPG, WebP, GIF, or BMP).'); return; }
+    incoming.forEach(file => {
+      files.push({ file: file, previewUrl: URL.createObjectURL(file), status: '' });
+    });
+    renderFileList();
+    convertBtn.disabled = files.length === 0;
+  }
+
+  fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+  });
+
+  function updateQualityVisibility() {
+    qualityField.style.display = formatSelect.value === 'image/png' ? 'none' : 'block';
+  }
+  formatSelect.addEventListener('change', updateQualityVisibility);
+  updateQualityVisibility();
+
+  qualitySlider.addEventListener('input', () => { qualityValue.textContent = qualitySlider.value + '%'; });
+
+  function extensionFor(mime) {
+    if (mime === 'image/png') return 'png';
+    if (mime === 'image/webp') return 'webp';
+    return 'jpg';
+  }
+
+  function convertOne(entry, mime, quality) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        if (mime === 'image/jpeg') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          if (!blob) { reject(new Error('Conversion failed for ' + entry.file.name)); return; }
+          resolve(blob);
+        }, mime, quality);
+      };
+      img.onerror = () => reject(new Error('Could not read ' + entry.file.name + ' — it may be corrupted or an unsupported format.'));
+      img.src = entry.previewUrl;
+    });
+  }
+
+  convertBtn.addEventListener('click', async () => {
+    clearError();
+    if (!files.length) return;
+    convertBtn.disabled = true;
+    convertBtn.textContent = 'Converting…';
+    const mime = formatSelect.value;
+    const quality = parseInt(qualitySlider.value, 10) / 100;
+    const ext = extensionFor(mime);
+
+    let failCount = 0;
+    for (let i = 0; i < files.length; i++) {
+      const entry = files[i];
+      entry.status = 'Converting…';
+      renderFileList();
+      try {
+        const blob = await convertOne(entry, mime, quality);
+        const baseName = entry.file.name.replace(/\.[^.]+$/, '');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = baseName + '.' + ext;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        entry.status = '✓ Done';
+      } catch (err) {
+        entry.status = '✗ Failed';
+        failCount++;
+      }
+      renderFileList();
+      await new Promise(r => setTimeout(r, 250)); // avoid overwhelming the browser's download prompts
+    }
+
+    convertBtn.disabled = false;
+    convertBtn.textContent = 'Convert & download all';
+    if (failCount) showError(failCount + ' file(s) could not be converted — see status next to each file.');
+  });
+})();
+</script>
+</body>
+</html>
