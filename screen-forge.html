@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Screen Share Forge — help someone by watching their screen live</title>
+<meta name="description" content="Send a link, get a code, watch their screen live and chat while you help them — no installs, nothing recorded, connects browser-to-browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .wrap { max-width: 620px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 24px 24px 28px; }
+  .panel h2 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; margin: 0 0 14px; }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin: 6px 0 0; line-height: 1.5; }
+
+  input[type="text"] {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+  .key-row button {
+    background: #fff; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius);
+    padding: 0 14px; font-size: 13px; cursor: pointer; color: var(--ink);
+  }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 13px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .draft-btn.danger { background: var(--error); color: #fff; }
+
+  .check-row { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; cursor: pointer; margin: 12px 0; }
+  .check-row input { margin-top: 3px; flex: none; width: auto; }
+
+  .code-display {
+    font-family: 'IBM Plex Mono', monospace; font-size: 32px; font-weight: 700; letter-spacing: 0.15em;
+    text-align: center; background: #fff; border: 1px solid rgba(22, 32, 43, 0.2); border-radius: var(--radius);
+    padding: 16px; margin: 12px 0;
+  }
+
+  .status-line { font-size: 13.5px; color: rgba(22, 32, 43, 0.75); margin: 12px 0; min-height: 1.4em; }
+
+  .video-frame { background: #000; border-radius: 4px; overflow: hidden; margin: 14px 0; position: relative; }
+  .video-frame video { width: 100%; display: block; max-height: 50vh; }
+  .video-frame .play-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.55); color: #fff; border: none;
+    font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .pointer-dot {
+    position: absolute; width: 18px; height: 18px; border-radius: 50%; background: rgba(216, 96, 74, 0.85);
+    box-shadow: 0 0 0 5px rgba(216, 96, 74, 0.3); transform: translate(-50%, -50%); pointer-events: none;
+  }
+
+  .chat-box { margin-top: 14px; border: 1px solid rgba(22, 32, 43, 0.18); border-radius: var(--radius); background: #fff; display: flex; flex-direction: column; }
+  .chat-messages { max-height: 180px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+  .chat-msg { max-width: 82%; padding: 6px 10px; border-radius: 10px; background: var(--paper-dim); line-height: 1.4; }
+  .chat-msg.mine { align-self: flex-end; background: var(--line-cyan-dim); }
+  .chat-msg .who { display: block; font-size: 10.5px; font-weight: 600; opacity: 0.6; margin-bottom: 2px; }
+  .chat-input-row { display: flex; gap: 6px; padding: 8px; border-top: 1px solid rgba(22, 32, 43, 0.12); }
+  .chat-input-row input { flex: 1; }
+  .chat-input-row button { background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius); padding: 0 14px; font-size: 13px; cursor: pointer; }
+
+  .error-box {
+    margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 620px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Screen Share Forge</h1>
+    <p>Send a link, get a code, and see someone's screen live so you can help them — no installs, nothing recorded.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="view active" id="view-choose">
+    <div class="panel">
+      <h2>What do you need?</h2>
+      <button type="button" class="draft-btn" id="startHelperBtn">🛠️ I want to help someone — start a session</button>
+      <p class="hint">You'll get a link and a code. Send it to the person you're helping — once they open it and choose to share, their screen shows up here live.</p>
+
+      <button type="button" class="draft-btn secondary" id="startClientBtn" style="margin-top:18px;">🙋 Someone gave me a code — I need help</button>
+      <div class="field" id="manualCodeField" style="display:none; margin-top:12px;">
+        <label for="manualCodeInput">Enter the code they gave you</label>
+        <input type="text" id="manualCodeInput" placeholder="e.g. 7K2P9Q" autocapitalize="characters" autocomplete="off">
+        <button type="button" class="draft-btn" id="manualCodeSubmitBtn" style="margin-top:8px;">Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-helper">
+    <div class="panel">
+      <h2>Helping session</h2>
+      <div id="helperSetupBlock">
+        <p class="hint" style="margin-top:0;">Send this link to the person you're helping. When they open it and share their screen, it appears below.</p>
+        <div class="field">
+          <label for="helperLinkInput">Share this link</label>
+          <div class="key-row"><input type="text" id="helperLinkInput" readonly><button type="button" id="copyLinkBtn">Copy</button></div>
+        </div>
+        <div class="field">
+          <label>Or read them this code</label>
+          <div class="code-display" id="helperCodeEl">------</div>
+        </div>
+      </div>
+      <p class="status-line" id="helperStatus">Setting up…</p>
+
+      <div class="video-frame" id="helperVideoFrame" style="display:none;">
+        <video id="remoteVideo" autoplay playsinline></video>
+        <button type="button" class="play-overlay" id="helperPlayOverlay" style="display:none;">▶ Click to start viewing</button>
+      </div>
+      <label class="check-row" id="pointerToggleRow" style="display:none;">
+        <input type="checkbox" id="pointerToggle">
+        <span>🔴 Point at things on their screen — move your mouse over the video above while this is checked. They'll see a red dot on their mini-preview.</span>
+      </label>
+      <div id="helperChatSlot"></div>
+
+      <button type="button" class="draft-btn danger" id="helperEndBtn" style="margin-top:16px;">End session</button>
+    </div>
+  </div>
+
+  <div class="view" id="view-client">
+    <div class="panel">
+      <h2>Sharing your screen</h2>
+      <p class="hint" style="margin-top:0;">Someone wants to help you. Only continue if you know and trust who sent you this link or code.</p>
+      <div class="code-display" id="clientCodeEl"></div>
+      <p class="status-line" id="clientStatus">Looking for the session…</p>
+
+      <button type="button" class="draft-btn" id="clientShareBtn" style="display:none;">🖥️ Share my screen</button>
+
+      <div class="video-frame" id="clientPreviewFrame" style="display:none;">
+        <video id="clientPreviewVideo" autoplay playsinline muted></video>
+        <div class="pointer-dot" id="clientPointerDot" hidden></div>
+      </div>
+      <p class="hint" id="pointerHint" style="display:none;">This mini-preview is what you're sharing. If they point at something, you'll see a red dot on it here.</p>
+      <div id="clientChatSlot"></div>
+
+      <button type="button" class="draft-btn danger" id="clientStopBtn" style="display:none; margin-top:16px;">Stop sharing</button>
+    </div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+</div>
+
+<footer>
+  Part of <a href="index.html">MigaBuilder</a>. Once connected, video, audio and chat travel directly between the two
+  browsers (peer-to-peer) — this tool's server only relays the one-time connection handshake and never sees or
+  stores the call itself. Screen sharing always goes through your browser's own picker, and you (or they) can stop
+  it at any time. This needs a one-time setup by the site owner — see <code>cloudflare-worker/README.md</code>.
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // Deploy cloudflare-worker/screenshare-signal.js (see cloudflare-worker/README.md)
+  // and paste its URL here. window.__SIGNAL_URL_OVERRIDE is only used by tests.
+  const SIGNAL_URL = (typeof window !== 'undefined' && window.__SIGNAL_URL_OVERRIDE) || 'https://REPLACE-ME.workers.dev';
+  const ICE_SERVERS = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
+  const CODE_ALPHABET = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // no 0/O/1/I/L — easier to read aloud
+
+  // ---------- element refs ----------
+  const views = {
+    choose: document.getElementById('view-choose'),
+    helper: document.getElementById('view-helper'),
+    client: document.getElementById('view-client')
+  };
+  const errorBox = document.getElementById('errorBox');
+
+  const startHelperBtn = document.getElementById('startHelperBtn');
+  const startClientBtn = document.getElementById('startClientBtn');
+  const manualCodeField = document.getElementById('manualCodeField');
+  const manualCodeInput = document.getElementById('manualCodeInput');
+  const manualCodeSubmitBtn = document.getElementById('manualCodeSubmitBtn');
+
+  const helperSetupBlock = document.getElementById('helperSetupBlock');
+  const helperLinkInput = document.getElementById('helperLinkInput');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const helperCodeEl = document.getElementById('helperCodeEl');
+  const helperStatus = document.getElementById('helperStatus');
+  const helperVideoFrame = document.getElementById('helperVideoFrame');
+  const remoteVideo = document.getElementById('remoteVideo');
+  const helperPlayOverlay = document.getElementById('helperPlayOverlay');
+  const pointerToggleRow = document.getElementById('pointerToggleRow');
+  const pointerToggle = document.getElementById('pointerToggle');
+  const helperChatSlot = document.getElementById('helperChatSlot');
+  const helperEndBtn = document.getElementById('helperEndBtn');
+
+  const clientCodeEl = document.getElementById('clientCodeEl');
+  const clientStatus = document.getElementById('clientStatus');
+  const clientShareBtn = document.getElementById('clientShareBtn');
+  const clientPreviewFrame = document.getElementById('clientPreviewFrame');
+  const clientPreviewVideo = document.getElementById('clientPreviewVideo');
+  const clientPointerDot = document.getElementById('clientPointerDot');
+  const pointerHint = document.getElementById('pointerHint');
+  const clientChatSlot = document.getElementById('clientChatSlot');
+  const clientStopBtn = document.getElementById('clientStopBtn');
+
+  // ---------- state ----------
+  let role = null; // 'helper' | 'client'
+  let pc = null;
+  let dataChannel = null;
+  let localStream = null;
+  let currentCode = null;
+  let pollGuard = null; // { cancelled: false }
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function showView(name) {
+    Object.keys(views).forEach(k => views[k].classList.toggle('active', k === name));
+  }
+
+  function signalConfigured() { return !/REPLACE-ME/.test(SIGNAL_URL); }
+
+  // ---------- signaling (relayed once through a small Worker, see cloudflare-worker/) ----------
+  async function putSignal(code, kind, desc) {
+    const res = await fetch(SIGNAL_URL.replace(/\/$/, '') + '/' + code + '/' + kind, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sdp: desc.sdp, type: desc.type })
+    });
+    if (!res.ok) throw new Error('Could not reach the signaling server (status ' + res.status + ').');
+  }
+  async function getSignal(code, kind) {
+    const res = await fetch(SIGNAL_URL.replace(/\/$/, '') + '/' + code + '/' + kind);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('Could not reach the signaling server (status ' + res.status + ').');
+    return res.json();
+  }
+  async function pollSignal(code, kind, opts) {
+    opts = opts || {};
+    const intervalMs = opts.intervalMs || 1500;
+    const timeoutMs = opts.timeoutMs || 300000;
+    const guard = opts.guard;
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      if (guard && guard.cancelled) throw new Error('Cancelled');
+      const val = await getSignal(code, kind);
+      if (val) return val;
+      await new Promise(r => setTimeout(r, intervalMs));
+    }
+    throw new Error('Timed out waiting — the code may have expired. Try starting a new session.');
+  }
+  function waitForIceGatheringComplete(peerConn) {
+    if (peerConn.iceGatheringState === 'complete') return Promise.resolve();
+    return new Promise(resolve => {
+      function check() {
+        if (peerConn.iceGatheringState === 'complete') {
+          peerConn.removeEventListener('icegatheringstatechange', check);
+          resolve();
+        }
+      }
+      peerConn.addEventListener('icegatheringstatechange', check);
+      setTimeout(resolve, 4000); // don't block forever on a slow/blocked network
+    });
+  }
+  function generateCode(len) {
+    let s = '';
+    for (let i = 0; i < len; i++) s += CODE_ALPHABET[Math.floor(Math.random() * CODE_ALPHABET.length)];
+    return s;
+  }
+
+  // ---------- chat (shared component, moved into whichever view is active) ----------
+  const chatSection = document.createElement('div');
+  chatSection.className = 'chat-box';
+  chatSection.innerHTML =
+    '<div class="chat-messages" id="chatMessages"></div>' +
+    '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Type a message…"><button type="button" id="chatSendBtn">Send</button></div>';
+  const chatMessages = chatSection.querySelector('#chatMessages');
+  const chatInput = chatSection.querySelector('#chatInput');
+  const chatSendBtn = chatSection.querySelector('#chatSendBtn');
+
+  function appendChatMessage(who, text, mine) {
+    const div = document.createElement('div');
+    div.className = 'chat-msg' + (mine ? ' mine' : '');
+    div.innerHTML = '<span class="who">' + who + '</span>' + String(text).replace(/</g, '&lt;');
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+  function sendChat() {
+    const text = chatInput.value.trim();
+    if (!text || !dataChannel || dataChannel.readyState !== 'open') return;
+    dataChannel.send(JSON.stringify({ type: 'chat', text: text }));
+    appendChatMessage('You', text, true);
+    chatInput.value = '';
+  }
+  chatSendBtn.addEventListener('click', sendChat);
+  chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
+
+  function wireDataChannel() {
+    dataChannel.onmessage = function (e) {
+      let msg;
+      try { msg = JSON.parse(e.data); } catch (err) { return; }
+      if (msg.type === 'chat') appendChatMessage('Them', msg.text, false);
+      else if (msg.type === 'pointer') showPointer(msg);
+    };
+  }
+  function showPointer(msg) {
+    if (role !== 'client') return;
+    if (!msg.visible) { clientPointerDot.hidden = true; return; }
+    const rect = clientPreviewFrame.getBoundingClientRect();
+    clientPointerDot.style.left = (msg.x * rect.width) + 'px';
+    clientPointerDot.style.top = (msg.y * rect.height) + 'px';
+    clientPointerDot.hidden = false;
+  }
+
+  // ---------- shared peer connection setup ----------
+  function createPeerConnection() {
+    const conn = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    conn.onconnectionstatechange = function () {
+      if (['disconnected', 'failed', 'closed'].includes(conn.connectionState)) {
+        if (role === 'helper') { helperStatus.textContent = 'Connection ended.'; }
+        else if (role === 'client') { clientStatus.textContent = 'Connection ended.'; }
+      }
+    };
+    return conn;
+  }
+
+  function resetSession() {
+    if (pollGuard) pollGuard.cancelled = true;
+    if (pc) { try { pc.close(); } catch (e) {} pc = null; }
+    if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+    dataChannel = null;
+    role = null;
+    currentCode = null;
+    chatMessages.innerHTML = '';
+    if (chatSection.parentNode) chatSection.parentNode.removeChild(chatSection);
+    remoteVideo.srcObject = null;
+    clientPreviewVideo.srcObject = null;
+    clientPointerDot.hidden = true;
+    pointerToggle.checked = false;
+    helperPlayOverlay.style.display = 'none';
+    clientPreviewFrame.style.display = 'none';
+    clientStopBtn.style.display = 'none';
+    clientShareBtn.style.display = 'none';
+    pointerHint.style.display = 'none';
+  }
+
+  // ================= HELPER =================
+  async function startHelperSession() {
+    clearError();
+    if (!signalConfigured()) {
+      showError('This tool needs a one-time setup by the site owner before it can connect people — see cloudflare-worker/README.md.');
+      return;
+    }
+    resetSession();
+    role = 'helper';
+    showView('helper');
+    helperSetupBlock.style.display = 'block';
+    helperVideoFrame.style.display = 'none';
+    pointerToggleRow.style.display = 'none';
+    helperChatSlot.innerHTML = '';
+    helperStatus.textContent = 'Setting up…';
+
+    const code = generateCode(6);
+    currentCode = code;
+    const shareUrl = location.origin + location.pathname + '?code=' + code;
+    helperCodeEl.textContent = code;
+    helperLinkInput.value = shareUrl;
+
+    pc = createPeerConnection();
+    pc.addTransceiver('video', { direction: 'recvonly' });
+    pc.addTransceiver('audio', { direction: 'recvonly' });
+    dataChannel = pc.createDataChannel('chat');
+    wireDataChannel();
+    dataChannel.onopen = function () { helperChatSlot.appendChild(chatSection); };
+
+    pc.ontrack = function (e) {
+      remoteVideo.srcObject = e.streams[0];
+      helperVideoFrame.style.display = 'block';
+      pointerToggleRow.style.display = 'flex';
+      helperStatus.textContent = 'Connected — viewing their screen.';
+      remoteVideo.play().catch(function () { helperPlayOverlay.style.display = 'flex'; });
+    };
+
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await waitForIceGatheringComplete(pc);
+      await putSignal(code, 'offer', pc.localDescription);
+    } catch (err) {
+      showError('Could not start the session: ' + err.message);
+      return;
+    }
+
+    helperStatus.textContent = 'Waiting for them to join — send the link or code above.';
+    pollGuard = { cancelled: false };
+    try {
+      const answer = await pollSignal(code, 'answer', { guard: pollGuard });
+      await pc.setRemoteDescription(answer);
+    } catch (err) {
+      if (!pollGuard.cancelled) showError(err.message);
+    }
+  }
+
+  helperPlayOverlay.addEventListener('click', function () {
+    remoteVideo.play().then(function () { helperPlayOverlay.style.display = 'none'; }).catch(function () {});
+  });
+
+  pointerToggle.addEventListener('change', function () {
+    if (!pointerToggle.checked && dataChannel && dataChannel.readyState === 'open') {
+      dataChannel.send(JSON.stringify({ type: 'pointer', visible: false }));
+    }
+  });
+  remoteVideo.addEventListener('mousemove', function (e) {
+    if (!pointerToggle.checked || !dataChannel || dataChannel.readyState !== 'open') return;
+    const rect = remoteVideo.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    dataChannel.send(JSON.stringify({ type: 'pointer', x: x, y: y, visible: true }));
+  });
+  remoteVideo.addEventListener('mouseleave', function () {
+    if (dataChannel && dataChannel.readyState === 'open') {
+      dataChannel.send(JSON.stringify({ type: 'pointer', visible: false }));
+    }
+  });
+
+  helperEndBtn.addEventListener('click', function () {
+    resetSession();
+    showView('choose');
+  });
+
+  // ================= CLIENT =================
+  async function prepareClientConnection(code) {
+    clearError();
+    if (!signalConfigured()) {
+      showError('This tool needs a one-time setup by the site owner before it can connect people — see cloudflare-worker/README.md.');
+      return;
+    }
+    resetSession();
+    role = 'client';
+    currentCode = code;
+    showView('client');
+    clientCodeEl.textContent = code;
+    clientStatus.textContent = 'Looking for the session…';
+    clientShareBtn.style.display = 'none';
+    clientChatSlot.innerHTML = '';
+
+    let offer;
+    pollGuard = { cancelled: false };
+    try {
+      offer = await pollSignal(code, 'offer', { timeoutMs: 120000, intervalMs: 1500, guard: pollGuard });
+    } catch (err) {
+      if (!pollGuard.cancelled) showError("Couldn't find that session — double-check the code, or ask them to start a new one.");
+      return;
+    }
+
+    pc = createPeerConnection();
+    pc.ondatachannel = function (e) {
+      dataChannel = e.channel;
+      wireDataChannel();
+      dataChannel.onopen = function () { clientChatSlot.appendChild(chatSection); };
+    };
+
+    try {
+      await pc.setRemoteDescription(offer);
+    } catch (err) {
+      showError('Could not read the session offer: ' + err.message);
+      return;
+    }
+
+    clientStatus.textContent = 'Ready — click below to choose what to share.';
+    clientShareBtn.style.display = 'block';
+  }
+
+  async function shareScreenAsClient() {
+    clearError();
+    let stream;
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    } catch (err) {
+      showError('Screen sharing was cancelled or blocked.');
+      return;
+    }
+    localStream = stream;
+    stream.getTracks().forEach(function (track) {
+      pc.addTrack(track, stream);
+      track.addEventListener('ended', stopClientSharing);
+    });
+    clientPreviewVideo.srcObject = stream;
+    clientPreviewFrame.style.display = 'block';
+    pointerHint.style.display = 'block';
+    clientShareBtn.style.display = 'none';
+    clientStopBtn.style.display = 'block';
+
+    try {
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      await waitForIceGatheringComplete(pc);
+      await putSignal(currentCode, 'answer', pc.localDescription);
+      clientStatus.textContent = 'Connected — your screen is being shared.';
+    } catch (err) {
+      showError('Could not connect: ' + err.message);
+    }
+  }
+
+  function stopClientSharing() {
+    resetSession();
+    showView('choose');
+  }
+
+  clientShareBtn.addEventListener('click', shareScreenAsClient);
+  clientStopBtn.addEventListener('click', stopClientSharing);
+
+  // ================= CHOOSER / ROUTING =================
+  startHelperBtn.addEventListener('click', startHelperSession);
+  startClientBtn.addEventListener('click', function () {
+    manualCodeField.style.display = manualCodeField.style.display === 'block' ? 'none' : 'block';
+  });
+  manualCodeSubmitBtn.addEventListener('click', function () {
+    const code = manualCodeInput.value.trim().toUpperCase();
+    if (!code) { showError('Enter the code you were given.'); return; }
+    prepareClientConnection(code);
+  });
+  copyLinkBtn.addEventListener('click', function () {
+    helperLinkInput.select();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(helperLinkInput.value).catch(function () {});
+    } else {
+      document.execCommand('copy');
+    }
+  });
+
+  (function init() {
+    if (!('RTCPeerConnection' in window) || !navigator.mediaDevices) {
+      showError('Your browser does not support the technology this tool needs (WebRTC). Try the latest Chrome, Edge, or Firefox.');
+      return;
+    }
+    const params = new URLSearchParams(location.search);
+    const code = (params.get('code') || '').trim().toUpperCase();
+    if (code) prepareClientConnection(code);
+  })();
+})();
+</script>
+</body>
+</html>
