@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request a Quote | Greenline Grounds - Reliable Lawn & Garden Care</title>
+    <meta name="description" content="Get a fast, free lawn care or landscaping quote from Greenline Grounds. Reliable, punctual yard maintenance you can set your watch to.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Request a Quote | Greenline Grounds">
+    <meta property="og:description" content="Contact Greenline Grounds today for a precise yard care estimate. Serving our community with reliable, on-time lawn, garden, and cleanup services.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1b4d22;
+            --primary-light: #2c6b34;
+            --primary-dark: #123316;
+            --accent: #5cbf3f;
+            --accent-hover: #4ba631;
+            --neutral-dark: #202421;
+            --neutral-light: #f4f7f4;
+            --white: #ffffff;
+            --gray: #6b7280;
+            --border: #d2d6dc;
+            --font-heading: 'Montserrat', sans-serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --transition: all 0.25s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--neutral-dark);
+            background-color: var(--neutral-light);
+            line-height: 1.6;
+        }
+
+        /* Utility classes */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            background-color: var(--primary);
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 20px;
+            font-family: var(--font-heading);
+        }
+
+        .logo-text {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .logo-tagline {
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--gray);
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--neutral-dark);
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent);
+        }
+
+        .nav-btn {
+            background-color: var(--primary);
+            color: var(--white) !important;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--white) !important;
+        }
+
+        /* Page Hero */
+        .hero-section {
+            background-color: var(--primary-dark);
+            background-image: linear-gradient(rgba(18, 51, 22, 0.9), rgba(18, 51, 22, 0.95));
+            color: var(--white);
+            padding: 70px 0;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: var(--font-heading);
+            font-size: 38px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--accent);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 500;
+        }
+
+        /* Grid Layout for Form & Info */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 48px;
+            padding: 64px 0;
+        }
+
+        /* Form Styling */
+        .form-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .form-intro {
+            margin-bottom: 30px;
+        }
+
+        .form-intro h2 {
+            font-family: var(--font-heading);
+            font-size: 24px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-intro p {
+            color: var(--gray);
+            font-size: 15px;
+        }
+
+        .form-group-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--neutral-dark);
+            margin-bottom: 8px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--neutral-dark);
+            background-color: #fafbfa;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background-color: var(--white);
+            box-shadow: 0 0 0 3px rgba(92, 191, 63, 0.15);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            background-color: var(--accent);
+            color: var(--white);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 6px;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Sidebar Info Styling */
+        .info-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .info-block {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-block h3 {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-block p {
+            font-size: 15px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .info-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Map and Service Area Visualization */
+        .service-area-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .map-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-area-content {
+            padding: 24px;
+        }
+
+        .service-area-content h3 {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .service-area-content p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+
+        .town-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--neutral-dark);
+        }
+
+        .town-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .town-item::before {
+            content: "✓";
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Trust/Promise Section */
+        .promise-banner {
+            background-color: var(--white);
+            border-top: 1px solid var(--border);
+            padding: 48px 0;
+            text-align: center;
+        }
+
+        .promise-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .promise-icon {
+            font-size: 40px;
+            margin-bottom: 16px;
+        }
+
+        .promise-content h3 {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .promise-content p {
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 64px 0 32px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+        }
+
+        .footer-logo-area p {
+            margin-top: 16px;
+            color: #b3c5b3;
+            font-size: 14px;
+            max-width: 320px;
+        }
+
+        .footer-logo-text {
+            color: var(--white);
+        }
+
+        .footer-title {
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            text-decoration: none;
+            color: #b3c5b3;
+            transition: var(--transition);
+            font-size: 15px;
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-contact-info p {
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #b3c5b3;
+        }
+
+        .footer-contact-info a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #23522a;
+            padding-top: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #b3c5b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-container {
+                flex-direction: column;
+                height: auto;
+                padding: 16px 0;
+                gap: 16px;
+            }
+
+            nav ul {
+                gap: 16px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .form-group-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .hero-title {
+                font-size: 30px;
+            }
+
+            .form-card {
+                padding: 24px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- MigaBuilder Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header / Navigation -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">G</div>
+                <div>
+                    <span class="logo-text">Greenline Grounds</span>
+                    <span class="logo-tagline">On-Time Lawn & Garden Care</span>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="active nav-btn">Get a Quote</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Request a Custom Quote</h1>
+            <p class="hero-subtitle">Tell us about your yard. We provide reliable service you can set your watch to.</p>
+        </div>
+    </section>
+
+    <!-- Main Content Area: Form & Info Column -->
+    <main class="container">
+        <div class="contact-grid">
+            
+            <!-- Left Column: Quote Form -->
+            <section class="form-card">
+                <div class="form-intro">
+                    <h2>Tell us about your project</h2>
+                    <p>Fill out this form and submitting will open your local email client with your exact details pre-filled. We reply within 24 business hours!</p>
+                </div>
+                
+                <form action="mailto:hello@greenlinegrounds.example" method="post" enctype="text/plain">
+                    
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-name">Your Full Name *</label>
+                            <input class="form-input" type="text" id="form-name" name="Name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-email">Email Address *</label>
+                            <input class="form-input" type="email" id="form-email" name="Email" required placeholder="john@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group-row">
+                        <div class="form-group">
+                            <label class="form-label" for="form-phone">Phone Number *</label>
+                            <input class="form-input" type="tel" id="form-phone" name="Phone" required placeholder="(555) 000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="form-address">Property Address *</label>
+                            <input class="form-input" type="text" id="form-address" name="Address" required placeholder="123 Green Lane, Suburbia">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="form-service">Service Needed *</label>
+                        <select class="form-select" id="form-service" name="Service" required>
+                            <option value="" disabled selected>Select a primary service...</option>
+                            <option value="Weekly Mowing & Edging">Weekly Lawn Mowing & Edging</option>
+                            <option value="Spring / Fall Yard Cleanup">Spring / Fall Yard Cleanup</option>
+                            <option value="Hedge & Shrub Trimming">Hedge & Shrub Trimming</option>
+                            <option value="Mulching & Bed Care">Mulching & Garden Bed Care</option>
+                            <option value="Aeration & Overseeding">Lawn Aeration & Overseeding</option>
+                            <option value="Custom Complete Package">Custom Landscape Maintenance Package</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="form-details">Yard Details & Special Instructions</label>
+                        <textarea class="form-textarea" id="form-details" name="Message_Details" placeholder="Tell us about pet gates, specific weed issues, or anything special we should know to give you an accurate quote..."></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Quote Request</button>
+                </form>
+            </section>
+
+            <!-- Right Column: Sidebar Info & Service Area Map -->
+            <aside class="info-sidebar">
+                
+                <!-- Quick Contact Info -->
+                <div class="info-block">
+                    <h3>Direct Contact</h3>
+                    <p>Prefer talking to a real human immediately? Give us a call or send an direct email.</p>
+                    <p style="margin-top: 16px;"><span class="highlight-text">Phone:</span> (555) 762-4273</p>
+                    <p><span class="highlight-text">Email:</span> <a href="mailto:hello@greenlinegrounds.example" style="color: var(--primary); text-decoration: underline; font-weight: 600;">hello@greenlinegrounds.example</a></p>
+                    <p><span class="highlight-text">Office Hours:</span> Mon–Fri, 7:00 AM – 5:00 PM</p>
+                </div>
+
+                <!-- Service Area Visualization -->
+                <div class="service-area-card">
+                    <img src="https://loremflickr.com/1200/800/suburb%2Caerial?random=85136" alt="Suburban neighborhood with green lawns" class="map-image">
+                    <div class="service-area-content">
+                        <h3>Our Service Area</h3>
+                        <p>We provide scheduled lawn care services throughout the following local towns and surrounding neighborhoods:</p>
+                        
+                        <div class="town-list">
+                            <div class="town-item">Greenfield</div>
+                            <div class="town-item">Oakridge</div>
+                            <div class="town-item">Riverdale</div>
+                            <div class="town-item">Maple Valley</div>
+                            <div class="town-item">Pinehurst</div>
+                            <div class="town-item">Stonecreek</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trust Factor Info -->
+                <div class="info-block" style="border-left-color: var(--accent);">
+                    <h3>The Greenline Promise</h3>
+                    <p>We pride ourselves on reliability. If we say we will be there on Tuesday morning, we'll see you on Tuesday morning. Our crews are uniformed, background-checked, and professional.</p>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <!-- Guarantee Banner -->
+    <section class="promise-banner">
+        <div class="container promise-content">
+            <div class="promise-icon">⏱️</div>
+            <h3>"You can set your watch to us"</h3>
+            <p>If our crew is more than 30 minutes late for a scheduled maintenance window without prior notice, your next basic service is completely free. We respect your property and your valuable time.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-logo-area">
+                <a href="index.html" class="logo" style="margin-bottom: 16px;">
+                    <div class="logo-icon" style="background-color: var(--accent);">G</div>
+                    <div>
+                        <span class="logo-text footer-logo-text">Greenline Grounds</span>
+                        <span class="logo-tagline" style="color: #b3c5b3;">On-Time Lawn & Garden Care</span>
+                    </div>
+                </a>
+                <p>Reliable lawn care, landscaping maintenance, and cleanup services for homeowners who value punctuality, hard work, and brilliant green results.</p>
+            </div>
+            <div>
+                <h4 class="footer-title">Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="services.html">Our Services</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Request a Quote</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact-info">
+                <h4 class="footer-title">Get in Touch</h4>
+                <p>Have questions? Reach out directly:</p>
+                <p><strong>Phone:</strong> (555) 762-4273</p>
+                <p><strong>Email:</strong> <a href="mailto:hello@greenlinegrounds.example">hello@greenlinegrounds.example</a></p>
+                <p><strong>Location:</strong> Greenfield, State</p>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <p>&copy; 2024 Greenline Grounds. All rights reserved.</p>
+            <p>Reliable lawn & garden care you can set your watch to.</p>
+        </div>
+    </footer>
+</body>
+</html>

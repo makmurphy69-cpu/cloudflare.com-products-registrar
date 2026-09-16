@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professional Lawn Care Services | Greenline Grounds</title>
+  <meta name="description" content="Explore our reliable, flat-rate lawn and garden services. From weekly mowing to complete seasonal cleanup, Greenline Grounds offers care you can set your watch to.">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://greenlinegrounds.example/services.html">
+  <meta property="og:title" content="Professional Lawn Care Services | Greenline Grounds">
+  <meta property="og:description" content="Explore our reliable, flat-rate lawn and garden services. From weekly mowing to complete seasonal cleanup, Greenline Grounds offers care you can set your watch to.">
+  <meta property="og:image" content="https://loremflickr.com/1200/800/lawn%2Cmower?random=664">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global Reset & Base Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #2D312E;
+      background-color: #FAFCFA;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #143616;
+    }
+
+    /* Core Color Palette Variables */
+    :root {
+      --primary: #1E4620;
+      --primary-dark: #0F2A11;
+      --primary-light: #E9F3EA;
+      --accent: #E2A63B;
+      --accent-dark: #C98E27;
+      --text-dark: #2D312E;
+      --text-muted: #5C635E;
+      --white: #FFFFFF;
+      --border-color: #E2E8E3;
+    }
+
+    /* Navigation Container */
+    header {
+      background-color: var(--white);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-main {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s ease;
+      position: relative;
+      padding: 4px 0;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-links a.active {
+      color: var(--primary);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    /* Hero Banner for Services */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: var(--white);
+      padding: 72px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero h1 {
+      color: var(--white);
+      font-size: 42px;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #D3E4D4;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Services Grid Section */
+    .services-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+
+    /* Card styling */
+    .service-card {
+      background: var(--white);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .service-image-container {
+      position: relative;
+      height: 260px;
+      overflow: hidden;
+    }
+
+    .service-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .service-card:hover .service-image-container img {
+      transform: scale(1.05);
+    }
+
+    .price-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: var(--primary);
+      color: var(--white);
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .service-content {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .service-title {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .service-desc {
+      color: var(--text-muted);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      flex-grow: 1;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 700;
+      padding: 14px 24px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Highlighted Tagline Banner */
+    .guarantee-banner {
+      background-color: var(--primary-light);
+      border-radius: 12px;
+      padding: 40px;
+      margin-top: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      border: 1px solid rgba(30, 70, 32, 0.1);
+    }
+
+    .guarantee-text {
+      max-width: 700px;
+    }
+
+    .guarantee-text h3 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .guarantee-text p {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .guarantee-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: var(--primary-dark);
+      font-size: 18px;
+      background: var(--white);
+      padding: 16px 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      white-space: nowrap;
+    }
+
+    .guarantee-badge span {
+      color: var(--accent);
+      font-size: 24px;
+    }
+
+    /* Footer Styles */
+    footer {
+      background-color: var(--primary-dark);
+      color: #CEDCD0;
+      padding: 64px 24px 32px 24px;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.5fr;
+      gap: 48px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 48px;
+      margin-bottom: 32px;
+    }
+
+    .footer-brand h4 {
+      color: var(--white);
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand p {
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-links h5, .footer-contact h5 {
+      color: var(--white);
+      font-size: 16px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: #CEDCD0;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .footer-contact p {
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .footer-contact a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer-contact a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 968px) {
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .guarantee-banner {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+
+      .nav-links {
+        gap: 20px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .footer-container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Example Banner Element -->
+  <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+  <!-- Header Navigation -->
+  <header>
+    <div class="nav-container">
+      <a href="index.html" class="logo">
+        <span class="logo-main">Greenline Grounds</span>
+        <span class="logo-sub">Reliable lawn & garden care</span>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="services.html" class="active">Services</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Our Professional Services</h1>
+      <p>Affordable, reliable, and thorough maintenance programs designed to keep your outdoor spaces looking spectacular all year round.</p>
+    </div>
+  </section>
+
+  <!-- Main Services Grid -->
+  <section class="services-section">
+    <div class="services-grid">
+      
+      <!-- Service 1: Weekly Lawn Mowing -->
+      <div class="service-card">
+        <div class="service-image-container">
+          <img src="https://loremflickr.com/1200/800/lawn%2Cmower?random=45647" alt="Freshly mown dark green lawn with neat parallel stripes">
+          <span class="price-badge">Starting at $45/visit</span>
+        </div>
+        <div class="service-content">
+          <h3 class="service-title">Weekly Lawn Mowing</h3>
+          <p class="service-desc">Keep your grass dense, healthy, and sharp. Our weekly service includes precision cutting, string trimming around all obstacles and fence lines, and thorough blowing of your driveways, sidewalks, and patio areas.</p>
+          <a href="mailto:hello@greenlinegrounds.example?subject=Quote%20Request%3A%20Weekly%20Lawn%20Mowing" class="btn">Request a Quote</a>
+        </div>
+      </div>
+
+      <!-- Service 2: Seasonal Cleanup -->
+      <div class="service-card">
+        <div class="service-image-container">
+          <img src="https://loremflickr.com/1200/800/leaves%2Crake?random=81482" alt="Crisp autumn leaves being cleaned off a rich green lawn with a rake">
+          <span class="price-badge">Starting at $150</span>
+        </div>
+        <div class="service-content">
+          <h3 class="service-title">Seasonal Cleanup</h3>
+          <p class="service-desc">Complete property refresh to prepare your landscape for the seasonal transitions of Spring or Fall. Includes leaf removal, perennial cutbacks, garden bed de-cluttering, and debris hauling so you start fresh.</p>
+          <a href="mailto:hello@greenlinegrounds.example?subject=Quote%20Request%3A%20Seasonal%20Cleanup" class="btn">Request a Quote</a>
+        </div>
+      </div>
+
+      <!-- Service 3: Hedge & Shrub Trimming -->
+      <div class="service-card">
+        <div class="service-image-container">
+          <img src="https://loremflickr.com/1200/800/shears%2Cshrub?random=98109" alt="Gardener trimming dense privacy bushes precisely with hedge shears">
+          <span class="price-badge">Starting at $65</span>
+        </div>
+        <div class="service-content">
+          <h3 class="service-title">Hedge & Shrub Trimming</h3>
+          <p class="service-desc">Pruning and maintenance for hedges and shrubs up to 10 feet tall. We shape your foliage to encourage lush new growth, maintain clear boundaries, and immediately sharpen the overall geometry of your home's exterior.</p>
+          <a href="mailto:hello@greenlinegrounds.example?subject=Quote%20Request%3A%20Hedge%20and%20Shrub%20Trimming" class="btn">Request a Quote</a>
+        </div>
+      </div>
+
+      <!-- Service 4: Mulch Installation -->
+      <div class="service-card">
+        <div class="service-image-container">
+          <img src="https://loremflickr.com/1200/800/mulch%2Cgarden?random=80072" alt="Rich dark mulch spread neatly around ornamental garden plants">
+          <span class="price-badge">Custom Quote</span>
+        </div>
+        <div class="service-content">
+          <h3 class="service-title">Mulch Installation</h3>
+          <p class="service-desc">Enhance your soil's water retention, combat weed growth, and define your garden lines with premium wood mulch. We prepare the beds, cut sharp natural borders, and lay a perfect 2 to 3-inch protective blanket.</p>
+          <a href="mailto:hello@greenlinegrounds.example?subject=Quote%20Request%3A%20Mulch%20Installation" class="btn">Request a Quote</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Guarantee Banner Section -->
+    <div class="guarantee-banner">
+      <div class="guarantee-text">
+        <h3>Reliability is our signature guarantee</h3>
+        <p>If we aren't at your property within our scheduled service window, your next basic service is completely free of charge. No excuses, just punctual and exceptional care.</p>
+      </div>
+      <div class="guarantee-badge">
+        <span>⏱</span> Set Your Watch To It
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h4>Greenline Grounds</h4>
+        <p>"Reliable lawn & garden care you can set your watch to." Serving residential and light commercial clients with punctual, professional yard maintenance.</p>
+      </div>
+      <div class="footer-links">
+        <h5>Quick Links</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h5>Get in touch</h5>
+        <p>Questions or special requests?</p>
+        <p><a href="mailto:hello@greenlinegrounds.example">hello@greenlinegrounds.example</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Greenline Grounds. All rights reserved.</p>
+      <p>Reliable Turf & Landscape Maintenance</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Duel - Ninja Fighting Game</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0f0c1b;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            margin: 5px 0;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #e51c23;
+            text-shadow: 0 0 10px rgba(229, 28, 35, 0.6);
+        }
+        #canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 800 / 500;
+            border: 4px solid #332244;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background: #000;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .controls-legend {
+            margin-top: 10px;
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .controls-legend span {
+            color: #e51c23;
+            font-weight: bold;
+        }
+        .btn {
+            background: #e51c23;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(229, 28, 35, 0.4);
+        }
+        .btn:hover {
+            background: #ff3d44;
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        #mobile-controls {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+        .mobile-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        .mobile-btn:active {
+            background: rgba(229, 28, 35, 0.6);
+        }
+        @media (max-width: 768px) {
+            #mobile-controls {
+                display: flex;
+            }
+            .controls-legend {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Shadow Duel</h1>
+
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="500"></canvas>
+    </div>
+
+    <div class="controls-legend">
+        <div>Move: <span>← / →</span> or <span>A / D</span></div>
+        <div>Jump: <span>↑</span> or <span>W</span></div>
+        <div>Slash Attack: <span>SPACE BAR</span></div>
+    </div>
+
+    <!-- Simple touch fallback layout for mobile -->
+    <div id="mobile-controls">
+        <div style="display: flex; gap: 10px;">
+            <button class="mobile-btn" id="btn-left">←</button>
+            <button class="mobile-btn" id="btn-jump">↑</button>
+            <button class="mobile-btn" id="btn-right">→</button>
+        </div>
+        <button class="mobile-btn" id="btn-attack" style="background: rgba(229, 28, 35, 0.4); width: 80px; border-radius: 12px;">⚔️</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game constants & settings
+        const GROUND_Y = 400;
+        const GRAVITY = 0.6;
+        const WALK_SPEED = 5.5;
+        const JUMP_FORCE = -14;
+        const ROUNDS_TO_WIN = 2;
+
+        // Game state
+        let gameState = 'START'; // START, INTRO, FIGHT, ROUND_OVER, GAME_OVER
+        let currentRound = 1;
+        let playerWins = 0;
+        let enemyWins = 0;
+        let introTimer = 0;
+        let outroTimer = 0;
+        let matchWinnerText = '';
+        let screenShake = 0;
+
+        // Particle system
+        let particles = [];
+        let backgroundLeaves = [];
+
+        // Input handler
+        const keys = {
+            left: false,
+            right: false,
+            jump: false,
+            attack: false
+        };
+
+        // Mobile control attachment
+        function setupMobileControls() {
+            const bindTouch = (id, keyName) => {
+                const btn = document.getElementById(id);
+                btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
+                btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            };
+            bindTouch('btn-left', 'left');
+            bindTouch('btn-right', 'right');
+            bindTouch('btn-jump', 'jump');
+            bindTouch('btn-attack', 'attack');
+        }
+        setupMobileControls();
+
+        // Keyboard Event Listeners
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+            if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = true;
+            if (e.code === 'Space') {
+                keys.attack = true;
+                e.preventDefault(); // Stop page scrolling
+            }
+            // Start/restart game hook
+            if (e.code === 'Space' || e.code === 'Enter') {
+                if (gameState === 'START') {
+                    resetFullGame();
+                } else if (gameState === 'GAME_OVER') {
+                    resetFullGame();
+                }
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+            if (e.code === 'ArrowUp' || e.code === 'KeyW') keys.jump = false;
+            if (e.code === 'Space') keys.attack = false;
+        });
+
+        // Click handler to restart/start via pointer
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            if (gameState === 'START' || gameState === 'GAME_OVER') {
+                // If button clicked
+                if (clickX > 300 && clickX < 500 && clickY > 320 && clickY < 380) {
+                    resetFullGame();
+                }
+            }
+        });
+
+        // Background Particle Gen (Cherry Blossom Leaves)
+        function createLeaf() {
+            return {
+                x: Math.random() * canvas.width,
+                y: -10 - Math.random() * 100,
+                speedX: -1 - Math.random() * 2,
+                speedY: 1 + Math.random() * 2,
+                size: 4 + Math.random() * 5,
+                angle: Math.random() * Math.PI * 2,
+                spinSpeed: 0.02 + Math.random() * 0.05
+            };
+        }
+        for (let i = 0; i < 25; i++) {
+            backgroundLeaves.push(createLeaf());
+            backgroundLeaves[i].y = Math.random() * canvas.height; // spread initially
+        }
+
+        // Particle generator for hits and jumps
+        function spawnDust(x, y, count = 5) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: -Math.random() * 3,
+                    alpha: 1,
+                    size: 3 + Math.random() * 4,
+                    color: 'rgba(200, 200, 200, 0.4)',
+                    life: 0.02 + Math.random() * 0.03
+                });
+            }
+        }
+
+        function spawnBloodSparks(x, y, dir, count = 15) {
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: dir * (2 + Math.random() * 6) + (Math.random() - 0.5) * 3,
+                    vy: -2 - Math.random() * 6,
+                    alpha: 1,
+                    size: 2 + Math.random() * 4,
+                    color: Math.random() > 0.3 ? '#ff2233' : '#ffdd44',
+                    life: 0.015 + Math.random() * 0.015
+                });
+            }
+        }
+
+        // Ninja Entity Class
+        class Ninja {
+            constructor(x, y, color, isPlayer, name, emoji) {
+                this.startX = x;
+                this.startY = y;
+                this.x = x;
+                this.y = y;
+                this.width = 50;
+                this.height = 70;
+                this.vx = 0;
+                this.vy = 0;
+                this.color = color;
+                this.isPlayer = isPlayer;
+                this.name = name;
+                this.emoji = emoji;
+
+                this.health = 100;
+                this.maxHealth = 100;
+                this.facing = isPlayer ? 1 : -1; // 1 = Right, -1 = Left
+                this.isGrounded = false;
+                
+                // Combat properties
+                this.isAttacking = false;
+                this.attackDuration = 12; // frames
+                this.attackTimer = 0;
+                this.attackCooldown = 0;
+                this.hasDealtDamage = false;
+                
+                this.hitStun = 0; // frames
+                this.invulnTimer = 0; // iframe count
+
+                // AI state machine
+                this.aiDecisionTimer = 0;
+                this.aiAction = 'idle'; // idle, move_left, move_right, jump, attack
+            }
+
+            reset() {
+                this.x = this.startX;
+                this.y = this.startY;
+                this.vx = 0;
+                this.vy = 0;
+                this.health = this.maxHealth;
+                this.facing = this.isPlayer ? 1 : -1;
+                this.isGrounded = false;
+                this.isAttacking = false;
+                this.attackTimer = 0;
+                this.attackCooldown = 0;
+                this.hitStun = 0;
+                this.invulnTimer = 0;
+            }
+
+            update(opponent) {
+                // Handle timers
+                if (this.attackCooldown > 0) this.attackCooldown--;
+                if (this.hitStun > 0) this.hitStun--;
+                if (this.invulnTimer > 0) this.invulnTimer--;
+
+                // Physics/Gravity
+                this.vy += GRAVITY;
+                this.y += this.vy;
+                this.x += this.vx;
+
+                // Ground Collision
+                if (this.y >= GROUND_Y - this.height) {
+                    this.y = GROUND_Y - this.height;
+                    this.vy = 0;
+                    if (!this.isGrounded) {
+                        this.isGrounded = true;
+                        spawnDust(this.x + this.width / 2, GROUND_Y, 6);
+                    }
+                }
+
+                // Drag / Friction
+                if (this.isGrounded) {
+                    this.vx *= 0.75;
+                } else {
+                    this.vx *= 0.95;
+                }
+
+                // Stage Boundaries
+                if (this.x < 10) this.x = 10;
+                if (this.x > canvas.width - this.width - 10) this.x = canvas.width - this.width - 10;
+
+                // Handle hit stun logic (prevents action during hit stun)
+                if (this.hitStun > 0) {
+                    this.isAttacking = false;
+                    return; 
+                }
+
+                // Handle attack execution
+                if (this.isAttacking) {
+                    this.attackTimer--;
+                    if (this.attackTimer <= 0) {
+                        this.isAttacking = false;
+                    }
+                    return; // No movement while slashing
+                }
+
+                // Core logic separation
+                if (this.isPlayer) {
+                    this.handlePlayerInput();
+                } else {
+                    this.handleAIBehavior(opponent);
+                }
+            }
+
+            handlePlayerInput() {
+                // Horizontal movement
+                if (keys.left) {
+                    this.vx = -WALK_SPEED;
+                    this.facing = -1;
+                    if (this.isGrounded && Math.random() < 0.25) spawnDust(this.x + this.width, GROUND_Y, 1);
+                } else if (keys.right) {
+                    this.vx = WALK_SPEED;
+                    this.facing = 1;
+                    if (this.isGrounded && Math.random() < 0.25) spawnDust(this.x, GROUND_Y, 1);
+                }
+
+                // Jump
+                if (keys.jump && this.isGrounded) {
+                    this.vy = JUMP_FORCE;
+                    this.isGrounded = false;
+                    spawnDust(this.x + this.width/2, GROUND_Y, 8);
+                }
+
+                // Slash Attack
+                if (keys.attack && this.attackCooldown === 0) {
+                    this.triggerAttack();
+                }
+            }
+
+            handleAIBehavior(opponent) {
+                // Run AI update cycle every 12 frames for realistic reaction latency
+                this.aiDecisionTimer--;
+                const distToOpponent = Math.abs((opponent.x + opponent.width / 2) - (this.x + this.width / 2));
+                const dirToOpponent = opponent.x > this.x ? 1 : -1;
+
+                if (this.aiDecisionTimer <= 0) {
+                    this.aiDecisionTimer = 8 + Math.floor(Math.random() * 10);
+                    
+                    // Simple logic tree
+                    if (distToOpponent < 110) {
+                        // High chance of attacking, low chance of jump dodge
+                        const rand = Math.random();
+                        if (rand < 0.7) {
+                            this.aiAction = 'attack';
+                        } else if (rand < 0.85 && this.isGrounded) {
+                            this.aiAction = 'jump';
+                        } else {
+                            // Back up slightly
+                            this.aiAction = dirToOpponent === 1 ? 'move_left' : 'move_right';
+                        }
+                    } else if (distToOpponent > 300) {
+                        // Far away, run closer
+                        this.aiAction = dirToOpponent === 1 ? 'move_right' : 'move_left';
+                    } else {
+                        // Mid range, close in or hold ground
+                        this.aiAction = Math.random() < 0.75 ? (dirToOpponent === 1 ? 'move_right' : 'move_left') : 'idle';
+                    }
+                }
+
+                // Apply AI actions
+                if (this.aiAction === 'move_left') {
+                    this.vx = -WALK_SPEED * 0.85; // slightly slower AI
+                    this.facing = -1;
+                } else if (this.aiAction === 'move_right') {
+                    this.vx = WALK_SPEED * 0.85;
+                    this.facing = 1;
+                } else if (this.aiAction === 'jump' && this.isGrounded) {
+                    this.vy = JUMP_FORCE;
+                    this.isGrounded = false;
+                    spawnDust(this.x + this.width/2, GROUND_Y, 5);
+                } else if (this.aiAction === 'attack' && this.attackCooldown === 0) {
+                    this.facing = dirToOpponent;
+                    this.triggerAttack();
+                    this.aiAction = 'idle';
+                    this.aiDecisionTimer = 15; // post-attack wait
+                }
+            }
+
+            triggerAttack() {
+                this.isAttacking = true;
+                this.attackTimer = this.attackDuration;
+                this.attackCooldown = 25; // Frame cooldown between slashes
+                this.hasDealtDamage = false;
+                this.vx = this.facing * 8; // Lunges slightly forward
+            }
+
+            checkSlashHits(opponent) {
+                if (!this.isAttacking || this.hasDealtDamage) return;
+
+                // Calculate the attack hitbox rectangle in front of us
+                const range = 75;
+                const hitBox = {
+                    x: this.facing === 1 ? this.x + this.width : this.x - range,
+                    y: this.y + 10,
+                    width: range,
+                    height: this.height - 10
+                };
+
+                // Opponent hitbox
+                const opBox = {
+                    x: opponent.x,
+                    y: opponent.y,
+                    width: opponent.width,
+                    height: opponent.height
+                };
+
+                // AABB Intersection check
+                if (hitBox.x < opBox.x + opBox.width &&
+                    hitBox.x + hitBox.width > opBox.x &&
+                    hitBox.y < opBox.y + opBox.height &&
+                    hitBox.y + hitBox.height > opBox.y) {
+                    
+                    // Hit!
+                    this.hasDealtDamage = true;
+                    opponent.takeDamage(18, this.facing);
+                }
+            }
+
+            takeDamage(amount, direction) {
+                if (this.invulnTimer > 0) return;
+
+                this.health -= amount;
+                if (this.health < 0) this.health = 0;
+                
+                this.hitStun = 15; // Freeze movement briefly
+                this.vx = direction * 10; // Knockback
+                this.vy = -5; // Jump slightly up on impact
+                screenShake = 12;
+
+                // Sparks / Blood FX
+                const impactX = this.x + this.width / 2;
+                const impactY = this.y + this.height / 3;
+                spawnBloodSparks(impactX, impactY, direction);
+
+                // Short invulnerability frame window
+                this.invulnTimer = 20;
+            }
+
+            draw() {
+                ctx.save();
+
+                // Apply simple hit stun / hurt flicker
+                if (this.hitStun > 0 && Math.floor(Date.now() / 30) % 2 === 0) {
+                    ctx.globalAlpha = 0.4;
+                }
+
+                // If invulnerable, translucent flashing
+                if (this.invulnTimer > 0 && Math.floor(Date.now() / 50) % 2 === 0) {
+                    ctx.globalAlpha = 0.5;
+                }
+
+                // Shadow under Ninja
+                ctx.beginPath();
+                ctx.ellipse(this.x + this.width/2, GROUND_Y, 20, 5, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fill();
+
+                // Direction scaling flip trick
+                ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+                ctx.scale(this.facing, 1);
+
+                // Render aesthetic aura
+                ctx.beginPath();
+                const auraGrd = ctx.createRadialGradient(0, 0, 10, 0, 0, 45);
+                auraGrd.addColorStop(0, this.color === 'blue' ? 'rgba(33, 150, 243, 0.25)' : 'rgba(229, 28, 35, 0.25)');
+                auraGrd.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = auraGrd;
+                ctx.arc(0, 0, 45, 0, Math.PI*2);
+                ctx.fill();
+
+                // Drawn Body Outline for precise visual hit representation
+                ctx.beginPath();
+                ctx.arc(0, -10, 15, 0, Math.PI*2); // head
+                ctx.rect(-10, 5, 20, 28); // torso
+                ctx.fillStyle = '#111111';
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = this.color === 'blue' ? '#2196F3' : '#E51C23';
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw Ninja Emoji
+                ctx.font = "38px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(this.emoji, 0, 0);
+
+                // Slash Visuals
+                if (this.isAttacking && this.attackTimer > 4) {
+                    ctx.restore(); // briefly exit facing-translate to render correct arc
+                    ctx.save();
+                    
+                    // Draw stylish slash arc
+                    ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+                    ctx.beginPath();
+                    ctx.strokeStyle = this.color === 'blue' ? 'rgba(100, 220, 255, 0.8)' : 'rgba(255, 100, 100, 0.8)';
+                    ctx.lineWidth = 6;
+                    ctx.lineCap = 'round';
+                    
+                    if (this.facing === 1) {
+                        ctx.arc(15, -10, 45, -Math.PI / 4, Math.PI / 4, false);
+                    } else {
+                        ctx.arc(-15, -10, 45, Math.PI * 0.75, Math.PI * 1.25, false);
+                    }
+                    ctx.stroke();
+
+                    // Attack Spark/Emoji Accent
+                    ctx.font = "24px Arial";
+                    ctx.fillText("⚔️", this.facing * 50, -10);
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create Ninjas
+        // Player (Blue Samurai theme), Enemy/AI (Red Shadow theme)
+        const player = new Ninja(150, GROUND_Y - 70, 'blue', true, 'HANZO (YOU)', '🥷');
+        const enemy = new Ninja(600, GROUND_Y - 70, 'red', false, 'SHADOW RYU', '🥷');
+
+        function resetRound() {
+            player.reset();
+            enemy.reset();
+            particles = [];
+            
+            if (playerWins >= ROUNDS_TO_WIN || enemyWins >= ROUNDS_TO_WIN) {
+                gameState = 'GAME_OVER';
+                matchWinnerText = playerWins >= ROUNDS_TO_WIN ? 'PLAYER HANZO WINS THE DUEL!' : 'SHADOW RYU WINS THE DUEL!';
+            } else {
+                gameState = 'INTRO';
+                introTimer = 100; // frames of intro wait
+            }
+        }
+
+        function resetFullGame() {
+            playerWins = 0;
+            enemyWins = 0;
+            currentRound = 1;
+            resetRound();
+        }
+
+        // Main Loop logic
+        function update() {
+            // Screen Shake Decay
+            if (screenShake > 0) screenShake -= 0.8;
+
+            // Blossom Leaf logic
+            backgroundLeaves.forEach(leaf => {
+                leaf.x += leaf.speedX;
+                leaf.y += leaf.speedY;
+                leaf.angle += leaf.spinSpeed;
+                if (leaf.x < -20 || leaf.y > canvas.height) {
+                    leaf.y = -20;
+                    leaf.x = Math.random() * canvas.width;
+                }
+            });
+
+            // Particles logic
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= p.life;
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            if (gameState === 'INTRO') {
+                introTimer--;
+                if (introTimer <= 0) {
+                    gameState = 'FIGHT';
+                }
+                // Still update physics to fall down initially
+                player.update(enemy);
+                enemy.update(player);
+
+            } else if (gameState === 'FIGHT') {
+                player.update(enemy);
+                enemy.update(player);
+
+                // Collision attack triggers
+                player.checkSlashHits(enemy);
+                enemy.checkSlashHits(player);
+
+                // Round win conditions
+                if (player.health <= 0) {
+                    enemyWins++;
+                    gameState = 'ROUND_OVER';
+                    outroTimer = 120;
+                } else if (enemy.health <= 0) {
+                    playerWins++;
+                    gameState = 'ROUND_OVER';
+                    outroTimer = 120;
+                }
+
+            } else if (gameState === 'ROUND_OVER') {
+                outroTimer--;
+                player.update(enemy);
+                enemy.update(player);
+
+                if (outroTimer <= 0) {
+                    currentRound++;
+                    resetRound();
+                }
+            }
+        }
+
+        // Draw Canvas Graphics
+        function draw() {
+            ctx.save();
+            
+            // Screen shake effect translation
+            if (screenShake > 0.1) {
+                const dx = (Math.random() - 0.5) * screenShake;
+                const dy = (Math.random() - 0.5) * screenShake;
+                ctx.translate(dx, dy);
+            }
+
+            // Draw Background (Pagoda Sky Night)
+            let skyGrd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrd.addColorStop(0, '#0d0b18');
+            skyGrd.addColorStop(0.5, '#201530');
+            skyGrd.addColorStop(1, '#3b1c3c');
+            ctx.fillStyle = skyGrd;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Huge Moon
+            ctx.beginPath();
+            let moonGrd = ctx.createRadialGradient(220, 150, 20, 220, 150, 110);
+            moonGrd.addColorStop(0, '#fffbf0');
+            moonGrd.addColorStop(0.8, 'rgba(255, 235, 180, 0.4)');
+            moonGrd.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = moonGrd;
+            ctx.arc(220, 150, 110, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Pagoda/Mountains Silhouette Background
+            ctx.fillStyle = 'rgba(15, 10, 25, 0.7)';
+            ctx.beginPath();
+            ctx.moveTo(0, 400);
+            ctx.lineTo(120, 310);
+            ctx.lineTo(130, 310);
+            ctx.lineTo(180, 350);
+            ctx.lineTo(240, 280);
+            ctx.lineTo(310, 400);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(500, 400);
+            ctx.lineTo(580, 330);
+            ctx.lineTo(650, 370);
+            ctx.lineTo(720, 290);
+            ctx.lineTo(800, 400);
+            ctx.fill();
+
+            // Draw Falling Cherry Blossoms
+            backgroundLeaves.forEach(leaf => {
+                ctx.save();
+                ctx.translate(leaf.x, leaf.y);
+                ctx.rotate(leaf.angle);
+                ctx.fillStyle = '#ff719a';
+                ctx.shadowColor = '#ff3366';
+                ctx.shadowBlur = 4;
+                // Oval petal leaf representation
+                ctx.beginPath();
+                ctx.ellipse(0, 0, leaf.size, leaf.size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // Draw Wooden Stage Floor (Bridge style)
+            ctx.fillStyle = '#1e1124';
+            ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+            
+            ctx.fillStyle = '#d32f2f'; // Red boundary bridge rails
+            ctx.fillRect(0, GROUND_Y, canvas.width, 14);
+            ctx.fillStyle = '#b71c1c';
+            for (let rx = 20; rx < canvas.width; rx += 80) {
+                ctx.fillRect(rx, GROUND_Y + 14, 15, canvas.height - GROUND_Y - 14);
+            }
+            
+            // Draw Ninjas
+            player.draw();
+            enemy.draw();
+
+            // Draw particles
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // --- HUD (Health & UI elements) ---
+            
+            // Player side HUD (Left)
+            drawHUDBar(30, 35, 280, 20, player.health / player.maxHealth, '#2196F3', '#001a33', 'left');
+            ctx.font = 'bold 13px Courier New';
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'left';
+            ctx.fillText(player.name, 30, 25);
+            // Wins indicators (Player)
+            for (let i = 0; i < ROUNDS_TO_WIN; i++) {
+                ctx.font = '20px Arial';
+                ctx.fillText(playerWins > i ? '🔵' : '⚫', 30 + (i * 25), 75);
+            }
+
+            // Enemy side HUD (Right)
+            drawHUDBar(canvas.width - 310, 35, 280, 20, enemy.health / enemy.maxHealth, '#E51C23', '#330005', 'right');
+            ctx.fillStyle = '#fff';
+            ctx.textAlign = 'right';
+            ctx.fillText(enemy.name, canvas.width - 30, 25);
+            // Wins indicators (Enemy)
+            for (let i = 0; i < ROUNDS_TO_WIN; i++) {
+                ctx.font = '20px Arial';
+                ctx.fillText(enemyWins > i ? '🔴' : '⚫', canvas.width - 50 - (i * 25), 75);
+            }
+
+            // Round Number Display Banner (Top Center)
+            ctx.fillStyle = 'rgba(30, 20, 40, 0.6)';
+            ctx.fillRect(canvas.width / 2 - 60, 15, 120, 35);
+            ctx.strokeStyle = '#e51c23';
+            ctx.strokeRect(canvas.width / 2 - 60, 15, 120, 35);
+            ctx.font = 'bold 15px Courier New';
+            ctx.fillStyle = '#ffd700';
+            ctx.textAlign = 'center';
+            ctx.fillText('ROUND ' + currentRound, canvas.width / 2, 37);
+
+            // Overlay Menus depending on states
+            if (gameState === 'START') {
+                drawScreenOverlay("SHADOW DUEL", "BEST OF 3 ROUNDS wins.", "CLICK OR SPACE TO START", true);
+            } else if (gameState === 'INTRO') {
+                // Show ROUND x start graphic
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.font = 'bold 46px Courier New';
+                ctx.fillStyle = '#ff1744';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = '#000';
+                ctx.shadowBlur = 6;
+                ctx.fillText('ROUND ' + currentRound, canvas.width / 2, canvas.height / 2 - 30);
+                
+                ctx.font = 'bold 24px Courier New';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText('READY...', canvas.width / 2, canvas.height / 2 + 20);
+            } else if (gameState === 'FIGHT') {
+                // Flash "FIGHT!" text during initial phase
+                if (player.attackCooldown > 15 && currentRound > 0 && player.invulnTimer > 15) { 
+                    // decorative check to avoid adding timers, just flash "FIGHT" for 30 frames
+                }
+            } else if (gameState === 'ROUND_OVER') {
+                ctx.font = 'bold 42px Courier New';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                const roundWinnerText = player.health <= 0 ? 'SHADOW RYU WINS ROUND!' : 'HANZO WINS ROUND!';
+                ctx.fillText(roundWinnerText, canvas.width / 2, canvas.height / 2);
+            } else if (gameState === 'GAME_OVER') {
+                drawScreenOverlay("DUEL CONCLUDED", matchWinnerText, "CLICK OR SPACE TO PLAY AGAIN", false);
+            }
+
+            ctx.restore();
+        }
+
+        // UI Utility for glowing bars
+        function drawHUDBar(x, y, w, h, ratio, barColor, bgColor, direction) {
+            ctx.save();
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(x, y, w, h);
+
+            // Health drop effect
+            const filledWidth = w * ratio;
+            ctx.fillStyle = barColor;
+            if (direction === 'left') {
+                ctx.fillRect(x, y, filledWidth, h);
+            } else {
+                ctx.fillRect(x + (w - filledWidth), y, filledWidth, h);
+            }
+
+            // Outline
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(x, y, w, h);
+            ctx.restore();
+        }
+
+        // Title / Game Over Screen design overlay
+        function drawScreenOverlay(title, subtitle, actionText, isStart) {
+            // Dark veil
+            ctx.fillStyle = 'rgba(10, 8, 20, 0.85)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Title
+            ctx.font = 'bold 44px Courier New';
+            ctx.fillStyle = '#e51c23';
+            ctx.textAlign = 'center';
+            ctx.shadowColor = 'rgba(229, 28, 35, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.fillText(title, canvas.width / 2, 170);
+            ctx.shadowBlur = 0;
+
+            // Subtitle
+            ctx.font = '18px Courier New';
+            ctx.fillStyle = '#cccccc';
+            ctx.fillText(subtitle, canvas.width / 2, 230);
+
+            // Drawing visual trophy / emblem
+            if (!isStart) {
+                ctx.font = '60px Arial';
+                ctx.fillText('🏆', canvas.width / 2, 100);
+            } else {
+                ctx.font = '60px Arial';
+                ctx.fillText('🥷 ⚔️ 🥷', canvas.width / 2, 100);
+            }
+
+            // Action Button box
+            const btnX = 300;
+            const btnY = 320;
+            const btnW = 200;
+            const btnH = 60;
+            
+            // Draw interactive styled button area
+            ctx.fillStyle = '#e51c23';
+            ctx.fillRect(btnX, btnY, btnW, btnH);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(btnX, btnY, btnW, btnH);
+
+            ctx.font = 'bold 14px Courier New';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(isStart ? "FIGHT NOW!" : "PLAY AGAIN", canvas.width / 2, btnY + 35);
+        }
+
+        // Ticking engine game loop
+        function tick() {
+            update();
+            draw();
+            requestAnimationFrame(tick);
+        }
+
+        // Start initialization
+        tick();
+
+    </script>
+</body>
+</html>

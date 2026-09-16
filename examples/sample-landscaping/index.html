@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greenline Grounds | Reliable Lawn & Garden Care</title>
+    <meta name="description" content="Get reliable lawn mowing, hedge trimming, and seasonal cleanups you can set your watch to with Greenline Grounds.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Greenline Grounds | Reliable Lawn & Garden Care">
+    <meta property="og:description" content="Get reliable lawn mowing, hedge trimming, and seasonal cleanups you can set your watch to with Greenline Grounds.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1b4332;
+            --primary-dark: #081c15;
+            --primary-light: #2d6a4f;
+            --accent: #52b788;
+            --accent-light: #d8f3dc;
+            --gold: #d4af37;
+            --dark: #1c251f;
+            --light: #f4f9f4;
+            --white: #ffffff;
+            --text-muted: #5c6f62;
+            --font-sans: 'Lexend', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --container-width: 1200px;
+        }
+
+        /* Reset & Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--white);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.25;
+            color: var(--primary-dark);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(27, 67, 50, 0.15);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-light);
+            color: var(--primary-dark);
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        /* Layout Container */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header Navigation */
+        .site-header {
+            background-color: var(--white);
+            border-bottom: 1px solid rgba(27, 67, 50, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            font-size: 15px;
+            color: var(--dark);
+            position: relative;
+            padding: 6px 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .header-cta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Mobile Nav Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--primary-dark);
+            margin: 6px 0;
+            transition: var(--transition);
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            padding: 120px 0;
+            background-color: var(--primary-dark);
+            color: var(--white);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(135deg, rgba(8, 28, 21, 0.92) 40%, rgba(8, 28, 21, 0.6) 100%);
+            z-index: 1;
+        }
+
+        .hero-bg-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        .hero-container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-tagline {
+            display: inline-block;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            background-color: rgba(82, 183, 136, 0.15);
+            padding: 6px 16px;
+            border-radius: 50px;
+        }
+
+        .hero h1 {
+            color: var(--white);
+            font-size: 54px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--accent-light);
+            margin-bottom: 36px;
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-badge-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .hero-badge-text {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        /* Trust Badges / Stats Section */
+        .trust-section {
+            background-color: var(--light);
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(27, 67, 50, 0.05);
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--white);
+            padding: 20px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .trust-icon {
+            width: 48px;
+            height: 48px;
+            background-color: var(--accent-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .trust-text h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .trust-text p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Intro / Pitch Section */
+        .intro-section {
+            padding: 100px 0;
+        }
+
+        .intro-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .intro-image-container {
+            position: relative;
+        }
+
+        .intro-image {
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(8, 28, 21, 0.1);
+        }
+
+        .intro-accent-box {
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            background-color: var(--primary-light);
+            color: var(--white);
+            padding: 24px 30px;
+            border-radius: 8px;
+            max-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .intro-accent-box h4 {
+            color: var(--white);
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+
+        .intro-accent-box p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .intro-content h2 {
+            font-size: 40px;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .intro-content p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .intro-checklist {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .intro-checklist li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .intro-checklist li::before {
+            content: "✓";
+            color: var(--accent);
+            font-weight: 700;
+            background-color: var(--accent-light);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        /* Featured Services Section */
+        .services-section {
+            background-color: var(--light);
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px auto;
+        }
+
+        .section-subtitle {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .section-header h2 {
+            font-size: 40px;
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border: 1px solid rgba(27, 67, 50, 0.05);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(8, 28, 21, 0.08);
+        }
+
+        .service-card-img-wrapper {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .service-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .service-card:hover .service-card-img {
+            transform: scale(1.05);
+        }
+
+        .service-card-price {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .service-card-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .service-card-content h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .service-card-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .service-card-btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Testimonial Section */
+        .testimonial-section {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-section::after {
+            content: '"';
+            position: absolute;
+            right: 5%;
+            bottom: -50px;
+            font-family: var(--font-serif);
+            font-size: 300px;
+            line-height: 1;
+            color: rgba(82, 183, 136, 0.03);
+            pointer-events: none;
+        }
+
+        .testimonial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-stars {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-bottom: 24px;
+            color: var(--gold);
+            font-size: 24px;
+        }
+
+        .testimonial-quote {
+            font-family: var(--font-serif);
+            font-size: 28px;
+            line-height: 1.4;
+            font-style: italic;
+            font-weight: 400;
+            color: var(--accent-light);
+            margin-bottom: 30px;
+        }
+
+        .testimonial-author {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--white);
+        }
+
+        .testimonial-author-title {
+            font-size: 13px;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+
+        /* Final CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background-color: var(--white);
+            text-align: center;
+        }
+
+        .cta-box {
+            background-color: var(--accent-light);
+            border-radius: 16px;
+            padding: 80px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box-content {
+            max-width: 650px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-box h2 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .cta-box p {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        .site-footer {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 80px 0 30px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
+            gap: 50px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand h3 {
+            color: var(--white);
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo-icon {
+            width: 28px;
+            height: 28px;
+            background-color: var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .footer-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .footer-col h4 {
+            color: var(--accent);
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--white);
+            padding-left: 4px;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-contact-item span {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 44px;
+            }
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .hero-badge {
+                max-width: 320px;
+            }
+            .intro-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .trust-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .nav-links {
+                display: none; /* Can be enhanced with interactive menu if desired */
+            }
+            .header-cta .btn-secondary {
+                display: none;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+            .hero h1 {
+                font-size: 36px;
+            }
+            .testimonial-quote {
+                font-size: 20px;
+            }
+            .cta-box {
+                padding: 50px 20px;
+            }
+            .cta-box h2 {
+                font-size: 32px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MigaBuilder Header Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header / Navigation -->
+    <header class="site-header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">G</div>
+                <div class="logo-text">Greenline Grounds</div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-cta">
+                <a href="tel:555-0199" class="btn btn-secondary" style="padding: 10px 20px; font-size: 14px;">Call (555) 0199</a>
+                <a href="contact.html" class="btn btn-primary" style="padding: 10px 20px; font-size: 14px;">Get a Quote</a>
+                <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <img class="hero-bg-img" src="https://loremflickr.com/1200/800/green%2Clawn%2Cmowing?random=92227" alt="Perfectly striped lush green lawn being mowed in suburban backyard">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="hero-tagline">Set Your Watch To Our Schedule</span>
+                <h1>Lawn Care You Can Depend On. Every Single Week.</h1>
+                <p>We provide meticulously reliable lawn mowing, trimming, and seasonal maintenance for homeowners who value absolute punctuality and premium quality.</p>
+                <div class="hero-ctas">
+                    <a href="contact.html" class="btn btn-primary">Request Free Quote</a>
+                    <a href="services.html" class="btn btn-accent">Explore Our Services</a>
+                </div>
+            </div>
+            <div class="hero-badge">
+                <div class="hero-badge-number">100%</div>
+                <div class="hero-badge-text">On-Time Guarantee</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges -->
+    <section class="trust-section">
+        <div class="container">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-icon">⏱</div>
+                    <div class="trust-text">
+                        <h4>Guaranteed Schedule</h4>
+                        <p>We arrive on the exact same day every week, guaranteed.</p>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">🌿</div>
+                    <div class="trust-text">
+                        <h4>Expert Crews</h4>
+                        <p>Trained, background-checked, and highly detailed local pros.</p>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon">💳</div>
+                    <div class="trust-text">
+                        <h4>Transparent Quotes</h4>
+                        <p>Never any hidden fees. Clear, flat rates upfront.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Intro Pitch -->
+    <section class="intro-section">
+        <div class="container intro-grid">
+            <div class="intro-image-container">
+                <img class="intro-image" src="https://loremflickr.com/1200/800/gardener%2Clandscaping%2Clawn?random=69407" alt="Professional Greenline Grounds landscaper smiling next to clean property border">
+                <div class="intro-accent-box">
+                    <h4>Over 12 Years of Local Care</h4>
+                    <p>Caring for residential yards and commercial grounds throughout the entire community.</p>
+                </div>
+            </div>
+            <div class="intro-content">
+                <span class="section-subtitle">Who We Are</span>
+                <h2>We Treat Your Lawn Like Our Own Reputation Depends On It</h2>
+                <p>At Greenline Grounds, we understand that finding reliable property help is harder than it should be. Too many contractors skip visits, show up late, or cut corners. That’s where we do things differently.</p>
+                <p>We’ve built our reputation on a simple, iron-clad rule: absolute reliability. Rain or shine, our pristine trucks roll up on schedule to deliver consistent, precision services that keep your yard looking immaculate.</p>
+                
+                <ul class="intro-checklist">
+                    <li>Same day scheduling every week</li>
+                    <li>Instant photo confirmation after every job</li>
+                    <li>Eco-friendly and sharp, premium equipment</li>
+                </ul>
+
+                <a href="about.html" class="btn btn-primary">Meet Our Crew</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Services -->
+    <section class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">What We Do Best</span>
+                <h2>Our Featured Services</h2>
+                <p>Whether you need ongoing maintenance or a complete seasonal overhaul, we deliver consistent, professional results with every single visit.</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- Service 1 -->
+                <div class="service-card">
+                    <div class="service-card-img-wrapper">
+                        <img class="service-card-img" src="https://loremflickr.com/1200/800/lawn%2Cmower%2Ccut?random=33626" alt="Lawn mower cutting crisp lines in thick green grass">
+                        <span class="service-card-price">Starting at $45/visit</span>
+                    </div>
+                    <div class="service-card-content">
+                        <h3>Weekly Lawn Mowing</h3>
+                        <p>Includes precise mowing, line-trimming around borders and obstacles, deep edging along hard surfaces, and complete cleanup of clippings.</p>
+                        <a href="mailto:hello@greenlinegrounds.example?subject=Quote Request: Weekly Lawn Mowing" class="btn btn-secondary service-card-btn">Request a Quote</a>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card">
+                    <div class="service-card-img-wrapper">
+                        <img class="service-card-img" src="https://loremflickr.com/1200/800/garden%2Cclean%2Cleaves?random=39794" alt="Backyard being cleared of leaves and mulch being laid out">
+                        <span class="service-card-price">Starting at $150</span>
+                    </div>
+                    <div class="service-card-content">
+                        <h3>Seasonal Cleanup</h3>
+                        <p>Spring and Autumn yard maintenance designed to clear leaf litter, debris, and dead foliage while preparing soil and turf for the coming weather.</p>
+                        <a href="mailto:hello@greenlinegrounds.example?subject=Quote Request: Seasonal Cleanup" class="btn btn-secondary service-card-btn">Request a Quote</a>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card">
+                    <div class="service-card-img-wrapper">
+                        <img class="service-card-img" src="https://loremflickr.com/1200/800/trimming%2Chedges%2Cshears?random=81010" alt="Hand trimmer trimming hedge into perfect clean shape">
+                        <span class="service-card-price">Starting at $65</span>
+                    </div>
+                    <div class="service-card-content">
+                        <h3>Hedge & Shrub Trimming</h3>
+                        <p>Expert shaping and structural pruning of hedges and ornamental shrubs to keep your borders structured, beautiful, and vibrant.</p>
+                        <a href="mailto:hello@greenlinegrounds.example?subject=Quote Request: Hedge Trimming" class="btn btn-secondary service-card-btn">Request a Quote</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 50px;">
+                <p style="margin-bottom: 20px; color: var(--text-muted);">Looking for mulch installation or customized landscape solutions?</p>
+                <a href="services.html" class="btn btn-primary">See All Services & Pricing</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="container testimonial-container">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Greenline shows up every single week, rain or shine, and our lawn has never looked better."</p>
+            <h4 class="testimonial-author">Pat Alvarez</h4>
+            <span class="testimonial-author-title">Property Owner in Westwood</span>
+        </div>
+    </section>
+
+    <!-- Final CTA Box -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-box-content">
+                    <h2>Ready to Experience Worry-Free Lawn Care?</h2>
+                    <p>Contact us today for a free, no-obligation quote. Our team will review your property dimensions and email your proposal within 24 hours.</p>
+                    <div class="cta-buttons">
+                        <a href="contact.html" class="btn btn-primary">Get a Free Proposal</a>
+                        <a href="tel:555-0199" class="btn btn-secondary">Call (555) 0199</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">G</div>
+                        <div class="footer-logo-text">Greenline Grounds</div>
+                    </div>
+                    <p>Providing pristine, premium lawn care and yard services to residential properties. Reliable, meticulous, and fully guaranteed.</p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Our Pages</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services & Pricing</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Request Quote</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Featured Services</h4>
+                    <ul>
+                        <li><a href="services.html">Lawn Mowing</a></li>
+                        <li><a href="services.html">Seasonal Cleanups</a></li>
+                        <li><a href="services.html">Hedge Trimming</a></li>
+                        <li><a href="services.html">Mulch Laying</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Get In Touch</h4>
+                    <div class="footer-contact-item">
+                        <span>Email:</span> hello@greenlinegrounds.example
+                    </div>
+                    <div class="footer-contact-item">
+                        <span>Call:</span> (555) 0199
+                    </div>
+                    <div class="footer-contact-item">
+                        <span>Office:</span> Mon - Fri, 8AM - 5PM
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Greenline Grounds. All rights reserved.</p>
+                <div class="footer-bottom-links">
+                    <a href="contact.html">Privacy Policy</a>
+                    <a href="contact.html">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

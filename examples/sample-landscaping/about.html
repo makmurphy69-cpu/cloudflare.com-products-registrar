@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Greenline Grounds - Family Lawn & Garden Care</title>
+    <meta name="description" content="Learn the story of Greenline Grounds, a family-run lawn care crew dedicated to absolute reliability and impeccable yards in our local community.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="About Us | Greenline Grounds - Family Lawn & Garden Care">
+    <meta property="og:description" content="Learn the story of Greenline Grounds, a family-run lawn care crew dedicated to absolute reliability and impeccable yards in our local community.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1b4332;
+            --primary-light: #2d6a4f;
+            --accent: #52b788;
+            --accent-soft: #d8f3dc;
+            --neutral-dark: #1a241f;
+            --neutral-light: #f4f9f4;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--neutral-dark);
+            background-color: var(--white);
+            line-height: 1.6;
+        }
+
+        /* Container helper */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        .logo-icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: var(--accent);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 14px;
+            height: 14px;
+            border-left: 3px solid var(--white);
+            border-bottom: 3px solid var(--white);
+            transform: rotate(-45deg);
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--neutral-dark);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--primary-light);
+        }
+
+        nav a.active {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 4px;
+        }
+
+        /* Mobile Menu Toggle (CSS only for responsiveness) */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Hero / Page Header Section */
+        .about-hero {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: var(--white);
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        .about-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--accent-soft);
+            font-weight: 300;
+        }
+
+        /* Story Section (Split Grid) */
+        .story-section {
+            padding: 100px 0;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .story-content h2 {
+            font-size: 2.25rem;
+            color: var(--primary);
+            margin-bottom: 24px;
+            font-weight: 800;
+        }
+
+        .story-content p {
+            font-size: 1.05rem;
+            color: #4a5568;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .story-content p strong {
+            color: var(--primary-light);
+        }
+
+        .story-image {
+            position: relative;
+        }
+
+        .story-image img {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            object-fit: cover;
+            aspect-ratio: 4/3;
+        }
+
+        .story-image::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--accent-soft);
+            border-radius: 16px;
+            z-index: -1;
+        }
+
+        /* Values Grid Section */
+        .values-section {
+            background-color: var(--neutral-light);
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 {
+            font-size: 2.25rem;
+            color: var(--primary);
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .section-header p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .value-card {
+            background-color: var(--white);
+            padding: 40px 32px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-top: 4px solid var(--accent);
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .value-card .icon-wrap {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--accent-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .value-card .icon-wrap svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary);
+        }
+
+        .value-card h3 {
+            font-size: 1.35rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .value-card p {
+            color: #4a5568;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Crew / Meet Team Section */
+        .team-section {
+            padding: 100px 0;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        .team-card {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            background-color: var(--white);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .team-card img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--accent-soft);
+        }
+
+        .team-info h3 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .team-role {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .team-info p {
+            color: #4a5568;
+            font-size: 0.95rem;
+        }
+
+        /* Testimonial Section */
+        .testimonial-section {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 80px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .testimonial-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .quote-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 16px;
+            font-family: serif;
+        }
+
+        .testimonial-text {
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent-soft);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(rgba(27,67,50,0.92), rgba(27,67,50,0.92)), url('https://loremflickr.com/1200/800/lawn%2Cgarden?random=89005') no-repeat center/cover;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .cta-content p {
+            font-size: 1.15rem;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--accent-soft);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--primary);
+            text-decoration: none;
+            padding: 16px 36px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background-color: var(--white);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--neutral-dark);
+            color: var(--white);
+            padding: 60px 0 30px 0;
+            font-size: 0.95rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo span {
+            color: var(--accent);
+        }
+
+        .footer-desc {
+            color: #a0aec0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .footer-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent-soft);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .footer-contact p {
+            margin-bottom: 12px;
+            color: #a0aec0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-contact a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .footer-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #718096;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 992px) {
+            .story-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 2.25rem;
+            }
+
+            nav {
+                display: none; /* In a real site we would toggle this with JS, but keeping simple and clean here */
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .team-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Required Banner directly after opening body tag -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"></div>
+                Greenline <span>Grounds</span>
+            </a>
+            
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="services.html">Services</a>
+                <a href="about.html" class="active">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+
+            <button class="menu-toggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Page Hero Banner -->
+    <section class="about-hero">
+        <div class="container">
+            <h1>Our Story</h1>
+            <p>Reliable lawn & garden care you can set your watch to.</p>
+        </div>
+    </section>
+
+    <!-- Detailed Story Section -->
+    <section class="story-section">
+        <div class="container">
+            <div class="story-grid">
+                <div class="story-content">
+                    <h2>How We Started</h2>
+                    <p>It began with a simple observation: our neighbors loved beautiful yards, but they dreaded the hassle of inconsistent landscapers. No-shows, delayed updates, and skipped service weeks left lawns looking messy and homeowners feeling frustrated.</p>
+                    <p>In 2014, we launched <strong>Greenline Grounds</strong> with a single mission: to bring absolute, clockwork reliability to local lawn care. We built our business on the belief that premium yard maintenance shouldn't require constant phone calls, micro-management, or guesswork from you.</p>
+                    <p>A decade later, our family-owned business has grown, but our core operating standard remains exactly the same. We show up when we say we will, treat every detail with absolute precision, and leave your property looking its absolute best.</p>
+                </div>
+                <div class="story-image">
+                    <img src="https://loremflickr.com/1200/800/gardener%2Clawnmower?random=43874" alt="Professional lawn technician working with care">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values Section -->
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The Greenline Standard</h2>
+                <p>The values that drive us to provide dependable services week after week.</p>
+            </div>
+            
+            <div class="values-grid">
+                <!-- Value 1 -->
+                <div class="value-card">
+                    <div class="icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <h3>Always On Schedule</h3>
+                    <p>We honor our appointments down to the hour. If we have a rare weather delay, you'll know instantly. We respect your time as much as we care for your grass.</p>
+                </div>
+
+                <!-- Value 2 -->
+                <div class="value-card">
+                    <div class="icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <h3>Meticulous Detail</h3>
+                    <p>We don't believe in "quick mows." Our team trims clean edges, clears grass clippings from paths, and maintains our mower blades daily for the sharpest cut possible.</p>
+                </div>
+
+                <!-- Value 3 -->
+                <div class="value-card">
+                    <div class="icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <h3>Family-Owned Pride</h3>
+                    <p>We are a tight-knit family crew and trusted local neighbors. You will always see the same familiar, friendly faces servicing your yard month after month.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crew Section -->
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Meet the Team</h2>
+                <p>The experienced specialists behind your perfectly manicured lawn.</p>
+            </div>
+
+            <div class="team-grid">
+                <!-- Member 1 -->
+                <div class="team-card">
+                    <img src="https://loremflickr.com/1200/800/man%2Csmiling%2Coutdoors?random=89207" alt="Marcus Vance, Co-founder of Greenline Grounds">
+                    <div class="team-info">
+                        <h3>Marcus Vance</h3>
+                        <div class="team-role">Founder & Operations Lead</div>
+                        <p>With 15+ years of turf management experience, Marcus oversees our scheduling, daily crew coordination, and technical quality standards.</p>
+                    </div>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="team-card">
+                    <img src="https://loremflickr.com/1200/800/young%2Cman%2Csmiling?random=35582" alt="Ted Vance, Co-founder of Greenline Grounds">
+                    <div class="team-info">
+                        <h3>Ted Vance</h3>
+                        <div class="team-role">Co-Founder & Lead Designer</div>
+                        <p>Ted is our garden structure and plant health expert. He loves selecting the perfect shrubs, native plants, and mulches for local climates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="container">
+            <div class="testimonial-container">
+                <div class="quote-icon">“</div>
+                <blockquote class="testimonial-text">
+                    "They treat every yard like it's their own. Can't recommend them enough."
+                </blockquote>
+                <div class="testimonial-author">— Jordan T.</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Get a Yard You Can Be Proud Of</h2>
+                <p>Experience hassle-free, highly reliable lawn care with Greenline Grounds. Get a fast, free service quote today.</p>
+                <a href="contact.html" class="btn">Get a Free Estimate</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Col 1: About/Logo -->
+                <div>
+                    <a href="index.html" class="footer-logo">
+                        <div class="logo-icon"></div>
+                        Greenline <span>Grounds</span>
+                    </a>
+                    <p class="footer-desc">Providing premium, predictable, and professional lawn care. Set your watch to our reliability.</p>
+                </div>
+
+                <!-- Col 2: Site Links -->
+                <div>
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact & Estimates</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Contact Info -->
+                <div>
+                    <h4 class="footer-title">Contact Us</h4>
+                    <div class="footer-contact">
+                        <p><strong>Email:</strong> <a href="mailto:hello@greenlinegrounds.example">hello@greenlinegrounds.example</a></p>
+                        <p><strong>Hours:</strong> Mon - Sat: 7:00 AM - 6:00 PM</p>
+                        <p><strong>Location:</strong> Proudly serving your local neighborhoods.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <p>&copy; 2026 Greenline Grounds. All rights reserved.</p>
+                <p>Reliable lawn & garden care you can set your watch to.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

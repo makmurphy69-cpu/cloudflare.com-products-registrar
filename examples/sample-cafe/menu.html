@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Fernway Coffee - Big Front Porch Energy</title>
+    <meta name="description" content="Browse the delicious menu at Fernway Coffee, featuring small-batch drip, specialty lattes, house-made scones, and warm breakfast favorites.">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Menu | Fernway Coffee - Big Front Porch Energy">
+    <meta property="og:description" content="Browse the delicious menu at Fernway Coffee, featuring small-batch drip, specialty lattes, house-made scones, and warm breakfast favorites.">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Base Colors & Typography */
+        :root {
+            --cream: #FAF6F0;
+            --cream-dark: #F3EAE0;
+            --terracotta: #C96F53;
+            --terracotta-dark: #B0593E;
+            --espresso: #2E1E12;
+            --espresso-light: #5A4433;
+            --gold: #E2A63B;
+            --font-serif: 'Fraunces', Georgia, serif;
+            --font-sans: 'Outfit', system-ui, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--espresso);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+        }
+
+        /* Navigation Header */
+        header {
+            background-color: var(--cream-dark);
+            border-bottom: 2px solid #EADBCE;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-group {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--espresso);
+        }
+
+        .logo-title {
+            font-family: var(--font-serif);
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .logo-tagline {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--terracotta);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--espresso-light);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+            position: relative;
+            padding: 4px 0;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--terracotta);
+        }
+
+        nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--terracotta);
+            border-radius: 2px;
+        }
+
+        /* Hero / Header Section */
+        .menu-hero {
+            text-align: center;
+            padding: 60px 24px 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .menu-hero h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            color: var(--espresso);
+            margin-bottom: 16px;
+        }
+
+        .menu-hero p {
+            font-size: 1.15rem;
+            color: var(--espresso-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Menu Container Layout */
+        .menu-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        /* Featured Menu Grid (Top) */
+        .featured-menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+            align-items: center;
+        }
+
+        .featured-image-container {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(46, 30, 18, 0.08);
+            border: 8px solid var(--cream-dark);
+        }
+
+        .featured-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            max-height: 450px;
+        }
+
+        .featured-text {
+            padding-right: 20px;
+        }
+
+        .featured-text h2 {
+            font-family: var(--font-serif);
+            font-size: 2.25rem;
+            margin-bottom: 16px;
+            color: var(--espresso);
+        }
+
+        .featured-text p {
+            margin-bottom: 24px;
+            color: var(--espresso-light);
+            font-size: 1.05rem;
+        }
+
+        .menu-notice {
+            background-color: var(--cream-dark);
+            border-left: 4px solid var(--terracotta);
+            padding: 16px 20px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.95rem;
+            color: var(--espresso-light);
+        }
+
+        /* Traditional Menu Board Grid */
+        .menu-sections {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+        }
+
+        .menu-category {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(46, 30, 18, 0.04);
+            border: 1px solid rgba(46, 30, 18, 0.06);
+        }
+
+        .category-title-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed var(--cream-dark);
+            padding-bottom: 15px;
+        }
+
+        .category-title {
+            font-family: var(--font-serif);
+            font-size: 1.75rem;
+            color: var(--terracotta);
+        }
+
+        .category-icon {
+            font-size: 1.5rem;
+        }
+
+        .menu-item {
+            margin-bottom: 28px;
+        }
+
+        .menu-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .item-name {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        .item-dots {
+            flex-grow: 1;
+            border-bottom: 2px dotted #DDD2C4;
+            margin: 0 12px;
+        }
+
+        .item-price {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--terracotta-dark);
+        }
+
+        .item-description {
+            font-size: 0.95rem;
+            color: var(--espresso-light);
+            line-height: 1.4;
+        }
+
+        /* Dietary tags */
+        .tags {
+            margin-top: 6px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background-color: var(--cream-dark);
+            color: var(--espresso-light);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Photos Section between menu items */
+        .menu-showcase-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .gallery-card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(46, 30, 18, 0.05);
+            background: white;
+            border: 1px solid rgba(46, 30, 18, 0.05);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-caption {
+            padding: 16px;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+            color: var(--espresso-light);
+            border-top: 1px solid rgba(46, 30, 18, 0.05);
+        }
+
+        /* Special Banner / CTA */
+        .menu-footer-cta {
+            background-color: var(--terracotta);
+            color: white;
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            margin-top: 60px;
+            box-shadow: 0 10px 25px rgba(201, 111, 83, 0.25);
+        }
+
+        .menu-footer-cta h3 {
+            font-family: var(--font-serif);
+            font-size: 2.25rem;
+            margin-bottom: 12px;
+        }
+
+        .menu-footer-cta p {
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            opacity: 0.95;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .menu-btn {
+            display: inline-block;
+            background-color: var(--cream);
+            color: var(--terracotta-dark);
+            text-decoration: none;
+            padding: 12px 32px;
+            border-radius: 30px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .menu-btn:hover {
+            background-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--espresso);
+            color: var(--cream);
+            padding: 60px 24px 30px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.1);
+            padding-bottom: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-logo h4 {
+            font-family: var(--font-serif);
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo p {
+            color: #DDD2C4;
+            max-width: 300px;
+            font-size: 0.95rem;
+        }
+
+        .footer-links h5, .footer-contact h5 {
+            font-family: var(--font-sans);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #DDD2C4;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--gold);
+        }
+
+        .footer-contact p {
+            color: #DDD2C4;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .footer-contact a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .footer-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #B5A89A;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .menu-sections {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .featured-menu-grid {
+                grid-template-columns: 1fr;
+            }
+            .featured-text {
+                padding-right: 0;
+                order: 2;
+            }
+            .featured-image-container {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+            .menu-hero h1 {
+                font-size: 2.25rem;
+            }
+            .menu-showcase-gallery {
+                grid-template-columns: 1fr;
+            }
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MigaBuilder Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Navigation Header -->
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo-group">
+                <span class="logo-title">Fernway Coffee</span>
+                <span class="logo-tagline">Big Front Porch Energy</span>
+            </a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="menu.html" class="active">Menu</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Menu Page Content -->
+    <main>
+        
+        <!-- Hero Section -->
+        <section class="menu-hero">
+            <h1>On the Porch Menu</h1>
+            <p>Thoughtfully sourced coffee, house-infused syrups, and scratch-made breakfast items crafted to make you feel right at home. Pull up a chair and stay a while.</p>
+        </section>
+
+        <!-- Menu Section Wrapper -->
+        <div class="menu-wrapper">
+
+            <!-- Featured Scone Highlight Section -->
+            <section class="featured-menu-grid">
+                <div class="featured-text">
+                    <h2>Warm from the Oven</h2>
+                    <p>Our kitchen hums early in the morning so you can wake up to fresh pastries, local ingredients, and comforting breakfasts made exactly the way we like 'em. There's always something sweet waiting for you on the counter.</p>
+                    <div class="menu-notice">
+                        <strong>Dietary Information:</strong> We offer oat, almond, and soy milk substitutes for our entire drink range. Gluten-free crusts and options are available upon request.
+                    </div>
+                </div>
+                <div class="featured-image-container">
+                    <img src="https://loremflickr.com/1200/800/scones%2Cbakery?random=465" alt="Freshly baked maple pecan scones on a display stand inside a warm bakery">
+                </div>
+            </section>
+
+            <!-- Main Coffee & Food Board -->
+            <section class="menu-sections">
+
+                <!-- Left Column: Brews & Specialty Drinks -->
+                <div class="menu-category">
+                    <div class="category-title-container">
+                        <span class="category-icon">☕</span>
+                        <h2 class="category-title">Brews & Espresso</h2>
+                    </div>
+
+                    <!-- Item 1 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Fernway House Blend</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$3.75</span>
+                        </div>
+                        <p class="item-description">Our signature small-batch medium-dark drip coffee. Smooth with rich notes of warm milk chocolate, toasted pecan, and a clean finish.</p>
+                        <div class="tags">
+                            <span class="tag">Free Refills</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Cold Brew</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$4.25</span>
+                        </div>
+                        <p class="item-description">Slow-steeped in-house for 18 hours. Exceptionally smooth, served cold over ice with an option for cream.</p>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Honey Lavender Latte</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$5.50</span>
+                        </div>
+                        <p class="item-description">Espresso with your choice of milk, gently sweetened with our organic culinary lavender reduction and locally sourced raw wildflower honey.</p>
+                        <div class="tags">
+                            <span class="tag">Hot or Iced</span>
+                            <span class="tag">Local Honey</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Cardamom Cortado</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$4.75</span>
+                        </div>
+                        <p class="item-description">Equal parts espresso and perfectly velvety steamed milk, spiced with freshly ground organic cardamom pods and a touch of orange oil.</p>
+                        <div class="tags">
+                            <span class="tag">Traditional 4oz</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Bakery & All-Day Breakfast -->
+                <div class="menu-category">
+                    <div class="category-title-container">
+                        <span class="category-icon">🥐</span>
+                        <h2 class="category-title">Fresh Bakery & Plates</h2>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Maple Pecan Scone</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$4.00</span>
+                        </div>
+                        <p class="item-description">Crumbly, buttery scratch-made scone loaded with slow-roasted pecans and topped with a sweet, genuine Vermont maple syrup glaze.</p>
+                        <div class="tags">
+                            <span class="tag">Freshly Baked</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Avocado Toast</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$9.50</span>
+                        </div>
+                        <p class="item-description">Thick slice of toasted sourdough topped with seasoned avocado smash, cherry tomatoes, pickled radish, and a dash of everything seasoning.</p>
+                        <div class="tags">
+                            <span class="tag">Vegetarian</span>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <span class="item-name">Breakfast Burrito</span>
+                            <span class="item-dots"></span>
+                            <span class="item-price">$8.50</span>
+                        </div>
+                        <p class="item-description">Scrambled eggs, spiced black beans, sharp cheddar cheese, and house-made roasted salsa folded into a warm, toasted flour tortilla.</p>
+                        <div class="tags">
+                            <span class="tag">Hot Food</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Intermission Gallery Photos -->
+            <section class="menu-showcase-gallery">
+                <div class="gallery-card">
+                    <img src="https://loremflickr.com/1200/800/latte%2Ccoffee?random=17693" alt="Perfect pour-over coffee sitting next to fresh beans on a wooden counter">
+                    <div class="gallery-caption">Espresso crafted with love and care.</div>
+                </div>
+                <div class="gallery-card">
+                    <img src="https://loremflickr.com/1200/800/toast%2Cbreakfast?random=31563" alt="Vibrant freshly made avocado toast topped with baby radishes and seeds">
+                    <div class="gallery-caption">All-day avocado toast on crusty sourdough.</div>
+                </div>
+                <div class="gallery-card">
+                    <img src="https://loremflickr.com/1200/800/pastry%2Ccozy?random=3032" alt="Warm maple pecan scone sitting cozy next to a mug of hot coffee">
+                    <div class="gallery-caption">Bakery goodies delivered warm daily.</div>
+                </div>
+            </section>
+
+            <!-- Bottom CTA -->
+            <section class="menu-footer-cta">
+                <h3>Planning a Porch Gathering?</h3>
+                <p>We do catering and bulk beverage boxes for neighborhood events, local book clubs, and lazy weekend backyard parties. Get in touch with us to coordinate.</p>
+                <a href="contact.html" class="menu-btn">Contact Our Team</a>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-logo">
+                <h4>Fernway Coffee</h4>
+                <p>Small-batch coffee, big front porch energy. Located in the heart of the community, we're your home away from home.</p>
+            </div>
+            <div class="footer-links">
+                <h5>Our Pages</h5>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact & Directions</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h5>Get in Touch</h5>
+                <p>📍 128 Fernway Lane, East Cliff</p>
+                <p>✉️ <a href="mailto:hello@fernwaycoffee.example">hello@fernwaycoffee.example</a></p>
+                <p>📞 (555) 349-2739</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Fernway Coffee Company. All Rights Reserved.</p>
+            <p>Made with love in your local neighborhood.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

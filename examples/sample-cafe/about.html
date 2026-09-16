@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Fernway Coffee | East Nashville Neighborhood Café</title>
+    <meta name="description" content="Discover the story behind Fernway Coffee in East Nashville—our commitment to small-batch roasting, friendly front porch energy, and neighborhood community.">
+    
+    <meta property="og:title" content="About Fernway Coffee | East Nashville Neighborhood Café">
+    <meta property="og:description" content="Discover the story behind Fernway Coffee in East Nashville—our commitment to small-batch roasting, friendly front porch energy, and neighborhood community.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --cream: #FAF6F0;
+            --cream-dark: #F0E8DC;
+            --terracotta: #C85A32;
+            --terracotta-dark: #A44622;
+            --brown: #3A2405;
+            --brown-muted: #6B573E;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--brown);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--cream);
+            border-bottom: 1px solid var(--cream-dark);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--terracotta);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a {
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--terracotta);
+        }
+
+        /* Hero Section */
+        .about-hero {
+            max-width: 1100px;
+            margin: 60px auto 40px;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .about-hero h1 {
+            font-size: clamp(2.5rem, 5vw, 3.8rem);
+            color: var(--brown);
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .about-hero p.tagline {
+            font-size: 1.25rem;
+            color: var(--terracotta);
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            max-width: 1000px;
+            margin: 0 auto 80px;
+            padding: 0 24px;
+        }
+
+        .grid-story {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .grid-story.reverse {
+            direction: rtl;
+        }
+
+        .grid-story.reverse > * {
+            direction: ltr;
+        }
+
+        .story-text h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: var(--brown);
+        }
+
+        .story-text p {
+            color: var(--brown-muted);
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+        }
+
+        .image-wrapper {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(58, 36, 5, 0.08);
+            background-color: var(--cream-dark);
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            min-height: 320px;
+            max-height: 420px;
+        }
+
+        /* Porch Vibe Highlight Banner */
+        .porch-banner {
+            background-color: var(--terracotta);
+            color: var(--white);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            margin: 0 24px 80px;
+            max-width: 1052px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .porch-banner h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .porch-banner p {
+            max-width: 650px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--brown);
+            color: var(--cream);
+            padding: 60px 24px 40px;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 24px;
+            border-bottom: 1px solid rgba(250, 246, 240, 0.1);
+            padding-bottom: 40px;
+        }
+
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--cream);
+        }
+
+        .footer-nav {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+            font-size: 0.95rem;
+        }
+
+        .footer-nav a:hover {
+            color: var(--terracotta);
+        }
+
+        .footer-info {
+            font-size: 0.950rem;
+            color: var(--cream-dark);
+            opacity: 0.8;
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 30px auto 0;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--cream-dark);
+            opacity: 0.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-story,
+            .grid-story.reverse {
+                grid-template-columns: 1fr;
+                direction: ltr;
+                gap: 32px;
+            }
+
+            .nav-links {
+                display: none; /* simple mobile fallback, or can rely on standard wrapping */
+            }
+            
+            .nav-container {
+                justify-content: center;
+            }
+
+            .porch-banner {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo brand-font">Fernway Coffee</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="about.html" class="active">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="about-hero">
+            <h1>Our Story</h1>
+            <p class="tagline">Small-batch coffee, big front porch energy</p>
+        </section>
+
+        <section class="content-section">
+            <div class="grid-story">
+                <div class="story-text">
+                    <h2>Rooted in East Nashville</h2>
+                    <p>Fernway Coffee was born out of a simple belief: that a neighborhood café should feel like an extension of your own living room. Located right at 104 Fernway Lane, we set out to build a space where time slows down just a little bit.</p>
+                    <p>Whether you’re grabbing a quick cortado on your morning commute or settling in with a book for the afternoon, our doors are open to everyone who makes East Nashville so vibrant.</p>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://loremflickr.com/1200/800/cafe%2Cneighborhood%2Cexterior?random=2411" alt="Fernway Coffee exterior on Fernway Lane in East Nashville">
+                </div>
+            </div>
+
+            <div class="grid-story reverse">
+                <div class="story-text">
+                    <h2>Small-Batch, Crafted with Care</h2>
+                    <p>We partner closely with independent local roasters who share our obsession with quality, ethics, and sustainability. Every single batch of beans is sourced with intention, roasted to highlight its unique origin notes, and brewed with precision.</p>
+                    <p>From our house syrups made from scratch to our rotating single-origin pours, we treat every cup as a craft—never rushed, always exceptional.</p>
+                </div>
+                <div class="image-wrapper">
+                    <img src="https://loremflickr.com/1200/800/coffee%2Croasting%2Cbeans?random=27762" alt="Freshly roasted coffee beans being sorted">
+                </div>
+            </div>
+        </section>
+
+        <section class="porch-banner">
+            <h2>Big Front Porch Energy</h2>
+            <p>You won't find corporate stiffness here. Pull up a chair on our porch, wave to the neighbors walking their dogs, and enjoy a warm cup crafted by people who genuinely love what they do.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo brand-font">Fernway Coffee</div>
+            <ul class="footer-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="footer-info">
+                <p>104 Fernway Lane, East Nashville, TN</p>
+                <p>hello@fernwaycoffee.example</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Fernway Coffee. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

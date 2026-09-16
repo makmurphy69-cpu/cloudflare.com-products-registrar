@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fernway Coffee | Small-Batch Coffee & Big Front Porch Energy</title>
+    <meta name="description" content="Welcome to Fernway Coffee, your neighborhood café serving small-batch coffee, fresh pastries, and warm, friendly front porch vibes.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Fernway Coffee | Neighborhood Cafe">
+    <meta property="og:description" content="Experience small-batch coffee and big front porch energy in a cozy, welcoming neighborhood setting.">
+    <meta property="og:type" content="website">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #FAF6F0;
+            --cream-dark: #F2EAE1;
+            --terracotta: #D46A43;
+            --terracotta-dark: #A64E2E;
+            --espresso: #2B1D16;
+            --espresso-light: #523F35;
+            --sage: #5F7464;
+            --sage-light: #809685;
+            --font-heading: 'Fraunces', serif;
+            --font-body: 'Quicksand', sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--cream);
+            color: var(--espresso);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Button Component */
+        .btn {
+            display: inline-block;
+            background-color: var(--terracotta);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(212, 106, 67, 0.2);
+        }
+
+        .btn:hover {
+            background-color: var(--terracotta-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(212, 106, 67, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--espresso);
+            border: 2px solid var(--espresso);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--espresso);
+            color: var(--cream);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(43, 29, 22, 0.1);
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--cream);
+            border-bottom: 1px solid rgba(43, 29, 22, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--espresso);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtext {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--terracotta);
+            font-weight: 700;
+            display: block;
+            margin-top: -4px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--espresso-light);
+            position: relative;
+            padding: 8px 0;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--terracotta);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--terracotta);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background-color: var(--espresso);
+            margin: 5px 0;
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background-color: var(--cream-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(212, 106, 67, 0.05);
+            z-index: 1;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 60px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-tagline {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--terracotta);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            color: var(--espresso);
+            margin-bottom: 24px;
+            font-weight: 800;
+        }
+
+        .hero h1 span {
+            color: var(--terracotta);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: var(--espresso-light);
+            margin-bottom: 36px;
+            max-width: 540px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+        }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(43, 29, 22, 0.15);
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-badge {
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            background-color: var(--sage);
+            color: #fff;
+            padding: 20px 24px;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            max-width: 240px;
+        }
+
+        .hero-badge p {
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* Intro Section */
+        .intro {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .section-header {
+            max-width: 650px;
+            margin: 0 auto 60px auto;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--terracotta);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 40px;
+            color: var(--espresso);
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            font-size: 16px;
+            color: var(--espresso-light);
+        }
+
+        .intro-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .intro-card {
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(43, 29, 22, 0.04);
+            border: 1px solid rgba(43, 29, 22, 0.03);
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .intro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(43, 29, 22, 0.08);
+        }
+
+        .intro-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .intro-card h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: var(--espresso);
+        }
+
+        .intro-card p {
+            color: var(--espresso-light);
+            font-size: 15px;
+        }
+
+        /* Highlights Section */
+        .highlights {
+            padding: 100px 0;
+            background-color: var(--cream-dark);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .menu-card {
+            background-color: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(43, 29, 22, 0.05);
+            transition: var(--transition);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(43, 29, 22, 0.1);
+        }
+
+        .menu-img-container {
+            height: 240px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .menu-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .menu-card:hover .menu-img-container img {
+            transform: scale(1.05);
+        }
+
+        .menu-info {
+            padding: 24px;
+        }
+
+        .menu-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--espresso);
+        }
+
+        .menu-price {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--terracotta);
+        }
+
+        .menu-desc {
+            font-size: 15px;
+            color: var(--espresso-light);
+            margin-bottom: 16px;
+        }
+
+        .highlights-footer {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* Testimonial Section */
+        .testimonial-section {
+            padding: 120px 0;
+            background-color: var(--sage);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonial-section::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-heading);
+            font-size: 240px;
+            color: rgba(255, 255, 255, 0.05);
+            line-height: 1;
+        }
+
+        .testimonial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-text {
+            font-family: var(--font-heading);
+            font-size: 32px;
+            line-height: 1.4;
+            margin-bottom: 30px;
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--cream);
+        }
+
+        /* Hours & Location Quick Glance */
+        .glance {
+            padding: 100px 0;
+            background-color: var(--cream);
+        }
+
+        .glance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .glance-info h2 {
+            font-size: 38px;
+            color: var(--espresso);
+            margin-bottom: 16px;
+        }
+
+        .glance-p {
+            font-size: 16px;
+            color: var(--espresso-light);
+            margin-bottom: 40px;
+        }
+
+        .glance-details {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .glance-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .glance-icon {
+            font-size: 24px;
+            background-color: var(--cream-dark);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glance-item h4 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: var(--espresso);
+        }
+
+        .glance-item p {
+            color: var(--espresso-light);
+            font-size: 15px;
+        }
+
+        .glance-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(43, 29, 22, 0.1);
+            object-fit: cover;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--espresso);
+            color: var(--cream);
+            padding: 80px 0 40px 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+
+        .footer-brand h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .footer-brand p {
+            color: rgba(250, 246, 240, 0.7);
+            margin-bottom: 24px;
+            font-size: 15px;
+            max-width: 320px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(250, 246, 240, 0.1);
+            border-radius: 50%;
+            color: var(--cream);
+            transition: var(--transition);
+        }
+
+        .social-link:hover {
+            background-color: var(--terracotta);
+            transform: translateY(-3px);
+        }
+
+        .footer-links-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--terracotta);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-menu a {
+            color: rgba(250, 246, 240, 0.8);
+            font-size: 15px;
+        }
+
+        .footer-menu a:hover {
+            color: var(--cream);
+            padding-left: 5px;
+        }
+
+        .footer-contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            color: rgba(250, 246, 240, 0.8);
+            font-size: 15px;
+        }
+
+        .footer-contact-info a {
+            color: var(--terracotta);
+            font-weight: 600;
+        }
+
+        .footer-contact-info a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(250, 246, 240, 0.1);
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            color: rgba(250, 246, 240, 0.6);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 991px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .hero {
+                padding: 60px 0;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 46px;
+            }
+
+            .hero-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-badge {
+                left: 20px;
+            }
+
+            .intro-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .glance-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .glance-image {
+                order: -1;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Mobile menu hidden by default */
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .testimonial-text {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mandatory Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example site built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div>
+                    <span class="logo-text">Fernway Coffee</span>
+                    <span class="logo-subtext">Big Front Porch Energy</span>
+                </div>
+            </a>
+            
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+
+            <button class="mobile-menu-btn" aria-label="Toggle Menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Overlay (Simply handles responsiveness) -->
+    <div id="mobile-overlay" style="display: none; background: var(--cream); position: fixed; top: 90px; left: 0; width: 100%; height: calc(100vh - 90px); z-index: 99; padding: 40px 24px;">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 30px; align-items: center; font-size: 22px; font-weight: 600;">
+            <li><a href="index.html" style="color: var(--terracotta);">Home</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="hero-tagline">Welcome to the Porch</span>
+                <h1>Come for the <span>coffee</span>, stay for the breeze.</h1>
+                <p class="hero-description">We roast and brew small-batch coffee with a side of easygoing neighborhood hospitality. Pull up a chair, find a warm spot in the sun, and let us pour you a cup.</p>
+                <div class="hero-buttons">
+                    <a href="menu.html" class="btn">Explore the Menu</a>
+                    <a href="about.html" class="btn btn-secondary">Our Story</a>
+                </div>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="https://loremflickr.com/1200/800/coffee%2Cporch%2Ccafe?random=13740" alt="A beautiful, sunlit cafe porch with a warm wood table and delicious espresso cups">
+                <div class="hero-badge">
+                    <p>☕️ Serving cozy neighborly vibes & fresh roasts daily.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Welcome / Intro Section -->
+    <section class="intro">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">What We're About</span>
+                <h2 class="section-title">The local living room you've been searching for</h2>
+                <p>We started Fernway with a simple idea: that a café should feel like your best friend's front porch. A place where conversations flow, time slows down, and everyone is welcome.</p>
+            </div>
+            
+            <div class="intro-grid">
+                <div class="intro-card">
+                    <div class="intro-icon">🌱</div>
+                    <h3>Small-Batch Coffee</h3>
+                    <p>We work directly with sustainable family farms to source exceptional beans, roasting them right down the street in microlots.</p>
+                </div>
+                <div class="intro-card">
+                    <div class="intro-icon">🏡</div>
+                    <h3>Porch Energy</h3>
+                    <p>With plenty of outdoor seating, comfortable rocking chairs, and warm smiles, we are built for lingering mornings.</p>
+                </div>
+                <div class="intro-card">
+                    <div class="intro-icon">🥐</div>
+                    <h3>Daily Pastries</h3>
+                    <p>Baked locally and delivered every single morning before dawn. Perfect partners for your morning pour-over.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Highlights Section -->
+    <section class="highlights">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">From the Bar</span>
+                <h2 class="section-title">Our Neighborhood Favorites</h2>
+                <p>We take pride in every single pour. Here are three of our community's most beloved menu items, crafted with care by our baristas.</p>
+            </div>
+
+            <div class="menu-grid">
+                <!-- Highlight 1 -->
+                <div class="menu-card">
+                    <div class="menu-img-container">
+                        <img src="https://loremflickr.com/1200/800/latte%2Clavender?random=71495" alt="A creamy latte topped with intricate leaf art and dried lavender petals">
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-meta">
+                            <h3 class="menu-title">Honey Lavender Latte</h3>
+                            <span class="menu-price">$5.50</span>
+                        </div>
+                        <p class="menu-desc">Espresso combined with freshly steamed milk, organic local honey, and culinary lavender buds.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight 2 -->
+                <div class="menu-card">
+                    <div class="menu-img-container">
+                        <img src="https://loremflickr.com/1200/800/pastry%2Cscone?random=86690" alt="A golden-brown maple pecan scone resting on a ceramic plate">
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-meta">
+                            <h3 class="menu-title">Maple Pecan Scone</h3>
+                            <span class="menu-price">$4.00</span>
+                        </div>
+                        <p class="menu-desc">Flaky, buttery scone baked fresh daily, generously glazed with pure maple syrup and toasted pecans.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight 3 -->
+                <div class="menu-card">
+                    <div class="menu-img-container">
+                        <img src="https://loremflickr.com/1200/800/avocado%2Ctoast?random=5314" alt="Slices of avocado toast on sourdough topped with seeds and microgreens">
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-meta">
+                            <h3 class="menu-title">Avocado Toast</h3>
+                            <span class="menu-price">$9.50</span>
+                        </div>
+                        <p class="menu-desc">Toasted rustic sourdough topped with smashed organic avocado, heirloom tomatoes, and sea salt flakes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlights-footer">
+                <a href="menu.html" class="btn">View the Full Menu</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="container testimonial-container">
+            <p class="testimonial-text">"The honey lavender latte is worth crossing town for. This is our new Saturday ritual."</p>
+            <p class="testimonial-author">— Priya N.</p>
+        </div>
+    </section>
+
+    <!-- Hours & Quick Info Section -->
+    <section class="glance">
+        <div class="container glance-grid">
+            <div class="glance-info">
+                <span class="section-subtitle">Drop By Sometime</span>
+                <h2>Find your spot in the sun</h2>
+                <p class="glance-p">We are located on the quiet corner of Oak &amp; Fernwood. Stop in for your morning rush, or stay late with a good book on our wrapping front deck.</p>
+                
+                <div class="glance-details">
+                    <div class="glance-item">
+                        <div class="glance-icon">⏰</div>
+                        <div>
+                            <h4>Hours of Operation</h4>
+                            <p>Mon–Fri: 7am–3pm<br>Sat–Sun: 8am–2pm</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glance-item">
+                        <div class="glance-icon">📍</div>
+                        <div>
+                            <h4>Our Little Porch</h4>
+                            <p>104 Fernway Lane, East Nashville</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="contact.html" class="btn">Get Directions</a>
+            </div>
+            <div class="glance-image">
+                <img src="https://loremflickr.com/1200/800/cafe%2Ccozy%2Cwindow?random=41581" alt="A cozy nook inside the coffee shop showing wooden chairs and plant decor next to a large window">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Fernway Coffee</h3>
+                    <p>Crafting delicious, small-batch coffee with comfortable front porch hospitality. Your daily local retreat.</p>
+                    <div class="footer-socials">
+                        <a href="#" class="social-link" aria-label="Instagram">📸</a>
+                        <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                        <a href="#" class="social-link" aria-label="Yelp">⭐</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="footer-links-title">Quick Links</h4>
+                    <ul class="footer-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="menu.html">Our Menu</a></li>
+                        <li><a href="about.html">Our Story</a></li>
+                        <li><a href="contact.html">Say Hello</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-links-title">Contact Us</h4>
+                    <div class="footer-contact-info">
+                        <p>104 Fernway Lane<br>East Nashville</p>
+                        <p>Email: <a href="mailto:hello@fernwaycoffee.example">hello@fernwaycoffee.example</a></p>
+                        <p>Call: (555) 321-COFE</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 Fernway Coffee Co. All rights reserved.</p>
+                <p>Designed with warmth &amp; fresh caffeine.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple Mobile Menu Script -->
+    <script>
+        function toggleMobileMenu() {
+            var overlay = document.getElementById('mobile-overlay');
+            var btn = document.querySelector('.mobile-menu-btn');
+            if (overlay.style.display === 'none' || overlay.style.display === '') {
+                overlay.style.display = 'block';
+                btn.classList.add('active');
+            } else {
+                overlay.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

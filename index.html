@@ -526,11 +526,18 @@
 
 <div class="showcase">
   <div class="showcase-header">
+    <h2>Samples — what MigaBuilder can make</h2>
+  </div>
+  <div class="showcase-grid" id="sampleGrid"></div>
+</div>
+
+<div class="showcase">
+  <div class="showcase-header">
     <h2>See what's been built</h2>
     <a href="#" id="showcaseSubmitLink" style="color: var(--line-cyan);">Submit your site →</a>
   </div>
   <div class="showcase-grid" id="showcaseGrid"></div>
-  <p class="showcase-empty" id="showcaseEmpty" style="display:none;">No examples added yet — this list is edited in the code (see SHOWCASE_SITES near the top of the script).</p>
+  <p class="showcase-empty" id="showcaseEmpty" style="display:none;">No customer sites submitted yet — email yours in using the link above, or see SHOWCASE_SITES near the top of the script.</p>
 </div>
 
 <main>
@@ -875,6 +882,23 @@
     </div>
 
     <div class="field" style="margin-top:14px;">
+      <details style="color: var(--paper); font-size: 13.5px;">
+        <summary style="cursor:pointer; color: var(--paper); font-weight:600; font-size:14px;">Want to use your own domain instead of github.io? (click for steps)</summary>
+        <ol style="margin:10px 0 0; padding-left:20px; line-height:1.7; color: rgba(237,234,224,0.75);">
+          <li><strong>Buy a domain</strong> from any registrar — Namecheap, Porkbun, Cloudflare Registrar, etc. (typically $9–15/year for a .com).</li>
+          <li><strong>Point its DNS at GitHub Pages.</strong> In your registrar's DNS settings, add four <code>A</code> records for the root domain (e.g. <code>yourbusiness.com</code>), all pointing to:
+            <br><code>185.199.108.153</code>, <code>185.199.109.153</code>, <code>185.199.110.153</code>, <code>185.199.111.153</code>
+            <br>Optionally also add a <code>CNAME</code> record for <code>www</code> pointing to <code>your-username.github.io</code>.
+          </li>
+          <li><strong>Add the domain in GitHub.</strong> In your published repo, go to Settings → Pages → Custom domain, type your domain, and click Save. GitHub adds a <code>CNAME</code> file to the repo automatically.</li>
+          <li><strong>Wait for the DNS check.</strong> GitHub verifies the DNS records before it can issue a certificate — this is usually quick but can occasionally take a few hours. If it seems stuck for a long time, click Remove, wait a few seconds, then re-enter the domain and Save again to force a fresh check.</li>
+          <li><strong>Turn on Enforce HTTPS.</strong> Once the check succeeds (a green "DNS check successful"), tick the "Enforce HTTPS" box in that same settings page — this makes sure visitors always get the secure, padlocked version of your site.</li>
+        </ol>
+        <p class="hint" style="color: rgba(237,234,224,0.55); margin-top:10px;">DNS changes can take anywhere from a few minutes to 24 hours to fully propagate worldwide — if your domain doesn't work immediately, that's normal, just give it time.</p>
+      </details>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
       <label style="color: var(--paper);">Instant hosting, no domain needed (optional)</label>
       <button type="button" class="draft-btn" id="downloadZipBtn" disabled>⬇ Download all pages as .zip</button>
       <p class="hint" style="color: rgba(237,234,224,0.55);">Unzip it, then drag the folder onto <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> or upload it in the <a href="https://developers.cloudflare.com/pages/get-started/direct-upload/" target="_blank" rel="noopener">Cloudflare Pages dashboard</a> — both give you a live public link in seconds, free, no domain purchase or GitHub account required.</p>
@@ -915,12 +939,35 @@
   const EMAIL_AFFILIATE_URL = 'https://workspace.google.com/';
   document.getElementById('emailAffiliateLink').href = EMAIL_AFFILIATE_URL;
 
-  // ---------- showcase: sites built with MigaBuilder ----------
+  // ---------- samples: official demos built by MigaBuilder itself ----------
+  // These show visitors what the tool can produce. Keep this separate from
+  // SHOWCASE_SITES below, which is for real customers' actual sites.
+  const SAMPLE_SITES = [
+    { name: 'Ember & Oak — candle shop', desc: 'Multi-page store with products, testimonials, and a brand story', url: 'https://migabuilder.com/examples/demo-shop/index.html' },
+    { name: 'Greenline Grounds — landscaping', desc: 'Local service business with a quote-request flow', url: 'https://migabuilder.com/examples/sample-landscaping/index.html' },
+    { name: 'Fernway Coffee — café', desc: 'Menu-driven site with hours and location', url: 'https://migabuilder.com/examples/sample-cafe/index.html' },
+    { name: 'Ninja Showdown — Game Forge sample', desc: 'A full 2-player-style duel game generated from one sentence', url: 'https://migabuilder.com/examples/sample-game/index.html' },
+  ];
+
+  (function renderSamples() {
+    const grid = document.getElementById('sampleGrid');
+    SAMPLE_SITES.forEach(site => {
+      const a = document.createElement('a');
+      a.className = 'showcase-card';
+      a.href = site.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.innerHTML = '<strong>' + site.name + '</strong><span>' + site.desc + '</span>';
+      grid.appendChild(a);
+    });
+  })();
+
+  // ---------- showcase: real customer sites ----------
   // Add an entry here each time a customer's site goes live, so new
   // visitors can see real examples. Edit this list directly — there's no
   // database, this array IS the list.
   const SHOWCASE_SITES = [
-    { name: 'Ember & Oak (demo candle shop)', url: 'https://migabuilder.com/examples/demo-shop/index.html' },
+    // { name: 'Example Plumbing Co.', url: 'https://example-plumbing.com' },
   ];
   const SHOWCASE_SUBMIT_EMAIL = 'you@migabuilder.com'; // replace with your real email
 
