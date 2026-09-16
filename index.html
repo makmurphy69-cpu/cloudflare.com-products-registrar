@@ -727,8 +727,37 @@
       <button type="button" class="add-row-btn" id="addInvoiceRowBtn">+ Add line item</button>
     </div>
     <div class="field">
-      <button type="button" class="add-row-btn" id="generateInvoiceBtn">Generate &amp; download</button>
-      <p class="hint">Instant, no AI call — builds a clean printable document from what you've entered. Uses your logo if you generated a brand kit above.</p>
+      <button type="button" class="add-row-btn" id="generateInvoiceBtn">Download as HTML</button>
+      <button type="button" class="add-row-btn" id="printInvoiceBtn" style="margin-top:8px;">🖨️ Print now</button>
+      <p class="hint">Instant, no AI call — builds a clean printable document from what you've entered. Uses your logo if you generated a brand kit above. "Print now" opens your browser's print dialog directly — good for a one-off copy without saving a file.</p>
+    </div>
+
+    <div class="section-title">Contracts (optional)</div>
+
+    <div class="field">
+      <label for="contractType">Contract type</label>
+      <select id="contractType">
+        <option value="Service Agreement">Service agreement</option>
+        <option value="NDA">Non-disclosure agreement (NDA)</option>
+        <option value="Independent Contractor Agreement">Independent contractor agreement</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="contractOtherParty">Other party's name</label>
+      <input type="text" id="contractOtherParty" placeholder="Client or contractor name">
+    </div>
+    <div class="field">
+      <label for="contractScope">Scope of work / purpose</label>
+      <textarea id="contractScope" placeholder="e.g. Weekly lawn mowing and hedge trimming at 123 Main St, April–October" style="min-height:70px;"></textarea>
+    </div>
+    <div class="field">
+      <label for="contractTerms">Payment &amp; terms</label>
+      <textarea id="contractTerms" placeholder="e.g. $150/visit, due within 7 days of service. Either party may cancel with 14 days' written notice." style="min-height:70px;"></textarea>
+    </div>
+    <div class="field">
+      <button type="button" class="add-row-btn" id="generateContractBtn">Download as HTML</button>
+      <button type="button" class="add-row-btn" id="printContractBtn" style="margin-top:8px;">🖨️ Print now</button>
+      <p class="hint">Instant, no AI call — a plain-language template with signature lines for both parties. Not a substitute for a lawyer on anything high-stakes, but solid for straightforward local business agreements.</p>
     </div>
 
     <div class="section-title">PowerPoint creator (optional)</div>
@@ -951,9 +980,16 @@
   const invoiceRowsEl = document.getElementById('invoiceRows');
   const addInvoiceRowBtn = document.getElementById('addInvoiceRowBtn');
   const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
+  const printInvoiceBtn = document.getElementById('printInvoiceBtn');
   const invoiceClient = document.getElementById('invoiceClient');
   const invoiceType = document.getElementById('invoiceType');
   const bizNameInput = document.getElementById('bizName');
+  const contractType = document.getElementById('contractType');
+  const contractOtherParty = document.getElementById('contractOtherParty');
+  const contractScope = document.getElementById('contractScope');
+  const contractTerms = document.getElementById('contractTerms');
+  const generateContractBtn = document.getElementById('generateContractBtn');
+  const printContractBtn = document.getElementById('printContractBtn');
   const pptxBrief = document.getElementById('pptxBrief');
   const generatePptxBtn = document.getElementById('generatePptxBtn');
   const gameThemeSelect = document.getElementById('gameTheme');
@@ -1341,14 +1377,24 @@
     return isNaN(n) ? 0 : n;
   }
 
-  function generateInvoice() {
-    clearError();
+  function printHtml(html) {
+    const win = window.open('', '_blank');
+    if (!win) { showError('Your browser blocked the print window — allow pop-ups for this site and try again.'); return; }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    win.addEventListener('load', () => win.print());
+    setTimeout(() => { try { win.print(); } catch (e) {} }, 400);
+  }
+
+  function buildInvoiceHtml() {
     const items = Array.from(invoiceRowsEl.querySelectorAll('.product-row')).map(row => ({
       desc: row.querySelector('.i-desc').value.trim(),
       amount: row.querySelector('.i-amount').value.trim()
     })).filter(i => i.desc);
 
-    if (!items.length) { showError('Add at least one line item.'); return; }
+    if (!items.length) { showError('Add at least one line item.'); return null; }
 
     const bizName = bizNameInput.value.trim() || 'Your Business';
     const docType = invoiceType.value;
@@ -1377,9 +1423,79 @@
       '<div class="total">Total: ' + (total ? '$' + total.toFixed(2) : 'See items above') + '</div>' +
       '</body></html>';
 
-    downloadTextAsFile(html, docType.toLowerCase() + '-' + docNumber + '.html', 'text/html');
+    return { html: html, filename: docType.toLowerCase() + '-' + docNumber + '.html' };
   }
-  generateInvoiceBtn.addEventListener('click', generateInvoice);
+  generateInvoiceBtn.addEventListener('click', () => {
+    clearError();
+    const result = buildInvoiceHtml();
+    if (result) downloadTextAsFile(result.html, result.filename, 'text/html');
+  });
+  printInvoiceBtn.addEventListener('click', () => {
+    clearError();
+    const result = buildInvoiceHtml();
+    if (result) printHtml(result.html);
+  });
+
+  // ---------- contracts ----------
+  function buildContractHtml() {
+    const type = contractType.value;
+    const bizName = bizNameInput.value.trim() || 'Your Business';
+    const other = contractOtherParty.value.trim();
+    const scope = contractScope.value.trim();
+    const terms = contractTerms.value.trim();
+
+    if (!other) { showError('Add the other party\'s name.'); return null; }
+    if (!scope) { showError('Describe the scope of work or purpose.'); return null; }
+
+    const date = new Date().toLocaleDateString();
+    const docNumber = 'C-' + Date.now().toString().slice(-6);
+    const isNda = type === 'NDA';
+
+    const bodyParagraphs = isNda
+      ? [
+          'This Non-Disclosure Agreement ("Agreement") is entered into on ' + date + ' between ' + bizName + ' ("Disclosing Party") and ' + other + ' ("Receiving Party").',
+          '<strong>Purpose.</strong> ' + scope,
+          '<strong>Confidentiality.</strong> The Receiving Party agrees to keep confidential all non-public information shared in connection with the above purpose, and not to disclose it to third parties without prior written consent.',
+          terms ? '<strong>Additional terms.</strong> ' + terms : '',
+          '<strong>Term.</strong> This Agreement remains in effect until the information no longer qualifies as confidential, or either party terminates it in writing.'
+        ]
+      : [
+          'This ' + type + ' ("Agreement") is entered into on ' + date + ' between ' + bizName + ' and ' + other + '.',
+          '<strong>Scope.</strong> ' + scope,
+          terms ? '<strong>Payment &amp; terms.</strong> ' + terms : '',
+          '<strong>Independent relationship.</strong> Nothing in this Agreement creates an employment, partnership, or joint-venture relationship between the parties.',
+          '<strong>Termination.</strong> Either party may terminate this Agreement as described in the terms above, or with 14 days\' written notice if no other period is specified.'
+        ];
+    const bodyHtml = bodyParagraphs.filter(Boolean).map(p => '<p>' + p + '</p>').join('');
+
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + type + ' ' + docNumber + '</title>' +
+      '<style>body{font-family:Arial,sans-serif;color:#16202B;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.6;}' +
+      'h1{font-size:20px;margin:0 0 4px;} .meta{color:#666;font-size:13px;margin-bottom:24px;}' +
+      'p{font-size:14px;margin:0 0 14px;}' +
+      '.sign-block{display:flex;gap:40px;margin-top:48px;}' +
+      '.sign{flex:1;} .sign-line{border-top:1px solid #16202B;margin-top:48px;padding-top:6px;font-size:12.5px;color:#666;}' +
+      '@media print{body{margin:0;}}</style></head><body>' +
+      '<h1>' + type + '</h1>' +
+      '<div class="meta">#' + docNumber + ' · ' + date + '</div>' +
+      bodyHtml +
+      '<div class="sign-block">' +
+      '<div class="sign"><div class="sign-line">' + bizName + ' — Signature &amp; date</div></div>' +
+      '<div class="sign"><div class="sign-line">' + other + ' — Signature &amp; date</div></div>' +
+      '</div>' +
+      '</body></html>';
+
+    return { html: html, filename: type.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + docNumber + '.html' };
+  }
+  generateContractBtn.addEventListener('click', () => {
+    clearError();
+    const result = buildContractHtml();
+    if (result) downloadTextAsFile(result.html, result.filename, 'text/html');
+  });
+  printContractBtn.addEventListener('click', () => {
+    clearError();
+    const result = buildContractHtml();
+    if (result) printHtml(result.html);
+  });
 
   // ---------- powerpoint creator ----------
   async function generatePptx() {
