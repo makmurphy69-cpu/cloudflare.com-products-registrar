@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Video Forge — turn your drawings into a video, ready for YouTube</title>
+<meta name="description" content="Upload your own drawings, add pacing, pan/zoom, music and a title card, then render a real video file right in your browser — download it or upload it straight to YouTube.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(320px, 400px) 1fr;
+    gap: 24px;
+    padding: 28px clamp(20px, 4vw, 48px) 56px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius);
+    padding: 22px 22px 26px; max-height: calc(100vh - 40px); overflow-y: auto;
+    position: sticky; top: 20px;
+  }
+  @media (max-width: 900px) { .panel { position: static; max-height: none; } }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="password"], input[type="text"], input[type="number"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 9px 10px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-option { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; cursor: pointer; }
+  .radio-option input { margin-top: 3px; flex: none; width: auto; }
+  .radio-option .opt-label { font-weight: 600; }
+  .radio-option .opt-sub { display: block; font-weight: 400; font-size: 12px; color: rgba(22, 32, 43, 0.6); }
+
+  .check-row { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; cursor: pointer; }
+  .check-row input { margin-top: 3px; flex: none; width: auto; }
+  .check-row .opt-sub { display: block; font-weight: 400; font-size: 12px; color: rgba(22, 32, 43, 0.6); }
+
+  .upload-btn {
+    display: inline-block; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 10px 12px; font-size: 13px; cursor: pointer; text-align: center; width: 100%;
+  }
+  .upload-btn:hover { border-color: rgba(22, 32, 43, 0.55); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 12px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .draft-btn.danger { background: var(--error); color: #fff; }
+
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .draft-btn { flex: 1; }
+
+  .error-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+  .status-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 13px; color: #244731; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+
+  /* thumbnails / frame list */
+  .frames { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .frame-row {
+    display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: center;
+    background: #fff; border: 1px solid rgba(22, 32, 43, 0.18); border-radius: var(--radius); padding: 7px;
+  }
+  .frame-row img { width: 46px; height: 46px; object-fit: cover; border-radius: 2px; }
+  .frame-meta { display: flex; flex-direction: column; gap: 4px; }
+  .frame-meta .frame-name { font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+  .frame-dur { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: rgba(22,32,43,0.6); }
+  .frame-dur input { width: 56px; padding: 4px 6px; font-size: 12px; }
+  .frame-actions { display: flex; flex-direction: column; gap: 3px; }
+  .frame-actions button {
+    background: transparent; border: none; cursor: pointer; font-size: 14px; padding: 2px 4px; color: var(--ink);
+  }
+  .frame-actions button.remove { color: var(--error); }
+  .frames-empty { font-size: 12.5px; color: rgba(22,32,43,0.55); padding: 10px 0; }
+
+  /* ---------- Preview / stage ---------- */
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .stage-wrap { background: #000; border-radius: 2px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  #stageCanvas, #resultVideo { width: 100%; height: auto; display: block; max-height: 62vh; }
+  .sheet-empty { margin: auto; text-align: center; color: rgba(237,234,224,0.45); font-size: 14px; max-width: 340px; padding: 40px 20px; }
+  .sheet-empty strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; color: rgba(237,234,224,0.75); margin-bottom: 6px; }
+
+  .progress-wrap { margin-top: 14px; display: none; }
+  .progress-wrap.show { display: block; }
+  .progress-label { font-size: 12.5px; color: rgba(237,234,224,0.7); margin-bottom: 6px; display:flex; justify-content:space-between; }
+  .progress-track { height: 8px; border-radius: 4px; background: rgba(237,234,224,0.15); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--line-cyan); transition: width 0.1s linear; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+
+  .yt-panel { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-cyan-dim); }
+  .yt-panel h2 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin: 0 0 10px; color: rgba(237,234,224,0.9); }
+  .yt-field { margin-bottom: 12px; }
+  .yt-field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; color: rgba(237,234,224,0.85); }
+  .yt-field input, .yt-field textarea, .yt-field select {
+    width: 100%; font-size: 13.5px; padding: 8px 10px; border-radius: var(--radius);
+    border: 1px solid var(--line-cyan-dim); background: var(--navy); color: var(--paper);
+  }
+  .yt-hint { font-size: 12px; color: rgba(237,234,224,0.55); line-height: 1.5; margin-top: 4px; }
+  .yt-hint a { color: var(--line-cyan); }
+  details.yt-setup summary { cursor: pointer; color: var(--paper); font-weight: 600; font-size: 13.5px; margin-bottom: 8px; }
+  details.yt-setup ol { margin: 10px 0 0; padding-left: 20px; line-height: 1.7; color: rgba(237,234,224,0.75); font-size: 13px; }
+  details.yt-setup code { background: rgba(237,234,224,0.1); padding: 1px 5px; border-radius: 3px; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Video Forge</h1>
+    <p>Upload your drawings, add pacing, music and a title card, then render a real video — right in your browser — and upload it straight to YouTube.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+
+    <div class="section-title">Your drawings</div>
+    <div class="field">
+      <label class="upload-btn" for="drawingInput">+ Add drawings (photos or scans, in order)</label>
+      <input type="file" id="drawingInput" accept="image/*" multiple style="display:none;">
+      <p class="hint">Add as many as you like. Reorder with the arrows, set how long each one stays on screen, or remove one.</p>
+    </div>
+    <div class="frames" id="frames"></div>
+    <p class="frames-empty" id="framesEmpty">No drawings added yet.</p>
+
+    <div class="section-title">Motion &amp; style</div>
+    <div class="field">
+      <label for="modeSelect">Animation style</label>
+      <select id="modeSelect">
+        <option value="kenburns" selected>Slow pan &amp; zoom (Ken Burns)</option>
+        <option value="cuts">Simple cuts (no motion)</option>
+        <option value="flipbook">Flipbook / stop-motion (fast frames)</option>
+      </select>
+      <p class="hint" id="modeHint">Each drawing slowly pans and zooms for a cinematic feel.</p>
+    </div>
+    <div class="field" id="transitionField">
+      <label for="transitionSelect">Transition between drawings</label>
+      <select id="transitionSelect">
+        <option value="fade" selected>Crossfade</option>
+        <option value="slide">Slide</option>
+        <option value="none">Hard cut</option>
+      </select>
+    </div>
+    <div class="field" id="fpsField" style="display:none;">
+      <label for="fpsInput">Flipbook speed (frames per second)</label>
+      <input type="number" id="fpsInput" value="10" min="2" max="30" step="1">
+    </div>
+    <div class="field" id="loopField" style="display:none;">
+      <label for="loopInput">Loop the sequence this many times</label>
+      <input type="number" id="loopInput" value="3" min="1" max="20" step="1">
+    </div>
+    <div class="field">
+      <label for="aspectSelect">Aspect ratio</label>
+      <select id="aspectSelect">
+        <option value="1280x720" selected>16:9 landscape — standard YouTube</option>
+        <option value="720x1280">9:16 vertical — YouTube Shorts / Reels</option>
+        <option value="1080x1080">1:1 square</option>
+      </select>
+    </div>
+
+    <div class="section-title">Title card (optional)</div>
+    <div class="field">
+      <label class="check-row"><input type="checkbox" id="titleEnabled"><span>Show a title screen first</span></label>
+    </div>
+    <div id="titleFields" style="display:none;">
+      <div class="field"><label for="titleText">Title</label><input type="text" id="titleText" placeholder="e.g. My Dragon Adventure"></div>
+      <div class="field"><label for="titleSubtext">Subtitle (optional)</label><input type="text" id="titleSubtext" placeholder="e.g. Drawn by Alex, age 8"></div>
+      <div class="field"><label for="titleDuration">Seconds on screen</label><input type="number" id="titleDuration" value="3" min="1" max="10" step="0.5"></div>
+    </div>
+
+    <div class="section-title">Music &amp; narration (optional)</div>
+    <div class="field">
+      <label class="upload-btn" for="musicInput">+ Add background music</label>
+      <input type="file" id="musicInput" accept="audio/*" style="display:none;">
+      <div class="hint" id="musicFileName"></div>
+    </div>
+    <div class="field" id="musicVolumeField" style="display:none;">
+      <label for="musicVolume">Music volume</label>
+      <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.5">
+    </div>
+    <div class="field">
+      <label class="check-row"><input type="checkbox" id="loopMusic" checked><span>Loop music if it's shorter than the video</span></label>
+    </div>
+    <div class="field">
+      <label>Record a spoken narration</label>
+      <div class="btn-row">
+        <button type="button" class="draft-btn secondary" id="recordBtn">🎙️ Record</button>
+        <button type="button" class="draft-btn secondary" id="removeNarrationBtn" style="display:none;">✕ Remove</button>
+      </div>
+      <div class="hint" id="narrationStatus"></div>
+    </div>
+
+    <button type="button" class="draft-btn" id="renderBtn" style="margin-top:6px;">🎬 Render video</button>
+    <div class="error-box" id="errorBox"></div>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>VIDEO FORGE — LIVE PREVIEW</span>
+      <span id="titleBlockRight">NOT STARTED</span>
+    </div>
+
+    <div class="stage-wrap" id="stageWrap">
+      <div class="sheet-empty" id="stageEmpty">
+        <strong>Nothing to preview yet.</strong>
+        Add at least one drawing on the left, then hit Play preview or Render video.
+      </div>
+      <canvas id="stageCanvas" width="1280" height="720" style="display:none;"></canvas>
+      <video id="resultVideo" controls style="display:none;"></video>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label"><span id="progressLabel">Rendering…</span><span id="progressPct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="table-actions">
+      <button type="button" id="playPreviewBtn">▶ Play preview</button>
+      <button type="button" id="stopPreviewBtn" disabled>■ Stop preview</button>
+      <button type="button" id="cancelRenderBtn" style="display:none;">✕ Cancel render</button>
+      <button type="button" id="downloadVideoBtn" disabled class="primary">⬇ Download video (.webm)</button>
+    </div>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Rendering happens in real time in your browser (a 30-second video takes about 30 seconds to render) — nothing is uploaded anywhere unless you use the YouTube button below. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited.</p>
+
+    <div class="yt-panel">
+      <h2>Upload straight to YouTube</h2>
+      <div class="yt-field">
+        <label for="ytClientId">Your Google OAuth Client ID</label>
+        <input type="text" id="ytClientId" placeholder="xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com">
+        <p class="yt-hint">This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Video Forge only sends it to Google, never anywhere else.</p>
+      </div>
+      <button type="button" class="draft-btn secondary" id="connectYtBtn">Connect Google account</button>
+      <div class="status-box" id="ytConnectedBox">✓ Connected to your Google account.</div>
+
+      <div id="ytUploadFields" style="display:none; margin-top:14px;">
+        <div class="yt-field"><label for="ytTitle">Video title</label><input type="text" id="ytTitle" placeholder="My Dragon Adventure"></div>
+        <div class="yt-field"><label for="ytDesc">Description</label><textarea id="ytDesc" placeholder="Made with Video Forge from my own drawings."></textarea></div>
+        <div class="yt-field"><label for="ytTags">Tags (comma separated)</label><input type="text" id="ytTags" placeholder="drawing, animation, kids art"></div>
+        <div class="row-2" style="margin-bottom:12px;">
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytPrivacy">Privacy</label>
+            <select id="ytPrivacy">
+              <option value="private" selected>Private</option>
+              <option value="unlisted">Unlisted</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytCategory">Category</label>
+            <select id="ytCategory">
+              <option value="1">Film &amp; Animation</option>
+              <option value="24">Entertainment</option>
+              <option value="22" selected>People &amp; Blogs</option>
+              <option value="27">Education</option>
+              <option value="26">Howto &amp; Style</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="draft-btn" id="uploadYtBtn" disabled>Upload to YouTube</button>
+        <p class="yt-hint">Render a video first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.</p>
+      </div>
+      <div class="status-box" id="ytResultBox"></div>
+      <div class="error-box" id="ytErrorBox"></div>
+
+      <details class="yt-setup" style="margin-top:16px;">
+        <summary>One-time setup: get a Google OAuth Client ID (click to expand)</summary>
+        <ol>
+          <li>Go to the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, create (or pick) a project, and enable the <strong>YouTube Data API v3</strong>.</li>
+          <li>Under <strong>APIs &amp; Services → OAuth consent screen</strong>, set it up as "External", add the <code>youtube.upload</code> scope, and add your own Google account under "Test users" (this avoids needing Google's full app-verification review, since only you will use it).</li>
+          <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an <strong>OAuth client ID</strong> of type "Web application". Add the exact URL this page is running at (e.g. <code>https://your-username.github.io</code>) under "Authorized JavaScript origins".</li>
+          <li>Copy the generated Client ID (it ends in <code>.apps.googleusercontent.com</code>) into the field above.</li>
+          <li>Click "Connect Google account" and approve access — Google will warn that the app is unverified, which is expected for a personal project; click through as the test user you added.</li>
+        </ol>
+        <p class="yt-hint" style="margin-top:10px;">If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your drawings, music and rendered video stay in your browser — nothing is uploaded unless you use the YouTube button, and that goes straight from your browser to your own Google account.</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- element refs ----------
+  const drawingInput = document.getElementById('drawingInput');
+  const framesEl = document.getElementById('frames');
+  const framesEmpty = document.getElementById('framesEmpty');
+  const modeSelect = document.getElementById('modeSelect');
+  const modeHint = document.getElementById('modeHint');
+  const transitionField = document.getElementById('transitionField');
+  const transitionSelect = document.getElementById('transitionSelect');
+  const fpsField = document.getElementById('fpsField');
+  const fpsInput = document.getElementById('fpsInput');
+  const loopField = document.getElementById('loopField');
+  const loopInput = document.getElementById('loopInput');
+  const aspectSelect = document.getElementById('aspectSelect');
+  const titleEnabled = document.getElementById('titleEnabled');
+  const titleFields = document.getElementById('titleFields');
+  const titleText = document.getElementById('titleText');
+  const titleSubtext = document.getElementById('titleSubtext');
+  const titleDuration = document.getElementById('titleDuration');
+  const musicInput = document.getElementById('musicInput');
+  const musicFileName = document.getElementById('musicFileName');
+  const musicVolumeField = document.getElementById('musicVolumeField');
+  const musicVolume = document.getElementById('musicVolume');
+  const loopMusic = document.getElementById('loopMusic');
+  const recordBtn = document.getElementById('recordBtn');
+  const removeNarrationBtn = document.getElementById('removeNarrationBtn');
+  const narrationStatus = document.getElementById('narrationStatus');
+  const renderBtn = document.getElementById('renderBtn');
+  const errorBox = document.getElementById('errorBox');
+  const titleBlockRight = document.getElementById('titleBlockRight');
+  const stageWrap = document.getElementById('stageWrap');
+  const stageEmpty = document.getElementById('stageEmpty');
+  const stageCanvas = document.getElementById('stageCanvas');
+  const resultVideo = document.getElementById('resultVideo');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressPct = document.getElementById('progressPct');
+  const progressFill = document.getElementById('progressFill');
+  const playPreviewBtn = document.getElementById('playPreviewBtn');
+  const stopPreviewBtn = document.getElementById('stopPreviewBtn');
+  const cancelRenderBtn = document.getElementById('cancelRenderBtn');
+  const downloadVideoBtn = document.getElementById('downloadVideoBtn');
+
+  const ytClientId = document.getElementById('ytClientId');
+  const connectYtBtn = document.getElementById('connectYtBtn');
+  const ytConnectedBox = document.getElementById('ytConnectedBox');
+  const ytUploadFields = document.getElementById('ytUploadFields');
+  const ytTitle = document.getElementById('ytTitle');
+  const ytDesc = document.getElementById('ytDesc');
+  const ytTags = document.getElementById('ytTags');
+  const ytPrivacy = document.getElementById('ytPrivacy');
+  const ytCategory = document.getElementById('ytCategory');
+  const uploadYtBtn = document.getElementById('uploadYtBtn');
+  const ytResultBox = document.getElementById('ytResultBox');
+  const ytErrorBox = document.getElementById('ytErrorBox');
+
+  const ctx = stageCanvas.getContext('2d');
+
+  // ---------- state ----------
+  let frames = []; // {id, img, name, duration}
+  let frameIdCounter = 0;
+  let musicBuffer = null; // decoded AudioBuffer
+  let narrationBuffer = null;
+  let narrationBlob = null;
+  let mediaRecorderMic = null;
+  let micChunks = [];
+  let isRecordingNarration = false;
+  let previewRaf = null;
+  let previewStart = null;
+  let previewAudioCtx = null;
+  let renderState = null; // active render session
+  let renderedVideoBlob = null;
+  let accessToken = null;
+  let tokenClient = null;
+
+  const KENBURNS_PATTERNS = [
+    { zFrom: 1.00, zTo: 1.18, xFrom: -0.05, yFrom: -0.03, xTo: 0.05, yTo: 0.03 },
+    { zFrom: 1.18, zTo: 1.00, xFrom: 0.05, yFrom: 0.03, xTo: -0.05, yTo: -0.03 },
+    { zFrom: 1.00, zTo: 1.15, xFrom: 0.05, yFrom: -0.04, xTo: -0.05, yTo: 0.04 },
+    { zFrom: 1.15, zTo: 1.00, xFrom: -0.05, yFrom: 0.04, xTo: 0.05, yTo: -0.04 }
+  ];
+  const TRANSITION_DUR = 0.6; // seconds
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function currentSize() {
+    const [w, h] = aspectSelect.value.split('x').map(Number);
+    return { w, h };
+  }
+
+  // ---------- frame list ----------
+  drawingInput.addEventListener('change', function (e) {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          frames.push({ id: ++frameIdCounter, img, dataUrl: reader.result, name: file.name, duration: 3 });
+          renderFrameList();
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    drawingInput.value = '';
+  });
+
+  function renderFrameList() {
+    framesEl.innerHTML = '';
+    framesEmpty.style.display = frames.length ? 'none' : 'block';
+    frames.forEach((f, i) => {
+      const row = document.createElement('div');
+      row.className = 'frame-row';
+      row.innerHTML =
+        '<img src="' + f.dataUrl + '" alt="">' +
+        '<div class="frame-meta">' +
+          '<span class="frame-name">' + f.name.replace(/</g, '&lt;') + '</span>' +
+          '<span class="frame-dur">Seconds: <input type="number" min="0.3" max="20" step="0.1" value="' + f.duration + '" data-id="' + f.id + '" class="dur-input"></span>' +
+        '</div>' +
+        '<div class="frame-actions">' +
+          '<button type="button" data-up="' + f.id + '" title="Move up">▲</button>' +
+          '<button type="button" data-down="' + f.id + '" title="Move down">▼</button>' +
+          '<button type="button" class="remove" data-remove="' + f.id + '" title="Remove">✕</button>' +
+        '</div>';
+      framesEl.appendChild(row);
+    });
+    framesEl.querySelectorAll('.dur-input').forEach(inp => {
+      inp.addEventListener('change', () => {
+        const f = frames.find(x => x.id === Number(inp.dataset.id));
+        if (f) f.duration = Math.max(0.3, parseFloat(inp.value) || 3);
+      });
+    });
+    framesEl.querySelectorAll('[data-up]').forEach(btn => btn.addEventListener('click', () => moveFrame(Number(btn.dataset.up), -1)));
+    framesEl.querySelectorAll('[data-down]').forEach(btn => btn.addEventListener('click', () => moveFrame(Number(btn.dataset.down), 1)));
+    framesEl.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => {
+      frames = frames.filter(x => x.id !== Number(btn.dataset.remove));
+      renderFrameList();
+    }));
+  }
+  function moveFrame(id, dir) {
+    const i = frames.findIndex(f => f.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= frames.length) return;
+    const tmp = frames[i]; frames[i] = frames[j]; frames[j] = tmp;
+    renderFrameList();
+  }
+
+  // ---------- mode / UI toggles ----------
+  const MODE_HINTS = {
+    kenburns: 'Each drawing slowly pans and zooms for a cinematic feel.',
+    cuts: 'Each drawing holds still, then cuts straight to the next.',
+    flipbook: "Drawings flash by quickly like a hand-flipped flipbook or stop-motion loop — great for a short animated sequence."
+  };
+  function applyMode() {
+    const mode = modeSelect.value;
+    modeHint.textContent = MODE_HINTS[mode];
+    const isFlip = mode === 'flipbook';
+    fpsField.style.display = isFlip ? 'block' : 'none';
+    loopField.style.display = isFlip ? 'block' : 'none';
+    transitionField.style.display = isFlip ? 'none' : 'block';
+  }
+  modeSelect.addEventListener('change', applyMode);
+  applyMode();
+
+  titleEnabled.addEventListener('change', () => { titleFields.style.display = titleEnabled.checked ? 'block' : 'none'; });
+
+  musicInput.addEventListener('change', async function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    musicFileName.textContent = 'Loading "' + file.name + '"…';
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      musicBuffer = await ac.decodeAudioData(arrayBuffer.slice(0));
+      ac.close();
+      musicFileName.textContent = 'Added: ' + file.name + ' (' + musicBuffer.duration.toFixed(1) + 's)';
+      musicVolumeField.style.display = 'block';
+    } catch (err) {
+      musicFileName.textContent = '';
+      showError('Could not read that audio file: ' + err.message);
+    }
+  });
+
+  // ---------- narration recording ----------
+  recordBtn.addEventListener('click', async function () {
+    if (isRecordingNarration) {
+      mediaRecorderMic.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micChunks = [];
+      mediaRecorderMic = new MediaRecorder(stream);
+      mediaRecorderMic.ondataavailable = e => { if (e.data.size) micChunks.push(e.data); };
+      mediaRecorderMic.onstop = async function () {
+        stream.getTracks().forEach(t => t.stop());
+        isRecordingNarration = false;
+        recordBtn.textContent = '🎙️ Record';
+        narrationBlob = new Blob(micChunks, { type: 'audio/webm' });
+        try {
+          const arrayBuffer = await narrationBlob.arrayBuffer();
+          const ac = new (window.AudioContext || window.webkitAudioContext)();
+          narrationBuffer = await ac.decodeAudioData(arrayBuffer);
+          ac.close();
+          narrationStatus.textContent = 'Narration recorded (' + narrationBuffer.duration.toFixed(1) + 's).';
+          removeNarrationBtn.style.display = 'inline-block';
+        } catch (err) {
+          showError('Could not process the recorded narration: ' + err.message);
+        }
+      };
+      mediaRecorderMic.start();
+      isRecordingNarration = true;
+      recordBtn.textContent = '⏹ Stop recording';
+      narrationStatus.textContent = 'Recording…';
+    } catch (err) {
+      showError('Could not access your microphone: ' + err.message);
+    }
+  });
+  removeNarrationBtn.addEventListener('click', function () {
+    narrationBuffer = null;
+    narrationBlob = null;
+    narrationStatus.textContent = '';
+    removeNarrationBtn.style.display = 'none';
+  });
+
+  // ---------- timeline construction ----------
+  function buildTimeline() {
+    const segments = [];
+    if (titleEnabled.checked && (titleText.value.trim() || titleSubtext.value.trim())) {
+      segments.push({ type: 'title', duration: Math.max(0.5, parseFloat(titleDuration.value) || 3), text: titleText.value.trim(), sub: titleSubtext.value.trim() });
+    }
+    const mode = modeSelect.value;
+    if (mode === 'flipbook') {
+      const fps = Math.max(1, parseInt(fpsInput.value, 10) || 10);
+      const loops = Math.max(1, parseInt(loopInput.value, 10) || 1);
+      for (let l = 0; l < loops; l++) {
+        frames.forEach((f, i) => segments.push({ type: 'image', img: f.img, duration: 1 / fps, kenburns: false, seed: i }));
+      }
+    } else {
+      frames.forEach((f, i) => segments.push({ type: 'image', img: f.img, duration: f.duration, kenburns: mode === 'kenburns', seed: i }));
+    }
+    // compute overlaps / cumulative starts
+    const transition = mode === 'flipbook' ? 'none' : transitionSelect.value;
+    const starts = new Array(segments.length).fill(0);
+    for (let i = 0; i < segments.length; i++) {
+      let overlap = 0;
+      if (i > 0 && transition !== 'none' && segments[i - 1].type === 'image' && segments[i].type === 'image') {
+        overlap = Math.min(TRANSITION_DUR, segments[i - 1].duration * 0.5, segments[i].duration * 0.5);
+      }
+      segments[i].overlapPrev = overlap;
+      starts[i] = i === 0 ? 0 : starts[i - 1] + segments[i - 1].duration - overlap;
+    }
+    const total = segments.length ? starts[segments.length - 1] + segments[segments.length - 1].duration : 0;
+    return { segments, starts, total, transition };
+  }
+
+  function drawImageCover(g, img, cw, ch, zoom, offXFrac, offYFrac) {
+    const ir = img.width / img.height, cr = cw / ch;
+    let dw, dh;
+    if (ir > cr) { dh = ch * zoom; dw = dh * ir; } else { dw = cw * zoom; dh = dw / ir; }
+    const cx = cw / 2 + offXFrac * cw, cy = ch / 2 + offYFrac * ch;
+    const dx = Math.max(Math.min(cx - dw / 2, 0), cw - dw);
+    const dy = Math.max(Math.min(cy - dh / 2, 0), ch - dh);
+    g.drawImage(img, dx, dy, dw, dh);
+  }
+
+  function drawSegmentContent(g, cw, ch, seg, localT) {
+    if (seg.type === 'title') {
+      g.fillStyle = '#0E1B2E';
+      g.fillRect(0, 0, cw, ch);
+      const fadeT = Math.min(0.4, seg.duration * 0.3);
+      let alpha = 1;
+      if (localT < fadeT) alpha = localT / fadeT;
+      else if (localT > seg.duration - fadeT) alpha = (seg.duration - localT) / fadeT;
+      g.save();
+      g.globalAlpha = Math.max(0, Math.min(1, alpha));
+      g.fillStyle = '#EDEAE0';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.font = '700 ' + Math.round(ch * 0.09) + 'px "Space Grotesk", sans-serif';
+      g.fillText(seg.text || '', cw / 2, ch / 2 - (seg.sub ? ch * 0.04 : 0), cw * 0.86);
+      if (seg.sub) {
+        g.font = '500 ' + Math.round(ch * 0.04) + 'px "IBM Plex Sans", sans-serif';
+        g.fillStyle = '#6FD1E0';
+        g.fillText(seg.sub, cw / 2, ch / 2 + ch * 0.08, cw * 0.86);
+      }
+      g.restore();
+      return;
+    }
+    // image segment
+    if (seg.kenburns) {
+      const p = KENBURNS_PATTERNS[seg.seed % KENBURNS_PATTERNS.length];
+      const t = seg.duration > 0 ? localT / seg.duration : 0;
+      const zoom = p.zFrom + (p.zTo - p.zFrom) * t;
+      const offX = p.xFrom + (p.xTo - p.xFrom) * t;
+      const offY = p.yFrom + (p.yTo - p.yFrom) * t;
+      drawImageCover(g, seg.img, cw, ch, zoom, offX, offY);
+    } else {
+      drawImageCover(g, seg.img, cw, ch, 1, 0, 0);
+    }
+  }
+
+  function findSegmentIndexAt(timeline, t) {
+    const { starts, segments } = timeline;
+    let idx = 0;
+    for (let i = 0; i < segments.length; i++) {
+      if (starts[i] <= t) idx = i; else break;
+    }
+    return idx;
+  }
+
+  function drawTimelineAt(timeline, g, cw, ch, t) {
+    const { segments, starts, transition } = timeline;
+    if (!segments.length) return;
+    const i = findSegmentIndexAt(timeline, t);
+    const seg = segments[i];
+    const localT = Math.min(seg.duration, Math.max(0, t - starts[i]));
+    const next = segments[i + 1];
+
+    g.clearRect(0, 0, cw, ch);
+    g.fillStyle = '#000';
+    g.fillRect(0, 0, cw, ch);
+
+    if (next && transition !== 'none' && next.overlapPrev > 0) {
+      const overlapStart = seg.duration - next.overlapPrev;
+      if (localT >= overlapStart) {
+        const progress = Math.max(0, Math.min(1, (localT - overlapStart) / next.overlapPrev));
+        const nextLocalT = Math.max(0, t - starts[i + 1]);
+        if (transition === 'fade') {
+          g.save(); g.globalAlpha = 1; drawSegmentContent(g, cw, ch, seg, localT); g.restore();
+          g.save(); g.globalAlpha = progress; drawSegmentContent(g, cw, ch, next, nextLocalT); g.restore();
+        } else if (transition === 'slide') {
+          g.save();
+          g.translate(-cw * progress, 0);
+          drawSegmentContent(g, cw, ch, seg, localT);
+          g.restore();
+          g.save();
+          g.translate(cw * (1 - progress), 0);
+          drawSegmentContent(g, cw, ch, next, nextLocalT);
+          g.restore();
+        }
+        return;
+      }
+    }
+    drawSegmentContent(g, cw, ch, seg, localT);
+  }
+
+  // ---------- preview playback (no recording) ----------
+  function stopPreview() {
+    if (previewRaf) cancelAnimationFrame(previewRaf);
+    previewRaf = null;
+    if (previewAudioCtx) { try { previewAudioCtx.close(); } catch (e) {} previewAudioCtx = null; }
+    playPreviewBtn.disabled = false;
+    stopPreviewBtn.disabled = true;
+  }
+  playPreviewBtn.addEventListener('click', function () {
+    clearError();
+    if (!frames.length) { showError('Add at least one drawing first.'); return; }
+    const timeline = buildTimeline();
+    if (!timeline.total) { showError('Nothing to preview.'); return; }
+    const { w, h } = currentSize();
+    stageCanvas.width = w; stageCanvas.height = h;
+    stageEmpty.style.display = 'none';
+    resultVideo.style.display = 'none';
+    stageCanvas.style.display = 'block';
+
+    previewAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    scheduleAudioSources(previewAudioCtx, previewAudioCtx.destination, timeline.total);
+
+    playPreviewBtn.disabled = true;
+    stopPreviewBtn.disabled = false;
+    previewStart = performance.now();
+    titleBlockRight.textContent = 'PREVIEWING';
+    function step() {
+      const elapsed = (performance.now() - previewStart) / 1000;
+      if (elapsed >= timeline.total) {
+        drawTimelineAt(timeline, ctx, w, h, timeline.total - 0.001);
+        stopPreview();
+        titleBlockRight.textContent = 'PREVIEW DONE';
+        return;
+      }
+      drawTimelineAt(timeline, ctx, w, h, elapsed);
+      previewRaf = requestAnimationFrame(step);
+    }
+    previewRaf = requestAnimationFrame(step);
+  });
+  stopPreviewBtn.addEventListener('click', function () {
+    stopPreview();
+    titleBlockRight.textContent = 'STOPPED';
+  });
+
+  function scheduleAudioSources(audioCtx, destNode, totalDuration) {
+    if (musicBuffer) {
+      const src = audioCtx.createBufferSource();
+      src.buffer = musicBuffer;
+      src.loop = loopMusic.checked && musicBuffer.duration < totalDuration;
+      const gain = audioCtx.createGain();
+      gain.gain.value = parseFloat(musicVolume.value) || 0.5;
+      src.connect(gain).connect(destNode);
+      src.start(0);
+      if (!src.loop) { try { src.stop(audioCtx.currentTime + totalDuration); } catch (e) {} }
+    }
+    if (narrationBuffer) {
+      const src = audioCtx.createBufferSource();
+      src.buffer = narrationBuffer;
+      const gain = audioCtx.createGain();
+      gain.gain.value = 1;
+      src.connect(gain).connect(destNode);
+      src.start(0);
+    }
+  }
+
+  // ---------- render to video file ----------
+  function pickMimeType() {
+    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
+    return '';
+  }
+
+  renderBtn.addEventListener('click', function () {
+    clearError();
+    if (!frames.length) { showError('Add at least one drawing first.'); return; }
+    if (!window.MediaRecorder || !stageCanvas.captureStream) {
+      showError('Your browser does not support recording canvas to video. Try the latest Chrome, Edge, or Firefox.');
+      return;
+    }
+    stopPreview();
+    const timeline = buildTimeline();
+    if (!timeline.total) { showError('Nothing to render.'); return; }
+    const mimeType = pickMimeType();
+    if (!mimeType) { showError('No supported video format found in this browser.'); return; }
+
+    const { w, h } = currentSize();
+    stageCanvas.width = w; stageCanvas.height = h;
+    stageEmpty.style.display = 'none';
+    resultVideo.style.display = 'none';
+    stageCanvas.style.display = 'block';
+    downloadVideoBtn.disabled = true;
+    renderedVideoBlob = null;
+    uploadYtBtn.disabled = true;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const dest = audioCtx.createMediaStreamDestination();
+    scheduleAudioSources(audioCtx, dest, timeline.total);
+
+    const canvasStream = stageCanvas.captureStream(30);
+    const tracks = [...canvasStream.getVideoTracks()];
+    if (dest.stream.getAudioTracks().length) tracks.push(...dest.stream.getAudioTracks());
+    const combined = new MediaStream(tracks);
+
+    const recorder = new MediaRecorder(combined, { mimeType, videoBitsPerSecond: 6000000 });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+
+    renderBtn.disabled = true;
+    playPreviewBtn.disabled = true;
+    cancelRenderBtn.style.display = 'inline-block';
+    progressWrap.classList.add('show');
+    progressLabel.textContent = 'Rendering…';
+    titleBlockRight.textContent = 'RENDERING';
+
+    let cancelled = false;
+    let rafId = null;
+    const startTs = performance.now();
+
+    function finish() {
+      progressWrap.classList.remove('show');
+      cancelRenderBtn.style.display = 'none';
+      renderBtn.disabled = false;
+      playPreviewBtn.disabled = false;
+      try { audioCtx.close(); } catch (e) {}
+      renderState = null;
+    }
+
+    recorder.onstop = function () {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (cancelled) { finish(); titleBlockRight.textContent = 'CANCELLED'; return; }
+      renderedVideoBlob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(renderedVideoBlob);
+      resultVideo.src = url;
+      resultVideo.style.display = 'block';
+      stageCanvas.style.display = 'none';
+      downloadVideoBtn.disabled = false;
+      uploadYtBtn.disabled = !accessToken;
+      titleBlockRight.textContent = 'RENDER COMPLETE';
+      finish();
+    };
+
+    recorder.start();
+    function step() {
+      if (cancelled) { recorder.stop(); return; }
+      const elapsed = (performance.now() - startTs) / 1000;
+      if (elapsed >= timeline.total) {
+        drawTimelineAt(timeline, ctx, w, h, timeline.total - 0.001);
+        recorder.stop();
+        return;
+      }
+      drawTimelineAt(timeline, ctx, w, h, elapsed);
+      const pct = Math.round((elapsed / timeline.total) * 100);
+      progressFill.style.width = pct + '%';
+      progressPct.textContent = pct + '%';
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+
+    renderState = {
+      cancel: function () { cancelled = true; }
+    };
+  });
+
+  cancelRenderBtn.addEventListener('click', function () {
+    if (renderState) renderState.cancel();
+  });
+
+  downloadVideoBtn.addEventListener('click', function () {
+    if (!renderedVideoBlob) return;
+    const url = URL.createObjectURL(renderedVideoBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'video-forge.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  // ---------- YouTube upload ----------
+  function showYtError(msg) { ytErrorBox.textContent = msg; ytErrorBox.classList.add('show'); }
+  function clearYtError() { ytErrorBox.textContent = ''; ytErrorBox.classList.remove('show'); }
+
+  function ensureTokenClient() {
+    if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
+    const clientId = ytClientId.value.trim();
+    if (!clientId) return null;
+    if (tokenClient && tokenClient.__clientId === clientId) return tokenClient;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/youtube.upload',
+      callback: function (resp) {
+        if (resp.error) { showYtError('Google sign-in failed: ' + resp.error); return; }
+        accessToken = resp.access_token;
+        clearYtError();
+        ytConnectedBox.classList.add('show');
+        ytUploadFields.style.display = 'block';
+        uploadYtBtn.disabled = !renderedVideoBlob;
+      }
+    });
+    tokenClient.__clientId = clientId;
+    return tokenClient;
+  }
+
+  connectYtBtn.addEventListener('click', function () {
+    clearYtError();
+    if (!ytClientId.value.trim()) { showYtError('Paste your Google OAuth Client ID first — see the setup steps below.'); return; }
+    const client = ensureTokenClient();
+    if (!client) { showYtError("Google's sign-in library hasn't finished loading yet — wait a second and try again."); return; }
+    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+  });
+
+  uploadYtBtn.addEventListener('click', async function () {
+    clearYtError();
+    ytResultBox.classList.remove('show');
+    if (!renderedVideoBlob) { showYtError('Render a video first.'); return; }
+    if (!accessToken) { showYtError('Connect your Google account first.'); return; }
+
+    const metadata = {
+      snippet: {
+        title: ytTitle.value.trim() || 'Video Forge upload',
+        description: ytDesc.value.trim(),
+        tags: ytTags.value.split(',').map(s => s.trim()).filter(Boolean),
+        categoryId: ytCategory.value
+      },
+      status: { privacyStatus: ytPrivacy.value }
+    };
+
+    uploadYtBtn.disabled = true;
+    uploadYtBtn.textContent = 'Starting upload…';
+    progressWrap.classList.add('show');
+    progressLabel.textContent = 'Uploading to YouTube…';
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    try {
+      const initResp = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': renderedVideoBlob.type || 'video/webm',
+          'X-Upload-Content-Length': String(renderedVideoBlob.size)
+        },
+        body: JSON.stringify(metadata)
+      });
+      if (!initResp.ok) {
+        const errBody = await initResp.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : ('Request failed with status ' + initResp.status);
+        throw new Error(msg);
+      }
+      const uploadUrl = initResp.headers.get('Location');
+      if (!uploadUrl) {
+        throw new Error('Google did not return an upload session URL — your browser or an extension may be blocking it. Try downloading the video and uploading it manually at studio.youtube.com instead.');
+      }
+
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', renderedVideoBlob.type || 'video/webm');
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+            progressPct.textContent = pct + '%';
+          }
+        };
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const data = JSON.parse(xhr.responseText);
+              resolve(data);
+            } catch (e) { reject(new Error('Upload finished but the response could not be read.')); }
+          } else {
+            reject(new Error('Upload failed with status ' + xhr.status + ': ' + xhr.responseText));
+          }
+        };
+        xhr.onerror = function () { reject(new Error('A network error interrupted the upload — this can happen if a browser extension blocks requests to Google.')); };
+        xhr.send(renderedVideoBlob);
+      }).then(data => {
+        ytResultBox.innerHTML = '✓ Uploaded! <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">Watch it on YouTube</a> (' + (ytPrivacy.value === 'private' ? 'private — only you can see it' : ytPrivacy.value) + ').';
+        ytResultBox.classList.add('show');
+      });
+    } catch (err) {
+      showYtError(err.message || 'Upload failed.');
+    } finally {
+      uploadYtBtn.disabled = false;
+      uploadYtBtn.textContent = 'Upload to YouTube';
+      progressWrap.classList.remove('show');
+    }
+  });
+})();
+</script>
+</body>
+</html>
