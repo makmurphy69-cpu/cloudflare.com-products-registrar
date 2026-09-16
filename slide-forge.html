@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Slide Forge — free PowerPoint generator</title>
+<meta name="description" content="Describe a presentation, get a real, downloadable .pptx — built live in your browser, free.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+
+  * { box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--navy);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      linear-gradient(var(--line-cyan-dim) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+  }
+
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--line-cyan);
+    outline-offset: 2px;
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 26px clamp(20px, 4vw, 48px) 22px;
+    position: relative;
+  }
+  header.masthead::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--line-cyan) 0, var(--line-cyan) 1px,
+      transparent 1px, transparent 9px
+    );
+    opacity: 0.55;
+  }
+
+  .logo-mark {
+    width: 42px;
+    height: 42px;
+    flex: none;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
+  }
+
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.005em;
+    margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  header.masthead p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: rgba(237, 234, 224, 0.6);
+  }
+
+  .solo-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 28px clamp(20px, 4vw, 48px) 56px;
+  }
+
+  .panel {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: var(--radius);
+    padding: 22px 22px 26px;
+  }
+
+  .field { margin-bottom: 18px; }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .field .hint {
+    font-size: 12.5px;
+    color: rgba(22, 32, 43, 0.62);
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5);
+    margin: 22px 0 12px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="password"],
+  input[type="text"],
+  textarea {
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink);
+  }
+
+  textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+
+  .toggle-key {
+    background: transparent;
+    border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius);
+    padding: 0 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+    color: var(--ink);
+  }
+
+  select {
+    width: 100%;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 11px;
+    border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--ink);
+  }
+
+  .draft-btn {
+    width: 100%;
+    background: var(--amber);
+    color: var(--amber-ink);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 15px;
+    padding: 13px;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .error-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(216, 96, 74, 0.14);
+    border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: #6E2418;
+    display: none;
+  }
+  .error-box.show { display: block; }
+
+  .success-box {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(78, 158, 115, 0.14);
+    border: 1px solid rgba(78, 158, 115, 0.4);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: #275238;
+    display: none;
+  }
+  .success-box.show { display: block; }
+
+  footer {
+    padding: 20px clamp(20px, 4vw, 48px) 40px;
+    font-size: 12.5px;
+    color: rgba(237, 234, 224, 0.45);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Slide Forge</h1>
+    <p>Describe a presentation. Get a real, downloadable .pptx — built live in your browser.</p>
+  </div>
+</header>
+
+<div class="solo-wrap">
+  <div class="panel">
+
+    <div class="section-title">Connection</div>
+
+    <div class="field">
+      <label for="provider">AI provider</label>
+      <select id="provider">
+        <option value="gemini" selected>Gemini — free, no key needed</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+
+    <div class="field" id="apiKeyField">
+      <label for="apiKey" id="apiKeyLabel">Your OpenAI API key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="hint">Used only to call the provider above directly from your browser. Never stored, never sent anywhere else, and cleared if you reload the page.</p>
+    </div>
+
+    <div class="field" id="freeNoticeField" style="display:none;">
+      <p class="hint" style="margin-top:0;">✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.</p>
+    </div>
+
+    <div class="field">
+      <label for="model">Text model</label>
+      <select id="model">
+        <option value="gpt-4o-mini" selected>gpt-4o-mini (fast, cheap)</option>
+        <option value="gpt-4o">gpt-4o (higher quality)</option>
+        <option value="gpt-4.1">gpt-4.1</option>
+      </select>
+    </div>
+
+    <div class="section-title">The presentation</div>
+
+    <div class="field">
+      <label for="pptxBrief">Describe the presentation you need</label>
+      <textarea id="pptxBrief" placeholder="e.g. A 6-slide pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact"></textarea>
+      <p class="hint">4–10 slides, real content — no AI-generated images, just a clean, professional layout you can restyle in PowerPoint or Google Slides afterward.</p>
+    </div>
+
+    <button type="button" class="draft-btn" id="generatePptxBtn">Generate .pptx</button>
+
+    <div class="error-box" id="errorBox"></div>
+    <div class="success-box" id="successBox"></div>
+  </div>
+</div>
+
+<footer>Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type here is stored anywhere.</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const providerSelect = document.getElementById('provider');
+  const apiKeyField = document.getElementById('apiKeyField');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabel = document.getElementById('apiKeyLabel');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+  const freeNoticeField = document.getElementById('freeNoticeField');
+  const modelSelect = document.getElementById('model');
+  const pptxBrief = document.getElementById('pptxBrief');
+  const generatePptxBtn = document.getElementById('generatePptxBtn');
+  const errorBox = document.getElementById('errorBox');
+  const successBox = document.getElementById('successBox');
+
+  function showError(message) {
+    successBox.classList.remove('show');
+    errorBox.textContent = message;
+    errorBox.classList.add('show');
+  }
+  function clearError() {
+    errorBox.textContent = '';
+    errorBox.classList.remove('show');
+  }
+  function showSuccess(message) {
+    clearError();
+    successBox.textContent = message;
+    successBox.classList.add('show');
+  }
+
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  const modelOptions = {
+    gemini: [
+      { value: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (free tier)' },
+      { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (free tier)' }
+    ],
+    openai: [
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (fast, cheap)' },
+      { value: 'gpt-4o', label: 'gpt-4o (higher quality)' },
+      { value: 'gpt-4.1', label: 'gpt-4.1' }
+    ],
+    anthropic: [
+      { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (fast, cheap)' },
+      { value: 'claude-sonnet-5', label: 'Claude Sonnet 5 (recommended)' },
+      { value: 'claude-opus-5', label: 'Claude Opus 5 (highest quality)' }
+    ]
+  };
+
+  function applyProvider() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      apiKeyField.style.display = 'none';
+      freeNoticeField.style.display = 'block';
+    } else {
+      apiKeyField.style.display = 'block';
+      freeNoticeField.style.display = 'none';
+      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+    }
+    modelSelect.innerHTML = '';
+    const defaultIndex = provider === 'anthropic' ? 1 : 0;
+    modelOptions[provider].forEach((opt, i) => {
+      const el = document.createElement('option');
+      el.value = opt.value;
+      el.textContent = opt.label;
+      if (i === defaultIndex) el.selected = true;
+      modelSelect.appendChild(el);
+    });
+  }
+  providerSelect.addEventListener('change', applyProvider);
+  applyProvider();
+
+  // The real Gemini key lives server-side as a Cloudflare Worker secret — see
+  // cloudflare-worker/README.md. Never put an actual key on this line; this
+  // file is public and anyone can view its source.
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
+
+  function currentTextApiKey() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') return 'via-proxy'; // Gemini calls go through GEMINI_PROXY_URL, not a client-held key
+    return apiKeyInput.value.trim();
+  }
+
+  function stripCodeFence(text) {
+    const trimmed = text.trim();
+    const fenceMatch = trimmed.match(/^```(?:html|json)?\s*([\s\S]*?)\s*```$/i);
+    return fenceMatch ? fenceMatch[1] : trimmed;
+  }
+
+  async function callChat(apiKey, model, systemPrompt, userPrompt) {
+    const provider = providerSelect.value;
+
+    if (provider === 'gemini') {
+      const response = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, systemPrompt: systemPrompt, userPrompt: userPrompt })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.');
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const cand = data.candidates && data.candidates[0];
+      const raw = cand && cand.content && cand.content.parts && cand.content.parts[0]
+        ? cand.content.parts[0].text
+        : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    if (provider === 'anthropic') {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: model,
+          max_tokens: 8000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        const msg = errBody && errBody.error && errBody.error.message
+          ? errBody.error.message
+          : ('Request failed with status ' + response.status);
+        throw new Error(msg);
+      }
+      const data = await response.json();
+      const block = data.content && data.content.find(b => b.type === 'text');
+      const raw = block ? block.text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.8
+      })
+    });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => null);
+      const msg = errBody && errBody.error && errBody.error.message
+        ? errBody.error.message
+        : ('Request failed with status ' + response.status);
+      throw new Error(msg);
+    }
+    const data = await response.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('The model returned an empty response.');
+    return stripCodeFence(raw);
+  }
+
+  async function generatePptx() {
+    clearError();
+    successBox.classList.remove('show');
+    const key = currentTextApiKey();
+    const brief = pptxBrief.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!brief) { showError('Describe the presentation you need.'); return; }
+    if (typeof PptxGenJS === 'undefined') { showError('The PowerPoint library failed to load — check your internet connection and reload the page.'); return; }
+
+    generatePptxBtn.disabled = true;
+    generatePptxBtn.textContent = 'Building…';
+    const model = modelSelect.value;
+    const rules = [
+      'You plan PowerPoint presentations. Given a description, respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
+      '{"title": "presentation title", "slides": [{"title": "slide title", "bullets": ["point 1","point 2"]}]}',
+      '4-10 slides. Each slide: a short title and 2-5 short bullet points, real content (no placeholders).'
+    ].join('\n');
+
+    try {
+      const json = await callChat(key, model, rules, brief);
+      const plan = JSON.parse(json);
+
+      const pptx = new PptxGenJS();
+      pptx.defineLayout({ name: 'MB', width: 10, height: 5.63 });
+      pptx.layout = 'MB';
+
+      const titleSlide = pptx.addSlide();
+      titleSlide.background = { color: '0E2A47' };
+      titleSlide.addText(plan.title || brief, {
+        x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: 'EDEAE0', fontFace: 'Arial'
+      });
+
+      (plan.slides || []).forEach(s => {
+        const slide = pptx.addSlide();
+        slide.background = { color: 'FFFFFF' };
+        slide.addText(s.title || '', {
+          x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: '0E2A47', fontFace: 'Arial'
+        });
+        slide.addText((s.bullets || []).map(b => ({ text: b, options: { bullet: true, breakLine: true } })), {
+          x: 0.6, y: 1.4, w: 8.6, h: 3.8, fontSize: 16, color: '16202B', fontFace: 'Arial'
+        });
+      });
+
+      const fileName = (plan.title || 'presentation').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.pptx';
+      await pptx.writeFile({ fileName: fileName });
+      showSuccess('Downloaded ' + fileName + ' — ' + ((plan.slides || []).length + 1) + ' slides.');
+    } catch (err) {
+      showError(err.message || 'Could not generate the presentation.');
+    } finally {
+      generatePptxBtn.disabled = false;
+      generatePptxBtn.textContent = 'Generate .pptx';
+    }
+  }
+  generatePptxBtn.addEventListener('click', generatePptx);
+})();
+</script>
+</body>
+</html>
