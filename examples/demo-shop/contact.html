@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us — Ember & Oak | Hand-Poured Candles for Slow Evenings</title>
+    <meta name="description" content="Get in touch with Ember & Oak. Whether you have questions about our hand-poured soy candles or wholesale inquiries, we'd love to hear from you.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Contact Us — Ember & Oak | Hand-Poured Candles for Slow Evenings">
+    <meta property="og:description" content="Get in touch with Ember & Oak. Whether you have questions about our hand-poured soy candles or wholesale inquiries, we'd love to hear from you.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --color-bg: #FAF7F2;
+            --color-card: #F4EFE6;
+            --color-text-main: #2C2621;
+            --color-text-muted: #6B5E53;
+            --color-accent: #C87D55;
+            --color-accent-hover: #A9623C;
+            --color-border: #E6DFD3;
+            --font-serif: "Playfair Display", Georgia, serif;
+            --font-sans: "Work Sans", system-ui, -apple-system, sans-serif;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: var(--color-bg);
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            text-decoration: none;
+            color: var(--color-text-main);
+        }
+
+        .logo-title {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .logo-tagline {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--color-text-muted);
+            margin-top: 2px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text-main);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--color-accent);
+        }
+
+        /* Mobile Nav Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-text-main);
+            margin: 5px 0;
+            transition: var(--transition);
+        }
+
+        /* Contact Hero Section */
+        .contact-hero {
+            padding: 80px 20px 40px 20px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .contact-hero h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            font-weight: 400;
+            margin-bottom: 16px;
+            color: var(--color-text-main);
+        }
+
+        .contact-hero p {
+            font-size: 1.15rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Contact Main Content Area */
+        .contact-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 100px 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+        }
+
+        /* Form Styling */
+        .contact-form-container {
+            background-color: var(--color-card);
+            padding: 48px;
+            border-radius: 4px;
+            border: 1px solid var(--color-border);
+        }
+
+        .contact-form-container h2 {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-text-main);
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background-color: var(--color-bg);
+            color: var(--color-text-main);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(200, 125, 85, 0.15);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            background-color: var(--color-accent);
+            color: #ffffff;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 0.5px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        /* Sidebar Info Styling */
+        .contact-info-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .info-block {
+            margin-bottom: 40px;
+        }
+
+        .info-block h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .info-block p {
+            color: var(--color-text-muted);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .info-block a {
+            color: var(--color-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .info-block a:hover {
+            text-decoration: underline;
+        }
+
+        .studio-image-container {
+            margin-top: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+        }
+
+        .studio-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: var(--color-card);
+            border-top: 1px solid var(--color-border);
+            padding: 60px 20px 40px 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h2 {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .footer-brand p {
+            color: var(--color-text-muted);
+            max-width: 320px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .footer-links-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .footer-col h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-text-main);
+            margin-bottom: 16px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul a {
+            text-decoration: none;
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .footer-col ul a:hover {
+            color: var(--color-accent);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid var(--color-border);
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 900px) {
+            .contact-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .contact-hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                position: relative;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--color-bg);
+                border-bottom: 1px solid var(--color-border);
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            }
+
+            nav.active {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 16px;
+                align-items: center;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MigaBuilder Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example store built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo-container">
+                <div class="logo-title">Ember & Oak</div>
+                <div class="logo-tagline">Slow Evenings</div>
+            </a>
+            
+            <button class="mobile-menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="mainNav">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contact Hero -->
+    <main>
+        <section class="contact-hero">
+            <h1>Let's Connect</h1>
+            <p>Have a question about our scents, shipping, or carrying Ember & Oak candles in your shop? We would love to hear from you. Fill out the form below or drop us a line anytime.</p>
+        </section>
+
+        <!-- Contact Form & Info Grid -->
+        <section class="contact-section">
+            
+            <!-- Left Side: Form -->
+            <div class="contact-form-container">
+                <h2>Send a Message</h2>
+                <form method="post" action="mailto:hello@emberandoak.example" enctype="text/plain">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Evelyn Wood" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="evelyn@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">How can we help?</label>
+                        <input type="text" id="subject" name="subject" placeholder="Wholesale Inquiry / Custom Order / Candle Care" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Your Message</label>
+                        <textarea id="message" name="message" placeholder="Write your message here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+
+            <!-- Right Side: Info Block -->
+            <div class="contact-info-container">
+                <div>
+                    <div class="info-block">
+                        <h3>Our Studio</h3>
+                        <p>All Ember & Oak candles are hand-poured in small batches, cured, and shipped from our studio workspace in the Pacific Northwest.</p>
+                        <p>While our studio is not open to the public for walk-ins, you can shop our collection online or at retail stockists nationwide.</p>
+                    </div>
+
+                    <div class="info-block">
+                        <h3>Direct Contact</h3>
+                        <p><strong>Email Support:</strong> <a href="mailto:hello@emberandoak.example">hello@emberandoak.example</a></p>
+                        <p>We strive to reply to all inquiries within 24 to 48 hours, Monday through Friday.</p>
+                    </div>
+
+                    <div class="info-block">
+                        <h3>Wholesale Opportunities</h3>
+                        <p>If you are a retailer interested in stocking Ember & Oak, please email us directly with details about your retail shop, location, and your website.</p>
+                    </div>
+                </div>
+
+                <div class="studio-image-container">
+                    <img src="https://loremflickr.com/1200/800/candle%2Ccozy?random=59243" alt="A warm lit Ember & Oak candle sitting on a natural wood surface next to matches.">
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h2>Ember & Oak</h2>
+                <p>Thoughtfully crafted, hand-poured soy candles designed to encourage intentional, slow, and cozy evenings at home.</p>
+            </div>
+            
+            <div class="footer-links-grid">
+                <div class="footer-col">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop Candles</a></li>
+                        <li><a href="about.html">Our Story</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Get in Touch</h4>
+                    <ul>
+                        <li><a href="mailto:hello@emberandoak.example">hello@emberandoak.example</a></li>
+                        <li><a href="contact.html">Wholesale Inquiries</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2024 Ember & Oak. All rights reserved.</p>
+            <p>Crafted for slow living.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Navigation Script -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const mainNav = document.getElementById('mainNav');
+
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

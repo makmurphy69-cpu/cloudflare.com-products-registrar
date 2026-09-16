@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ember & Oak | Hand-poured candles for slow evenings</title>
+  <meta name="description" content="Ember & Oak crafts small-batch, hand-poured soy candles designed to bring warmth, comfort, and a sense of slow living to your home.">
+  <meta property="og:title" content="Ember & Oak | Hand-poured candles for slow evenings">
+  <meta property="og:description" content="Discover our small-batch soy candles, crafted with clean-burning ingredients and natural woodsy scents.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-cream: #FDFBF7;
+      --color-warm-beige: #F5EFEB;
+      --color-soft-clay: #EADCD3;
+      --color-charcoal: #2B2421;
+      --color-accent-amber: #C68B59;
+      --color-dark-amber: #8E5431;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--color-cream);
+      color: var(--color-charcoal);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 1rem;
+      font-weight: 300;
+      color: #4A3E39;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    /* Layout Components */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header Nav */
+    header {
+      background-color: rgba(253, 251, 247, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(43, 36, 33, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .logo-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      line-height: 1;
+    }
+
+    .tagline {
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      position: relative;
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 1px;
+      bottom: -4px;
+      left: 0;
+      background-color: var(--color-accent-amber);
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      max-width: 540px;
+    }
+
+    .hero-pre {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-accent-amber);
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 24px;
+      line-height: 1.15;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--color-charcoal);
+      color: var(--color-cream);
+      padding: 16px 36px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--color-dark-amber);
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      height: 520px;
+    }
+
+    .hero-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      box-shadow: 20px 20px 0px var(--color-warm-beige);
+    }
+
+    /* Introduction Section */
+    .intro-bar {
+      background-color: var(--color-warm-beige);
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .intro-content {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .intro-content h2 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+
+    .intro-content p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+
+    /* Featured Products */
+    .featured {
+      padding: 100px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: #7A6B65;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+
+    .product-card {
+      background-color: #FFFFFF;
+      border: 1px solid rgba(43, 36, 33, 0.05);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(43, 36, 33, 0.04);
+    }
+
+    .product-image-container {
+      height: 400px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      background-color: var(--color-warm-beige);
+    }
+
+    .product-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-image-container img {
+      transform: scale(1.03);
+    }
+
+    .product-details {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .product-title {
+      font-size: 1.6rem;
+    }
+
+    .product-price {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      color: var(--color-accent-amber);
+      font-weight: 500;
+    }
+
+    .product-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      color: #6A5B55;
+    }
+
+    .product-btn {
+      margin-top: auto;
+      text-align: center;
+      background-color: transparent;
+      border: 1px solid var(--color-charcoal);
+      color: var(--color-charcoal);
+      padding: 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+    }
+
+    .product-btn:hover {
+      background-color: var(--color-charcoal);
+      color: var(--color-cream);
+    }
+
+    /* Testimonials Section */
+    .testimonials {
+      background-color: #F0E8E2;
+      padding: 100px 0;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background-color: var(--color-cream);
+      padding: 40px;
+      border-radius: 2px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      position: relative;
+    }
+
+    .quote-icon {
+      font-family: var(--font-serif);
+      font-size: 4rem;
+      color: var(--color-accent-amber);
+      opacity: 0.3;
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      line-height: 1;
+    }
+
+    .testimonial-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .testimonial-author {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 600;
+      color: var(--color-charcoal);
+      display: flex;
+      align-items: center;
+    }
+
+    .testimonial-author::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background-color: var(--color-accent-amber);
+      margin-right: 12px;
+    }
+
+    /* Footer */
+    footer {
+      background-color: var(--color-charcoal);
+      color: var(--color-cream);
+      padding: 80px 0 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .footer-about h3 {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+
+    .footer-about p {
+      color: #C3B9B5;
+      font-size: 0.95rem;
+      max-width: 320px;
+      margin-bottom: 24px;
+    }
+
+    .footer-title {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--color-accent-amber);
+      margin-bottom: 24px;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 12px;
+    }
+
+    .footer-links a {
+      color: #C3B9B5;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--color-cream);
+      padding-left: 4px;
+    }
+
+    .footer-contact p {
+      color: #C3B9B5;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+    }
+
+    .footer-contact a {
+      color: var(--color-accent-amber);
+      font-weight: 500;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(253, 251, 247, 0.1);
+      padding-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #8C7F79;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 60px 0;
+      }
+      .hero-image-wrapper {
+        height: 400px;
+        order: -1;
+      }
+      .product-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example store built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+  <header>
+    <div class="nav-container">
+      <div class="logo-group">
+        <a href="index.html" class="logo">Ember & Oak</a>
+        <span class="tagline">Hand-poured candles for slow evenings</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="container">
+      <div class="hero">
+        <div class="hero-content">
+          <span class="hero-pre">100% natural soy wax</span>
+          <h1>Create space for quiet reflection.</h1>
+          <p>We craft clean-burning, small-batch candles designed to slow down your senses. Formulated with complex essential oils and botanical fragrance blends to turn simple moments into sacred rituals.</p>
+          <a href="shop.html" class="btn">Explore the Collection</a>
+        </div>
+        <div class="hero-image-wrapper">
+          <img src="https://loremflickr.com/1200/800/candle%2Ccozy%2Cliving-room?random=91294" alt="Lit soy wax candle on a wood table, surrounded by books and cozy blankets">
+        </div>
+      </div>
+    </section>
+
+    <!-- Intro Bar -->
+    <section class="intro-bar">
+      <div class="container">
+        <div class="intro-content">
+          <h2>The Art of Slowing Down</h2>
+          <p>Every candle we pour at Ember & Oak is a reminder to pause. Hand-crafted in small batches using sustainably sourced soy wax, natural cotton-paper wicks, and phthalate-free premium fragrance oils, our blends capture the comforting elements of crackling fires, damp earth, and late autumn evenings.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Scents -->
+    <section class="container featured">
+      <div class="section-header">
+        <h2>Bestselling Scents</h2>
+        <p>Expertly blended to gently fill your space with warm, grounding aromas</p>
+      </div>
+
+      <div class="product-grid">
+        <!-- Cedar & Smoke -->
+        <div class="product-card">
+          <div class="product-image-container">
+            <img src="https://loremflickr.com/1200/800/candle%2Ccedar%2Cwooden?random=40419" alt="Cedar & Smoke Amber glass jar candle on wood shelf">
+          </div>
+          <div class="product-details">
+            <div class="product-meta">
+              <h3 class="product-title">Cedar & Smoke</h3>
+              <span class="product-price">$24</span>
+            </div>
+            <p class="product-desc">An earthy, nostalgic blend of crushed cedar needles, blue spruce, and a faint whisper of firewood smoke. Perfect for cool rainy afternoons.</p>
+            <a href="mailto:hello@emberandoak.example" class="product-btn">Contact to order</a>
+          </div>
+        </div>
+
+        <!-- Fig & Amber -->
+        <div class="product-card">
+          <div class="product-image-container">
+            <img src="https://loremflickr.com/1200/800/candle%2Camber%2Cwarm?random=30904" alt="Fig & Amber hand-poured candle being lit">
+          </div>
+          <div class="product-details">
+            <div class="product-meta">
+              <h3 class="product-title">Fig & Amber</h3>
+              <span class="product-price">$26</span>
+            </div>
+            <p class="product-desc">A rich, comforting composition of sweet sun-ripened fig, rich golden amber, and a subtle trace of sandalwood. Complex, warm, and inviting.</p>
+            <a href="mailto:hello@emberandoak.example" class="product-btn">Contact to order</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+      <div class="container">
+        <div class="section-header">
+          <h2>Loved by Slow-Livers</h2>
+          <p>What our community says about their burning experiences</p>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <span class="quote-icon">“</span>
+            <p class="testimonial-text">"The Cedar & Smoke candle made my whole apartment feel like a cabin retreat. Burns clean and lasts for weeks."</p>
+            <span class="testimonial-author">Maya R.</span>
+          </div>
+
+          <div class="testimonial-card">
+            <span class="quote-icon">“</span>
+            <p class="testimonial-text">"Fig & Amber is unlike anything from the big candle brands — rich without being overpowering."</p>
+            <span class="testimonial-author">Devon K.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <h3>Ember & Oak</h3>
+          <p>Small-batch, hand-poured soy wax candles mindfully crafted in our home studio to bring peace and slow warmth to yours.</p>
+        </div>
+        <div>
+          <h4 class="footer-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4 class="footer-title">Inquiries</h4>
+          <p>Have questions about custom orders, wholesale, or our process?</p>
+          <p><a href="mailto:hello@emberandoak.example">hello@emberandoak.example</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Ember & Oak Candle Co. All rights reserved.</p>
+        <p>Made for slow evenings.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

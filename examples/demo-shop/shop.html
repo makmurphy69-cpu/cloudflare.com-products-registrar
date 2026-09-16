@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Hand-Poured Soy Candles | Ember & Oak</title>
+    <meta name="description" content="Explore our collection of four signature, hand-poured soy candles designed to fill your home with the warm, cozy scents of slow evenings.">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Shop Hand-Poured Soy Candles | Ember & Oak">
+    <meta property="og:description" content="Explore our collection of four signature, hand-poured soy candles designed to fill your home with the warm, cozy scents of slow evenings.">
+    <meta property="og:type" content="website">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-bg: #FAF6F0;
+            --color-card-bg: #FDFBFAF;
+            --color-text-dark: #2C2520;
+            --color-text-light: #5A4E46;
+            --color-accent: #9E521E;
+            --color-accent-hover: #7E3E14;
+            --color-border: #E8DFD5;
+            --font-serif: "Playfair Display", Georgia, serif;
+            --font-body: "Lora", Times, serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text-dark);
+            font-family: var(--font-body);
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        /* Header Navigation */
+        header {
+            border-bottom: 1px solid var(--color-border);
+            background-color: rgba(250, 246, 240, 0.95);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+        }
+
+        .logo-group {
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .logo-title {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--color-text-dark);
+        }
+
+        .logo-tagline {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--color-accent);
+            margin-top: 2px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--color-accent);
+        }
+
+        /* Hero Section */
+        .shop-hero {
+            max-width: 800px;
+            margin: 80px auto 40px auto;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .shop-hero h1 {
+            font-family: var(--font-serif);
+            font-size: 3rem;
+            font-weight: 400;
+            color: var(--color-text-dark);
+            margin-bottom: 16px;
+        }
+
+        .shop-hero p {
+            font-size: 1.15rem;
+            color: var(--color-text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Products Grid */
+        .products-section {
+            max-width: 1100px;
+            margin: 0 auto 100px auto;
+            padding: 0 24px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px 32px;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .shop-hero {
+                margin: 48px auto 24px auto;
+            }
+            .shop-hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+
+        .product-card {
+            background-color: var(--color-card-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(44, 37, 32, 0.04);
+        }
+
+        .product-image-container {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+            background-color: #EFECE8;
+        }
+
+        .product-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .product-card:hover .product-image-container img {
+            transform: scale(1.03);
+        }
+
+        .product-details {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .product-title {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+
+        .product-price {
+            font-family: var(--font-serif);
+            font-size: 1.3rem;
+            color: var(--color-accent);
+            font-weight: 500;
+        }
+
+        .product-description {
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .order-btn {
+            display: inline-block;
+            background-color: var(--color-accent);
+            color: #FFFFFF;
+            text-align: center;
+            text-decoration: none;
+            padding: 12px 24px;
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 2px;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .order-btn:hover {
+            background-color: var(--color-accent-hover);
+        }
+
+        /* Value Banner Section */
+        .value-banner {
+            background-color: #ECE5DC;
+            padding: 64px 24px;
+            text-align: center;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .value-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .value-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            color: var(--color-text-dark);
+        }
+
+        .value-text {
+            color: var(--color-text-light);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #221B16;
+            color: #E6DFD7;
+            padding: 64px 24px 32px 24px;
+        }
+
+        .footer-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-brand {
+            max-width: 320px;
+        }
+
+        .footer-brand-title {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: #FFF;
+            margin-bottom: 8px;
+        }
+
+        .footer-brand-tagline {
+            font-size: 0.85rem;
+            color: #C3B5A7;
+            margin-bottom: 16px;
+        }
+
+        .footer-links h4, .footer-contact h4 {
+            font-family: var(--font-serif);
+            color: #FFF;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-links a {
+            color: #C3B5A7;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #FFF;
+        }
+
+        .footer-contact p {
+            color: #C3B5A7;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .footer-contact a {
+            color: #C3B5A7;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-contact a:hover {
+            color: #FFF;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #362D26;
+            padding-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #A09183;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-top {
+                flex-direction: column;
+                gap: 32px;
+            }
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px;
+            }
+            nav ul {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MigaBuilder Required Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example store built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Navigation Header -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo-group">
+                <span class="logo-title">Ember & Oak</span>
+                <span class="logo-tagline">Slow Evenings</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html" class="active">Shop</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Shop Introduction -->
+        <section class="shop-hero">
+            <h1>The Core Collection</h1>
+            <p>Thoughtfully formulated, hand-poured in small batches, and crafted strictly with 100% natural soy wax, premium botanical fragrance oils, and cotton wicks. Perfect for unwinding.</p>
+        </section>
+
+        <!-- Product Listing Grid -->
+        <section class="products-section">
+            <div class="product-grid">
+                
+                <!-- Product 1: Cedar & Smoke -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://loremflickr.com/1200/800/candle%2Cwood%2Csmoke?random=95666" alt="Amber glass candle surrounded by pine and dark wood accents">
+                    </div>
+                    <div class="product-details">
+                        <div class="product-header">
+                            <h2 class="product-title">Cedar & Smoke</h2>
+                            <span class="product-price">$24</span>
+                        </div>
+                        <p class="product-description">Immerse your space in the aroma of a quiet cabin hearth. Deep notes of aged cedar wood, wild balsam, and charred oak firewood blended with hints of crisp autumn wind.</p>
+                        <a href="mailto:hello@emberandoak.example?subject=Order Inquiry: Cedar & Smoke Candle" class="order-btn">Contact to order</a>
+                    </div>
+                </div>
+
+                <!-- Product 2: Vanilla Bourbon -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://loremflickr.com/1200/800/candle%2Ccozy%2Cvanilla?random=87090" alt="Warm candle casting a golden glow on a cozy rustic tabletop">
+                    </div>
+                    <div class="product-details">
+                        <div class="product-header">
+                            <h2 class="product-title">Vanilla Bourbon</h2>
+                            <span class="product-price">$22</span>
+                        </div>
+                        <p class="product-description">Warm, rich, and undeniably comforting. Deeply sweet Madagascar vanilla bean steeped in oak-aged Kentucky bourbon, rounded out with a soft note of charred sugar.</p>
+                        <a href="mailto:hello@emberandoak.example?subject=Order Inquiry: Vanilla Bourbon Candle" class="order-btn">Contact to order</a>
+                    </div>
+                </div>
+
+                <!-- Product 3: Sea Salt & Driftwood -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://loremflickr.com/1200/800/candle%2Cbeach%2Cdriftwood?random=66995" alt="Scented candle with natural sea salt and weathered wood in a clean, minimalist setting">
+                    </div>
+                    <div class="product-details">
+                        <div class="product-header">
+                            <h2 class="product-title">Sea Salt & Driftwood</h2>
+                            <span class="product-price">$24</span>
+                        </div>
+                        <p class="product-description">Capture the calm of a misty, desolate coast. Salty ocean mist, sun-bleached driftwood, and fresh wild sage create a clean, refreshing, and calming atmosphere.</p>
+                        <a href="mailto:hello@emberandoak.example?subject=Order Inquiry: Sea Salt & Driftwood Candle" class="order-btn">Contact to order</a>
+                    </div>
+                </div>
+
+                <!-- Product 4: Fig & Amber -->
+                <div class="product-card">
+                    <div class="product-image-container">
+                        <img src="https://loremflickr.com/1200/800/candle%2Camber%2Cwarm?random=5951" alt="Warmly lit candle beside fresh figs and resinous raw amber">
+                    </div>
+                    <div class="product-details">
+                        <div class="product-header">
+                            <h2 class="product-title">Fig & Amber</h2>
+                            <span class="product-price">$26</span>
+                        </div>
+                        <p class="product-description">Earthysweet and wonderfully grounding. Sun-ripened Adriatic mission figs layered gently over a foundation of rich, warm golden amber, clean musk, and autumn leaves.</p>
+                        <a href="mailto:hello@emberandoak.example?subject=Order Inquiry: Fig & Amber Candle" class="order-btn">Contact to order</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Our Craft Quality Assurance Banner -->
+        <section class="value-banner">
+            <div class="value-container">
+                <h3 class="value-title">Crafted with Intention</h3>
+                <p class="value-text">All of our candles are hand-poured in micro-batches in our Pacific Northwest studio. We use sustainable ingredients, zero synthetic dyes, and local suppliers to ensure each blend slow-burns cleanly and fills your room perfectly.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <h3 class="footer-brand-title">Ember & Oak</h3>
+                    <p class="footer-brand-tagline">Hand-poured candles for slow evenings.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Inquiries</h4>
+                    <p>To order, reach out to us at:</p>
+                    <p><a href="mailto:hello@emberandoak.example">hello@emberandoak.example</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ember & Oak. All rights reserved.</p>
+                <p>Crafted for comfort, slow moments, and warm rooms.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

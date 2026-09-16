@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story | Ember & Oak Hand-Poured Candles</title>
+    <meta name="description" content="Discover the story behind Ember & Oak, where we hand-pour premium, clean-burning soy candles in small batches to inspire your slow evenings.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Our Story | Ember & Oak Hand-Poured Candles">
+    <meta property="og:description" content="Discover the story behind Ember & Oak, where we hand-pour premium, clean-burning soy candles in small batches to inspire your slow evenings.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Reset & Variable Tokens */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --color-bg-primary: #FDFBF7;
+            --color-bg-secondary: #F5EFEA;
+            --color-text-dark: #2A211D;
+            --color-text-muted: #5E524C;
+            --color-accent: #A36B4C;
+            --color-accent-hover: #835235;
+            --color-banner: #E2A63B;
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Inter', sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --container-max: 1200px;
+        }
+
+        body {
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-dark);
+            font-family: var(--font-sans);
+            font-weight: 300;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: var(--font-serif);
+            font-weight: 500;
+            line-height: 1.2;
+            color: var(--color-text-dark);
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--color-text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Utilities */
+        .container {
+            max-width: var(--container-max);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--color-text-dark);
+            color: #ffffff;
+            padding: 1rem 2.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--color-text-dark);
+        }
+
+        .btn:hover {
+            background-color: transparent;
+            color: var(--color-text-dark);
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: var(--color-bg-primary);
+            border-bottom: 1px solid rgba(42, 33, 29, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+        }
+
+        .logo-group {
+            text-decoration: none;
+            color: var(--color-text-dark);
+        }
+
+        .logo-title {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-accent);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--color-text-dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--color-accent);
+            transition: var(--transition-smooth);
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        nav a:hover {
+            color: var(--color-accent);
+        }
+
+        /* Mobile Menu Toggle Button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--color-text-dark);
+            margin: 5px 0;
+            transition: var(--transition-smooth);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 0 5rem 0;
+            background-color: var(--color-bg-primary);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--color-accent);
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-lead {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: var(--color-text-muted);
+            margin-bottom: 2rem;
+            font-family: var(--font-serif);
+            font-style: italic;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            height: 550px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(42, 33, 29, 0.05);
+        }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.5s ease;
+        }
+
+        .hero-image-wrapper:hover img {
+            transform: scale(1.03);
+        }
+
+        /* Philosophy & Core Values (Split layout with ambient color blocks) */
+        .philosophy {
+            padding: 8rem 0;
+            background-color: var(--color-bg-secondary);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 6rem;
+            align-items: center;
+        }
+
+        .philosophy-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .phi-img-1 {
+            height: 400px;
+            object-fit: cover;
+            width: 100%;
+            margin-top: 3rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+
+        .phi-img-2 {
+            height: 400px;
+            object-fit: cover;
+            width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+
+        .philosophy h2 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        /* The Process Grid */
+        .process {
+            padding: 8rem 0;
+            background-color: var(--color-bg-primary);
+        }
+
+        .process-title {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 5rem auto;
+        }
+
+        .process-title h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+        }
+
+        .process-card {
+            text-align: left;
+        }
+
+        .process-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+        }
+
+        .process-step {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .process-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Testimonial Banner (Full Width Color Block) */
+        .testimonial-section {
+            background-color: #3E322B;
+            color: #FDFBF7;
+            padding: 7rem 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .testimonial-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .testimonial-quote {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            line-height: 1.4;
+            font-style: italic;
+            margin-bottom: 2rem;
+            color: #FDFBF7;
+        }
+
+        .testimonial-author {
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-banner);
+            font-weight: 500;
+        }
+
+        /* Founder's Letter */
+        .founder-section {
+            padding: 8rem 0;
+            background-color: var(--color-bg-primary);
+        }
+
+        .founder-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .founder-image {
+            height: 500px;
+            width: 100%;
+            object-fit: cover;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+
+        .founder-content h2 {
+            font-size: 2.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .signature {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            font-style: italic;
+            color: var(--color-accent);
+            margin-top: 2rem;
+        }
+
+        /* Footer Section */
+        footer {
+            background-color: #1E1613;
+            color: #E2DCD6;
+            padding: 6rem 0 3rem 0;
+            font-size: 0.95rem;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 4rem;
+            border-bottom: 1px solid rgba(226, 220, 214, 0.1);
+            padding-bottom: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            color: #ffffff;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-brand p {
+            color: #A3968F;
+            max-width: 320px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .footer-links h4 {
+            color: #ffffff;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #A3968F;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-links a:hover {
+            color: var(--color-banner);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #7E716A;
+        }
+
+        .footer-bottom a {
+            color: #7E716A;
+            text-decoration: none;
+        }
+
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 3.2rem;
+            }
+            .hero-grid, .philosophy-grid, .founder-grid {
+                gap: 3rem;
+            }
+            .philosophy h2, .process-title h2, .founder-content h2 {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Navigation Mobile styling */
+            .menu-toggle {
+                display: block;
+            }
+
+            nav {
+                display: none;
+                position: absolute;
+                top: 90px;
+                left: 0;
+                right: 0;
+                background-color: var(--color-bg-primary);
+                padding: 2rem;
+                border-bottom: 1px solid rgba(42, 33, 29, 0.08);
+                box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            }
+
+            nav.active {
+                display: block;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1.5rem;
+                align-items: center;
+            }
+
+            /* Responsive Grids */
+            .hero-grid, .philosophy-grid, .founder-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .hero-image-wrapper {
+                height: 380px;
+                order: -1;
+            }
+
+            .philosophy-images {
+                order: 2;
+            }
+
+            .phi-img-1 {
+                margin-top: 0;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+
+            .process-card img {
+                height: 320px;
+            }
+
+            .founder-image {
+                height: 380px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .testimonial-quote {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MigaBuilder Banner -->
+    <div style="background:#E2A63B;color:#3A2405;text-align:center;padding:10px 16px;font-family:system-ui,sans-serif;font-size:14px;">This is an example store built entirely with <a href="../../index.html" style="color:#3A2405;text-decoration:underline;font-weight:600;">MigaBuilder</a> — not a real business.</div>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="index.html" class="logo-group">
+                <span class="logo-title">Ember & Oak</span>
+                <span class="logo-subtitle">Hand-Poured Candles</span>
+            </a>
+
+            <!-- Toggle Button for Mobile Navigation -->
+            <button class="menu-toggle" aria-label="Toggle Navigation Menu" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="navbar">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html" class="active">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="hero-tag">Our Beginnings</span>
+                <h1>Crafted for the quiet, slow moments.</h1>
+                <p class="hero-lead">We believe that a candle should be more than home fragrance. It should be a gentle invitation to pause, unwind, and dwell in the present.</p>
+                <p>Ember & Oak was born out of a desire to find quiet amidst the constant rush of modern life. Rooted in the therapeutic rhythm of small-batch crafting, each of our candles is poured by hand with undivided focus, clean ingredients, and a dedication to unmatched sensory quality.</p>
+            </div>
+            <div class="hero-image-wrapper">
+                <img src="https://loremflickr.com/1200/800/candle%2Ccozy?random=71932" alt="Warm lit candle resting on a rustic wooden ledge with amber glow">
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy & Core Values -->
+    <section class="philosophy">
+        <div class="container philosophy-grid">
+            <div class="philosophy-images">
+                <img src="https://loremflickr.com/1200/800/wax%2Cpouring?random=46758" class="phi-img-1" alt="Warm liquid soy wax being poured smoothly into amber jars">
+                <img src="https://loremflickr.com/1200/800/essential%2Coil?random=2928" class="phi-img-2" alt="Pure botanical oils and herbal ingredients neatly arranged">
+            </div>
+            <div class="philosophy-content">
+                <span class="hero-tag">The Philosophy</span>
+                <h2>Clean materials. Intentional design.</h2>
+                <p>What goes into your home matters deeply to us. Standard commercial candles are often loaded with synthetic paraffins and harsh chemical additives. We set out to create an alternative that is kind to your lungs and beautiful to your spaces.</p>
+                <p>Every single Ember & Oak candle is formulated using 100% natural soy wax sourced sustainably from domestic farmers. We pair our wax with botanical fragrance oils and clean crackling wooden wicks to produce a steady, toxic-free burn that gently warms your home without overwhelming it.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Hand-Poured Process -->
+    <section class="process">
+        <div class="container">
+            <div class="process-title">
+                <span class="hero-tag">Our Method</span>
+                <h2>Made by Hand in Small Batches</h2>
+                <p>We refuse to compromise quality for scale. That is why our process remains strictly manual, slow, and intentional from start to finish.</p>
+            </div>
+
+            <div class="process-grid">
+                <!-- Step 1 -->
+                <div class="process-card">
+                    <img src="https://loremflickr.com/1200/800/botanical%2Cfragrance?random=90660" alt="A glass dropper bottle sitting next to dry cedar chips and pine cones">
+                    <span class="process-step">Step 01</span>
+                    <h3>The Scent Profile</h3>
+                    <p>We meticulously test and blend complex fragrance profiles inspired by nature—woods, dry spices, earthy resins, and fresh botanicals—to recreate the nostalgic aroma of a forest retreat.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="process-card">
+                    <img src="https://loremflickr.com/1200/800/candle%2Ccrafting?random=91422" alt="Hands carefully holding a glass amber jar and setting a wooden wick centered in wax">
+                    <span class="process-step">Step 02</span>
+                    <h3>The Slow Pour</h3>
+                    <p>Wax is melted to its precise temperature and blended with oils, then poured by hand into our signature amber glass vessels. Hand-pouring reduces air bubbles and ensures an even distribution.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="process-card">
+                    <img src="https://loremflickr.com/1200/800/wooden%2Ctable?random=61907" alt="Rows of amber glass candles curing quietly in a clean, sunlit workshop">
+                    <span class="process-step">Step 03</span>
+                    <h3>The Cure & Trim</h3>
+                    <p>Each batch is allowed to cure slowly in a temperature-controlled environment for two weeks. This curing process binds the oils to the wax, ensuring maximum hot scent throw.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial-section">
+        <div class="testimonial-container">
+            <div class="testimonial-quote">
+                "Fig & Amber is unlike anything from the big candle brands — rich without being overpowering."
+            </div>
+            <div class="testimonial-author">
+                — Devon K.
+            </div>
+        </div>
+    </section>
+
+    <!-- Founder's Story -->
+    <section class="founder-section">
+        <div class="container founder-grid">
+            <img src="https://loremflickr.com/1200/800/artisan%2Cwoman?random=72351" class="founder-image" alt="Ember and Oak founder smiling in a warm workshop with shelves of candles">
+            <div class="founder-content">
+                <span class="hero-tag">A Note From Our Founder</span>
+                <h2>"I wanted to build a sanctuary within the home."</h2>
+                <p>My journey into candlemaking began in a tiny studio apartment during a chaotic season of life. Every evening, my ritual was to light a candle and sit with a book. That simple flicker of warm light and grounding earthy scent changed the energy of the entire space. It became my sanctuary.</p>
+                <p>I crafted Ember & Oak to share that sanctuary with you. I hope our candles inspire you to dim the harsh overhead lights, silence the screens, and enjoy a slow, quiet evening. You’ve earned it.</p>
+                <p class="signature">Claire Thorne</p>
+                <div style="margin-top: 2rem;">
+                    <a href="shop.html" class="btn">Explore the Collection</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Ember & Oak</h3>
+                    <p>Creating sustainable, clean-burning soy candles that help you slow down, breathe deeply, and savor the evening.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="shop.html">Shop</a></li>
+                        <li><a href="about.html">About Our Story</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Say Hello</h4>
+                    <ul>
+                        <li><a href="mailto:hello@emberandoak.example">hello@emberandoak.example</a></li>
+                        <li style="color: #A3968F; margin-top: 1rem;">Based in Portland, Oregon</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Ember & Oak. All rights reserved.</p>
+                <p>Designed with intention.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        function toggleMobileMenu() {
+            const nav = document.getElementById('navbar');
+            const toggle = document.querySelector('.menu-toggle');
+            nav.classList.toggle('active');
+            toggle.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
