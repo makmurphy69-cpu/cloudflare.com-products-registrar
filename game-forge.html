@@ -118,6 +118,13 @@
 
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
+
+  .chip-btn {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: 20px;
+    padding: 6px 13px; font-size: 12.5px; cursor: pointer;
+  }
+  .chip-btn:hover:not(:disabled) { border-color: var(--line-cyan); color: var(--line-cyan); }
+  .chip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -168,6 +175,36 @@
 
     <div class="section-title">The game</div>
     <div class="field">
+      <label for="genre">Genre</label>
+      <select id="genre">
+        <option value="auto" selected>Let the AI decide</option>
+        <option value="platformer">Platformer (jump/run)</option>
+        <option value="shooter">Top-down shooter</option>
+        <option value="runner">Endless runner / dodger</option>
+        <option value="puzzle">Puzzle / match grid</option>
+        <option value="racing">Racing / obstacle course</option>
+        <option value="tower">Tower defense (lite)</option>
+        <option value="battle">Turn-based battle</option>
+      </select>
+      <p class="hint">Picking a genre gives the AI real technical scaffolding for that kind of game (physics, spawning, grid logic) instead of guessing — usually the single biggest jump in quality.</p>
+    </div>
+    <div class="field">
+      <label for="difficulty">Difficulty curve</label>
+      <select id="difficulty">
+        <option value="normal" selected>Normal — balanced from the start</option>
+        <option value="easy">Easy — forgiving, good for testing</option>
+        <option value="hard">Hard — punishing, tight timing</option>
+        <option value="escalating">Escalating — starts easy, ramps up over time</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Extra features</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featSound" checked style="width:auto;"> Sound effects (Web Audio, no files)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featTouch" checked style="width:auto;"> On-screen touch controls for mobile</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featHighscore" checked style="width:auto;"> Local high score (saved in the browser)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:0;"><input type="checkbox" id="featTwoPlayer" style="width:auto;"> Two-player, same keyboard</label>
+    </div>
+    <div class="field">
       <label for="brief">Describe the game you want</label>
       <textarea id="brief" placeholder="e.g. A ninja who fights other ninjas — arrow keys to move, space to attack, best of 3 rounds wins"></textarea>
       <p class="hint">Be specific about controls and the win condition if you have one in mind — the AI follows what you give it. Expect simple, playable mechanics with shapes and emoji for characters, not illustrated art.</p>
@@ -188,6 +225,7 @@
 
     <div class="field" style="margin-top:14px;">
       <label for="refineInput" style="color: var(--paper);">Refine this game</label>
+      <div id="quickRefineChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
       <textarea id="refineInput" placeholder="e.g. Make the ninjas move faster, add a health bar, make attacks have a cooldown" style="min-height:60px;"></textarea>
       <button type="button" class="draft-btn" id="refineBtn" disabled style="margin-top:8px;">Apply change</button>
     </div>
@@ -215,6 +253,12 @@
   const toggleKeyBtn = document.getElementById('toggleKey');
   const freeNoticeField = document.getElementById('freeNoticeField');
   const modelSelect = document.getElementById('model');
+  const genreSelect = document.getElementById('genre');
+  const difficultySelect = document.getElementById('difficulty');
+  const featSound = document.getElementById('featSound');
+  const featTouch = document.getElementById('featTouch');
+  const featHighscore = document.getElementById('featHighscore');
+  const featTwoPlayer = document.getElementById('featTwoPlayer');
   const briefInput = document.getElementById('brief');
   const draftBtn = document.getElementById('draftBtn');
   const errorBox = document.getElementById('errorBox');
@@ -223,6 +267,7 @@
   const preview = document.getElementById('preview');
   const refineInput = document.getElementById('refineInput');
   const refineBtn = document.getElementById('refineBtn');
+  const quickRefineChips = document.getElementById('quickRefineChips');
   const viewSourceBtn = document.getElementById('viewSourceBtn');
   const downloadBtn = document.getElementById('downloadBtn');
   const sourceView = document.getElementById('sourceView');
@@ -389,19 +434,108 @@
     viewSourceBtn.disabled = false;
     downloadBtn.disabled = false;
     refineBtn.disabled = false;
+    setQuickRefineChipsEnabled(true);
   }
 
-  const GAME_RULES = [
-    'You are a browser game developer. Given a short description, write ONE complete, self-contained HTML document implementing that game, playable immediately.',
+  const GAME_RULES_BASE = [
+    'You are a senior browser game developer. Given a short description, write ONE complete, self-contained HTML document implementing that game, playable immediately.',
     'Requirements:',
-    '- A single <canvas> element, roughly 800x500 (responsive down to smaller screens), redrawn via requestAnimationFrame.',
+    '- A single <canvas> element, roughly 800x500 (responsive down to smaller screens), redrawn via requestAnimationFrame with delta-time-based movement (not fixed per-frame steps) so speed is consistent across refresh rates.',
     '- All CSS and JavaScript inline in this one document. No external scripts, fonts, images, or network calls of any kind.',
     '- Implement real, working mechanics that match the description: movement, the main action (attack/jump/shoot/collect/etc. as fitting), a clear win/lose or score condition, and a visible "Play again" control once the game ends.',
     '- Keyboard controls (arrow keys or WASD for movement, Space or another key for the main action) — show the controls in a small on-screen legend.',
     '- Draw characters and objects as clear canvas shapes combined with relevant emoji rendered via ctx.font + fillText (e.g. "🥷", "⚔️", "👾", "🏆") — this reads far better than plain rectangles with zero art assets.',
+    '- Use proper collision detection (AABB or distance-based, whichever fits) rather than approximate guessing, and clamp entities so they never move fully off-canvas unless the design calls for it.',
     '- Keep logic self-contained and robust: no external asset loading, no external libraries, no eval.',
     '- Output ONLY the complete HTML document — no markdown fences, no commentary, no explanation.'
   ].join('\n');
+
+  const GENRE_RULES = {
+    auto: '',
+    platformer: [
+      'GENRE: Platformer.',
+      '- Implement real gravity (constant downward acceleration), a jump impulse, and ground/platform collision that stops falling only when landing on a surface from above.',
+      '- Build at least 3-4 platforms/ledges at varying heights the player must navigate, plus at least one hazard (spikes, gap, or enemy) that ends the run or costs a life on contact.',
+      '- Coyote-time (a few frames of jump grace after leaving a ledge) is a nice touch if it fits naturally.'
+    ].join('\n'),
+    shooter: [
+      'GENRE: Top-down shooter.',
+      '- Player aims/moves in a top-down view; the main action fires a projectile that travels in a straight line and is removed on hit or leaving the canvas.',
+      '- Spawn enemies on a timer/wave system with increasing frequency or toughness over time; track and display remaining enemies or wave number.',
+      '- Use simple object pooling logic (reuse arrays of active bullets/enemies, splice out dead ones) rather than leaking unbounded objects.'
+    ].join('\n'),
+    runner: [
+      'GENRE: Endless runner / dodger.',
+      '- The world scrolls or obstacles move toward the player continuously; speed should increase gradually the longer the run lasts.',
+      '- The player has one clear evasive action (jump, lane-switch, or duck) with an unmistakable game-over the instant they touch an obstacle.',
+      '- Track and display distance or survival time as the score, and persist/show the best run in-session.'
+    ].join('\n'),
+    puzzle: [
+      'GENRE: Puzzle / match grid.',
+      '- Model the board as a real 2D array (rows x cols) of typed cells, not just visual shapes with no underlying data.',
+      '- Implement actual match/clear detection logic (e.g. 3-in-a-row, or the specific rule described) that mutates the grid array and refills/settles it afterward.',
+      '- Give the player a clear input method (click/tap two adjacent cells to swap, or click to select then click destination) and prevent illegal moves.'
+    ].join('\n'),
+    racing: [
+      'GENRE: Racing / obstacle course.',
+      '- The player controls a vehicle/character that steers left-right (and optionally accelerates/brakes) while the track or obstacles scroll past.',
+      '- Increase obstacle density or scroll speed over time to build difficulty, and end the run cleanly on collision.',
+      '- Track distance traveled or time survived as the score.'
+    ].join('\n'),
+    tower: [
+      'GENRE: Tower defense (lite).',
+      '- Enemies follow a fixed path (array of waypoints) from start to end; reaching the end costs the player a life.',
+      '- The player places a small number of tower types (at least 2, with different range/damage/cost tradeoffs) by clicking grid cells; towers auto-target and fire at enemies in range on a cooldown.',
+      '- Implement a simple currency (earned per kill) and a wave counter that increases enemy count/speed each wave.'
+    ].join('\n'),
+    battle: [
+      'GENRE: Turn-based battle.',
+      '- Implement real turn order: player picks an action from a visible menu (attack/defend/special/etc.), it resolves, then the opponent (simple AI) takes a turn, alternating until one side\'s HP reaches 0.',
+      '- Show HP bars for both sides that update immediately after each action, and log the last couple of actions as short text so the player can follow what happened.',
+      '- Keep the opponent AI simple but not purely random — e.g. favor its strongest move when the player is low, or defend when itself is low.'
+    ].join('\n')
+  };
+
+  const DIFFICULTY_RULES = {
+    normal: 'DIFFICULTY: Balanced — a competent first-time player should be able to win or make real progress within a couple of tries.',
+    easy: 'DIFFICULTY: Easy — slower enemy/obstacle speed, more forgiving hit detection and timing windows, generous lives or health. This should be very winnable.',
+    hard: 'DIFFICULTY: Hard — faster pace, tighter timing windows, less margin for error. A skilled player should still be able to win, but it should take real effort.',
+    escalating: 'DIFFICULTY: Escalating — start noticeably easy so new players get a feel for the controls, then ramp speed/spawn-rate/enemy toughness up smoothly over time (by score, wave, or elapsed time) so late play is genuinely challenging.'
+  };
+
+  function featureRules() {
+    const rules = [];
+    if (featSound.checked) {
+      rules.push([
+        'FEATURE — Sound effects: use the Web Audio API (new (window.AudioContext || window.webkitAudioContext)()) to generate short procedural sound effects with oscillators/gain envelopes — no audio files. Add distinct sounds for at least: the main action, taking damage/losing, and winning/scoring. Include a mute/unmute button.'
+      ].join(''));
+    }
+    if (featTouch.checked) {
+      rules.push([
+        'FEATURE — Touch controls: add on-screen touch controls (buttons or a D-pad, styled simply with divs/CSS, positioned below or overlaying the canvas) that trigger the exact same input handlers as the keyboard, shown always (not only detected via media query) so the game is fully playable by tap alone on a phone.'
+      ].join(''));
+    }
+    if (featHighscore.checked) {
+      rules.push([
+        'FEATURE — Local high score: on game over, read/write a high score using localStorage (pick a clear unique key), display both the current run\'s score and the best score, and update the stored best when beaten.'
+      ].join(''));
+    }
+    if (featTwoPlayer.checked) {
+      rules.push([
+        'FEATURE — Two players, one keyboard: support a second local player with a distinct key set (commonly WASD + a nearby action key for player 2, arrow keys + a different action key for player 1) — this may mean two characters, or a simple alternating-turns setup for a battle/puzzle genre, whichever fits the description. Clearly label which controls belong to which player in the on-screen legend.'
+      ].join(''));
+    }
+    return rules;
+  }
+
+  function buildGameSystemPrompt() {
+    const parts = [GAME_RULES_BASE];
+    const genreRule = GENRE_RULES[genreSelect.value];
+    if (genreRule) parts.push(genreRule);
+    parts.push(DIFFICULTY_RULES[difficultySelect.value]);
+    parts.push.apply(parts, featureRules());
+    return parts.join('\n\n');
+  }
 
   async function generateGame() {
     clearError();
@@ -415,7 +549,7 @@
     titleBlock.textContent = 'GAME FORGE — BUILDING…';
     try {
       const model = modelSelect.value;
-      const html = await callChat(key, model, GAME_RULES, brief);
+      const html = await callChat(key, model, buildGameSystemPrompt(), brief);
       showGame(html);
       titleBlock.textContent = 'GAME FORGE — READY TO PLAY';
     } catch (err) {
@@ -427,6 +561,30 @@
     }
   }
   draftBtn.addEventListener('click', generateGame);
+
+  const QUICK_REFINE_PRESETS = [
+    { label: '+ Sound effects', text: 'Add Web Audio procedural sound effects (no audio files) for the main action, taking damage, and winning, plus a mute button.' },
+    { label: '+ Touch controls', text: 'Add always-visible on-screen touch controls (buttons/D-pad) below the canvas that trigger the same actions as the keyboard, so it is fully playable on a phone.' },
+    { label: '+ High score', text: 'Add a local high score saved with localStorage, shown alongside the current score, updated whenever the player beats it.' },
+    { label: '+ Two-player', text: 'Add a second local player on a separate key set (WASD for one, arrow keys for the other) sharing the same keyboard, clearly labeled in the on-screen controls legend.' },
+    { label: 'Make it harder', text: 'Increase the difficulty: faster pace, tighter timing windows, tougher or more frequent enemies/obstacles, less margin for error.' },
+    { label: 'Add more levels', text: 'Add progressively harder levels or waves that advance automatically once the current one is cleared, with a brief on-screen indicator of the current level/wave number.' }
+  ];
+  QUICK_REFINE_PRESETS.forEach(function (preset) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip-btn';
+    chip.textContent = preset.label;
+    chip.disabled = true;
+    chip.addEventListener('click', function () {
+      refineInput.value = preset.text;
+      refineGame();
+    });
+    quickRefineChips.appendChild(chip);
+  });
+  function setQuickRefineChipsEnabled(enabled) {
+    quickRefineChips.querySelectorAll('.chip-btn').forEach(function (chip) { chip.disabled = !enabled; });
+  }
 
   async function refineGame() {
     clearError();
