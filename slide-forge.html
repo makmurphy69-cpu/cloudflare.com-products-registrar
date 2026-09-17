@@ -239,6 +239,15 @@
       <input type="number" id="slideCountInput" min="1" max="20" placeholder="Let the AI decide (4–10)">
       <p class="hint">Not counting the title slide. Leave blank to let the AI pick a reasonable number.</p>
     </div>
+    <div class="field">
+      <label for="themeSelect">Color theme</label>
+      <select id="themeSelect">
+        <option value="navy" selected>Navy &amp; Amber</option>
+        <option value="slate">Slate &amp; Teal</option>
+        <option value="forest">Forest &amp; Gold</option>
+        <option value="plum">Plum &amp; Rose</option>
+      </select>
+    </div>
 
     <div class="field">
       <label>Photos (optional, one per slide)</label>
@@ -458,8 +467,17 @@
 
   // ---------- slide state ----------
   let presentationTitle = '';
-  let slides = []; // {id, title, bullets: string[], mediaDataUrl, mediaType: 'image'|'video', mediaName, position}
+  let slides = []; // {id, title, bullets: string[], notes, mediaDataUrl, mediaType: 'image'|'video', mediaName, position}
   let slideIdCounter = 0;
+  const themeSelect = document.getElementById('themeSelect');
+
+  const THEMES = {
+    navy: { title: '0E2A47', titleText: 'EDEAE0', heading: '0E2A47', body: '16202B' },
+    slate: { title: '1E293B', titleText: 'F1F5F9', heading: '1E293B', body: '334155' },
+    forest: { title: '1B4332', titleText: 'F4F1E8', heading: '1B4332', body: '2D3B34' },
+    plum: { title: '3B1F3D', titleText: 'F5E9F0', heading: '3B1F3D', body: '2D1B2E' }
+  };
+  function currentTheme() { return THEMES[themeSelect.value] || THEMES.navy; }
 
   const POSITION_LABELS = {
     right: 'Right of text',
@@ -467,8 +485,8 @@
     full: 'Full-slide'
   };
 
-  function newSlide(title, bullets) {
-    return { id: ++slideIdCounter, title: title || 'New slide', bullets: bullets || [''], mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
+  function newSlide(title, bullets, notes) {
+    return { id: ++slideIdCounter, title: title || 'New slide', bullets: bullets || [''], notes: notes || '', mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
   }
 
   // ---------- preloaded photos (paired one-per-slide when planning) ----------
@@ -535,6 +553,7 @@
       const actions = document.createElement('div');
       actions.className = 'slide-card-actions';
       actions.innerHTML =
+        '<button type="button" data-regen title="Regenerate this slide with AI">🔁</button>' +
         '<button type="button" data-up title="Move up">▲</button>' +
         '<button type="button" data-down title="Move down">▼</button>' +
         '<button type="button" class="remove" data-remove title="Remove slide">✕</button>';
@@ -549,6 +568,14 @@
       bulletsArea.value = (s.bullets || []).join('\n');
       bulletsArea.addEventListener('input', () => { s.bullets = bulletsArea.value.split('\n'); });
       card.appendChild(bulletsArea);
+
+      const notesArea = document.createElement('textarea');
+      notesArea.style.minHeight = '44px';
+      notesArea.style.marginTop = '8px';
+      notesArea.placeholder = 'Speaker notes (optional) — not shown on the slide, only in presenter view';
+      notesArea.value = s.notes || '';
+      notesArea.addEventListener('input', () => { s.notes = notesArea.value; });
+      card.appendChild(notesArea);
 
       const mediaRow = document.createElement('div');
       mediaRow.className = 'slide-media-row';
@@ -607,6 +634,7 @@
       }
       card.appendChild(mediaRow);
 
+      actions.querySelector('[data-regen]').addEventListener('click', (e) => regenerateSlide(s, e.currentTarget));
       actions.querySelector('[data-up]').addEventListener('click', () => moveSlide(i, -1));
       actions.querySelector('[data-down]').addEventListener('click', () => moveSlide(i, 1));
       actions.querySelector('[data-remove]').addEventListener('click', () => {
@@ -647,18 +675,18 @@
     const model = modelSelect.value;
     const rules = [
       'You plan PowerPoint presentations. Given a description, respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
-      '{"title": "presentation title", "slides": [{"title": "slide title", "bullets": ["point 1","point 2"]}]}',
+      '{"title": "presentation title", "slides": [{"title": "slide title", "bullets": ["point 1","point 2"], "notes": "1-3 sentences a presenter could read aloud to expand on this slide"}]}',
       hasRequestedCount
         ? ('Return EXACTLY ' + requestedCount + ' slides in the slides array (not counting the title slide).')
         : '4-10 slides.',
-      'Each slide: a short title and 2-5 short bullet points, real content (no placeholders).'
+      'Each slide: a short title, 2-5 short bullet points, and speaker notes — all real content (no placeholders).'
     ].join('\n');
 
     try {
       const json = await callChat(key, model, rules, brief);
       const plan = JSON.parse(json);
       presentationTitle = plan.title || brief;
-      slides = (plan.slides || []).map(s => newSlide(s.title, s.bullets));
+      slides = (plan.slides || []).map(s => newSlide(s.title, s.bullets, s.notes));
       if (!slides.length) slides = [newSlide('New slide', ['Point one'])];
 
       let pairedCount = 0;
@@ -689,6 +717,41 @@
   }
   planBtn.addEventListener('click', planSlides);
 
+  // ---------- regenerate a single slide ----------
+  async function regenerateSlide(s, btn) {
+    clearError();
+    const key = currentTextApiKey();
+    if (!key) { showError('Add your API key first.'); return; }
+
+    const original = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = '⏳';
+    const model = modelSelect.value;
+    const rules = [
+      'You are reworking ONE slide of an existing presentation. Given the presentation\'s overall topic and this slide\'s current content, rewrite just this slide.',
+      'Respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
+      '{"title": "slide title", "bullets": ["point 1","point 2"], "notes": "1-3 sentences a presenter could read aloud"}',
+      '2-5 short bullet points, real content (no placeholders). Keep it consistent with the presentation\'s topic and tone but feel free to rephrase, reorganize, or improve the current version.'
+    ].join('\n');
+    const userMsg = 'PRESENTATION TOPIC:\n' + (pptxBrief.value.trim() || presentationTitle) +
+      '\n\nCURRENT SLIDE:\nTitle: ' + s.title + '\nBullets:\n' + (s.bullets || []).join('\n') +
+      (s.notes ? '\nNotes: ' + s.notes : '');
+
+    try {
+      const json = await callChat(key, model, rules, userMsg);
+      const updated = JSON.parse(json);
+      s.title = updated.title || s.title;
+      s.bullets = updated.bullets && updated.bullets.length ? updated.bullets : s.bullets;
+      s.notes = updated.notes != null ? updated.notes : s.notes;
+      renderSlidesList();
+      showSuccess('Regenerated "' + s.title + '".');
+    } catch (err) {
+      showError(err.message || 'Could not regenerate that slide.');
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
+
   // ---------- build .pptx ----------
   const POSITION_LAYOUTS = {
     right: { text: { x: 0.5, y: 1.3, w: 4.5, h: 3.9 }, media: { x: 5.3, y: 1.3, w: 4.2, h: 3.9 } },
@@ -705,29 +768,31 @@
   }
 
   function buildSlide(pptx, s) {
+    const theme = currentTheme();
     const slide = pptx.addSlide();
     slide.background = { color: 'FFFFFF' };
     const bullets = (s.bullets || []).filter(b => b && b.trim());
     const hasMedia = !!s.mediaDataUrl;
+    if (s.notes && s.notes.trim()) slide.addNotes(s.notes.trim());
 
     if (hasMedia && s.position === 'full') {
       addMediaToSlide(pptx, slide, s, POSITION_LAYOUTS.full.media, 'cover');
-      slide.addShape('rect', { x: 0, y: 3.9, w: 10, h: 1.73, fill: { color: '0E2A47', transparency: 25 }, line: { type: 'none' } });
-      slide.addText(s.title || '', { x: 0.5, y: 4.0, w: 9, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF', fontFace: 'Arial' });
+      slide.addShape('rect', { x: 0, y: 3.9, w: 10, h: 1.73, fill: { color: theme.title, transparency: 25 }, line: { type: 'none' } });
+      slide.addText(s.title || '', { x: 0.5, y: 4.0, w: 9, h: 0.6, fontSize: 22, bold: true, color: theme.titleText, fontFace: 'Arial' });
       if (bullets.length) {
-        slide.addText(bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } })), { x: 0.6, y: 4.6, w: 8.8, h: 0.9, fontSize: 12, color: 'EDEAE0', fontFace: 'Arial' });
+        slide.addText(bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } })), { x: 0.6, y: 4.6, w: 8.8, h: 0.9, fontSize: 12, color: theme.titleText, fontFace: 'Arial' });
       }
       return;
     }
 
-    slide.addText(s.title || '', { x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: '0E2A47', fontFace: 'Arial' });
+    slide.addText(s.title || '', { x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: theme.heading, fontFace: 'Arial' });
 
     const layout = hasMedia ? POSITION_LAYOUTS[s.position] : null;
     const textBox = layout ? layout.text : { x: 0.6, y: 1.4, w: 8.6, h: 3.8 };
     if (bullets.length) {
       slide.addText(
         bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } })),
-        Object.assign({ fontSize: 16, color: '16202B', fontFace: 'Arial' }, textBox)
+        Object.assign({ fontSize: 16, color: theme.body, fontFace: 'Arial' }, textBox)
       );
     }
     if (hasMedia) addMediaToSlide(pptx, slide, s, layout.media, 'contain');
@@ -747,10 +812,11 @@
       pptx.defineLayout({ name: 'MB', width: 10, height: 5.63 });
       pptx.layout = 'MB';
 
+      const theme = currentTheme();
       const titleSlide = pptx.addSlide();
-      titleSlide.background = { color: '0E2A47' };
+      titleSlide.background = { color: theme.title };
       titleSlide.addText(presentationTitle || pptxBrief.value.trim() || 'Presentation', {
-        x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: 'EDEAE0', fontFace: 'Arial'
+        x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: theme.titleText, fontFace: 'Arial'
       });
 
       slides.forEach(s => buildSlide(pptx, s));
