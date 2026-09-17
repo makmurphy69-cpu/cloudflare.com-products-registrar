@@ -125,6 +125,19 @@
   }
   .chip-btn:hover:not(:disabled) { border-color: var(--line-cyan); color: var(--line-cyan); }
   .chip-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .add-audio-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .upload-btn, .record-btn {
+    display: inline-block; background: #fff; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius);
+    padding: 8px 12px; font-size: 12.5px; cursor: pointer; color: var(--ink); font-family: inherit;
+  }
+  .record-btn.recording { background: rgba(216, 96, 74, 0.14); border-color: var(--error); color: #6E2418; }
+  .clip-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(22, 32, 43, 0.12); flex-wrap: wrap; }
+  .clip-row:last-child { border-bottom: none; }
+  .clip-row input[type="text"] { flex: 1; min-width: 90px; font-size: 13px; padding: 6px 8px; }
+  .clip-row select { flex: none; width: auto; font-size: 12px; padding: 6px 8px; }
+  .clip-row audio { height: 30px; max-width: 150px; }
+  .clip-row .remove-clip { background: transparent; border: none; color: var(--error); cursor: pointer; font-size: 16px; line-height: 1; padding: 4px; }
 </style>
 </head>
 <body>
@@ -199,10 +212,20 @@
     </div>
     <div class="field">
       <label>Extra features</label>
-      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featSound" checked style="width:auto;"> Sound effects (Web Audio, no files)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featSound" checked style="width:auto;"> Procedural sound effects (Web Audio, no files)</label>
       <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featTouch" checked style="width:auto;"> On-screen touch controls for mobile</label>
       <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:6px;"><input type="checkbox" id="featHighscore" checked style="width:auto;"> Local high score (saved in the browser)</label>
       <label style="display:flex;align-items:center;gap:8px;font-weight:400;font-size:13.5px;margin-bottom:0;"><input type="checkbox" id="featTwoPlayer" style="width:auto;"> Two-player, same keyboard</label>
+    </div>
+    <div class="field">
+      <label>Your own sound &amp; voice (optional)</label>
+      <p class="hint" style="margin-top:0;">Upload short clips or record your voice — they're baked directly into the game file and never sent anywhere, including to the AI provider. Give each one a short name; the AI uses the name to decide when to play it (e.g. "jump", "win", "taunt"). Keep clips short — they're embedded as-is.</p>
+      <div class="add-audio-row">
+        <label class="upload-btn" for="audioUploadInput">+ Add sound files</label>
+        <input type="file" id="audioUploadInput" accept="audio/*" multiple style="display:none;">
+        <button type="button" class="record-btn" id="recordVoiceBtn">🎙️ Record voice</button>
+      </div>
+      <div id="clipsList"></div>
     </div>
     <div class="field">
       <label for="brief">Describe the game you want</label>
@@ -259,6 +282,9 @@
   const featTouch = document.getElementById('featTouch');
   const featHighscore = document.getElementById('featHighscore');
   const featTwoPlayer = document.getElementById('featTwoPlayer');
+  const audioUploadInput = document.getElementById('audioUploadInput');
+  const recordVoiceBtn = document.getElementById('recordVoiceBtn');
+  const clipsList = document.getElementById('clipsList');
   const briefInput = document.getElementById('brief');
   const draftBtn = document.getElementById('draftBtn');
   const errorBox = document.getElementById('errorBox');
@@ -322,6 +348,188 @@
   }
   providerSelect.addEventListener('change', applyProvider);
   applyProvider();
+
+  let customClips = []; // {id, name, kind: 'sfx'|'voice'|'music', dataUrl, label}
+  let clipIdCounter = 0;
+
+  function sanitizeClipName(raw, excludeId) {
+    let base = (raw || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    if (!base) base = 'clip';
+    let candidate = base;
+    let n = 2;
+    while (customClips.some(function (c) { return c.name === candidate && c.id !== excludeId; })) {
+      candidate = base + '_' + n;
+      n++;
+    }
+    return candidate;
+  }
+
+  function guessKindFromFilename(name) {
+    return /(music|bgm|loop|theme|ambient)/i.test(name) ? 'music' : 'sfx';
+  }
+
+  function addClip(dataUrl, rawName, kind) {
+    const id = 'clip_' + (++clipIdCounter);
+    const name = sanitizeClipName(rawName, id);
+    customClips.push({ id: id, name: name, kind: kind, dataUrl: dataUrl, label: rawName });
+    renderClipsList();
+  }
+
+  function renderClipsList() {
+    clipsList.innerHTML = '';
+    customClips.forEach(function (clip) {
+      const row = document.createElement('div');
+      row.className = 'clip-row';
+
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = clip.name;
+      nameInput.title = 'Trigger name the AI uses to play this clip';
+      nameInput.addEventListener('change', function () {
+        clip.name = sanitizeClipName(nameInput.value, clip.id);
+        renderClipsList();
+      });
+
+      const kindSelect = document.createElement('select');
+      [['sfx', 'Sound effect'], ['voice', 'Voice line'], ['music', 'Background music (loops)']].forEach(function (opt) {
+        const el = document.createElement('option');
+        el.value = opt[0]; el.textContent = opt[1];
+        if (opt[0] === clip.kind) el.selected = true;
+        kindSelect.appendChild(el);
+      });
+      kindSelect.addEventListener('change', function () { clip.kind = kindSelect.value; });
+
+      const preview = document.createElement('audio');
+      preview.controls = true;
+      preview.src = clip.dataUrl;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-clip';
+      removeBtn.textContent = '✕';
+      removeBtn.title = 'Remove';
+      removeBtn.addEventListener('click', function () {
+        customClips = customClips.filter(function (c) { return c.id !== clip.id; });
+        renderClipsList();
+      });
+
+      row.appendChild(nameInput);
+      row.appendChild(kindSelect);
+      row.appendChild(preview);
+      row.appendChild(removeBtn);
+      clipsList.appendChild(row);
+    });
+  }
+
+  audioUploadInput.addEventListener('change', function () {
+    Array.from(audioUploadInput.files || []).forEach(function (file) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const baseName = file.name.replace(/\.[^.]+$/, '');
+        addClip(String(reader.result), baseName, guessKindFromFilename(file.name));
+      };
+      reader.readAsDataURL(file);
+    });
+    audioUploadInput.value = '';
+  });
+
+  let voiceRecorder = null;
+  let voiceChunks = [];
+  let voiceStream = null;
+
+  recordVoiceBtn.addEventListener('click', async function () {
+    if (voiceRecorder && voiceRecorder.state === 'recording') {
+      voiceRecorder.stop();
+      return;
+    }
+    try {
+      voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+      showError('Could not access the microphone: ' + (err.message || err));
+      return;
+    }
+    voiceChunks = [];
+    voiceRecorder = new MediaRecorder(voiceStream);
+    voiceRecorder.ondataavailable = function (e) { if (e.data.size > 0) voiceChunks.push(e.data); };
+    voiceRecorder.onstop = function () {
+      voiceStream.getTracks().forEach(function (t) { t.stop(); });
+      recordVoiceBtn.textContent = '🎙️ Record voice';
+      recordVoiceBtn.classList.remove('recording');
+      const blob = new Blob(voiceChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onload = function () {
+        const voiceCount = customClips.filter(function (c) { return c.kind === 'voice'; }).length + 1;
+        addClip(String(reader.result), 'voice_' + voiceCount, 'voice');
+      };
+      reader.readAsDataURL(blob);
+    };
+    voiceRecorder.start();
+    recordVoiceBtn.textContent = '⏹ Stop recording';
+    recordVoiceBtn.classList.add('recording');
+  });
+
+  function customAudioPromptSection() {
+    if (!customClips.length) return '';
+    const lines = ['CUSTOM AUDIO — the player supplied their own sound/voice clips, which are wired up automatically after your code runs. Do NOT write procedural sound for any moment covered below; instead call window.playCustomSound("<name>") at the exact right moment in your game logic — the function and audio elements already exist, you do not need to define or load anything.'];
+    customClips.filter(function (c) { return c.kind !== 'music'; }).forEach(function (c) {
+      lines.push('- window.playCustomSound("' + c.name + '") — a ' + (c.kind === 'voice' ? 'voice line' : 'sound effect') + ' named "' + c.name + '". Use the name as a strong hint for when it belongs (e.g. a clip named "jump" plays on jumping, "win" plays on winning); use your best judgement if the name is ambiguous.');
+    });
+    const music = customClips.filter(function (c) { return c.kind === 'music'; });
+    if (music.length) {
+      lines.push('- Background music ("' + music.map(function (c) { return c.name; }).join('", "') + '") already loops automatically once the player first interacts — do not trigger it yourself and do not add any other background music.');
+    }
+    return lines.join('\n');
+  }
+
+  const AUDIO_MARK_START = '<!-- migabuilder-custom-audio start -->';
+  const AUDIO_MARK_END = '<!-- migabuilder-custom-audio end -->';
+
+  function stripInjectedAudio(html) {
+    const startIdx = html.indexOf(AUDIO_MARK_START);
+    const endIdx = html.indexOf(AUDIO_MARK_END);
+    if (startIdx === -1 || endIdx === -1) return html;
+    return html.slice(0, startIdx) + html.slice(endIdx + AUDIO_MARK_END.length);
+  }
+
+  function injectCustomAudio(html) {
+    const clean = stripInjectedAudio(html);
+    if (!customClips.length) return clean;
+    const audioTags = customClips.map(function (clip) {
+      return '<audio id="ca_' + clip.name + '" preload="auto" style="display:none"' + (clip.kind === 'music' ? ' loop' : '') + '><source src="' + clip.dataUrl + '"></audio>';
+    }).join('\n');
+    const mapEntries = customClips.map(function (clip) {
+      return '"' + clip.name + '": document.getElementById("ca_' + clip.name + '")';
+    }).join(', ');
+    const hasMusic = customClips.some(function (c) { return c.kind === 'music'; });
+    const scriptLines = [
+      '<' + 'script>',
+      '(function(){',
+      '  window.__customAudio = { ' + mapEntries + ' };',
+      '  window.playCustomSound = function(name){',
+      '    var el = window.__customAudio[name];',
+      '    if (!el) return;',
+      '    try { var node = el.cloneNode(true); node.volume = el.volume; node.play().catch(function(){}); } catch(e){}',
+      '  };'
+    ];
+    if (hasMusic) {
+      scriptLines.push(
+        '  var bgmStarted = false;',
+        '  function startBgm(){',
+        '    if (bgmStarted) return;',
+        '    bgmStarted = true;',
+        '    Object.keys(window.__customAudio).forEach(function(k){ var el = window.__customAudio[k]; if (el.loop) { el.play().catch(function(){}); } });',
+        '    window.removeEventListener("keydown", startBgm);',
+        '    window.removeEventListener("pointerdown", startBgm);',
+        '  }',
+        '  window.addEventListener("keydown", startBgm);',
+        '  window.addEventListener("pointerdown", startBgm);'
+      );
+    }
+    scriptLines.push('})();', '<' + '/script>');
+    const block = AUDIO_MARK_START + '\n' + audioTags + '\n' + scriptLines.join('\n') + '\n' + AUDIO_MARK_END;
+    if (/<\/body>/i.test(clean)) return clean.replace(/<\/body>/i, block + '\n</body>');
+    return clean + '\n' + block;
+  }
 
   // The real Gemini key lives server-side as a Cloudflare Worker secret — see
   // cloudflare-worker/README.md. Never put an actual key on this line; this
@@ -507,7 +715,7 @@
     const rules = [];
     if (featSound.checked) {
       rules.push([
-        'FEATURE — Sound effects: use the Web Audio API (new (window.AudioContext || window.webkitAudioContext)()) to generate short procedural sound effects with oscillators/gain envelopes — no audio files. Add distinct sounds for at least: the main action, taking damage/losing, and winning/scoring. Include a mute/unmute button.'
+        'FEATURE — Sound effects: use the Web Audio API (new (window.AudioContext || window.webkitAudioContext)()) to generate short procedural sound effects with oscillators/gain envelopes — no audio files. Add distinct sounds for at least: the main action, taking damage/losing, and winning/scoring, for any of these not already covered by one of the player\'s own custom clips (listed separately below, if any). Include a mute/unmute button.'
       ].join(''));
     }
     if (featTouch.checked) {
@@ -534,6 +742,8 @@
     if (genreRule) parts.push(genreRule);
     parts.push(DIFFICULTY_RULES[difficultySelect.value]);
     parts.push.apply(parts, featureRules());
+    const audioSection = customAudioPromptSection();
+    if (audioSection) parts.push(audioSection);
     return parts.join('\n\n');
   }
 
@@ -550,7 +760,7 @@
     try {
       const model = modelSelect.value;
       const html = await callChat(key, model, buildGameSystemPrompt(), brief);
-      showGame(html);
+      showGame(injectCustomAudio(html));
       titleBlock.textContent = 'GAME FORGE — READY TO PLAY';
     } catch (err) {
       showError(err.message || 'Could not generate that game.');
@@ -597,17 +807,20 @@
     refineBtn.disabled = true;
     refineBtn.textContent = 'Applying…';
     const model = modelSelect.value;
-    const rules = [
+    const rulesParts = [
       'You are editing an existing browser game.',
       'Below is the current complete HTML document, followed by a requested change.',
       'Apply ONLY the requested change. Keep everything else about the game the same unless the change requires it to differ.',
       'Keep following the original rules: single self-contained HTML document, inline canvas game, no external assets, output ONLY the complete updated HTML document with no markdown fences or commentary.'
-    ].join('\n');
-    const userMsg = 'CURRENT GAME HTML:\n' + currentGameHtml + '\n\nREQUESTED CHANGE:\n' + instruction;
+    ];
+    const audioSection = customAudioPromptSection();
+    if (audioSection) rulesParts.push(audioSection);
+    const rules = rulesParts.join('\n');
+    const userMsg = 'CURRENT GAME HTML:\n' + stripInjectedAudio(currentGameHtml) + '\n\nREQUESTED CHANGE:\n' + instruction;
 
     try {
       const html = await callChat(key, model, rules, userMsg);
-      showGame(html);
+      showGame(injectCustomAudio(html));
       refineInput.value = '';
     } catch (err) {
       showError(err.message || 'Could not apply that change.');
