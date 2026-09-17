@@ -209,6 +209,7 @@
       </span>
     </label>
     <p class="hint" style="margin: 0 0 14px;">When you click Start, your browser will ask which screen, window, or tab to share.</p>
+    <p class="hint" style="margin: 0 0 14px;"><strong>Need to show something on another MigaBuilder page while recording?</strong> Open it in a new tab (right-click a link → "Open in new tab", or Ctrl/Cmd+click) instead of clicking away from this tab — navigating this tab to another page ends the recording and loses it, since the recording only exists in this page's memory. Screen sharing lets you switch to any other tab or window without stopping the recording, as long as this tab itself stays open.</p>
 
     <button type="button" class="draft-btn" id="startBtn">🔴 Start recording</button>
     <div class="btn-row" id="activeControls" style="display:none; margin-top:8px;">
@@ -439,6 +440,16 @@
     if (displayStream) { displayStream.getTracks().forEach(t => t.stop()); displayStream = null; }
     if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
   }
+
+  // Navigating this tab away — including to another MigaBuilder page — tears
+  // down this page's JS entirely, which silently destroys an in-progress
+  // recording or an unsaved one sitting in memory. Warn before that happens.
+  function hasWorkToLose() {
+    return (mediaRecorder && mediaRecorder.state !== 'inactive') || !!exportBlob;
+  }
+  window.addEventListener('beforeunload', function (e) {
+    if (hasWorkToLose()) { e.preventDefault(); e.returnValue = ''; }
+  });
 
   startBtn.addEventListener('click', async function () {
     clearError();
