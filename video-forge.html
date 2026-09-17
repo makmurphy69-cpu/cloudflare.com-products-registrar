@@ -241,6 +241,15 @@
 <main>
   <section class="panel">
 
+    <div class="status-box" id="draftBanner" style="margin-top:0;">
+      <span id="draftBannerText"></span>
+      <div class="btn-row" style="margin-top:8px;">
+        <button type="button" class="draft-btn secondary" id="resumeDraftBtn" style="flex:1;">↺ Resume draft</button>
+        <button type="button" class="draft-btn secondary" id="discardDraftBtn" style="flex:1;">✕ Discard</button>
+      </div>
+    </div>
+    <p class="hint" id="autosaveHint" style="margin:0 0 16px;">Your progress autosaves to this browser as you work, so a refresh won't lose it. <span id="autosaveStatus"></span> <a href="#" id="clearDraftLink" style="color:var(--navy);text-decoration:underline;">Clear saved draft</a></p>
+
     <div class="section-title">Your drawings</div>
     <div class="field">
       <button type="button" class="draft-btn secondary" id="sampleBtn">▶ Try a sample first</button>
@@ -493,6 +502,13 @@
   const ytResultBox = document.getElementById('ytResultBox');
   const ytErrorBox = document.getElementById('ytErrorBox');
 
+  const draftBanner = document.getElementById('draftBanner');
+  const draftBannerText = document.getElementById('draftBannerText');
+  const resumeDraftBtn = document.getElementById('resumeDraftBtn');
+  const discardDraftBtn = document.getElementById('discardDraftBtn');
+  const autosaveStatus = document.getElementById('autosaveStatus');
+  const clearDraftLink = document.getElementById('clearDraftLink');
+
   const ctx = stageCanvas.getContext('2d');
 
   // ---------- state ----------
@@ -548,6 +564,7 @@
   });
 
   function renderFrameList() {
+    scheduleAutosave();
     framesEl.innerHTML = '';
     framesEmpty.style.display = frames.length ? 'none' : 'block';
     frames.forEach((f, i) => {
@@ -570,6 +587,7 @@
       inp.addEventListener('change', () => {
         const f = frames.find(x => x.id === Number(inp.dataset.id));
         if (f) f.duration = Math.max(0.3, parseFloat(inp.value) || 3);
+        scheduleAutosave();
       });
     });
     framesEl.querySelectorAll('[data-up]').forEach(btn => btn.addEventListener('click', () => moveFrame(Number(btn.dataset.up), -1)));
@@ -604,6 +622,7 @@
   });
 
   function renderCaptionsList() {
+    scheduleAutosave();
     captionsListEl.innerHTML = '';
     captionsEmpty.style.display = captions.length ? 'none' : 'block';
     captions.forEach(cap => {
@@ -626,14 +645,17 @@
     captionsListEl.querySelectorAll('.cap-start').forEach(inp => inp.addEventListener('change', () => {
       const cap = captions.find(c => c.id === Number(inp.dataset.id));
       if (cap) cap.start = Math.max(0, parseFloat(inp.value) || 0);
+      scheduleAutosave();
     }));
     captionsListEl.querySelectorAll('.cap-duration').forEach(inp => inp.addEventListener('change', () => {
       const cap = captions.find(c => c.id === Number(inp.dataset.id));
       if (cap) cap.duration = Math.max(0.5, parseFloat(inp.value) || 3);
+      scheduleAutosave();
     }));
     captionsListEl.querySelectorAll('.cap-position').forEach(sel => sel.addEventListener('change', () => {
       const cap = captions.find(c => c.id === Number(sel.dataset.id));
       if (cap) cap.position = sel.value;
+      scheduleAutosave();
     }));
     captionsListEl.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => {
       captions = captions.filter(c => c.id !== Number(btn.dataset.remove));
@@ -799,10 +821,18 @@
     loopField.style.display = isFlip ? 'block' : 'none';
     transitionField.style.display = isFlip ? 'none' : 'block';
   }
-  modeSelect.addEventListener('change', applyMode);
+  modeSelect.addEventListener('change', function () { applyMode(); scheduleAutosave(); });
   applyMode();
 
-  titleEnabled.addEventListener('change', () => { titleFields.style.display = titleEnabled.checked ? 'block' : 'none'; });
+  transitionSelect.addEventListener('change', scheduleAutosave);
+  fpsInput.addEventListener('change', scheduleAutosave);
+  loopInput.addEventListener('change', scheduleAutosave);
+  aspectSelect.addEventListener('change', scheduleAutosave);
+
+  titleEnabled.addEventListener('change', () => { titleFields.style.display = titleEnabled.checked ? 'block' : 'none'; scheduleAutosave(); });
+  titleText.addEventListener('input', scheduleAutosave);
+  titleSubtext.addEventListener('input', scheduleAutosave);
+  titleDuration.addEventListener('change', scheduleAutosave);
 
   // ---------- sound clips (uploaded or recorded) ----------
   async function decodeAudioFile(fileOrBlob) {
@@ -813,6 +843,48 @@
     } finally {
       ac.close();
     }
+  }
+
+  function audioBufferToWav(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+    const numFrames = buffer.length;
+    const dataSize = numFrames * blockAlign;
+    const arrayBuffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(arrayBuffer);
+
+    function writeString(offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    const channelData = [];
+    for (let c = 0; c < numChannels; c++) channelData.push(buffer.getChannelData(c));
+
+    let offset = 44;
+    for (let i = 0; i < numFrames; i++) {
+      for (let c = 0; c < numChannels; c++) {
+        let sample = Math.max(-1, Math.min(1, channelData[c][i]));
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
+    }
+    return new Blob([arrayBuffer], { type: 'audio/wav' });
   }
 
   function addSoundClip(name, buffer, type) {
@@ -864,6 +936,7 @@
   });
 
   function renderSoundClipsList() {
+    scheduleAutosave();
     soundClipsEl.innerHTML = '';
     soundClipsEmpty.style.display = soundClips.length ? 'none' : 'block';
     soundClips.forEach(clip => {
@@ -890,18 +963,22 @@
     soundClipsEl.querySelectorAll('.clip-type').forEach(sel => sel.addEventListener('change', () => {
       const clip = soundClips.find(c => c.id === Number(sel.dataset.id));
       if (clip) clip.type = sel.value;
+      scheduleAutosave();
     }));
     soundClipsEl.querySelectorAll('.clip-start').forEach(inp => inp.addEventListener('change', () => {
       const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
       if (clip) clip.start = Math.max(0, parseFloat(inp.value) || 0);
+      scheduleAutosave();
     }));
     soundClipsEl.querySelectorAll('.clip-volume').forEach(inp => inp.addEventListener('input', () => {
       const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
       if (clip) clip.volume = parseFloat(inp.value);
+      scheduleAutosave();
     }));
     soundClipsEl.querySelectorAll('.clip-loop').forEach(inp => inp.addEventListener('change', () => {
       const clip = soundClips.find(c => c.id === Number(inp.dataset.id));
       if (clip) clip.loop = inp.checked;
+      scheduleAutosave();
     }));
     soundClipsEl.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => {
       soundClips = soundClips.filter(c => c.id !== Number(btn.dataset.remove));
@@ -1389,6 +1466,151 @@
       progressWrap.classList.remove('show');
     }
   });
+
+  // ---------- draft autosave / resume (localStorage) ----------
+  const DRAFT_KEY = 'videoForgeDraft_v1';
+  let autosaveTimer = null;
+  let suppressAutosave = false; // true while a draft is being loaded, so loading it doesn't immediately re-save it
+
+  function collectDraftState() {
+    return {
+      version: 1,
+      savedAt: Date.now(),
+      settings: {
+        mode: modeSelect.value,
+        transition: transitionSelect.value,
+        fps: fpsInput.value,
+        loop: loopInput.value,
+        aspect: aspectSelect.value,
+        titleEnabled: titleEnabled.checked,
+        titleText: titleText.value,
+        titleSubtext: titleSubtext.value,
+        titleDuration: titleDuration.value
+      },
+      frames: frames.map(f => ({ dataUrl: f.dataUrl, name: f.name, duration: f.duration })),
+      captions: captions.map(c => ({ text: c.text, start: c.start, duration: c.duration, position: c.position })),
+      soundClips: [] // filled in asynchronously by saveDraft() before storing
+    };
+  }
+
+  function blobToDataUrl(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Could not read audio for saving.'));
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function saveDraft() {
+    if (!frames.length && !captions.length && !soundClips.length) { clearDraft(); return; }
+    try {
+      const state = collectDraftState();
+      state.soundClips = await Promise.all(soundClips.map(async (c) => ({
+        name: c.name, type: c.type, start: c.start, volume: c.volume, loop: c.loop,
+        audioDataUrl: await blobToDataUrl(audioBufferToWav(c.buffer))
+      })));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+      autosaveStatus.textContent = 'Saved just now.';
+    } catch (err) {
+      autosaveStatus.textContent = "Couldn't autosave (your project may be too large for browser storage) — remember to download when you're done.";
+    }
+  }
+
+  function scheduleAutosave() {
+    if (suppressAutosave) return;
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(saveDraft, 900);
+  }
+
+  function clearDraft() {
+    localStorage.removeItem(DRAFT_KEY);
+    autosaveStatus.textContent = '';
+  }
+
+  async function loadDraftIntoState(state) {
+    suppressAutosave = true;
+    try {
+      const loadedFrames = state.frames || [];
+      const newFrames = loadedFrames.map(f => ({ id: ++frameIdCounter, dataUrl: f.dataUrl, name: f.name, duration: f.duration, img: null }));
+      await Promise.all(newFrames.map(f => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => { f.img = img; resolve(); };
+        img.onerror = () => resolve();
+        img.src = f.dataUrl;
+      })));
+      frames = newFrames;
+      renderFrameList();
+
+      captions = (state.captions || []).map(c => ({ id: ++captionIdCounter, text: c.text, start: c.start, duration: c.duration, position: c.position }));
+      renderCaptionsList();
+
+      const loadedClips = [];
+      for (const c of (state.soundClips || [])) {
+        try {
+          const resp = await fetch(c.audioDataUrl);
+          const blob = await resp.blob();
+          const buffer = await decodeAudioFile(blob);
+          loadedClips.push({ id: ++clipIdCounter, name: c.name, type: c.type, buffer, start: c.start, volume: c.volume, loop: c.loop });
+        } catch (e) { /* skip a clip that can't be decoded rather than failing the whole restore */ }
+      }
+      soundClips = loadedClips;
+      renderSoundClipsList();
+
+      const s = state.settings || {};
+      if (s.mode) modeSelect.value = s.mode;
+      applyMode();
+      if (s.transition) transitionSelect.value = s.transition;
+      if (s.fps) fpsInput.value = s.fps;
+      if (s.loop) loopInput.value = s.loop;
+      if (s.aspect) aspectSelect.value = s.aspect;
+      titleEnabled.checked = !!s.titleEnabled;
+      titleFields.style.display = titleEnabled.checked ? 'block' : 'none';
+      titleText.value = s.titleText || '';
+      titleSubtext.value = s.titleSubtext || '';
+      if (s.titleDuration) titleDuration.value = s.titleDuration;
+    } finally {
+      suppressAutosave = false;
+    }
+  }
+
+  function checkForSavedDraft() {
+    let raw;
+    try { raw = localStorage.getItem(DRAFT_KEY); } catch (e) { return; }
+    if (!raw) return;
+    let state;
+    try { state = JSON.parse(raw); } catch (e) { clearDraft(); return; }
+    const frameCount = (state.frames || []).length;
+    const when = new Date(state.savedAt || Date.now());
+    draftBannerText.textContent = 'You have an unsaved draft from ' + when.toLocaleString() + ' (' + frameCount + ' drawing' + (frameCount === 1 ? '' : 's') + ').';
+    draftBanner.classList.add('show');
+    resumeDraftBtn.onclick = async function () {
+      clearError();
+      resumeDraftBtn.disabled = true;
+      resumeDraftBtn.textContent = 'Loading…';
+      try {
+        await loadDraftIntoState(state);
+        draftBanner.classList.remove('show');
+      } catch (err) {
+        showError('Could not load the saved draft: ' + err.message);
+      } finally {
+        resumeDraftBtn.disabled = false;
+        resumeDraftBtn.textContent = '↺ Resume draft';
+      }
+    };
+    discardDraftBtn.onclick = function () {
+      clearDraft();
+      draftBanner.classList.remove('show');
+    };
+  }
+
+  clearDraftLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!window.confirm('Clear the autosaved draft? This only removes the saved copy in this browser — anything currently on screen is untouched.')) return;
+    clearDraft();
+  });
+
+  checkForSavedDraft();
 })();
 </script>
 </body>
