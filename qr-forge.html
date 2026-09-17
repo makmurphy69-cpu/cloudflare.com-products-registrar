@@ -76,6 +76,10 @@
   }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   input[type="color"] { width: 100%; height: 42px; padding: 3px; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; cursor: pointer; }
+  .upload-btn {
+    display: inline-block; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 10px 12px; font-size: 13px; cursor: pointer; text-align: center; width: 100%;
+  }
 
   .draft-btn {
     width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
@@ -120,9 +124,71 @@
   <div class="panel">
     <div class="section-title">Content</div>
     <div class="field">
+      <label for="qrType">Type</label>
+      <select id="qrType">
+        <option value="text" selected>Link or plain text</option>
+        <option value="wifi">Wi-Fi network</option>
+        <option value="vcard">Contact card (vCard)</option>
+        <option value="phone">Phone number</option>
+        <option value="email">Email address</option>
+      </select>
+    </div>
+    <div class="field" id="fieldsText">
       <label for="qrText">Link or text to encode</label>
       <input type="text" id="qrText" placeholder="https://yourbusiness.com or any text" value="https://migabuilder.com">
       <p class="hint">Works for URLs, phone numbers, plain text — anything a QR scanner can read.</p>
+    </div>
+    <div class="field" id="fieldsWifi" style="display:none;">
+      <label for="wifiSsid">Network name (SSID)</label>
+      <input type="text" id="wifiSsid" placeholder="MyHomeWiFi">
+      <div class="row-2" style="margin-top:10px;">
+        <div>
+          <label for="wifiSecurity">Security</label>
+          <select id="wifiSecurity">
+            <option value="WPA" selected>WPA/WPA2</option>
+            <option value="WEP">WEP</option>
+            <option value="nopass">None (open network)</option>
+          </select>
+        </div>
+        <div>
+          <label for="wifiPassword">Password</label>
+          <input type="text" id="wifiPassword" placeholder="Leave blank if open">
+        </div>
+      </div>
+      <p class="hint">Scanning this connects a phone directly to the network — no typing required.</p>
+    </div>
+    <div class="field" id="fieldsVcard" style="display:none;">
+      <label for="vcardName">Full name</label>
+      <input type="text" id="vcardName" placeholder="Jane Smith">
+      <div class="row-2" style="margin-top:10px;">
+        <div>
+          <label for="vcardPhone">Phone</label>
+          <input type="text" id="vcardPhone" placeholder="+1 555 0100">
+        </div>
+        <div>
+          <label for="vcardEmail">Email</label>
+          <input type="text" id="vcardEmail" placeholder="jane@example.com">
+        </div>
+      </div>
+      <p class="hint">Scanning saves this as a new contact.</p>
+    </div>
+    <div class="field" id="fieldsPhone" style="display:none;">
+      <label for="phoneNumber">Phone number</label>
+      <input type="text" id="phoneNumber" placeholder="+1 555 0100">
+      <p class="hint">Scanning dials this number directly.</p>
+    </div>
+    <div class="field" id="fieldsEmail" style="display:none;">
+      <label for="emailAddress">Email address</label>
+      <input type="text" id="emailAddress" placeholder="jane@example.com">
+      <p class="hint">Scanning opens a new email addressed to this.</p>
+    </div>
+
+    <div class="section-title">Logo overlay (optional)</div>
+    <div class="field">
+      <label class="upload-btn" for="logoInput" id="logoUploadLabel">+ Add a logo to the center</label>
+      <input type="file" id="logoInput" accept="image/*" style="display:none;">
+      <p class="hint">Automatically switches error correction to High so the code still scans with the center covered.</p>
+      <button type="button" id="removeLogoBtn" style="display:none;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:12.5px;">Remove logo</button>
     </div>
 
     <div class="section-title">Style</div>
@@ -143,6 +209,7 @@
           <option value="Q">Quartile — sturdier</option>
           <option value="H">High — best for logos overlaid</option>
         </select>
+        <p class="hint" id="levelForcedHint" style="display:none;">Forced to High while a logo is overlaid.</p>
       </div>
     </div>
     <div class="field row-2">
@@ -171,9 +238,27 @@
 (function(){
   "use strict";
 
+  const qrType = document.getElementById('qrType');
   const qrText = document.getElementById('qrText');
+  const fieldsText = document.getElementById('fieldsText');
+  const fieldsWifi = document.getElementById('fieldsWifi');
+  const fieldsVcard = document.getElementById('fieldsVcard');
+  const fieldsPhone = document.getElementById('fieldsPhone');
+  const fieldsEmail = document.getElementById('fieldsEmail');
+  const wifiSsid = document.getElementById('wifiSsid');
+  const wifiSecurity = document.getElementById('wifiSecurity');
+  const wifiPassword = document.getElementById('wifiPassword');
+  const vcardName = document.getElementById('vcardName');
+  const vcardPhone = document.getElementById('vcardPhone');
+  const vcardEmail = document.getElementById('vcardEmail');
+  const phoneNumber = document.getElementById('phoneNumber');
+  const emailAddress = document.getElementById('emailAddress');
+  const logoInput = document.getElementById('logoInput');
+  const logoUploadLabel = document.getElementById('logoUploadLabel');
+  const removeLogoBtn = document.getElementById('removeLogoBtn');
   const qrSize = document.getElementById('qrSize');
   const qrLevel = document.getElementById('qrLevel');
+  const levelForcedHint = document.getElementById('levelForcedHint');
   const qrDark = document.getElementById('qrDark');
   const qrLight = document.getElementById('qrLight');
   const qrTarget = document.getElementById('qrTarget');
@@ -185,24 +270,110 @@
 
   const LEVELS = { L: 'L', M: 'M', Q: 'Q', H: 'H' };
 
+  function escWifi(s) { return s.replace(/([\\;,:"])/g, '\\$1'); }
+
+  function updateTypeFields() {
+    const type = qrType.value;
+    fieldsText.style.display = type === 'text' ? 'block' : 'none';
+    fieldsWifi.style.display = type === 'wifi' ? 'block' : 'none';
+    fieldsVcard.style.display = type === 'vcard' ? 'block' : 'none';
+    fieldsPhone.style.display = type === 'phone' ? 'block' : 'none';
+    fieldsEmail.style.display = type === 'email' ? 'block' : 'none';
+  }
+  qrType.addEventListener('change', () => { updateTypeFields(); render(); });
+  updateTypeFields();
+
+  function getEncodedText() {
+    const type = qrType.value;
+    if (type === 'wifi') {
+      const ssid = wifiSsid.value.trim();
+      if (!ssid) return '';
+      const sec = wifiSecurity.value;
+      const pass = wifiPassword.value.trim();
+      return 'WIFI:T:' + sec + ';S:' + escWifi(ssid) + ';' + (sec === 'nopass' ? '' : 'P:' + escWifi(pass) + ';') + ';';
+    }
+    if (type === 'vcard') {
+      const name = vcardName.value.trim();
+      if (!name) return '';
+      const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + name];
+      if (vcardPhone.value.trim()) lines.push('TEL:' + vcardPhone.value.trim());
+      if (vcardEmail.value.trim()) lines.push('EMAIL:' + vcardEmail.value.trim());
+      lines.push('END:VCARD');
+      return lines.join('\n');
+    }
+    if (type === 'phone') {
+      const num = phoneNumber.value.trim();
+      return num ? 'tel:' + num.replace(/[^0-9+]/g, '') : '';
+    }
+    if (type === 'email') {
+      const addr = emailAddress.value.trim();
+      return addr ? 'mailto:' + addr : '';
+    }
+    return qrText.value.trim();
+  }
+
+  let logoImg = null;
+
+  logoInput.addEventListener('change', (e) => {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        logoImg = img;
+        logoUploadLabel.textContent = 'Replace logo';
+        removeLogoBtn.style.display = 'inline';
+        render();
+      };
+      img.onerror = () => showError('Could not read that image.');
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  removeLogoBtn.addEventListener('click', () => {
+    logoImg = null;
+    logoInput.value = '';
+    logoUploadLabel.textContent = '+ Add a logo to the center';
+    removeLogoBtn.style.display = 'none';
+    render();
+  });
+
   function render() {
     clearError();
-    const text = qrText.value.trim();
+    const text = getEncodedText();
     qrTarget.innerHTML = '';
+    qrLevel.disabled = !!logoImg;
+    levelForcedHint.style.display = logoImg ? 'block' : 'none';
     if (!text) {
-      qrTarget.innerHTML = '<div class="preview-empty">Type something above to see the code</div>';
+      qrTarget.innerHTML = '<div class="preview-empty">Fill in the fields above to see the code</div>';
       downloadBtn.disabled = true;
       return;
     }
     try {
+      const size = parseInt(qrSize.value, 10);
+      const level = logoImg ? 'H' : qrLevel.value;
       new QRCode(qrTarget, {
         text: text,
-        width: parseInt(qrSize.value, 10),
-        height: parseInt(qrSize.value, 10),
+        width: size,
+        height: size,
         colorDark: qrDark.value,
         colorLight: qrLight.value,
-        correctLevel: QRCode.CorrectLevel[LEVELS[qrLevel.value]]
+        correctLevel: QRCode.CorrectLevel[LEVELS[level]]
       });
+      if (logoImg) {
+        const canvas = qrTarget.querySelector('canvas');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          const logoSize = size * 0.22;
+          const x = (size - logoSize) / 2;
+          const y = (size - logoSize) / 2;
+          const pad = logoSize * 0.12;
+          ctx.fillStyle = qrLight.value;
+          ctx.fillRect(x - pad, y - pad, logoSize + pad * 2, logoSize + pad * 2);
+          ctx.drawImage(logoImg, x, y, logoSize, logoSize);
+        }
+      }
       downloadBtn.disabled = false;
     } catch (err) {
       showError('Could not generate a QR code for that input — try shorter text.');
@@ -210,7 +381,7 @@
     }
   }
 
-  [qrText, qrSize, qrLevel, qrDark, qrLight].forEach(el => {
+  [qrText, qrSize, qrLevel, qrDark, qrLight, wifiSsid, wifiSecurity, wifiPassword, vcardName, vcardPhone, vcardEmail, phoneNumber, emailAddress].forEach(el => {
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   });
