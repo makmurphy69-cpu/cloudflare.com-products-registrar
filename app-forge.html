@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>App Forge — free app generator</title>
+<meta name="description" content="Describe an app and get it built — as an installable web app, a small utility tool, or a starter project for a real Android/iOS app — free, right in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="App Forge — free app generator">
+<meta property="og:description" content="Describe an app and get it built — as an installable web app, a small utility tool, or a starter project for a real Android/iOS app — free, right in your browser.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/app-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/app-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="App Forge — free app generator">
+<meta name="twitter:description" content="Describe an app and get it built — as an installable web app, a small utility tool, or a starter project for a real Android/iOS app — free, right in your browser.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/app-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<style>
+  :root {
+    --navy: #0E2A47; --navy-deep: #081826; --paper: #EDEAE0; --paper-dim: #E2DECE; --ink: #16202B;
+    --line-cyan: #6FD1E0; --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B; --amber-ink: #4A3410; --success: #4E9E73; --error: #D8604A; --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  .mode-toggle-wrap { max-width: 1300px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
+  .mode-toggle { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .mode-btn {
+    flex: 1; min-width: 200px; background: rgba(237,234,224,0.08); color: var(--paper); border: 1px solid var(--line-cyan-dim);
+    border-radius: var(--radius); padding: 12px; font-size: 13.5px; font-weight: 600; cursor: pointer; text-align: center;
+  }
+  .mode-btn.active { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); }
+  .mode-note {
+    max-width: 1300px; margin: 0 auto 20px; padding: 0 clamp(20px, 4vw, 48px);
+    font-size: 12.5px; color: rgba(237,234,224,0.6); line-height: 1.5;
+  }
+
+  main { display: grid; grid-template-columns: minmax(340px, 420px) 1fr; gap: 24px; padding: 0 clamp(20px, 4vw, 48px) 56px; align-items: start; max-width: 1300px; margin: 0 auto; }
+  @media (max-width: 950px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px;
+    max-height: calc(100vh - 40px); overflow-y: auto; position: sticky; top: 20px;
+  }
+  @media (max-width: 950px) { .panel { position: static; max-height: none; } }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12px; color: rgba(22, 32, 43, 0.62); margin-top: 5px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  input[type="password"], input[type="text"], select, textarea {
+    width: 100%; font-size: 13.5px; padding: 8px 9px; border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.45; }
+  input[type="color"] { width: 100%; height: 34px; border: 1px solid rgba(22,32,43,0.28); border-radius: var(--radius); padding: 2px; background: #fff; }
+
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+  .toggle-key { background: transparent; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 14px; padding: 11px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row button { flex: 1; }
+
+  .warn-box {
+    margin-top: 8px; padding: 10px 12px; background: rgba(226, 166, 59, 0.16); border: 1px solid rgba(226, 166, 59, 0.5);
+    border-radius: var(--radius); font-size: 12px; color: #4A3410; line-height: 1.45;
+  }
+  .error-box {
+    margin-top: 10px; padding: 10px 12px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 12.5px; color: #6E2418; display: none; line-height: 1.4;
+  }
+  .error-box.show { display: block; }
+  .status-box {
+    margin-top: 10px; padding: 10px 12px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 12.5px; color: #244731; display: none; line-height: 1.4;
+  }
+  .status-box.show { display: block; }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .stage-wrap { background: #fff; border-radius: 2px; flex: 1; min-height: 460px; overflow: hidden; position: relative; }
+  #previewFrame { width: 100%; height: 100%; min-height: 460px; border: 0; display: block; }
+  .sheet-empty {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
+    color: rgba(22,32,43,0.4); font-size: 14px; padding: 40px 20px;
+  }
+  .sheet-empty strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; color: rgba(22,32,43,0.6); margin-bottom: 6px; }
+
+  .refine-row { display: flex; gap: 8px; margin-top: 12px; }
+  .refine-row input { flex: 1; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer; flex: 1;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 1300px; margin: 0 auto; }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>App Forge</h1>
+    <p>Describe an app. Choose what kind of output you need, then build and refine it.</p>
+  </div>
+</header>
+
+<div class="mode-toggle-wrap">
+  <div class="mode-toggle">
+    <button type="button" class="mode-btn active" id="modeWebBtn">📱 Installable web app (PWA)</button>
+    <button type="button" class="mode-btn" id="modeUtilityBtn">🧰 Small utility app</button>
+    <button type="button" class="mode-btn" id="modeMobileBtn">📦 Mobile app starter project</button>
+  </div>
+</div>
+<p class="mode-note" id="modeNote"></p>
+
+<main>
+  <section class="panel">
+
+    <div class="section-title">Connection</div>
+    <div class="field">
+      <label for="provider">AI provider</label>
+      <select id="provider">
+        <option value="gemini" selected>Gemini — free, no key needed</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+    <div class="field" id="apiKeyField">
+      <label for="apiKey" id="apiKeyLabel">Your OpenAI API key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="hint">Used only to call the provider above directly from your browser. Never stored.</p>
+    </div>
+    <div class="field" id="freeNoticeField" style="display:none;">
+      <p class="hint" style="margin-top:0;">✓ Free to use — shares a limited daily capacity. Switch to OpenAI/Anthropic above with your own key if it stops working.</p>
+    </div>
+    <div class="field">
+      <label for="model">Text model</label>
+      <select id="model"></select>
+    </div>
+
+    <div class="section-title">Your app</div>
+    <div class="field">
+      <label for="appName">App name</label>
+      <input type="text" id="appName" placeholder="Chore Tracker">
+    </div>
+    <div class="field">
+      <label for="appBrief">Describe what it should do</label>
+      <textarea id="appBrief" placeholder="e.g. A simple weekly chore tracker for a household of 4 — assign chores to people, check them off, and reset every Monday. Remember everything between visits."></textarea>
+    </div>
+    <div class="field" id="themeColorField">
+      <label for="themeColor">Theme color</label>
+      <input type="color" id="themeColor" value="#0E2A47">
+    </div>
+
+    <button type="button" class="draft-btn" id="generateBtn">✨ Generate app</button>
+    <div class="error-box" id="errorBox"></div>
+    <div class="status-box" id="statusBox"></div>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>APP FORGE — PREVIEW</span>
+      <span id="titleBlockRight">NOT STARTED</span>
+    </div>
+
+    <div class="stage-wrap" id="stageWrap">
+      <div class="sheet-empty" id="stageEmpty">
+        <div>
+          <strong>Nothing built yet.</strong>
+          Describe your app on the left and click Generate.
+        </div>
+      </div>
+      <iframe id="previewFrame" title="App preview" style="display:none;"></iframe>
+    </div>
+
+    <div class="refine-row" id="refineRow" style="display:none;">
+      <input type="text" id="refineInput" placeholder="Ask for a change, e.g. 'add a dark mode toggle'">
+      <button type="button" class="draft-btn secondary" id="refineBtn" style="width:auto;">Apply</button>
+    </div>
+
+    <div class="table-actions">
+      <button type="button" id="downloadBtn" disabled class="primary">⬇ Download</button>
+    </div>
+    <p class="hint" id="modeHint" style="color: rgba(237,234,224,0.55); margin-top: 8px;"></p>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ================= mode state =================
+  const MODES = {
+    web: {
+      label: 'PWA',
+      note: 'Builds a real installable web app: a working page, a manifest, offline caching via a service worker, and app icons — download the .zip and host the files anywhere over HTTPS (GitHub Pages, Netlify, Cloudflare Pages, your own domain). Visitors can "Add to Home Screen" for an app-like icon.',
+      hint: 'Unzip and upload all the files together to any static host over HTTPS — PWAs require it. Nothing here needs a server beyond plain file hosting.'
+    },
+    utility: {
+      label: 'utility app',
+      note: 'Builds one self-contained HTML file — a working little tool, no install, no hosting required. Just open the file, or host it anywhere.',
+      hint: 'Downloads a single .html file. Open it directly, or upload it anywhere to share it.'
+    },
+    mobile: {
+      label: 'mobile starter project',
+      note: 'No browser can compile a real installable Android/iOS app directly — that needs Android Studio or Xcode. This instead builds a real starter project (using Capacitor, a standard tool for wrapping web apps as native apps) with your generated app already wired in, plus a step-by-step README for finishing the build with free tools outside the browser.',
+      hint: 'Downloads a project folder as .zip. See its README.md for the remaining steps (Node.js + Android Studio/Xcode, building, and publishing).'
+    }
+  };
+  let currentMode = 'web';
+
+  const modeWebBtn = document.getElementById('modeWebBtn');
+  const modeUtilityBtn = document.getElementById('modeUtilityBtn');
+  const modeMobileBtn = document.getElementById('modeMobileBtn');
+  const modeNote = document.getElementById('modeNote');
+  const modeHint = document.getElementById('modeHint');
+  const themeColorField = document.getElementById('themeColorField');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  function setMode(mode) {
+    currentMode = mode;
+    modeWebBtn.classList.toggle('active', mode === 'web');
+    modeUtilityBtn.classList.toggle('active', mode === 'utility');
+    modeMobileBtn.classList.toggle('active', mode === 'mobile');
+    modeNote.textContent = MODES[mode].note;
+    modeHint.textContent = MODES[mode].hint;
+    themeColorField.style.display = mode === 'utility' ? 'none' : 'block';
+    downloadBtn.textContent = mode === 'utility' ? '⬇ Download app.html' : '⬇ Download .zip';
+  }
+  modeWebBtn.addEventListener('click', () => setMode('web'));
+  modeUtilityBtn.addEventListener('click', () => setMode('utility'));
+  modeMobileBtn.addEventListener('click', () => setMode('mobile'));
+  setMode('web');
+
+  // ================= connection (same pattern as Slide Forge / Game Forge) =================
+  const providerSelect = document.getElementById('provider');
+  const apiKeyField = document.getElementById('apiKeyField');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabel = document.getElementById('apiKeyLabel');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+  const freeNoticeField = document.getElementById('freeNoticeField');
+  const modelSelect = document.getElementById('model');
+  const appName = document.getElementById('appName');
+  const appBrief = document.getElementById('appBrief');
+  const themeColor = document.getElementById('themeColor');
+  const generateBtn = document.getElementById('generateBtn');
+  const errorBox = document.getElementById('errorBox');
+  const statusBox = document.getElementById('statusBox');
+  const stageEmpty = document.getElementById('stageEmpty');
+  const previewFrame = document.getElementById('previewFrame');
+  const titleBlockRight = document.getElementById('titleBlockRight');
+  const refineRow = document.getElementById('refineRow');
+  const refineInput = document.getElementById('refineInput');
+  const refineBtn = document.getElementById('refineBtn');
+
+  function showError(msg) { statusBox.classList.remove('show'); errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+  function showStatus(msg) { clearError(); statusBox.textContent = msg; statusBox.classList.add('show'); }
+
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  const modelOptions = {
+    gemini: [
+      { value: 'gemini-3.5-flash-lite', label: 'Gemini 3.5 Flash-Lite (free tier)' },
+      { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash (free tier)' }
+    ],
+    openai: [
+      { value: 'gpt-4o-mini', label: 'gpt-4o-mini (fast, cheap)' },
+      { value: 'gpt-4o', label: 'gpt-4o (higher quality)' },
+      { value: 'gpt-4.1', label: 'gpt-4.1' }
+    ],
+    anthropic: [
+      { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5 (fast, cheap)' },
+      { value: 'claude-sonnet-5', label: 'Claude Sonnet 5 (recommended)' },
+      { value: 'claude-opus-5', label: 'Claude Opus 5 (highest quality)' }
+    ]
+  };
+  function applyProvider() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') { apiKeyField.style.display = 'none'; freeNoticeField.style.display = 'block'; }
+    else {
+      apiKeyField.style.display = 'block'; freeNoticeField.style.display = 'none';
+      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+    }
+    modelSelect.innerHTML = '';
+    const defaultIndex = provider === 'anthropic' ? 1 : 0;
+    modelOptions[provider].forEach((opt, i) => {
+      const el = document.createElement('option');
+      el.value = opt.value; el.textContent = opt.label;
+      if (i === defaultIndex) el.selected = true;
+      modelSelect.appendChild(el);
+    });
+  }
+  providerSelect.addEventListener('change', applyProvider);
+  applyProvider();
+
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
+  function currentTextApiKey() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') return 'via-proxy';
+    return apiKeyInput.value.trim();
+  }
+  function stripCodeFence(text) {
+    const trimmed = text.trim();
+    const fenceMatch = trimmed.match(/^```(?:html|json)?\s*([\s\S]*?)\s*```$/i);
+    return fenceMatch ? fenceMatch[1] : trimmed;
+  }
+  async function callChat(apiKey, model, systemPrompt, userPrompt) {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      const response = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: model, systemPrompt: systemPrompt, userPrompt: userPrompt })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        throw new Error((errBody && errBody.error && errBody.error.message) || (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.'));
+      }
+      const data = await response.json();
+      const cand = data.candidates && data.candidates[0];
+      const raw = cand && cand.content && cand.content.parts && cand.content.parts[0] ? cand.content.parts[0].text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+    if (provider === 'anthropic') {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: model, max_tokens: 8000, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        throw new Error((errBody && errBody.error && errBody.error.message) || ('Request failed with status ' + response.status));
+      }
+      const data = await response.json();
+      const block = data.content && data.content.find(b => b.type === 'text');
+      const raw = block ? block.text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: model, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], temperature: 0.6 })
+    });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => null);
+      throw new Error((errBody && errBody.error && errBody.error.message) || ('Request failed with status ' + response.status));
+    }
+    const data = await response.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('The model returned an empty response.');
+    return stripCodeFence(raw);
+  }
+
+  // ================= app generation =================
+  const APP_RULES = [
+    'You are a web app developer. Given a short description, write ONE complete, self-contained HTML document implementing that app, fully working immediately.',
+    'Requirements:',
+    '- All CSS and JavaScript inline in this one document. No external scripts, fonts, images, or network calls of any kind — it must work fully offline.',
+    '- Implement real, working functionality matching the description, not a static mockup.',
+    '- If the app should remember anything between visits (list items, settings, entries), persist it with localStorage.',
+    '- Clean, readable UI with clear labels and reasonable default spacing/typography. Use system-ui or sans-serif fonts only (no @import or Google Fonts).',
+    '- Keep logic self-contained and robust: no external libraries, no eval, no external asset loading.',
+    '- Output ONLY the complete HTML document — no markdown fences, no commentary, no explanation.'
+  ].join('\n');
+
+  let currentAppHtml = '';
+
+  function showPreview(html) {
+    currentAppHtml = html;
+    stageEmpty.style.display = 'none';
+    previewFrame.style.display = 'block';
+    previewFrame.srcdoc = html;
+    refineRow.style.display = 'flex';
+    downloadBtn.disabled = false;
+  }
+
+  async function generateApp() {
+    clearError();
+    const key = currentTextApiKey();
+    const brief = appBrief.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!brief) { showError('Describe the app you want.'); return; }
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = 'Building…';
+    titleBlockRight.textContent = 'BUILDING';
+    try {
+      const model = modelSelect.value;
+      const html = await callChat(key, model, APP_RULES, brief);
+      showPreview(html);
+      titleBlockRight.textContent = 'READY';
+      showStatus('Built. Try it on the right, ask for changes below, or download it.');
+    } catch (err) {
+      showError(err.message || 'Could not generate that app.');
+      titleBlockRight.textContent = 'GENERATION FAILED';
+    } finally {
+      generateBtn.disabled = false;
+      generateBtn.textContent = '✨ Generate app';
+    }
+  }
+  generateBtn.addEventListener('click', generateApp);
+
+  async function refineApp() {
+    clearError();
+    const key = currentTextApiKey();
+    const instruction = refineInput.value.trim();
+    if (!key) { showError('Add your API key first.'); return; }
+    if (!currentAppHtml) { showError('Generate an app first.'); return; }
+    if (!instruction) { showError('Say what you want changed.'); return; }
+
+    refineBtn.disabled = true;
+    refineBtn.textContent = 'Applying…';
+    const model = modelSelect.value;
+    const rules = [
+      'You are editing an existing self-contained web app.',
+      'Below is the current complete HTML document, followed by a requested change.',
+      'Apply ONLY the requested change. Keep everything else the same unless the change requires it to differ.',
+      'Keep following the original rules: one self-contained HTML document, no external assets or network calls, localStorage for anything that should persist, output ONLY the complete updated HTML document with no markdown fences or commentary.'
+    ].join('\n');
+    const userMsg = 'CURRENT APP HTML:\n' + currentAppHtml + '\n\nREQUESTED CHANGE:\n' + instruction;
+    try {
+      const html = await callChat(key, model, rules, userMsg);
+      showPreview(html);
+      refineInput.value = '';
+      showStatus('Updated.');
+    } catch (err) {
+      showError(err.message || 'Could not apply that change.');
+    } finally {
+      refineBtn.disabled = false;
+      refineBtn.textContent = 'Apply';
+    }
+  }
+  refineBtn.addEventListener('click', refineApp);
+  refineInput.addEventListener('keydown', e => { if (e.key === 'Enter') refineApp(); });
+
+  // ================= packaging: icon generation =================
+  function makeIconDataUrl(size, name, color) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const radius = size * 0.2;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(radius, 0);
+    ctx.arcTo(size, 0, size, size, radius);
+    ctx.arcTo(size, size, 0, size, radius);
+    ctx.arcTo(0, size, 0, 0, radius);
+    ctx.arcTo(0, 0, size, 0, radius);
+    ctx.closePath();
+    ctx.fill();
+    const letter = (name.trim()[0] || 'A').toUpperCase();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + Math.round(size * 0.55) + 'px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(letter, size / 2, size / 2 + size * 0.04);
+    return canvas.toDataURL('image/png');
+  }
+  function dataUrlToBlob(dataUrl) {
+    const parts = dataUrl.split(',');
+    const bin = atob(parts[1]);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: 'image/png' });
+  }
+
+  function injectIntoHead(html, snippet) {
+    if (/<head[^>]*>/i.test(html)) return html.replace(/<head[^>]*>/i, m => m + snippet);
+    return snippet + html;
+  }
+  function injectBeforeBodyClose(html, snippet) {
+    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '</body>');
+    return html + snippet;
+  }
+  function slugify(name) {
+    return (name || 'my-app').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'my-app';
+  }
+
+  // ================= download =================
+  downloadBtn.addEventListener('click', async function () {
+    if (!currentAppHtml) return;
+    clearError();
+    const name = appName.value.trim() || 'My App';
+    const slug = slugify(name);
+    const color = themeColor.value;
+
+    if (currentMode === 'utility') {
+      const blob = new Blob([currentAppHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = slug + '.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      return;
+    }
+
+    if (typeof JSZip === 'undefined') { showError('The zip library failed to load — check your internet connection and reload the page.'); return; }
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = 'Zipping…';
+    try {
+      const icon192 = makeIconDataUrl(192, name, color);
+      const icon512 = makeIconDataUrl(512, name, color);
+      const zip = new JSZip();
+
+      if (currentMode === 'web') {
+        const manifest = {
+          name: name, short_name: name.slice(0, 12), start_url: './index.html', display: 'standalone',
+          background_color: color, theme_color: color,
+          icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'icon-512.png', sizes: '512x512', type: 'image/png' }]
+        };
+        const sw = "const CACHE_NAME='app-cache-v1';const FILES=['./','./index.html','./manifest.json','./icon-192.png','./icon-512.png'];" +
+          "self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(FILES)));});" +
+          "self.addEventListener('fetch',e=>{e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});";
+        let html = injectIntoHead(currentAppHtml, '<link rel="manifest" href="manifest.json"><meta name="theme-color" content="' + color + '">');
+        html = injectBeforeBodyClose(html, '<script>if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js");}</' + 'script>');
+        zip.file('index.html', html);
+        zip.file('manifest.json', JSON.stringify(manifest, null, 2));
+        zip.file('sw.js', sw);
+        zip.file('icon-192.png', dataUrlToBlob(icon192));
+        zip.file('icon-512.png', dataUrlToBlob(icon512));
+        zip.file('README.md',
+          '# ' + name + '\n\nA generated installable web app (PWA).\n\n## To publish it\n\n' +
+          '1. Upload every file in this folder (keeping them together, same folder) to any static host over **HTTPS** — GitHub Pages, Netlify, Cloudflare Pages, or your own domain.\n' +
+          '2. Open index.html\'s URL on a phone or desktop browser — you\'ll be able to "Add to Home Screen" / "Install" it like a real app.\n' +
+          '3. It works offline after the first visit, thanks to sw.js caching its files.\n');
+      } else {
+        // mobile starter project (Capacitor)
+        zip.file('www/index.html', currentAppHtml);
+        zip.file('www/icon-192.png', dataUrlToBlob(icon192));
+        zip.file('www/icon-512.png', dataUrlToBlob(icon512));
+        zip.file('package.json', JSON.stringify({
+          name: slug, version: '1.0.0', private: true,
+          scripts: { sync: 'npx cap sync' },
+          dependencies: { '@capacitor/core': '^6.0.0', '@capacitor/android': '^6.0.0', '@capacitor/ios': '^6.0.0' },
+          devDependencies: { '@capacitor/cli': '^6.0.0' }
+        }, null, 2));
+        zip.file('capacitor.config.json', JSON.stringify({ appId: 'com.example.' + slug.replace(/-/g, ''), appName: name, webDir: 'www' }, null, 2));
+        zip.file('README.md',
+          '# ' + name + ' — mobile app starter project\n\n' +
+          'This is a real starting point, not a finished app-store app — no browser can compile a native ' +
+          'Android/iOS binary directly. Finishing it needs free tools outside the browser:\n\n' +
+          '## What you need\n- [Node.js](https://nodejs.org) installed\n' +
+          '- For Android: [Android Studio](https://developer.android.com/studio) (free)\n' +
+          '- For iOS: a Mac with [Xcode](https://developer.apple.com/xcode/) (free, but you need a Mac)\n\n' +
+          '## Steps\n1. Unzip this folder and open a terminal in it.\n2. Run `npm install`.\n' +
+          '3. Run `npx cap add android` (and/or `npx cap add ios`).\n' +
+          '4. Run `npx cap open android` (or `ios`) — this opens the real native project.\n' +
+          '5. Build and run it from Android Studio / Xcode like any native app.\n\n' +
+          '## Publishing for real\n- **Android**: needs a one-time $25 Google Play Console account, then submit your build there.\n' +
+          '- **iOS**: needs a $99/year Apple Developer account, then submit via Xcode/App Store Connect.\n\n' +
+          'Your app\'s actual content lives in `www/index.html` — re-run `npx cap sync` after changing it.\n');
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = slug + (currentMode === 'mobile' ? '-mobile-starter' : '-pwa') + '.zip';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      showStatus('Downloaded ' + a.download + '.');
+    } catch (err) {
+      showError('Could not build the download: ' + err.message);
+    } finally {
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = currentMode === 'utility' ? '⬇ Download app.html' : '⬇ Download .zip';
+    }
+  });
+})();
+</script>
+</body>
+</html>
