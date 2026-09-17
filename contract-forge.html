@@ -157,12 +157,33 @@
       <input type="text" id="otherParty" placeholder="Client or contractor name">
     </div>
     <div class="field">
+      <label for="effectiveDate">Effective date</label>
+      <input type="text" id="effectiveDate" placeholder="Defaults to today if left blank">
+    </div>
+    <div class="field">
       <label for="scope">Scope of work / purpose</label>
       <textarea id="scope" placeholder="e.g. Weekly lawn mowing and hedge trimming at 123 Main St, April–October"></textarea>
     </div>
     <div class="field">
       <label for="terms">Payment &amp; terms</label>
       <textarea id="terms" placeholder="e.g. $150/visit, due within 7 days of service. Either party may cancel with 14 days' written notice."></textarea>
+    </div>
+    <div class="field">
+      <label for="governingLaw">Governing law (optional)</label>
+      <input type="text" id="governingLaw" placeholder="e.g. State of Texas">
+    </div>
+
+    <div class="section-title">Signatures (optional)</div>
+    <div class="field">
+      <label>Your signature</label>
+      <canvas id="sigCanvasBiz" width="300" height="100" style="border:1px solid rgba(22,32,43,0.28);border-radius:var(--radius);background:#fff;touch-action:none;cursor:crosshair;display:block;width:100%;height:100px;"></canvas>
+      <button type="button" class="draft-btn secondary" id="clearSigBiz" style="margin-top:6px;">Clear</button>
+    </div>
+    <div class="field">
+      <label>Other party's signature</label>
+      <canvas id="sigCanvasOther" width="300" height="100" style="border:1px solid rgba(22,32,43,0.28);border-radius:var(--radius);background:#fff;touch-action:none;cursor:crosshair;display:block;width:100%;height:100px;"></canvas>
+      <button type="button" class="draft-btn secondary" id="clearSigOther" style="margin-top:6px;">Clear</button>
+      <p class="hint">Sign with a mouse or finger — handy if you're filling this out together with the other party. Otherwise leave blank and print or download for a signature later.</p>
     </div>
 
     <div class="error-box" id="errorBox"></div>
@@ -188,8 +209,10 @@
   const bizNameInput = document.getElementById('bizName');
   const contractType = document.getElementById('contractType');
   const otherParty = document.getElementById('otherParty');
+  const effectiveDateInput = document.getElementById('effectiveDate');
   const scope = document.getElementById('scope');
   const terms = document.getElementById('terms');
+  const governingLawInput = document.getElementById('governingLaw');
   const errorBox = document.getElementById('errorBox');
   const printBtn = document.getElementById('printBtn');
   const downloadBtn = document.getElementById('downloadBtn');
@@ -198,7 +221,71 @@
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
 
-  [bizNameInput, contractType, otherParty, scope, terms].forEach(el => el.addEventListener('input', renderPreview));
+  // ---------- draft autosave ----------
+  const DRAFT_KEY = 'contractForgeDraft_v1';
+  const draftFields = [bizNameInput, contractType, otherParty, effectiveDateInput, scope, terms, governingLawInput];
+
+  function saveDraft() {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        bizName: bizNameInput.value, contractType: contractType.value, otherParty: otherParty.value,
+        effectiveDate: effectiveDateInput.value, scope: scope.value, terms: terms.value, governingLaw: governingLawInput.value
+      }));
+    } catch (e) {}
+  }
+  function loadDraft() {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.bizName) bizNameInput.value = d.bizName;
+      if (d.contractType) contractType.value = d.contractType;
+      if (d.otherParty) otherParty.value = d.otherParty;
+      if (d.effectiveDate) effectiveDateInput.value = d.effectiveDate;
+      if (d.scope) scope.value = d.scope;
+      if (d.terms) terms.value = d.terms;
+      if (d.governingLaw) governingLawInput.value = d.governingLaw;
+    } catch (e) {}
+  }
+  loadDraft();
+
+  // ---------- signature pads ----------
+  function setupSignaturePad(canvas) {
+    const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#16202B';
+    let drawing = false, hasContent = false, lastX = 0, lastY = 0;
+    function pos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return { x: (e.clientX - rect.left) * (canvas.width / rect.width), y: (e.clientY - rect.top) * (canvas.height / rect.height) };
+    }
+    canvas.addEventListener('pointerdown', (e) => {
+      drawing = true; hasContent = true;
+      const p = pos(e); lastX = p.x; lastY = p.y;
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
+      e.preventDefault();
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!drawing) return;
+      const p = pos(e);
+      ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke();
+      lastX = p.x; lastY = p.y;
+    });
+    function stop() { if (drawing) { drawing = false; renderPreview(); } }
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointerleave', stop);
+    canvas.addEventListener('pointercancel', stop);
+    return {
+      isEmpty: () => !hasContent,
+      clear: () => { ctx.clearRect(0, 0, canvas.width, canvas.height); hasContent = false; renderPreview(); },
+      toDataUrl: () => hasContent ? canvas.toDataURL('image/png') : ''
+    };
+  }
+  const sigPadBiz = setupSignaturePad(document.getElementById('sigCanvasBiz'));
+  const sigPadOther = setupSignaturePad(document.getElementById('sigCanvasOther'));
+  document.getElementById('clearSigBiz').addEventListener('click', () => sigPadBiz.clear());
+  document.getElementById('clearSigOther').addEventListener('click', () => sigPadOther.clear());
+
+  draftFields.forEach(el => el.addEventListener('input', () => { renderPreview(); saveDraft(); }));
 
   function buildDocument() {
     const type = contractType.value;
@@ -206,41 +293,50 @@
     const other = otherParty.value.trim() || "[other party's name]";
     const scopeText = scope.value.trim() || '[describe the scope of work or purpose]';
     const termsText = terms.value.trim();
+    const governingLawText = governingLawInput.value.trim();
 
     const date = new Date().toLocaleDateString();
+    const effectiveDateText = effectiveDateInput.value.trim() || date;
     const docNumber = 'C-' + Date.now().toString().slice(-6);
     const isNda = type === 'NDA';
 
     const bodyParagraphs = isNda
       ? [
-          'This Non-Disclosure Agreement ("Agreement") is entered into on ' + date + ' between ' + bizName + ' ("Disclosing Party") and ' + other + ' ("Receiving Party").',
+          'This Non-Disclosure Agreement ("Agreement") is entered into on ' + effectiveDateText + ' between ' + bizName + ' ("Disclosing Party") and ' + other + ' ("Receiving Party").',
           '<strong>Purpose.</strong> ' + scopeText,
           '<strong>Confidentiality.</strong> The Receiving Party agrees to keep confidential all non-public information shared in connection with the above purpose, and not to disclose it to third parties without prior written consent.',
           termsText ? '<strong>Additional terms.</strong> ' + termsText : '',
-          '<strong>Term.</strong> This Agreement remains in effect until the information no longer qualifies as confidential, or either party terminates it in writing.'
+          '<strong>Term.</strong> This Agreement remains in effect until the information no longer qualifies as confidential, or either party terminates it in writing.',
+          governingLawText ? '<strong>Governing law.</strong> This Agreement is governed by the laws of ' + governingLawText + '.' : ''
         ]
       : [
-          'This ' + type + ' ("Agreement") is entered into on ' + date + ' between ' + bizName + ' and ' + other + '.',
+          'This ' + type + ' ("Agreement") is entered into on ' + effectiveDateText + ' between ' + bizName + ' and ' + other + '.',
           '<strong>Scope.</strong> ' + scopeText,
           termsText ? '<strong>Payment &amp; terms.</strong> ' + termsText : '',
           '<strong>Independent relationship.</strong> Nothing in this Agreement creates an employment, partnership, or joint-venture relationship between the parties.',
-          '<strong>Termination.</strong> Either party may terminate this Agreement as described in the terms above, or with 14 days\' written notice if no other period is specified.'
+          '<strong>Termination.</strong> Either party may terminate this Agreement as described in the terms above, or with 14 days\' written notice if no other period is specified.',
+          governingLawText ? '<strong>Governing law.</strong> This Agreement is governed by the laws of ' + governingLawText + '.' : ''
         ];
     const bodyHtml = bodyParagraphs.filter(Boolean).map(p => '<p>' + p + '</p>').join('');
+
+    const bizSigImg = sigPadBiz.toDataUrl();
+    const otherSigImg = sigPadOther.toDataUrl();
+    const bizSigBlock = bizSigImg ? '<img src="' + bizSigImg + '" style="height:60px;display:block;">' : '';
+    const otherSigBlock = otherSigImg ? '<img src="' + otherSigImg + '" style="height:60px;display:block;">' : '';
 
     const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + type + ' ' + docNumber + '</title>' +
       '<style>body{font-family:Arial,sans-serif;color:#16202B;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.6;}' +
       'h1{font-size:20px;margin:0 0 4px;} .meta{color:#666;font-size:13px;margin-bottom:24px;}' +
       'p{font-size:14px;margin:0 0 14px;}' +
       '.sign-block{display:flex;gap:40px;margin-top:48px;}' +
-      '.sign{flex:1;} .sign-line{border-top:1px solid #16202B;margin-top:48px;padding-top:6px;font-size:12.5px;color:#666;}' +
+      '.sign{flex:1;} .sign-line{border-top:1px solid #16202B;margin-top:8px;padding-top:6px;font-size:12.5px;color:#666;}' +
       '@media print{body{margin:0;}}</style></head><body>' +
       '<h1>' + type + '</h1>' +
-      '<div class="meta">#' + docNumber + ' · ' + date + '</div>' +
+      '<div class="meta">#' + docNumber + ' · Generated ' + date + '</div>' +
       bodyHtml +
       '<div class="sign-block">' +
-      '<div class="sign"><div class="sign-line">' + bizName + ' — Signature &amp; date</div></div>' +
-      '<div class="sign"><div class="sign-line">' + other + ' — Signature &amp; date</div></div>' +
+      '<div class="sign">' + bizSigBlock + '<div class="sign-line">' + bizName + ' — Signature &amp; date</div></div>' +
+      '<div class="sign">' + otherSigBlock + '<div class="sign-line">' + other + ' — Signature &amp; date</div></div>' +
       '</div>' +
       '</body></html>';
 
