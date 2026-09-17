@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Merge Forge — combine images, clips and music into one video</title>
-<meta name="description" content="Drop in slide images, video clips from other tools, and music — arrange them in order and merge into one final video, right in your browser.">
+<meta name="description" content="Drop in slide images, video clips from other tools, music, and text overlays — preview it live, then merge into one final video with smooth audio fades, right in your browser.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Merge Forge — combine images, clips and music into one video">
-<meta property="og:description" content="Drop in slide images, video clips from other tools, and music — arrange them in order and merge into one final video, right in your browser.">
+<meta property="og:description" content="Drop in slide images, video clips from other tools, music, and text overlays — preview it live, then merge into one final video with smooth audio fades, right in your browser.">
 <meta property="og:image" content="https://migabuilder.com/assets/og/merge-forge.jpg">
 <meta property="og:url" content="https://migabuilder.com/merge-forge.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Merge Forge — combine images, clips and music into one video">
-<meta name="twitter:description" content="Drop in slide images, video clips from other tools, and music — arrange them in order and merge into one final video, right in your browser.">
+<meta name="twitter:description" content="Drop in slide images, video clips from other tools, music, and text overlays — preview it live, then merge into one final video with smooth audio fades, right in your browser.">
 <meta name="twitter:image" content="https://migabuilder.com/assets/og/merge-forge.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,7 +192,7 @@
   </svg>
   <div>
     <h1>Merge Forge</h1>
-    <p>Drop in images, video clips, and music — arrange them in order and merge into one final video.</p>
+    <p>Drop in images, video clips, music, and text overlays — arrange them, preview live, then merge into one final video with smooth audio fades.</p>
   </div>
 </header>
 
@@ -238,6 +238,26 @@
       </select>
     </div>
 
+    <div class="section-title">Text overlay (optional)</div>
+    <div class="field">
+      <p class="hint" style="margin:0 0 8px;">Add lines of text that appear over the video — handy for quotes, captions, or credits.</p>
+      <label for="captionTextInput">Text</label>
+      <input type="text" id="captionTextInput" placeholder="e.g. Believe in yourself">
+      <div class="row-2" style="margin-top:8px;">
+        <div><label for="captionStartInput">Starts at (s)</label><input type="number" id="captionStartInput" value="0" min="0" step="0.5"></div>
+        <div><label for="captionDurationInput">Duration (s)</label><input type="number" id="captionDurationInput" value="3" min="0.5" step="0.5"></div>
+      </div>
+      <label for="captionPositionInput" style="margin-top:8px;">Position</label>
+      <select id="captionPositionInput">
+        <option value="bottom" selected>Bottom</option>
+        <option value="middle">Middle</option>
+        <option value="top">Top</option>
+      </select>
+      <button type="button" class="draft-btn secondary" id="addCaptionBtn" style="margin-top:8px;">+ Add text overlay</button>
+    </div>
+    <div class="items" id="captionsList"></div>
+    <p class="items-empty" id="captionsEmpty">No text overlays added.</p>
+
     <div class="section-title">Music &amp; sound (optional)</div>
     <div class="field">
       <p class="hint" style="margin:0 0 8px;">Layer in music or narration on top of everything above — upload a track (e.g. one you made in Music Forge), record narration live, or use a generated stock track. Got a screen recording from <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>? Add it as a clip above.</p>
@@ -259,6 +279,14 @@
     </div>
     <div class="frames" id="soundClips" style="display:flex;flex-direction:column;gap:8px;margin-top:10px;"></div>
     <p class="items-empty" id="soundClipsEmpty">No music or sound added — the merged video will use each clip's own original audio only.</p>
+    <div class="field">
+      <label>Fade the combined audio mix</label>
+      <div class="row-2">
+        <div><label for="fadeInInput" style="font-weight:400;font-size:12px;">Fade in (s)</label><input type="number" id="fadeInInput" value="0" min="0" max="10" step="0.5"></div>
+        <div><label for="fadeOutInput" style="font-weight:400;font-size:12px;">Fade out (s)</label><input type="number" id="fadeOutInput" value="0" min="0" max="10" step="0.5"></div>
+      </div>
+      <p class="hint">Smooths the start/end of the merged audio (music, narration, and video clip audio together) instead of cutting in or out abruptly.</p>
+    </div>
 
     <button type="button" class="draft-btn" id="renderBtn" style="margin-top:6px;">🎬 Merge &amp; render video</button>
     <div class="error-box" id="errorBox"></div>
@@ -285,10 +313,12 @@
     </div>
 
     <div class="table-actions">
+      <button type="button" id="playPreviewBtn">▶ Play preview</button>
+      <button type="button" id="stopPreviewBtn" disabled>■ Stop preview</button>
       <button type="button" id="cancelRenderBtn" style="display:none;">✕ Cancel render</button>
       <button type="button" id="downloadVideoBtn" disabled class="primary">⬇ Download video (.webm)</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Rendering happens in real time in your browser, plus a brief moment up front to line up any video clips. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited.</p>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Play preview plays the timeline live, right here, with no export — a quick way to check pacing, transitions, captions, and audio before committing to a full render. Rendering itself happens in real time in your browser, plus a brief moment up front to line up any video clips. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited.</p>
   </section>
 </main>
 
@@ -304,10 +334,19 @@
   const mediaItemsEmpty = document.getElementById('mediaItemsEmpty');
   const transitionSelect = document.getElementById('transitionSelect');
   const aspectSelect = document.getElementById('aspectSelect');
+  const captionTextInput = document.getElementById('captionTextInput');
+  const captionStartInput = document.getElementById('captionStartInput');
+  const captionDurationInput = document.getElementById('captionDurationInput');
+  const captionPositionInput = document.getElementById('captionPositionInput');
+  const addCaptionBtn = document.getElementById('addCaptionBtn');
+  const captionsListEl = document.getElementById('captionsList');
+  const captionsEmpty = document.getElementById('captionsEmpty');
   const soundInput = document.getElementById('soundInput');
   const recordClipBtn = document.getElementById('recordClipBtn');
   const soundClipsEl = document.getElementById('soundClips');
   const soundClipsEmpty = document.getElementById('soundClipsEmpty');
+  const fadeInInput = document.getElementById('fadeInInput');
+  const fadeOutInput = document.getElementById('fadeOutInput');
   const renderBtn = document.getElementById('renderBtn');
   const errorBox = document.getElementById('errorBox');
   const titleBlockRight = document.getElementById('titleBlockRight');
@@ -318,6 +357,8 @@
   const progressLabel = document.getElementById('progressLabel');
   const progressPct = document.getElementById('progressPct');
   const progressFill = document.getElementById('progressFill');
+  const playPreviewBtn = document.getElementById('playPreviewBtn');
+  const stopPreviewBtn = document.getElementById('stopPreviewBtn');
   const cancelRenderBtn = document.getElementById('cancelRenderBtn');
   const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 
@@ -326,6 +367,8 @@
   // ---------- state ----------
   let mediaItems = []; // {id, kind:'image'|'video', img, videoEl, objectUrl, name, duration, trimStart, trimEnd, naturalDuration, mute, volume, seed}
   let itemIdCounter = 0;
+  let captions = []; // {id, text, start, duration, position}
+  let captionIdCounter = 0;
   let soundClips = [];
   let clipIdCounter = 0;
   let mediaRecorderMic = null;
@@ -334,6 +377,9 @@
   let renderedVideoBlob = null;
   let renderState = null;
   let sharedAudioCtx = null;
+  let previewRaf = null;
+  let previewStart = null;
+  let previewMasterGain = null;
   const mediaSourceNodes = new Map(); // videoEl -> MediaElementSourceNode
 
   const KENBURNS_PATTERNS = [
@@ -449,6 +495,101 @@
     if (i < 0 || j < 0 || j >= mediaItems.length) return;
     const tmp = mediaItems[i]; mediaItems[i] = mediaItems[j]; mediaItems[j] = tmp;
     renderMediaItemsList();
+  }
+
+  // ---------- text overlays / captions (identical pattern to Video Forge) ----------
+  addCaptionBtn.addEventListener('click', function () {
+    clearError();
+    const text = captionTextInput.value.trim();
+    if (!text) { showError('Type some text first.'); return; }
+    captions.push({
+      id: ++captionIdCounter,
+      text,
+      start: Math.max(0, parseFloat(captionStartInput.value) || 0),
+      duration: Math.max(0.5, parseFloat(captionDurationInput.value) || 3),
+      position: captionPositionInput.value
+    });
+    captionTextInput.value = '';
+    renderCaptionsList();
+  });
+
+  function renderCaptionsList() {
+    captionsListEl.innerHTML = '';
+    captionsEmpty.style.display = captions.length ? 'none' : 'block';
+    captions.forEach(cap => {
+      const row = document.createElement('div');
+      row.className = 'clip-row';
+      row.innerHTML =
+        '<div class="clip-icon">💬</div>' +
+        '<div class="clip-meta">' +
+          '<span class="clip-name">"' + cap.text.replace(/</g, '&lt;') + '"</span>' +
+          '<div class="clip-controls">' +
+            '<label>From: <input type="number" class="cap-start" data-id="' + cap.id + '" value="' + cap.start + '" min="0" step="0.5" style="width:52px;">s</label>' +
+            '<label>For: <input type="number" class="cap-duration" data-id="' + cap.id + '" value="' + cap.duration + '" min="0.5" step="0.5" style="width:52px;">s</label>' +
+            '<label>At: <select class="cap-position" data-id="' + cap.id + '">' +
+              '<option value="bottom"' + (cap.position === 'bottom' ? ' selected' : '') + '>Bottom</option>' +
+              '<option value="middle"' + (cap.position === 'middle' ? ' selected' : '') + '>Middle</option>' +
+              '<option value="top"' + (cap.position === 'top' ? ' selected' : '') + '>Top</option>' +
+            '</select></label>' +
+          '</div>' +
+        '</div>' +
+        '<div class="clip-actions"><button type="button" data-remove="' + cap.id + '" title="Remove">✕</button></div>';
+      captionsListEl.appendChild(row);
+    });
+    captionsListEl.querySelectorAll('.cap-start').forEach(inp => inp.addEventListener('change', () => {
+      const cap = captions.find(c => c.id === Number(inp.dataset.id));
+      if (cap) cap.start = Math.max(0, parseFloat(inp.value) || 0);
+    }));
+    captionsListEl.querySelectorAll('.cap-duration').forEach(inp => inp.addEventListener('change', () => {
+      const cap = captions.find(c => c.id === Number(inp.dataset.id));
+      if (cap) cap.duration = Math.max(0.5, parseFloat(inp.value) || 3);
+    }));
+    captionsListEl.querySelectorAll('.cap-position').forEach(sel => sel.addEventListener('change', () => {
+      const cap = captions.find(c => c.id === Number(sel.dataset.id));
+      if (cap) cap.position = sel.value;
+    }));
+    captionsListEl.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => {
+      captions = captions.filter(c => c.id !== Number(btn.dataset.remove));
+      renderCaptionsList();
+    }));
+  }
+
+  function wrapCanvasText(g, text, maxWidth) {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let line = '';
+    words.forEach(word => {
+      const test = line ? line + ' ' + word : word;
+      if (line && g.measureText(test).width > maxWidth) { lines.push(line); line = word; } else { line = test; }
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function drawCaptionsAt(g, cw, ch, t) {
+    const active = captions.filter(c => t >= c.start && t < c.start + c.duration);
+    if (!active.length) return;
+    const fontSize = Math.round(ch * 0.045);
+    g.font = '700 ' + fontSize + 'px "IBM Plex Sans", sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    const maxWidth = cw * 0.86;
+    const lineHeight = fontSize * 1.3;
+    active.forEach(cap => {
+      const lines = wrapCanvasText(g, cap.text, maxWidth);
+      const anchorY = cap.position === 'top' ? ch * 0.14 : cap.position === 'bottom' ? ch * 0.86 : ch * 0.5;
+      const blockHeight = lines.length * lineHeight;
+      const firstLineY = anchorY - blockHeight / 2 + lineHeight / 2;
+      let maxLineWidth = 0;
+      lines.forEach(line => { maxLineWidth = Math.max(maxLineWidth, g.measureText(line).width); });
+      g.save();
+      g.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      const boxPadX = 18, boxPadY = 12;
+      g.fillRect(cw / 2 - maxLineWidth / 2 - boxPadX, anchorY - blockHeight / 2 - boxPadY, maxLineWidth + boxPadX * 2, blockHeight + boxPadY * 2);
+      g.fillStyle = '#fff';
+      lines.forEach((line, i) => g.fillText(line, cw / 2, firstLineY + i * lineHeight));
+      g.restore();
+    });
   }
 
   // ---------- sound clips (identical pattern to Video Forge) ----------
@@ -664,11 +805,100 @@
         const nextLocalT = Math.max(0, t - starts[i + 1]);
         g.save(); g.globalAlpha = 1; drawSegmentContent(g, cw, ch, seg, localT); g.restore();
         g.save(); g.globalAlpha = progress; drawSegmentContent(g, cw, ch, next, nextLocalT); g.restore();
+        drawCaptionsAt(g, cw, ch, t);
         return;
       }
     }
     drawSegmentContent(g, cw, ch, seg, localT);
+    drawCaptionsAt(g, cw, ch, t);
   }
+
+  function applyFadeEnvelope(audioCtx, gainNode, totalDuration) {
+    const maxFade = totalDuration / 2;
+    const fadeIn = Math.min(Math.max(0, parseFloat(fadeInInput.value) || 0), maxFade);
+    const fadeOut = Math.min(Math.max(0, parseFloat(fadeOutInput.value) || 0), maxFade);
+    const now = audioCtx.currentTime;
+    gainNode.gain.cancelScheduledValues(now);
+    gainNode.gain.setValueAtTime(fadeIn > 0 ? 0 : 1, now);
+    if (fadeIn > 0) gainNode.gain.linearRampToValueAtTime(1, now + fadeIn);
+    if (fadeOut > 0) {
+      const fadeOutStart = now + Math.max(fadeIn, totalDuration - fadeOut);
+      gainNode.gain.setValueAtTime(1, fadeOutStart);
+      gainNode.gain.linearRampToValueAtTime(0, now + totalDuration);
+    }
+  }
+
+  // ---------- lightweight live preview (no export) ----------
+  function stopPreview() {
+    if (previewRaf) cancelAnimationFrame(previewRaf);
+    previewRaf = null;
+    mediaItems.forEach(item => { if (item.kind === 'video') item.videoEl.pause(); });
+    if (previewMasterGain) { try { previewMasterGain.disconnect(); } catch (e) {} previewMasterGain = null; }
+    playPreviewBtn.disabled = false;
+    stopPreviewBtn.disabled = true;
+  }
+
+  playPreviewBtn.addEventListener('click', function () {
+    clearError();
+    if (!mediaItems.length) { showError('Add at least one image or video clip first.'); return; }
+    const timeline = buildTimeline();
+    if (!timeline.total) { showError('Nothing to preview.'); return; }
+    const { w, h } = currentSize();
+    stageCanvas.width = w; stageCanvas.height = h;
+    stageEmpty.style.display = 'none';
+    resultVideo.style.display = 'none';
+    stageCanvas.style.display = 'block';
+
+    if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioCtx = sharedAudioCtx;
+    previewMasterGain = audioCtx.createGain();
+    previewMasterGain.connect(audioCtx.destination);
+    applyFadeEnvelope(audioCtx, previewMasterGain, timeline.total);
+    scheduleAudioSources(audioCtx, previewMasterGain, timeline.total);
+    mediaItems.forEach(item => {
+      if (item.kind !== 'video') return;
+      const sourceNode = getSourceNode(audioCtx, item.videoEl);
+      sourceNode.disconnect();
+      const gain = audioCtx.createGain();
+      gain.gain.value = item.mute ? 0 : item.volume;
+      sourceNode.connect(gain).connect(previewMasterGain);
+      item.videoEl.muted = true; // routed through the Web Audio graph above, not the element itself
+    });
+
+    playPreviewBtn.disabled = true;
+    stopPreviewBtn.disabled = false;
+    previewStart = performance.now();
+    titleBlockRight.textContent = 'PREVIEWING';
+    let activeVideoItem = null;
+    function step() {
+      const elapsed = (performance.now() - previewStart) / 1000;
+      if (elapsed >= timeline.total) {
+        drawTimelineAt(timeline, ctx, w, h, timeline.total - 0.001);
+        stopPreview();
+        titleBlockRight.textContent = 'PREVIEW DONE';
+        return;
+      }
+      const idx = findSegmentIndexAt(timeline, elapsed);
+      const seg = timeline.segments[idx];
+      if (seg.type === 'video' && activeVideoItem !== seg.item) {
+        if (activeVideoItem) activeVideoItem.videoEl.pause();
+        activeVideoItem = seg.item;
+        activeVideoItem.videoEl.currentTime = activeVideoItem.trimStart;
+        activeVideoItem.videoEl.play().catch(() => {});
+      } else if (seg.type !== 'video' && activeVideoItem) {
+        activeVideoItem.videoEl.pause();
+        activeVideoItem = null;
+      }
+      drawTimelineAt(timeline, ctx, w, h, elapsed);
+      previewRaf = requestAnimationFrame(step);
+    }
+    previewRaf = requestAnimationFrame(step);
+  });
+
+  stopPreviewBtn.addEventListener('click', function () {
+    stopPreview();
+    titleBlockRight.textContent = 'STOPPED';
+  });
 
   // ---------- render ----------
   function pickMimeType() {
@@ -689,6 +919,7 @@
       showError('Your browser does not support recording canvas to video. Try the latest Chrome, Edge, or Firefox.');
       return;
     }
+    stopPreview();
     const timeline = buildTimeline();
     if (!timeline.total) { showError('Nothing to render.'); return; }
     const mimeType = pickMimeType();
@@ -703,6 +934,7 @@
     renderedVideoBlob = null;
 
     renderBtn.disabled = true;
+    playPreviewBtn.disabled = true;
     progressWrap.classList.add('show');
     progressLabel.textContent = 'Lining up clips…';
     progressFill.style.width = '0%';
@@ -722,14 +954,17 @@
     if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const audioCtx = sharedAudioCtx;
     const dest = audioCtx.createMediaStreamDestination();
-    scheduleAudioSources(audioCtx, dest, timeline.total);
+    const masterGain = audioCtx.createGain();
+    masterGain.connect(dest);
+    applyFadeEnvelope(audioCtx, masterGain, timeline.total);
+    scheduleAudioSources(audioCtx, masterGain, timeline.total);
     mediaItems.forEach(item => {
       if (item.kind !== 'video') return;
       const sourceNode = getSourceNode(audioCtx, item.videoEl);
       sourceNode.disconnect();
       const gain = audioCtx.createGain();
       gain.gain.value = item.mute ? 0 : item.volume;
-      sourceNode.connect(gain).connect(dest);
+      sourceNode.connect(gain).connect(masterGain);
       item.videoEl.muted = true;
     });
 
@@ -752,6 +987,7 @@
       progressWrap.classList.remove('show');
       cancelRenderBtn.style.display = 'none';
       renderBtn.disabled = false;
+      playPreviewBtn.disabled = false;
       mediaItems.forEach(item => { if (item.kind === 'video') item.videoEl.pause(); });
       renderState = null;
     }
