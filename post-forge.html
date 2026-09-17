@@ -211,6 +211,14 @@
         <label for="postLink">Link (optional)</label>
         <input type="text" id="postLink" placeholder="https://migabuilder.com/paint-forge.html">
       </div>
+      <div class="field">
+        <label for="postImage">Attach an image (optional)</label>
+        <input type="file" id="postImage" accept="image/*">
+        <div id="imagePreviewWrap" style="display:none;margin-top:8px;">
+          <img id="imagePreview" style="max-width:160px;max-height:110px;border-radius:4px;display:block;">
+          <button type="button" id="removeImageBtn" style="margin-top:4px;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:11.5px;">Remove image</button>
+        </div>
+      </div>
       <div class="target-list" id="targetList"></div>
       <div class="error-box" id="errorBox"></div>
       <button type="button" class="draft-btn" id="postBtn" style="margin-top:14px;">🚀 Post now</button>
@@ -240,6 +248,10 @@
   const saveBtn = document.getElementById('saveBtn');
   const postText = document.getElementById('postText');
   const postLink = document.getElementById('postLink');
+  const postImage = document.getElementById('postImage');
+  const imagePreviewWrap = document.getElementById('imagePreviewWrap');
+  const imagePreview = document.getElementById('imagePreview');
+  const removeImageBtn = document.getElementById('removeImageBtn');
   const charCount = document.getElementById('charCount');
   const targetList = document.getElementById('targetList');
   const postBtn = document.getElementById('postBtn');
@@ -299,12 +311,20 @@
     });
     if (!res.ok && res.status !== 204) throw new Error('Webhook responded with status ' + res.status);
   }
-  async function postDiscord(message) {
+  async function postDiscord(message, imageFile) {
     const url = discordWebhook.value.trim();
-    const res = await fetch(url, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: message })
-    });
+    let res;
+    if (imageFile) {
+      const form = new FormData();
+      form.append('payload_json', JSON.stringify({ content: message }));
+      form.append('files[0]', imageFile, imageFile.name || 'image.png');
+      res = await fetch(url, { method: 'POST', body: form });
+    } else {
+      res = await fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: message })
+      });
+    }
     if (!res.ok && res.status !== 204) {
       const body = await res.text().catch(() => '');
       throw new Error('Discord responded with status ' + res.status + (body ? ': ' + body.slice(0, 150) : ''));
@@ -324,15 +344,29 @@
     return data;
   }
   async function testBluesky() { await blueskySession(); }
-  async function postBluesky(message) {
+
+  async function uploadBlueskyBlob(session, imageFile) {
+    const res = await fetch('https://bsky.social/xrpc/com.atproto.repo.uploadBlob', {
+      method: 'POST',
+      headers: { 'Content-Type': imageFile.type || 'application/octet-stream', 'Authorization': 'Bearer ' + session.accessJwt },
+      body: imageFile
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.message) || 'Bluesky image upload failed.');
+    return data.blob;
+  }
+
+  async function postBluesky(message, imageFile) {
     const session = await blueskySession();
+    const record = { text: message, createdAt: new Date().toISOString(), $type: 'app.bsky.feed.post' };
+    if (imageFile) {
+      const blob = await uploadBlueskyBlob(session, imageFile);
+      record.embed = { $type: 'app.bsky.embed.images', images: [{ image: blob, alt: '' }] };
+    }
     const res = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.accessJwt },
-      body: JSON.stringify({
-        repo: session.did, collection: 'app.bsky.feed.post',
-        record: { text: message, createdAt: new Date().toISOString(), $type: 'app.bsky.feed.post' }
-      })
+      body: JSON.stringify({ repo: session.did, collection: 'app.bsky.feed.post', record: record })
     });
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error((data && data.message) || 'Bluesky post failed.');
@@ -352,22 +386,52 @@
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error((data && data.error) || 'Could not verify Mastodon credentials.');
   }
-  async function postMastodon(message) {
+  async function uploadMastodonMedia(token, imageFile) {
+    const form = new FormData();
+    form.append('file', imageFile, imageFile.name || 'image.png');
+    const res = await fetch(mastodonBase() + '/api/v2/media', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.error) || 'Mastodon image upload failed.');
+    return data.id;
+  }
+
+  async function postMastodon(message, imageFile) {
     const token = mastodonToken.value.trim();
+    const body = { status: message };
+    if (imageFile) body.media_ids = [await uploadMastodonMedia(token, imageFile)];
     const res = await fetch(mastodonBase() + '/api/v1/statuses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ status: message })
+      body: JSON.stringify(body)
     });
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error((data && data.error) || 'Mastodon post failed.');
   }
 
   const PLATFORMS = {
-    discord: { label: '💬 Discord', test: testDiscord, post: postDiscord, configured: () => !!discordWebhook.value.trim() },
-    bluesky: { label: '🦋 Bluesky', test: testBluesky, post: postBluesky, configured: () => !!(blueskyHandle.value.trim() && blueskyPassword.value.trim()) },
-    mastodon: { label: '🐘 Mastodon', test: testMastodon, post: postMastodon, configured: () => !!(mastodonInstance.value.trim() && mastodonToken.value.trim()) }
+    discord: { label: '💬 Discord', limit: 2000, test: testDiscord, post: postDiscord, configured: () => !!discordWebhook.value.trim() },
+    bluesky: { label: '🦋 Bluesky', limit: 300, test: testBluesky, post: postBluesky, configured: () => !!(blueskyHandle.value.trim() && blueskyPassword.value.trim()) },
+    mastodon: { label: '🐘 Mastodon', limit: 500, test: testMastodon, post: postMastodon, configured: () => !!(mastodonInstance.value.trim() && mastodonToken.value.trim()) }
   };
+
+  // ---------- image attachment ----------
+  let attachedImage = null;
+  postImage.addEventListener('change', function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    attachedImage = file;
+    imagePreview.src = URL.createObjectURL(file);
+    imagePreviewWrap.style.display = 'block';
+  });
+  removeImageBtn.addEventListener('click', function () {
+    attachedImage = null;
+    postImage.value = '';
+    imagePreviewWrap.style.display = 'none';
+  });
 
   document.querySelectorAll('[data-test]').forEach(btn => {
     btn.addEventListener('click', async function () {
@@ -399,10 +463,19 @@
   }
   postText.addEventListener('input', updateCharCount);
   postLink.addEventListener('input', updateCharCount);
+  function selectedTargets() {
+    return Array.from(targetList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.target);
+  }
   function updateCharCount() {
     const len = fullMessage().length;
-    charCount.textContent = len + ' characters';
-    charCount.classList.toggle('warn', len > 280);
+    const selected = selectedTargets();
+    const relevant = selected.length ? selected : Object.keys(PLATFORMS);
+    const parts = relevant.map(key => {
+      const over = len > PLATFORMS[key].limit;
+      return (over ? '<span style="color:var(--error);">' : '<span>') + PLATFORMS[key].label.split(' ')[0] + ' ' + len + '/' + PLATFORMS[key].limit + '</span>';
+    });
+    charCount.innerHTML = parts.join('  ·  ');
+    charCount.classList.toggle('warn', relevant.some(key => len > PLATFORMS[key].limit));
   }
   updateCharCount();
 
@@ -418,6 +491,8 @@
         PLATFORMS[key].label + (configured ? '' : ' (not connected)');
       targetList.appendChild(chip);
     });
+    targetList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', updateCharCount));
+    updateCharCount();
   }
   renderTargetList();
 
@@ -444,7 +519,7 @@
     resultsList.innerHTML = '';
     const message = fullMessage();
     if (!postText.value.trim()) { showError('Write something to post first.'); return; }
-    const selected = Array.from(targetList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.target);
+    const selected = selectedTargets();
     if (!selected.length) { showError('Connect and check at least one platform first.'); return; }
 
     postBtn.disabled = true;
@@ -453,11 +528,16 @@
     for (const key of selected) {
       const row = document.createElement('div');
       row.className = 'result-row';
+      if (message.length > PLATFORMS[key].limit) {
+        row.innerHTML = '<span class="ic">⚠️</span><span>' + PLATFORMS[key].label + ' — skipped, ' + message.length + ' characters exceeds its ' + PLATFORMS[key].limit + ' limit</span>';
+        resultsList.appendChild(row);
+        continue;
+      }
       row.innerHTML = '<span class="ic">⏳</span><span>' + PLATFORMS[key].label + '…</span>';
       resultsList.appendChild(row);
       try {
-        await PLATFORMS[key].post(message);
-        row.innerHTML = '<span class="ic">✅</span><span>' + PLATFORMS[key].label + ' — posted</span>';
+        await PLATFORMS[key].post(message, attachedImage);
+        row.innerHTML = '<span class="ic">✅</span><span>' + PLATFORMS[key].label + ' — posted' + (attachedImage ? ' with image' : '') + '</span>';
         succeeded.push(key);
       } catch (err) {
         row.innerHTML = '<span class="ic">❌</span><span>' + PLATFORMS[key].label + ' — ' + err.message + '</span>';
