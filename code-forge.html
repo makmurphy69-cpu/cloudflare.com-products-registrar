@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+(function () {
+  try {
+    var url = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
+    var page = location.pathname.split('/').pop() || 'index.html';
+    var body = JSON.stringify({ page: page });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url + '/hit', new Blob([body], { type: 'application/json' }));
+    } else {
+      fetch(url + '/hit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) { /* visit counting must never break the page */ }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Code Forge — learn Python and JavaScript by doing</title>
+<meta name="description" content="Pick a language, work through short coding exercises, run your code for real in your browser, and get instant pass/fail feedback plus an AI explanation of what you got right or wrong.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Code Forge — learn Python and JavaScript by doing">
+<meta property="og:description" content="Pick a language, work through short coding exercises, run your code for real in your browser, and get instant pass/fail feedback plus an AI explanation of what you got right or wrong.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/code-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/code-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Code Forge — learn Python and JavaScript by doing">
+<meta name="twitter:description" content="Pick a language, work through short coding exercises, run your code for real in your browser, and get instant pass/fail feedback plus an AI explanation of what you got right or wrong.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/code-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) 1fr;
+    gap: 24px;
+    padding: 28px clamp(20px, 4vw, 48px) 56px;
+    align-items: start;
+  }
+  @media (max-width: 980px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius);
+    padding: 20px 20px 24px; max-height: calc(100vh - 40px); overflow-y: auto;
+    position: sticky; top: 20px;
+  }
+  @media (max-width: 980px) { .panel { position: static; max-height: none; } }
+
+  .lang-toggle { display: flex; gap: 8px; margin-bottom: 18px; }
+  .lang-toggle button {
+    flex: 1; padding: 10px; border-radius: var(--radius); border: 1.5px solid rgba(22,32,43,0.28);
+    background: #fff; color: var(--ink); font-weight: 600; font-size: 13.5px; cursor: pointer;
+  }
+  .lang-toggle button.active { background: var(--navy); color: var(--paper); border-color: var(--navy); }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 18px 0 10px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .ex-list { display: flex; flex-direction: column; gap: 6px; }
+  .ex-item {
+    display: flex; align-items: center; gap: 10px; text-align: left; width: 100%;
+    background: #fff; border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius);
+    padding: 10px 12px; cursor: pointer; font-size: 13.5px; font-family: inherit; color: var(--ink);
+  }
+  .ex-item:hover { border-color: rgba(22,32,43,0.4); }
+  .ex-item.active { border-color: var(--navy); background: var(--paper-dim); font-weight: 600; }
+  .ex-item .ex-status { flex: none; width: 18px; text-align: center; }
+  .ex-item .ex-status.pass { color: var(--success); }
+
+  .prompt-card { background: #fff; color: var(--ink); border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius); padding: 14px 16px; margin-top: 4px; }
+  .prompt-card h2 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin: 0 0 8px; color: var(--ink); }
+  .prompt-card p { font-size: 13.5px; line-height: 1.55; margin: 0 0 8px; color: rgba(22,32,43,0.85); }
+  .prompt-card .harness-note { font-size: 12.5px; color: rgba(22,32,43,0.6); font-style: italic; }
+
+  .hints-wrap { margin-top: 10px; }
+  .hint-line { background: rgba(226,166,59,0.14); border: 1px solid rgba(226,166,59,0.4); border-radius: var(--radius); padding: 8px 10px; font-size: 12.5px; margin-top: 6px; color: #4A3410; }
+  .hint-btn { background: transparent; border: 1px dashed rgba(22,32,43,0.35); border-radius: var(--radius); padding: 6px 10px; font-size: 12.5px; cursor: pointer; color: var(--ink); }
+  .hint-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .provider-field { margin-top: 18px; }
+  .provider-field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; }
+  .provider-field select, .provider-field input {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 13.5px; padding: 8px 10px;
+    border: 1px solid rgba(22,32,43,0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  .key-row { display: flex; gap: 8px; margin-top: 8px; }
+  .key-row input { flex: 1; }
+  .toggle-key { background: transparent; border: 1px solid rgba(22,32,43,0.28); border-radius: var(--radius); padding: 0 12px; font-size: 12px; cursor: pointer; }
+  .provider-hint { font-size: 12px; color: rgba(22,32,43,0.6); margin-top: 6px; line-height: 1.4; }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; display: flex; flex-direction: column; min-height: 560px;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+
+  .editor-wrap { position: relative; background: #0b1622; border: 1px solid var(--line-cyan-dim); border-radius: 3px; overflow: hidden; }
+  .editor-gutter {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: #081422; color: rgba(237,234,224,0.35);
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 21px; padding: 12px 0; text-align: right;
+    pointer-events: none; overflow: hidden; white-space: pre;
+  }
+  #codeEditor {
+    width: 100%; min-height: 260px; resize: vertical; background: transparent; color: #eceae0; border: none;
+    font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 21px; padding: 12px 14px 12px 52px;
+    outline: none; tab-size: 4;
+  }
+
+  .run-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .run-row button {
+    background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 14px; padding: 10px 18px; cursor: pointer;
+  }
+  .run-row button.secondary { background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); }
+  .run-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .result-wrap { margin-top: 16px; }
+  .result-banner { display: none; padding: 12px 16px; border-radius: var(--radius); font-weight: 600; font-size: 14px; margin-bottom: 10px; }
+  .result-banner.show { display: block; }
+  .result-banner.pass { background: rgba(78,158,115,0.18); color: #9fe8c1; border: 1px solid rgba(78,158,115,0.5); }
+  .result-banner.fail { background: rgba(216,96,74,0.18); color: #f3b7a8; border: 1px solid rgba(216,96,74,0.5); }
+  .result-banner.err { background: rgba(216,96,74,0.24); color: #ffd0c4; border: 1px solid rgba(216,96,74,0.6); }
+
+  .console-block { background: #05101a; border: 1px solid var(--line-cyan-dim); border-radius: 3px; padding: 12px 14px; }
+  .console-block h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(237,234,224,0.45); margin: 0 0 6px; }
+  .console-block pre { margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #eceae0; white-space: pre-wrap; word-break: break-word; min-height: 20px; }
+  .console-block + .console-block { margin-top: 10px; }
+
+  .explain-wrap { margin-top: 16px; }
+  .explain-box {
+    margin-top: 10px; padding: 14px 16px; background: rgba(111,209,224,0.1); border: 1px solid var(--line-cyan-dim);
+    border-radius: var(--radius); font-size: 13.5px; line-height: 1.6; color: rgba(237,234,224,0.92); display: none; white-space: pre-wrap;
+  }
+  .explain-box.show { display: block; }
+  .explain-btn { background: transparent; color: var(--line-cyan); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius); padding: 9px 16px; font-size: 13.5px; cursor: pointer; }
+  .explain-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .error-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #f3b7a8; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Code Forge</h1>
+    <p>Pick Python or JavaScript, work through short exercises, and run real code right in your browser — with instant pass/fail feedback and an optional AI explanation.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="lang-toggle">
+      <button type="button" id="langPython" class="active">🐍 Python</button>
+      <button type="button" id="langJs">⚡ JavaScript</button>
+    </div>
+
+    <div class="section-title">Exercises</div>
+    <div class="ex-list" id="exList"></div>
+
+    <div class="section-title">Ask AI to explain</div>
+    <div class="provider-field">
+      <label for="provider">Provider</label>
+      <select id="provider">
+        <option value="gemini" selected>Gemini — free, no key needed</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+      <div class="key-row" id="apiKeyField" style="display:none;">
+        <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="provider-hint" id="providerHint">Free to use — shares a limited daily capacity. Used only when you click "Explain this".</p>
+    </div>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>CODE FORGE — <span id="exTitle">LOADING</span></span>
+      <span id="titleBlockRight">NOT RUN YET</span>
+    </div>
+
+    <div class="prompt-card">
+      <h2 id="promptTitle"></h2>
+      <p id="promptText"></p>
+      <p class="harness-note" id="harnessNote"></p>
+      <div class="hints-wrap">
+        <button type="button" class="hint-btn" id="hintBtn">💡 Show a hint (0/0)</button>
+        <div id="hintsShown"></div>
+      </div>
+    </div>
+
+    <div class="editor-wrap" style="margin-top:16px;">
+      <div class="editor-gutter" id="editorGutter">1</div>
+      <textarea id="codeEditor" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+    </div>
+
+    <div class="run-row">
+      <button type="button" id="runBtn">▶ Run &amp; check</button>
+      <button type="button" class="secondary" id="resetBtn">↺ Reset starter code</button>
+    </div>
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="result-wrap">
+      <div class="result-banner" id="resultBanner"></div>
+      <div class="console-block">
+        <h3>Output</h3>
+        <pre id="outputPre">Run your code to see output here.</pre>
+      </div>
+    </div>
+
+    <div class="explain-wrap">
+      <button type="button" class="explain-btn" id="explainBtn" disabled>🤖 Explain this (run your code first)</button>
+      <div class="explain-box" id="explainBox"></div>
+    </div>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your code runs entirely in your own browser (Python via Pyodide/WebAssembly, JavaScript in a sandboxed Web Worker) — nothing is uploaded, except the short snippet you choose to send when you click "Explain this", which goes only to the AI provider you selected. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- exercise data ----------
+  // Every exercise (after the first two intro ones) is function-based: the
+  // visible starter code defines a function, and a hidden "harness" (shown
+  // to the learner as a plain-English note, never as code) calls that
+  // function with fixed inputs and prints the results. Comparing the
+  // program's full stdout against a fixed expected string is what makes
+  // this checkable without a real test framework.
+  const EXERCISES = {
+    python: [
+      {
+        id: 'hello', title: 'Print', prompt: 'Print exactly: Hello, world!',
+        starter: 'print("Hello, world!")\n',
+        harness: '', harnessNote: '',
+        expected: 'Hello, world!',
+        hints: ['Python\'s print() function writes text to the output.', 'Put the text in quotes: print("Hello, world!")']
+      },
+      {
+        id: 'vars', title: 'Variables & arithmetic', prompt: 'Two variables are already set: a = 6 and b = 7. Print their product (a multiplied by b).',
+        starter: 'a = 6\nb = 7\n\n# print the product of a and b below\n',
+        harness: '', harnessNote: '',
+        expected: '42',
+        hints: ['Multiplication uses the * operator.', 'print(a * b)']
+      },
+      {
+        id: 'conditionals', title: 'Conditionals', prompt: 'Write a function classify_age(age) that returns "Adult" if age is 18 or older, otherwise "Minor".',
+        starter: 'def classify_age(age):\n    # return "Adult" if age >= 18, otherwise "Minor"\n    pass\n',
+        harness: 'print(classify_age(15))\nprint(classify_age(20))',
+        harnessNote: "We'll call classify_age(15) and classify_age(20).",
+        expected: 'Minor\nAdult',
+        hints: ['Use if / else and the >= operator.', 'return "Adult" if age >= 18 else "Minor"']
+      },
+      {
+        id: 'loops', title: 'Loops', prompt: 'Write a function sum_to_n(n) that returns the sum of every whole number from 1 to n, inclusive.',
+        starter: 'def sum_to_n(n):\n    total = 0\n    # your loop here\n    return total\n',
+        harness: 'print(sum_to_n(5))\nprint(sum_to_n(10))',
+        harnessNote: "We'll call sum_to_n(5) and sum_to_n(10).",
+        expected: '15\n55',
+        hints: ['range(1, n + 1) gives you every number from 1 to n.', 'for i in range(1, n + 1):\n    total += i']
+      },
+      {
+        id: 'lists', title: 'Lists', prompt: 'Write a function double_all(numbers) that returns a new list with every number doubled.',
+        starter: 'def double_all(numbers):\n    # return a new list with every number doubled\n    pass\n',
+        harness: 'print(double_all([1, 2, 3]))\nprint(double_all([5, 10]))',
+        harnessNote: 'We\'ll call double_all([1, 2, 3]) and double_all([5, 10]).',
+        expected: '[2, 4, 6]\n[10, 20]',
+        hints: ['A list comprehension can build a new list in one line.', 'return [n * 2 for n in numbers]']
+      },
+      {
+        id: 'functions', title: 'Functions & booleans', prompt: 'Write a function is_even(n) that returns True if n is even, otherwise False.',
+        starter: 'def is_even(n):\n    # return True if n is even, otherwise False\n    pass\n',
+        harness: 'print(is_even(4))\nprint(is_even(7))',
+        harnessNote: "We'll call is_even(4) and is_even(7).",
+        expected: 'True\nFalse',
+        hints: ['The % operator gives you the remainder of a division.', 'return n % 2 == 0']
+      },
+      {
+        id: 'strings', title: 'Strings', prompt: 'Write a function shout(word) that returns the word in ALL CAPS followed by "!!!".',
+        starter: 'def shout(word):\n    # return the word in capitals, followed by "!!!"\n    pass\n',
+        harness: 'print(shout("hello"))\nprint(shout("code"))',
+        harnessNote: 'We\'ll call shout("hello") and shout("code").',
+        expected: 'HELLO!!!\nCODE!!!',
+        hints: ['Strings have an .upper() method.', 'return word.upper() + "!!!"']
+      },
+      {
+        id: 'dicts', title: 'Dictionaries', prompt: 'Write a function total_price(cart) where cart is a dictionary of item names to prices (e.g. {"apple": 2, "bread": 3}). Return the sum of all the prices.',
+        starter: 'def total_price(cart):\n    # return the sum of all the values in the cart dictionary\n    pass\n',
+        harness: "print(total_price({'apple': 2, 'bread': 3}))\nprint(total_price({'milk': 4, 'eggs': 5, 'butter': 6}))",
+        harnessNote: 'We\'ll call total_price with two different carts.',
+        expected: '5\n15',
+        hints: ['A dictionary\'s .values() gives you all the values.', 'return sum(cart.values())']
+      },
+      {
+        id: 'recursion', title: 'Recursion (bonus)', prompt: 'Write a function factorial(n) that returns n! (n factorial) using recursion — factorial(n) calls itself with a smaller n.',
+        starter: 'def factorial(n):\n    # base case: factorial(0) is 1\n    # recursive case: n * factorial(n - 1)\n    pass\n',
+        harness: 'print(factorial(5))\nprint(factorial(0))',
+        harnessNote: "We'll call factorial(5) and factorial(0).",
+        expected: '120\n1',
+        hints: ['Every recursive function needs a base case that stops the recursion.', 'if n == 0:\n    return 1\nreturn n * factorial(n - 1)']
+      }
+    ],
+    javascript: [
+      {
+        id: 'hello', title: 'Print', prompt: 'Print exactly: Hello, world!',
+        starter: 'console.log("Hello, world!");\n',
+        harness: '', harnessNote: '',
+        expected: 'Hello, world!',
+        hints: ['JavaScript\'s console.log() writes text to the output.', 'console.log("Hello, world!");']
+      },
+      {
+        id: 'vars', title: 'Variables & arithmetic', prompt: 'Two variables are already set: a = 6 and b = 7. Print their product (a multiplied by b).',
+        starter: 'let a = 6;\nlet b = 7;\n\n// print the product of a and b below\n',
+        harness: '', harnessNote: '',
+        expected: '42',
+        hints: ['Multiplication uses the * operator.', 'console.log(a * b);']
+      },
+      {
+        id: 'conditionals', title: 'Conditionals', prompt: 'Write a function classifyAge(age) that returns "Adult" if age is 18 or older, otherwise "Minor".',
+        starter: 'function classifyAge(age) {\n  // return "Adult" if age >= 18, otherwise "Minor"\n}\n',
+        harness: 'console.log(classifyAge(15));\nconsole.log(classifyAge(20));',
+        harnessNote: "We'll call classifyAge(15) and classifyAge(20).",
+        expected: 'Minor\nAdult',
+        hints: ['Use if / else and the >= operator.', 'return age >= 18 ? "Adult" : "Minor";']
+      },
+      {
+        id: 'loops', title: 'Loops', prompt: 'Write a function sumToN(n) that returns the sum of every whole number from 1 to n, inclusive.',
+        starter: 'function sumToN(n) {\n  let total = 0;\n  // your loop here\n  return total;\n}\n',
+        harness: 'console.log(sumToN(5));\nconsole.log(sumToN(10));',
+        harnessNote: "We'll call sumToN(5) and sumToN(10).",
+        expected: '15\n55',
+        hints: ['A for loop from 1 to n (inclusive) covers every number.', 'for (let i = 1; i <= n; i++) {\n  total += i;\n}']
+      },
+      {
+        id: 'lists', title: 'Arrays', prompt: 'Write a function doubleAll(numbers) that returns a new array with every number doubled.',
+        starter: 'function doubleAll(numbers) {\n  // return a new array with every number doubled\n}\n',
+        harness: 'console.log(doubleAll([1, 2, 3]));\nconsole.log(doubleAll([5, 10]));',
+        harnessNote: 'We\'ll call doubleAll([1, 2, 3]) and doubleAll([5, 10]).',
+        expected: '[2, 4, 6]\n[10, 20]',
+        hints: ['Arrays have a .map() method that transforms every item.', 'return numbers.map(n => n * 2);']
+      },
+      {
+        id: 'functions', title: 'Functions & booleans', prompt: 'Write a function isEven(n) that returns true if n is even, otherwise false.',
+        starter: 'function isEven(n) {\n  // return true if n is even, otherwise false\n}\n',
+        harness: 'console.log(isEven(4));\nconsole.log(isEven(7));',
+        harnessNote: "We'll call isEven(4) and isEven(7).",
+        expected: 'true\nfalse',
+        hints: ['The % operator gives you the remainder of a division.', 'return n % 2 === 0;']
+      },
+      {
+        id: 'strings', title: 'Strings', prompt: 'Write a function shout(word) that returns the word in ALL CAPS followed by "!!!".',
+        starter: 'function shout(word) {\n  // return the word in capitals, followed by "!!!"\n}\n',
+        harness: 'console.log(shout("hello"));\nconsole.log(shout("code"));',
+        harnessNote: 'We\'ll call shout("hello") and shout("code").',
+        expected: 'HELLO!!!\nCODE!!!',
+        hints: ['Strings have a .toUpperCase() method.', 'return word.toUpperCase() + "!!!";']
+      },
+      {
+        id: 'dicts', title: 'Objects', prompt: 'Write a function totalPrice(cart) where cart is an object of item names to prices (e.g. { apple: 2, bread: 3 }). Return the sum of all the prices.',
+        starter: 'function totalPrice(cart) {\n  // return the sum of all the values in the cart object\n}\n',
+        harness: 'console.log(totalPrice({ apple: 2, bread: 3 }));\nconsole.log(totalPrice({ milk: 4, eggs: 5, butter: 6 }));',
+        harnessNote: 'We\'ll call totalPrice with two different carts.',
+        expected: '5\n15',
+        hints: ['Object.values() gives you an array of all the values.', 'return Object.values(cart).reduce((sum, price) => sum + price, 0);']
+      },
+      {
+        id: 'recursion', title: 'Recursion (bonus)', prompt: 'Write a function factorial(n) that returns n! (n factorial) using recursion — factorial(n) calls itself with a smaller n.',
+        starter: 'function factorial(n) {\n  // base case: factorial(0) is 1\n  // recursive case: n * factorial(n - 1)\n}\n',
+        harness: 'console.log(factorial(5));\nconsole.log(factorial(0));',
+        harnessNote: "We'll call factorial(5) and factorial(0).",
+        expected: '120\n1',
+        hints: ['Every recursive function needs a base case that stops the recursion.', 'if (n === 0) return 1;\nreturn n * factorial(n - 1);']
+      }
+    ]
+  };
+
+  // ---------- element refs ----------
+  const langPythonBtn = document.getElementById('langPython');
+  const langJsBtn = document.getElementById('langJs');
+  const exListEl = document.getElementById('exList');
+  const exTitleEl = document.getElementById('exTitle');
+  const promptTitle = document.getElementById('promptTitle');
+  const promptText = document.getElementById('promptText');
+  const harnessNoteEl = document.getElementById('harnessNote');
+  const hintBtn = document.getElementById('hintBtn');
+  const hintsShown = document.getElementById('hintsShown');
+  const codeEditor = document.getElementById('codeEditor');
+  const editorGutter = document.getElementById('editorGutter');
+  const runBtn = document.getElementById('runBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const errorBox = document.getElementById('errorBox');
+  const resultBanner = document.getElementById('resultBanner');
+  const outputPre = document.getElementById('outputPre');
+  const titleBlockRight = document.getElementById('titleBlockRight');
+  const explainBtn = document.getElementById('explainBtn');
+  const explainBox = document.getElementById('explainBox');
+  const providerSelect = document.getElementById('provider');
+  const apiKeyField = document.getElementById('apiKeyField');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabelHint = document.getElementById('providerHint');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+
+  // ---------- state ----------
+  let currentLang = 'python';
+  let currentExIndex = 0;
+  let hintsRevealed = 0;
+  let progress = {}; // "lang:id" -> true (passed)
+  let lastRun = null; // { code, output, error, passed }
+  let jsWorker = null;
+  let pyWorker = null;
+  let pyWorkerReady = null; // becomes a promise once a python run has started loading
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function currentExercise() { return EXERCISES[currentLang][currentExIndex]; }
+
+  // ---------- exercise list / prompt rendering ----------
+  function renderExList() {
+    exListEl.innerHTML = '';
+    EXERCISES[currentLang].forEach((ex, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ex-item' + (i === currentExIndex ? ' active' : '');
+      const passed = progress[currentLang + ':' + ex.id];
+      btn.innerHTML = '<span class="ex-status' + (passed ? ' pass' : '') + '">' + (passed ? '✓' : '○') + '</span><span>' + (i + 1) + '. ' + ex.title + '</span>';
+      btn.addEventListener('click', () => selectExercise(i));
+      exListEl.appendChild(btn);
+    });
+  }
+
+  function updateGutter() {
+    const lines = codeEditor.value.split('\n').length;
+    let nums = '';
+    for (let i = 1; i <= lines; i++) nums += i + '\n';
+    editorGutter.textContent = nums;
+  }
+  codeEditor.addEventListener('input', updateGutter);
+  codeEditor.addEventListener('scroll', () => { editorGutter.scrollTop = codeEditor.scrollTop; });
+  codeEditor.addEventListener('keydown', function (e) {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = codeEditor.selectionStart, end = codeEditor.selectionEnd;
+      codeEditor.value = codeEditor.value.slice(0, start) + '  ' + codeEditor.value.slice(end);
+      codeEditor.selectionStart = codeEditor.selectionEnd = start + 2;
+      updateGutter();
+    }
+  });
+
+  function selectExercise(i) {
+    currentExIndex = i;
+    hintsRevealed = 0;
+    lastRun = null;
+    const ex = currentExercise();
+    exTitleEl.textContent = ex.title.toUpperCase();
+    promptTitle.textContent = (i + 1) + '. ' + ex.title;
+    promptText.textContent = ex.prompt;
+    harnessNoteEl.textContent = ex.harnessNote || '';
+    codeEditor.value = ex.starter;
+    updateGutter();
+    hintsShown.innerHTML = '';
+    hintBtn.textContent = '💡 Show a hint (0/' + ex.hints.length + ')';
+    hintBtn.disabled = ex.hints.length === 0;
+    resultBanner.className = 'result-banner';
+    resultBanner.textContent = '';
+    outputPre.textContent = 'Run your code to see output here.';
+    titleBlockRight.textContent = 'NOT RUN YET';
+    explainBtn.disabled = true;
+    explainBtn.textContent = '🤖 Explain this (run your code first)';
+    explainBox.classList.remove('show');
+    explainBox.textContent = '';
+    clearError();
+    renderExList();
+  }
+
+  hintBtn.addEventListener('click', function () {
+    const ex = currentExercise();
+    if (hintsRevealed >= ex.hints.length) return;
+    const div = document.createElement('div');
+    div.className = 'hint-line';
+    div.textContent = ex.hints[hintsRevealed];
+    hintsShown.appendChild(div);
+    hintsRevealed++;
+    hintBtn.textContent = '💡 Show a hint (' + hintsRevealed + '/' + ex.hints.length + ')';
+    if (hintsRevealed >= ex.hints.length) hintBtn.disabled = true;
+  });
+
+  resetBtn.addEventListener('click', function () {
+    codeEditor.value = currentExercise().starter;
+    updateGutter();
+  });
+
+  function setLang(lang) {
+    if (lang === currentLang) return;
+    currentLang = lang;
+    langPythonBtn.classList.toggle('active', lang === 'python');
+    langJsBtn.classList.toggle('active', lang === 'javascript');
+    selectExercise(0);
+  }
+  langPythonBtn.addEventListener('click', () => setLang('python'));
+  langJsBtn.addEventListener('click', () => setLang('javascript'));
+
+  // ---------- JavaScript sandbox (Web Worker) ----------
+  const JS_WORKER_SRC = [
+    'function formatArg(v) {',
+    '  if (typeof v === "string") return v;',
+    '  if (Array.isArray(v)) return "[" + v.map(formatArg).join(", ") + "]";',
+    '  if (v !== null && typeof v === "object") return "{" + Object.keys(v).map(function (k) { return k + ": " + formatArg(v[k]); }).join(", ") + "}";',
+    '  return String(v);',
+    '}',
+    'self.onmessage = function (e) {',
+    '  const logs = [];',
+    '  const console = { log: function () { logs.push(Array.prototype.slice.call(arguments).map(formatArg).join(" ")); } };',
+    '  try {',
+    '    (function (console) { "use strict"; eval(e.data.code); })(console);',
+    '    self.postMessage({ ok: true, output: logs.join("\\n") });',
+    '  } catch (err) {',
+    '    self.postMessage({ ok: false, output: logs.join("\\n"), error: (err && err.message) || String(err) });',
+    '  }',
+    '};'
+  ].join('\n');
+
+  function runJs(code, timeoutMs) {
+    return new Promise((resolve) => {
+      if (jsWorker) { try { jsWorker.terminate(); } catch (e) {} }
+      const blob = new Blob([JS_WORKER_SRC], { type: 'application/javascript' });
+      jsWorker = new Worker(URL.createObjectURL(blob));
+      let settled = false;
+      const timer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        try { jsWorker.terminate(); } catch (e) {}
+        resolve({ ok: false, output: '', error: 'Your code took too long to run (possible infinite loop) and was stopped after ' + (timeoutMs / 1000) + 's.' });
+      }, timeoutMs);
+      jsWorker.onmessage = function (e) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(e.data);
+      };
+      jsWorker.onerror = function (e) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve({ ok: false, output: '', error: e.message || 'Worker error' });
+      };
+      jsWorker.postMessage({ code: code });
+    });
+  }
+
+  // ---------- Python sandbox (Pyodide in a Web Worker) ----------
+  const PYODIDE_INDEX_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+  const PY_WORKER_SRC = [
+    'importScripts("' + PYODIDE_INDEX_URL + 'pyodide.js");',
+    'let pyodideReadyPromise = loadPyodide({ indexURL: "' + PYODIDE_INDEX_URL + '" });',
+    'self.onmessage = async function (e) {',
+    '  try {',
+    '    const pyodide = await pyodideReadyPromise;',
+    '    const outputBuf = [];',
+    '    pyodide.setStdout({ batched: function (msg) { outputBuf.push(msg); } });',
+    '    pyodide.setStderr({ batched: function () {} });',
+    '    try {',
+    '      pyodide.runPython(e.data.code);',
+    '      self.postMessage({ ok: true, output: outputBuf.join("\\n") });',
+    '    } catch (err) {',
+    '      const msg = (err && err.message) || String(err);',
+    '      const lines = msg.split("\\n").map(function (l) { return l.trim(); }).filter(Boolean);',
+    '      const lastLine = lines.length ? lines[lines.length - 1] : msg;',
+    '      self.postMessage({ ok: false, output: outputBuf.join("\\n"), error: lastLine });',
+    '    }',
+    '  } catch (loadErr) {',
+    '    self.postMessage({ ok: false, output: "", error: "Could not start the Python runtime: " + ((loadErr && loadErr.message) || String(loadErr)) });',
+    '  }',
+    '};'
+  ].join('\n');
+
+  function ensurePyWorker() {
+    if (!pyWorker) {
+      const blob = new Blob([PY_WORKER_SRC], { type: 'application/javascript' });
+      pyWorker = new Worker(URL.createObjectURL(blob));
+    }
+    return pyWorker;
+  }
+
+  function runPython(code, timeoutMs) {
+    return new Promise((resolve) => {
+      const worker = ensurePyWorker();
+      let settled = false;
+      const timer = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        try { worker.terminate(); } catch (e) {}
+        pyWorker = null; // discard — a terminated worker can't be reused; a fresh one loads lazily next run
+        resolve({ ok: false, output: '', error: 'Your code took too long to run (possible infinite loop) and was stopped after ' + (timeoutMs / 1000) + 's.' });
+      }, timeoutMs);
+      worker.onmessage = function (e) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(e.data);
+      };
+      worker.onerror = function (e) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve({ ok: false, output: '', error: e.message || 'Worker error' });
+      };
+      worker.postMessage({ code: code });
+    });
+  }
+
+  // ---------- run & check ----------
+  runBtn.addEventListener('click', async function () {
+    clearError();
+    const ex = currentExercise();
+    const userCode = codeEditor.value;
+    const fullCode = userCode + (ex.harness ? '\n' + ex.harness : '');
+
+    runBtn.disabled = true;
+    runBtn.textContent = currentLang === 'python' ? 'Running… (first run loads Python, ~10-20s)' : 'Running…';
+    titleBlockRight.textContent = 'RUNNING';
+    resultBanner.className = 'result-banner';
+    outputPre.textContent = '…';
+
+    const timeoutMs = currentLang === 'python' ? 25000 : 3000;
+    let result;
+    try {
+      result = currentLang === 'python' ? await runPython(fullCode, timeoutMs) : await runJs(fullCode, timeoutMs);
+    } catch (err) {
+      result = { ok: false, output: '', error: err.message || String(err) };
+    }
+
+    runBtn.disabled = false;
+    runBtn.textContent = '▶ Run & check';
+
+    const output = (result.output || '').replace(/\s+$/, '');
+    outputPre.textContent = output || (result.error ? '' : '(no output)');
+
+    if (!result.ok) {
+      resultBanner.className = 'result-banner err show';
+      resultBanner.textContent = '⚠ Your code hit an error — see the message below.';
+      outputPre.textContent = (output ? output + '\n' : '') + 'Error: ' + result.error;
+      titleBlockRight.textContent = 'ERROR';
+      lastRun = { code: userCode, output: output, error: result.error, passed: false };
+    } else {
+      const passed = output.trim() === ex.expected.trim();
+      progress[currentLang + ':' + ex.id] = passed;
+      renderExList();
+      if (passed) {
+        resultBanner.className = 'result-banner pass show';
+        resultBanner.textContent = '✓ Correct! Output matches exactly what we expected.';
+        titleBlockRight.textContent = 'PASSED';
+      } else {
+        resultBanner.className = 'result-banner fail show';
+        resultBanner.textContent = '✗ Not quite — expected:\n' + ex.expected;
+        titleBlockRight.textContent = 'NOT YET';
+      }
+      lastRun = { code: userCode, output: output, error: null, passed: passed };
+    }
+    explainBtn.disabled = false;
+    explainBtn.textContent = '🤖 Explain this';
+  });
+
+  // ---------- AI explanation (same provider pattern as the rest of the site) ----------
+  function applyProvider() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      apiKeyField.style.display = 'none';
+      apiKeyLabelHint.textContent = 'Free to use — shares a limited daily capacity. Used only when you click "Explain this".';
+    } else {
+      apiKeyField.style.display = 'flex';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+      apiKeyLabelHint.textContent = 'Used only to call the provider directly from your browser when you click "Explain this". Never stored, never sent anywhere else.';
+    }
+  }
+  providerSelect.addEventListener('change', applyProvider);
+  applyProvider();
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  const GEMINI_PROXY_URL = 'https://migabuilder-gemini.makmurphy69.workers.dev';
+
+  function stripCodeFence(text) {
+    const trimmed = text.trim();
+    const fenceMatch = trimmed.match(/^```(?:text)?\s*([\s\S]*?)\s*```$/i);
+    return (fenceMatch ? fenceMatch[1] : trimmed).replace(/^["']|["']$/g, '');
+  }
+
+  async function callChat(systemPrompt, userPrompt) {
+    const provider = providerSelect.value;
+    const apiKey = apiKeyInput.value.trim();
+
+    if (provider === 'gemini') {
+      const response = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'gemini-3.5-flash', systemPrompt: systemPrompt, userPrompt: userPrompt })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        throw new Error((errBody && errBody.error && errBody.error.message) || (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.'));
+      }
+      const data = await response.json();
+      const cand = data.candidates && data.candidates[0];
+      const raw = cand && cand.content && cand.content.parts && cand.content.parts[0] ? cand.content.parts[0].text : '';
+      if (!raw) throw new Error('The model returned an empty response.');
+      return stripCodeFence(raw);
+    }
+
+    if (provider === 'anthropic') {
+      if (!apiKey) throw new Error('Add your Anthropic API key first.');
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-5', max_tokens: 400, system: systemPrompt, messages: [{ role: 'user', content: userPrompt }] })
+      });
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => null);
+        throw new Error((errBody && errBody.error && errBody.error.message) || ('Request failed with status ' + response.status));
+      }
+      const data = await response.json();
+      const block = data.content && data.content.find(b => b.type === 'text');
+      if (!block) throw new Error('The model returned an empty response.');
+      return stripCodeFence(block.text);
+    }
+
+    if (!apiKey) throw new Error('Add your OpenAI API key first.');
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], temperature: 0.4 })
+    });
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => null);
+      throw new Error((errBody && errBody.error && errBody.error.message) || ('Request failed with status ' + response.status));
+    }
+    const data = await response.json();
+    const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('The model returned an empty response.');
+    return stripCodeFence(raw);
+  }
+
+  explainBtn.addEventListener('click', async function () {
+    if (!lastRun) return;
+    clearError();
+    explainBtn.disabled = true;
+    explainBtn.textContent = 'Thinking…';
+    explainBox.classList.remove('show');
+    const ex = currentExercise();
+    const systemPrompt = 'You are a friendly, encouraging programming tutor helping a beginner. You will be given an exercise, the learner\'s code, and what actually happened when it ran. Explain in plain language, in 3-5 short sentences: what they got right, what specifically is wrong (if anything), and a nudge toward the fix — without just handing over a complete corrected solution. Be warm and specific, referencing their actual code.';
+    const userPrompt =
+      'Language: ' + currentLang + '\n' +
+      'Exercise: ' + ex.title + ' — ' + ex.prompt + '\n' +
+      'Learner\'s code:\n' + lastRun.code + '\n\n' +
+      (lastRun.error ? ('It raised this error: ' + lastRun.error) : ('Their code\'s output was:\n' + (lastRun.output || '(nothing)') + '\n\nThe correct output should have been:\n' + ex.expected + '\n\nDid it match? ' + (lastRun.passed ? 'Yes, it passed.' : 'No, it did not match.')));
+    try {
+      const explanation = await callChat(systemPrompt, userPrompt);
+      explainBox.textContent = explanation;
+      explainBox.classList.add('show');
+    } catch (err) {
+      showError('Could not get an explanation: ' + err.message);
+    } finally {
+      explainBtn.disabled = false;
+      explainBtn.textContent = '🤖 Explain this';
+    }
+  });
+
+  // ---------- init ----------
+  selectExercise(0);
+})();
+</script>
+</body>
+</html>
