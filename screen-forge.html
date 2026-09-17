@@ -91,6 +91,8 @@
 
   .check-row { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; cursor: pointer; margin: 12px 0; }
   .check-row input { margin-top: 3px; flex: none; width: auto; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-row button { flex: 1; }
 
   .code-display {
     font-family: 'IBM Plex Mono', monospace; font-size: 32px; font-weight: 700; letter-spacing: 0.15em;
@@ -188,6 +190,7 @@
         <p class="expiry-hint" id="helperExpiryHint">This code expires in <strong id="helperCountdown">10:00</strong> if nobody joins.</p>
       </div>
       <p class="status-line" id="helperStatus">Setting up…</p>
+      <button type="button" class="draft-btn secondary" id="helperReconnectBtn" style="display:none;">🔄 Try reconnecting</button>
 
       <div class="video-frame" id="helperVideoFrame" style="display:none;">
         <video id="remoteVideo" autoplay playsinline></video>
@@ -197,6 +200,11 @@
         <input type="checkbox" id="pointerToggle">
         <span>🔴 Point at things on their screen — move your mouse over the video above while this is checked. They'll see a red dot on their mini-preview.</span>
       </label>
+      <div class="btn-row" style="margin-top:10px;">
+        <button type="button" class="draft-btn secondary" id="helperRecordBtn" style="display:none;">🔴 Record this session</button>
+        <button type="button" class="draft-btn secondary" id="helperDownloadRecordingBtn" style="display:none;">⬇ Download recording</button>
+      </div>
+      <p class="hint" id="helperRecordHint" style="display:none;">Recording saves locally to your device only — the call itself is never uploaded anywhere.</p>
       <div id="helperChatSlot"></div>
 
       <button type="button" class="draft-btn danger" id="helperEndBtn" style="margin-top:16px;">End session</button>
@@ -209,6 +217,7 @@
       <p class="hint" style="margin-top:0;">Someone wants to help you. Only continue if you know and trust who sent you this link or code.</p>
       <div class="code-display" id="clientCodeEl"></div>
       <p class="status-line" id="clientStatus">Looking for the session…</p>
+      <button type="button" class="draft-btn secondary" id="clientReconnectBtn" style="display:none;">🔄 Try reconnecting</button>
 
       <button type="button" class="draft-btn" id="clientShareBtn" style="display:none;">🖥️ Share my screen</button>
 
@@ -217,6 +226,10 @@
         <div class="pointer-dot" id="clientPointerDot" hidden></div>
       </div>
       <p class="hint" id="pointerHint" style="display:none;">This mini-preview is what you're sharing. If they point at something, you'll see a red dot on it here.</p>
+      <div class="btn-row" style="margin-top:10px;">
+        <button type="button" class="draft-btn secondary" id="clientRecordBtn" style="display:none;">🔴 Record this session</button>
+        <button type="button" class="draft-btn secondary" id="clientDownloadRecordingBtn" style="display:none;">⬇ Download recording</button>
+      </div>
       <div id="clientChatSlot"></div>
 
       <button type="button" class="draft-btn danger" id="clientStopBtn" style="display:none; margin-top:16px;">Stop sharing</button>
@@ -273,6 +286,10 @@
   const helperQrCode = document.getElementById('helperQrCode');
   const helperExpiryHint = document.getElementById('helperExpiryHint');
   const helperCountdown = document.getElementById('helperCountdown');
+  const helperReconnectBtn = document.getElementById('helperReconnectBtn');
+  const helperRecordBtn = document.getElementById('helperRecordBtn');
+  const helperDownloadRecordingBtn = document.getElementById('helperDownloadRecordingBtn');
+  const helperRecordHint = document.getElementById('helperRecordHint');
 
   const clientCodeEl = document.getElementById('clientCodeEl');
   const clientStatus = document.getElementById('clientStatus');
@@ -283,6 +300,9 @@
   const pointerHint = document.getElementById('pointerHint');
   const clientChatSlot = document.getElementById('clientChatSlot');
   const clientStopBtn = document.getElementById('clientStopBtn');
+  const clientReconnectBtn = document.getElementById('clientReconnectBtn');
+  const clientRecordBtn = document.getElementById('clientRecordBtn');
+  const clientDownloadRecordingBtn = document.getElementById('clientDownloadRecordingBtn');
 
   // ---------- state ----------
   let role = null; // 'helper' | 'client'
@@ -398,9 +418,15 @@
   function createPeerConnection() {
     const conn = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     conn.onconnectionstatechange = function () {
+      if (conn !== pc) return; // a stale connection from before a reconnect
       if (['disconnected', 'failed', 'closed'].includes(conn.connectionState)) {
-        if (role === 'helper') { helperStatus.textContent = 'Connection ended.'; }
-        else if (role === 'client') { clientStatus.textContent = 'Connection ended.'; }
+        if (role === 'helper') {
+          helperStatus.textContent = 'Connection lost.';
+          if (currentCode) helperReconnectBtn.style.display = 'block';
+        } else if (role === 'client') {
+          clientStatus.textContent = 'Connection lost.';
+          if (currentCode) clientReconnectBtn.style.display = 'block';
+        }
       }
     };
     return conn;
@@ -434,6 +460,11 @@
   function resetSession() {
     if (pollGuard) pollGuard.cancelled = true;
     stopExpiryCountdown();
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') { try { mediaRecorder.stop(); } catch (e) {} }
+    mediaRecorder = null;
+    helperRecording = false;
+    clientRecording = false;
+    if (recordedBlobUrl) { URL.revokeObjectURL(recordedBlobUrl); recordedBlobUrl = null; }
     if (pc) { try { pc.close(); } catch (e) {} pc = null; }
     if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
     dataChannel = null;
@@ -452,7 +483,79 @@
     clientStopBtn.style.display = 'none';
     clientShareBtn.style.display = 'none';
     pointerHint.style.display = 'none';
+    helperReconnectBtn.style.display = 'none';
+    clientReconnectBtn.style.display = 'none';
+    helperRecordBtn.style.display = 'none';
+    helperRecordBtn.textContent = '🔴 Record this session';
+    helperDownloadRecordingBtn.style.display = 'none';
+    helperRecordHint.style.display = 'none';
+    clientRecordBtn.style.display = 'none';
+    clientRecordBtn.textContent = '🔴 Record this session';
+    clientDownloadRecordingBtn.style.display = 'none';
   }
+
+  // ================= local recording (helper records what they see, client records what they share) =================
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let recordedBlobUrl = null;
+  let helperRecording = false;
+  let clientRecording = false;
+
+  function pickRecordMimeType() {
+    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
+    return '';
+  }
+  function startRecording(stream, downloadBtn) {
+    const mimeType = pickRecordMimeType();
+    if (!mimeType) { showError('No supported recording format found in this browser.'); return false; }
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
+    mediaRecorder.ondataavailable = function (e) { if (e.data.size) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = function () {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      if (recordedBlobUrl) URL.revokeObjectURL(recordedBlobUrl);
+      recordedBlobUrl = URL.createObjectURL(blob);
+      downloadBtn.style.display = 'inline-block';
+      downloadBtn.onclick = function () {
+        const a = document.createElement('a');
+        a.href = recordedBlobUrl; a.download = 'screen-forge-session.webm';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      };
+    };
+    mediaRecorder.start(1000);
+    return true;
+  }
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  }
+
+  helperRecordBtn.addEventListener('click', function () {
+    if (!helperRecording) {
+      const stream = remoteVideo.captureStream ? remoteVideo.captureStream() : (remoteVideo.mozCaptureStream ? remoteVideo.mozCaptureStream() : null);
+      if (!stream) { showError('This browser cannot record video playback.'); return; }
+      if (!startRecording(stream, helperDownloadRecordingBtn)) return;
+      helperRecording = true;
+      helperRecordBtn.textContent = '⏹ Stop recording';
+      helperRecordHint.style.display = 'block';
+    } else {
+      stopRecording();
+      helperRecording = false;
+      helperRecordBtn.textContent = '🔴 Record this session';
+    }
+  });
+  clientRecordBtn.addEventListener('click', function () {
+    if (!clientRecording) {
+      if (!localStream) { showError('Start sharing your screen first.'); return; }
+      if (!startRecording(localStream, clientDownloadRecordingBtn)) return;
+      clientRecording = true;
+      clientRecordBtn.textContent = '⏹ Stop recording';
+    } else {
+      stopRecording();
+      clientRecording = false;
+      clientRecordBtn.textContent = '🔴 Record this session';
+    }
+  });
 
   // ================= HELPER =================
   async function startHelperSession() {
@@ -491,6 +594,8 @@
       remoteVideo.srcObject = e.streams[0];
       helperVideoFrame.style.display = 'block';
       pointerToggleRow.style.display = 'flex';
+      helperReconnectBtn.style.display = 'none';
+      helperRecordBtn.style.display = 'inline-block';
       helperStatus.textContent = 'Connected — viewing their screen.';
       stopExpiryCountdown();
       remoteVideo.play().catch(function () { helperPlayOverlay.style.display = 'flex'; });
@@ -544,6 +649,44 @@
     showView('choose');
   });
 
+  helperReconnectBtn.addEventListener('click', async function () {
+    clearError();
+    helperReconnectBtn.style.display = 'none';
+    helperStatus.textContent = 'Reconnecting…';
+    const code = currentCode;
+    if (pc) { try { pc.close(); } catch (e) {} }
+    pc = createPeerConnection();
+    pc.addTransceiver('video', { direction: 'recvonly' });
+    pc.addTransceiver('audio', { direction: 'recvonly' });
+    dataChannel = pc.createDataChannel('chat');
+    wireDataChannel();
+    dataChannel.onopen = function () { if (!chatSection.parentNode) helperChatSlot.appendChild(chatSection); };
+    pc.ontrack = function (e) {
+      remoteVideo.srcObject = e.streams[0];
+      helperVideoFrame.style.display = 'block';
+      pointerToggleRow.style.display = 'flex';
+      helperReconnectBtn.style.display = 'none';
+      helperRecordBtn.style.display = 'inline-block';
+      helperStatus.textContent = 'Reconnected — viewing their screen.';
+      remoteVideo.play().catch(function () { helperPlayOverlay.style.display = 'flex'; });
+    };
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await waitForIceGatheringComplete(pc);
+      await putSignal(code, 'offer', pc.localDescription);
+      helperStatus.textContent = 'Waiting for them to reconnect…';
+      pollGuard = { cancelled: false };
+      const answer = await pollSignal(code, 'answer', { timeoutMs: 120000, guard: pollGuard });
+      await pc.setRemoteDescription(answer);
+    } catch (err) {
+      if (!pollGuard.cancelled) {
+        showError('Could not reconnect: ' + err.message);
+        helperReconnectBtn.style.display = 'block';
+      }
+    }
+  });
+
   // ================= CLIENT =================
   async function prepareClientConnection(code) {
     clearError();
@@ -583,17 +726,35 @@
       return;
     }
 
+    if (!getDisplayMediaSupported()) {
+      clientStatus.textContent = "This device or browser can't share its screen.";
+      showError('Most phone and tablet browsers don\'t support screen sharing. Try opening this link on a desktop or laptop instead — Chrome, Edge, Firefox, or Safari on a Mac all work.');
+      clientShareBtn.style.display = 'none';
+      return;
+    }
     clientStatus.textContent = 'Ready — click below to choose what to share.';
     clientShareBtn.style.display = 'block';
   }
 
+  function getDisplayMediaSupported() {
+    return !!(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
+  }
+
   async function shareScreenAsClient() {
     clearError();
+    if (!getDisplayMediaSupported()) {
+      showError('This device or browser can\'t share its screen. Try opening this link on a desktop or laptop instead.');
+      return;
+    }
     let stream;
     try {
       stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
     } catch (err) {
-      showError('Screen sharing was cancelled or blocked.');
+      if (err.name === 'NotAllowedError') {
+        showError('Screen sharing was blocked or cancelled — click "Share my screen" and pick a screen, window, or tab to continue.');
+      } else {
+        showError('Could not start screen sharing: ' + (err.message || err.name));
+      }
       return;
     }
     localStream = stream;
@@ -606,6 +767,7 @@
     pointerHint.style.display = 'block';
     clientShareBtn.style.display = 'none';
     clientStopBtn.style.display = 'block';
+    clientRecordBtn.style.display = 'inline-block';
 
     try {
       const answer = await pc.createAnswer();
@@ -622,6 +784,39 @@
     resetSession();
     showView('choose');
   }
+
+  clientReconnectBtn.addEventListener('click', async function () {
+    clearError();
+    clientReconnectBtn.style.display = 'none';
+    clientStatus.textContent = 'Reconnecting…';
+    const code = currentCode;
+    if (pc) { try { pc.close(); } catch (e) {} }
+    pc = createPeerConnection();
+    pc.ondatachannel = function (e) {
+      dataChannel = e.channel;
+      wireDataChannel();
+      dataChannel.onopen = function () { if (!chatSection.parentNode) clientChatSlot.appendChild(chatSection); };
+    };
+    try {
+      clientStatus.textContent = 'Waiting for the new session details…';
+      pollGuard = { cancelled: false };
+      const offer = await pollSignal(code, 'offer', { timeoutMs: 120000, guard: pollGuard });
+      await pc.setRemoteDescription(offer);
+      if (localStream) {
+        localStream.getTracks().forEach(function (track) { pc.addTrack(track, localStream); });
+      }
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      await waitForIceGatheringComplete(pc);
+      await putSignal(code, 'answer', pc.localDescription);
+      clientStatus.textContent = 'Reconnected — your screen is being shared.';
+    } catch (err) {
+      if (!pollGuard.cancelled) {
+        showError('Could not reconnect: ' + err.message);
+        clientReconnectBtn.style.display = 'block';
+      }
+    }
+  });
 
   clientShareBtn.addEventListener('click', shareScreenAsClient);
   clientStopBtn.addEventListener('click', stopClientSharing);
