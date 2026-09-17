@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Invoice Forge — free quote &amp; invoice generator</title>
+<meta name="description" content="Fill in line items and a client name, get a clean quote or invoice document — preview it live, print it, or download it as HTML. No account, no AI call, right in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Invoice Forge — free quote &amp; invoice generator">
+<meta property="og:description" content="Fill in line items and a client name, get a clean quote or invoice document — preview it live, print it, or download it as HTML. No account, no AI call, right in your browser.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/invoice-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/invoice-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Invoice Forge — free quote &amp; invoice generator">
+<meta name="twitter:description" content="Fill in line items and a client name, get a clean quote or invoice document — preview it live, print it, or download it as HTML. No account, no AI call, right in your browser.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/invoice-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(320px, 400px) 1fr;
+    gap: 24px;
+    padding: 28px clamp(20px, 4vw, 48px) 56px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius);
+    padding: 22px 22px 26px; max-height: calc(100vh - 40px); overflow-y: auto;
+    position: sticky; top: 20px;
+  }
+  @media (max-width: 900px) { .panel { position: static; max-height: none; } }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="text"], select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 9px 10px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+
+  .upload-btn {
+    display: inline-block; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 10px 12px; font-size: 13px; cursor: pointer; text-align: center; width: 100%;
+  }
+  .upload-btn:hover { border-color: rgba(22, 32, 43, 0.55); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 12px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .draft-btn { flex: 1; }
+
+  .error-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+
+  .item-row { display: grid; grid-template-columns: 2fr 90px auto; gap: 8px; margin-bottom: 8px; }
+  .item-row input { width: 100%; }
+  .item-row button { background: transparent; border: none; cursor: pointer; font-size: 16px; color: var(--error); }
+  .add-row-btn {
+    width: 100%; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 9px; font-size: 13px; cursor: pointer; color: var(--ink);
+  }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .preview-wrap { background: #fff; border-radius: 2px; flex: 1; min-height: 460px; overflow: hidden; }
+  #previewFrame { width: 100%; height: 100%; min-height: 460px; border: 0; display: block; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Invoice Forge</h1>
+    <p>Fill in line items, preview it live, then print or download a clean quote or invoice.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+
+    <div class="section-title">Your business</div>
+    <div class="field">
+      <label for="bizName">Business name</label>
+      <input type="text" id="bizName" placeholder="Your Business">
+    </div>
+    <div class="field">
+      <label class="upload-btn" for="logoInput">+ Upload a logo (optional)</label>
+      <input type="file" id="logoInput" accept="image/*" style="display:none;">
+      <p class="hint" id="logoHint">Made one in <a href="logo-forge.html" style="color:var(--navy);text-decoration:underline;">Logo Forge</a>? Upload it here to add it to the document.</p>
+    </div>
+
+    <div class="section-title">Client &amp; document</div>
+    <div class="field">
+      <label for="clientName">Client name</label>
+      <input type="text" id="clientName" placeholder="Who this is for">
+    </div>
+    <div class="field">
+      <label for="docType">Document type</label>
+      <select id="docType">
+        <option value="Quote">Quote / Estimate</option>
+        <option value="Invoice">Invoice</option>
+      </select>
+    </div>
+
+    <div class="section-title">Line items</div>
+    <div id="itemRows"></div>
+    <button type="button" class="add-row-btn" id="addRowBtn">+ Add line item</button>
+
+    <div class="error-box" id="errorBox"></div>
+    <div class="btn-row" style="margin-top:18px;">
+      <button type="button" class="draft-btn secondary" id="printBtn">🖨️ Print now</button>
+      <button type="button" class="draft-btn" id="downloadBtn">⬇ Download HTML</button>
+    </div>
+    <p class="hint">Instant, no AI call — updates live as you type. "Print now" opens your browser's print dialog directly, good for a one-off copy or saving as a PDF.</p>
+  </section>
+
+  <section class="table">
+    <div class="title-block"><span>INVOICE FORGE — LIVE PREVIEW</span></div>
+    <div class="preview-wrap"><iframe id="previewFrame" title="Document preview"></iframe></div>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Everything you enter stays in your browser — nothing is uploaded anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const bizNameInput = document.getElementById('bizName');
+  const logoInput = document.getElementById('logoInput');
+  const logoHint = document.getElementById('logoHint');
+  const clientName = document.getElementById('clientName');
+  const docType = document.getElementById('docType');
+  const itemRowsEl = document.getElementById('itemRows');
+  const addRowBtn = document.getElementById('addRowBtn');
+  const errorBox = document.getElementById('errorBox');
+  const printBtn = document.getElementById('printBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const previewFrame = document.getElementById('previewFrame');
+
+  let logoDataUrl = '';
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  logoInput.addEventListener('change', function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      logoDataUrl = reader.result;
+      logoHint.textContent = 'Logo added: ' + file.name;
+      renderPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function addRow(desc, amount) {
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML =
+      '<input type="text" class="i-desc" placeholder="Description" value="' + (desc || '').replace(/"/g, '&quot;') + '">' +
+      '<input type="text" class="i-amount" placeholder="$0" value="' + (amount || '').replace(/"/g, '&quot;') + '">' +
+      '<button type="button" title="Remove">✕</button>';
+    row.querySelectorAll('input').forEach(inp => inp.addEventListener('input', renderPreview));
+    row.querySelector('button').addEventListener('click', function () { row.remove(); renderPreview(); });
+    itemRowsEl.appendChild(row);
+  }
+  addRowBtn.addEventListener('click', function () { addRow(); renderPreview(); });
+  addRow('Design work', '250');
+
+  [bizNameInput, clientName, docType].forEach(el => el.addEventListener('input', renderPreview));
+
+  function parseAmount(str) {
+    const n = parseFloat(String(str).replace(/[^0-9.\-]/g, ''));
+    return isNaN(n) ? 0 : n;
+  }
+
+  function buildDocument() {
+    const items = Array.from(itemRowsEl.querySelectorAll('.item-row')).map(row => ({
+      desc: row.querySelector('.i-desc').value.trim(),
+      amount: row.querySelector('.i-amount').value.trim()
+    })).filter(i => i.desc);
+
+    const bizName = bizNameInput.value.trim() || 'Your Business';
+    const type = docType.value;
+    const client = clientName.value.trim() || 'Client';
+    const date = new Date().toLocaleDateString();
+    const docNumber = type.slice(0, 1) + '-' + Date.now().toString().slice(-6);
+    const total = items.reduce((sum, i) => sum + parseAmount(i.amount), 0);
+    const rowsHtml = items.length
+      ? items.map(i =>
+          '<tr><td style="padding:8px 0;border-bottom:1px solid #eee;">' + i.desc.replace(/</g, '&lt;') + '</td>' +
+          '<td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">' + (i.amount.replace(/</g, '&lt;') || '—') + '</td></tr>'
+        ).join('')
+      : '<tr><td colspan="2" style="padding:8px 0;color:#999;">Add a line item on the left…</td></tr>';
+    const logoBlock = logoDataUrl ? '<img src="' + logoDataUrl + '" style="max-width:120px;max-height:70px;margin-bottom:10px;">' : '';
+
+    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + type + ' ' + docNumber + '</title>' +
+      '<style>body{font-family:Arial,sans-serif;color:#16202B;max-width:640px;margin:40px auto;padding:0 20px;}' +
+      'h1{font-size:22px;margin:0 0 4px;} .meta{color:#666;font-size:13px;margin-bottom:24px;}' +
+      'table{width:100%;border-collapse:collapse;margin-bottom:16px;} th{text-align:left;border-bottom:2px solid #16202B;padding-bottom:8px;font-size:13px;}' +
+      '.total{text-align:right;font-size:18px;font-weight:bold;margin-top:8px;}' +
+      '.parties{display:flex;justify-content:space-between;margin-bottom:28px;font-size:14px;}' +
+      '@media print{body{margin:0;}}</style></head><body>' +
+      logoBlock +
+      '<h1>' + bizName.replace(/</g, '&lt;') + '</h1>' +
+      '<div class="meta">' + type + ' #' + docNumber + ' · ' + date + '</div>' +
+      '<div class="parties"><div><strong>To:</strong><br>' + client.replace(/</g, '&lt;') + '</div></div>' +
+      '<table><tr><th>Description</th><th style="text-align:right;">Amount</th></tr>' + rowsHtml + '</table>' +
+      '<div class="total">Total: ' + (total ? '$' + total.toFixed(2) : 'See items above') + '</div>' +
+      '</body></html>';
+
+    return { html: html, filename: type.toLowerCase() + '-' + docNumber + '.html', hasItems: items.length > 0 };
+  }
+
+  function renderPreview() {
+    const doc = buildDocument();
+    previewFrame.srcdoc = doc.html;
+  }
+  renderPreview();
+
+  printBtn.addEventListener('click', function () {
+    clearError();
+    const doc = buildDocument();
+    if (!doc.hasItems) { showError('Add at least one line item first.'); return; }
+    const win = window.open('', '_blank');
+    if (!win) { showError('Your browser blocked the print window — allow pop-ups for this site and try again.'); return; }
+    win.document.open();
+    win.document.write(doc.html);
+    win.document.close();
+    win.focus();
+    win.addEventListener('load', function () { win.print(); });
+    setTimeout(function () { try { win.print(); } catch (e) {} }, 400);
+  });
+
+  downloadBtn.addEventListener('click', function () {
+    clearError();
+    const doc = buildDocument();
+    if (!doc.hasItems) { showError('Add at least one line item first.'); return; }
+    const blob = new Blob([doc.html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = doc.filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  });
+})();
+</script>
+</body>
+</html>

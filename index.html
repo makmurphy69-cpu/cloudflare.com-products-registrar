@@ -17,7 +17,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <!--
@@ -536,6 +535,8 @@
       <a href="music-forge.html" style="color: var(--line-cyan);">🎵 Music generator</a>
       <a href="clip-forge.html" style="color: var(--line-cyan);">✂️ Video trimmer, captions &amp; translation</a>
       <a href="merge-forge.html" style="color: var(--line-cyan);">🧩 Merge images, clips &amp; music into one video</a>
+      <a href="invoice-forge.html" style="color: var(--line-cyan);">🧾 Quote &amp; invoice generator</a>
+      <a href="contract-forge.html" style="color: var(--line-cyan);">📜 Contract generator</a>
       <a href="feedback.html" style="color: var(--line-cyan);">💬 Feedback &amp; suggestions</a>
     </p>
   </div>
@@ -700,22 +701,6 @@
       <p class="hint">Paste real feedback you've actually received — MigaBuilder won't invent fake reviews. Leave this empty to skip testimonials entirely.</p>
     </div>
 
-    <div class="section-title">Brand kit (optional)</div>
-
-    <div class="field">
-      <button type="button" class="add-row-btn" id="brandKitBtn">Generate a logo &amp; brand kit</button>
-      <p class="hint">Uses the brief above to design a simple logo, a color palette, and a printable business card — free to generate, uses your text model.</p>
-    </div>
-
-    <div id="brandKitResult" style="display:none;background:#fff;border-radius:var(--radius);padding:14px;margin-bottom:18px;">
-      <div id="brandKitLogo" style="width:100px;height:100px;margin:0 auto 10px;"></div>
-      <div id="brandKitSwatches" style="display:flex;gap:6px;justify-content:center;margin-bottom:10px;"></div>
-      <div style="display:flex;gap:8px;">
-        <button type="button" class="upload-btn" id="downloadLogoBtn" style="flex:1;">Download logo (SVG)</button>
-        <button type="button" class="upload-btn" id="downloadCardBtn" style="flex:1;">Download business card</button>
-      </div>
-    </div>
-
     <div class="section-title">Contact info (optional)</div>
 
     <div class="field">
@@ -733,68 +718,7 @@
     <div class="field">
       <label for="bizAddress">Address</label>
       <input type="text" id="bizAddress" placeholder="123 Main St, Austin, TX">
-      <p class="hint">If given, the contact page gets a map.</p>
-    </div>
-
-    <div class="section-title">Quotes &amp; invoices (optional)</div>
-
-    <div class="field">
-      <label for="invoiceClient">Client name</label>
-      <input type="text" id="invoiceClient" placeholder="Who this is for">
-    </div>
-    <div class="field">
-      <label for="invoiceType">Document type</label>
-      <select id="invoiceType">
-        <option value="Quote">Quote / Estimate</option>
-        <option value="Invoice">Invoice</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Line items</label>
-      <div id="invoiceRows"></div>
-      <button type="button" class="add-row-btn" id="addInvoiceRowBtn">+ Add line item</button>
-    </div>
-    <div class="field">
-      <button type="button" class="add-row-btn" id="generateInvoiceBtn">Download as HTML</button>
-      <button type="button" class="add-row-btn" id="printInvoiceBtn" style="margin-top:8px;">🖨️ Print now</button>
-      <p class="hint">Instant, no AI call — builds a clean printable document from what you've entered. Uses your logo if you generated a brand kit above. "Print now" opens your browser's print dialog directly — good for a one-off copy without saving a file.</p>
-    </div>
-
-    <div class="section-title">Contracts (optional)</div>
-
-    <div class="field">
-      <label for="contractType">Contract type</label>
-      <select id="contractType">
-        <option value="Service Agreement">Service agreement</option>
-        <option value="NDA">Non-disclosure agreement (NDA)</option>
-        <option value="Independent Contractor Agreement">Independent contractor agreement</option>
-      </select>
-    </div>
-    <div class="field">
-      <label for="contractOtherParty">Other party's name</label>
-      <input type="text" id="contractOtherParty" placeholder="Client or contractor name">
-    </div>
-    <div class="field">
-      <label for="contractScope">Scope of work / purpose</label>
-      <textarea id="contractScope" placeholder="e.g. Weekly lawn mowing and hedge trimming at 123 Main St, April–October" style="min-height:70px;"></textarea>
-    </div>
-    <div class="field">
-      <label for="contractTerms">Payment &amp; terms</label>
-      <textarea id="contractTerms" placeholder="e.g. $150/visit, due within 7 days of service. Either party may cancel with 14 days' written notice." style="min-height:70px;"></textarea>
-    </div>
-    <div class="field">
-      <button type="button" class="add-row-btn" id="generateContractBtn">Download as HTML</button>
-      <button type="button" class="add-row-btn" id="printContractBtn" style="margin-top:8px;">🖨️ Print now</button>
-      <p class="hint">Instant, no AI call — a plain-language template with signature lines for both parties. Not a substitute for a lawyer on anything high-stakes, but solid for straightforward local business agreements.</p>
-    </div>
-
-    <div class="section-title">PowerPoint creator (optional)</div>
-
-    <div class="field">
-      <label for="pptxBrief">Describe the presentation you need</label>
-      <textarea id="pptxBrief" placeholder="e.g. A 6-slide pitch deck for the plumbing business above: intro, the problem, our services, why us, pricing, contact" style="min-height:70px;"></textarea>
-      <button type="button" class="add-row-btn" id="generatePptxBtn" style="margin-top:8px;">Generate .pptx</button>
-      <p class="hint">Separate from the website — a standalone tool. Uses your text model to plan the slides, then builds a real downloadable PowerPoint file.</p>
+      <p class="hint">If given, the contact page gets a map. Need a logo, quotes/invoices, contracts, or a PowerPoint deck too? Those are separate standalone tools — see the links at the very top of this page.</p>
     </div>
 
     <div class="section-title">Mini-game (optional)</div>
@@ -1066,27 +990,7 @@
   const starterIdea = document.getElementById('starterIdea');
   const starterBtn = document.getElementById('starterBtn');
   const starterResult = document.getElementById('starterResult');
-  const brandKitBtn = document.getElementById('brandKitBtn');
-  const brandKitResult = document.getElementById('brandKitResult');
-  const brandKitLogo = document.getElementById('brandKitLogo');
-  const brandKitSwatches = document.getElementById('brandKitSwatches');
-  const downloadLogoBtn = document.getElementById('downloadLogoBtn');
-  const downloadCardBtn = document.getElementById('downloadCardBtn');
-  const invoiceRowsEl = document.getElementById('invoiceRows');
-  const addInvoiceRowBtn = document.getElementById('addInvoiceRowBtn');
-  const generateInvoiceBtn = document.getElementById('generateInvoiceBtn');
-  const printInvoiceBtn = document.getElementById('printInvoiceBtn');
-  const invoiceClient = document.getElementById('invoiceClient');
-  const invoiceType = document.getElementById('invoiceType');
   const bizNameInput = document.getElementById('bizName');
-  const contractType = document.getElementById('contractType');
-  const contractOtherParty = document.getElementById('contractOtherParty');
-  const contractScope = document.getElementById('contractScope');
-  const contractTerms = document.getElementById('contractTerms');
-  const generateContractBtn = document.getElementById('generateContractBtn');
-  const printContractBtn = document.getElementById('printContractBtn');
-  const pptxBrief = document.getElementById('pptxBrief');
-  const generatePptxBtn = document.getElementById('generatePptxBtn');
   const gameThemeSelect = document.getElementById('gameTheme');
   const gameSizeSelect = document.getElementById('gameSize');
   const generateGameBtn = document.getElementById('generateGameBtn');
@@ -1388,262 +1292,6 @@
     }
   }
   starterBtn.addEventListener('click', runStarter);
-
-  // ---------- brand kit ----------
-  let currentLogoSvg = '';
-  let currentCardHtml = '';
-
-  async function runBrandKit() {
-    clearError();
-    const key = currentTextApiKey();
-    const brief = briefInput.value.trim();
-    if (!key) { showError('Add your API key first.'); return; }
-    if (!brief) { showError('Describe the business (or use the Business Starter above) first.'); return; }
-
-    brandKitBtn.disabled = true;
-    brandKitBtn.textContent = 'Designing…';
-    const model = modelSelect.value;
-    const rules = [
-      'You are a brand designer. Given a business brief, design a simple, professional wordmark-style logo as inline SVG, a 3-color palette, and a printable business card.',
-      'Respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
-      '{"logoSvg": "<svg viewBox=\\"0 0 200 200\\" xmlns=\\"http://www.w3.org/2000/svg\\">...</svg>", "colors": ["#hex1","#hex2","#hex3"], "cardHtml": "<!DOCTYPE html>...a complete, self-contained, printable business-card-sized HTML page, 3.5in x 2in, with inline CSS, using the business name, slogan if any, and contact info if given"}',
-      'The logo must be a simple geometric mark or monogram (not a photo), must look correct on a light background, and must use only the given palette. Keep the SVG under 2000 characters.'
-    ].join('\n');
-
-    try {
-      const json = await callChat(key, model, rules, brief);
-      const kit = JSON.parse(json);
-      currentLogoSvg = kit.logoSvg;
-      currentCardHtml = kit.cardHtml;
-
-      brandKitLogo.innerHTML = kit.logoSvg;
-      brandKitSwatches.innerHTML = '';
-      (kit.colors || []).forEach(hex => {
-        const sw = document.createElement('div');
-        sw.style.cssText = 'width:28px;height:28px;border-radius:4px;background:' + hex + ';border:1px solid rgba(0,0,0,0.15);';
-        sw.title = hex;
-        brandKitSwatches.appendChild(sw);
-      });
-      brandKitResult.style.display = 'block';
-    } catch (err) {
-      showError(err.message || 'Could not generate a brand kit.');
-    } finally {
-      brandKitBtn.disabled = false;
-      brandKitBtn.textContent = 'Generate a logo & brand kit';
-    }
-  }
-  brandKitBtn.addEventListener('click', runBrandKit);
-
-  function downloadTextAsFile(text, filename, mime) {
-    const blob = new Blob([text], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-  downloadLogoBtn.addEventListener('click', () => {
-    if (currentLogoSvg) downloadTextAsFile(currentLogoSvg, 'logo.svg', 'image/svg+xml');
-  });
-  downloadCardBtn.addEventListener('click', () => {
-    if (currentCardHtml) downloadTextAsFile(currentCardHtml, 'business-card.html', 'text/html');
-  });
-
-  // ---------- quotes & invoices ----------
-  function addInvoiceRow(desc, amount) {
-    const row = document.createElement('div');
-    row.className = 'product-row';
-    row.style.gridTemplateColumns = '2fr 90px auto';
-    row.innerHTML =
-      '<input type="text" class="i-desc" placeholder="Description" value="' + (desc || '').replace(/"/g, '&quot;') + '">' +
-      '<input type="text" class="i-amount" placeholder="$0" value="' + (amount || '').replace(/"/g, '&quot;') + '">' +
-      '<button type="button" class="remove-thumb" title="Remove">×</button>';
-    row.querySelector('.remove-thumb').addEventListener('click', () => row.remove());
-    invoiceRowsEl.appendChild(row);
-  }
-  addInvoiceRowBtn.addEventListener('click', () => addInvoiceRow());
-  addInvoiceRow(); // start with one row
-
-  function parseAmount(str) {
-    const n = parseFloat(String(str).replace(/[^0-9.\-]/g, ''));
-    return isNaN(n) ? 0 : n;
-  }
-
-  function printHtml(html) {
-    const win = window.open('', '_blank');
-    if (!win) { showError('Your browser blocked the print window — allow pop-ups for this site and try again.'); return; }
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
-    win.focus();
-    win.addEventListener('load', () => win.print());
-    setTimeout(() => { try { win.print(); } catch (e) {} }, 400);
-  }
-
-  function buildInvoiceHtml() {
-    const items = Array.from(invoiceRowsEl.querySelectorAll('.product-row')).map(row => ({
-      desc: row.querySelector('.i-desc').value.trim(),
-      amount: row.querySelector('.i-amount').value.trim()
-    })).filter(i => i.desc);
-
-    if (!items.length) { showError('Add at least one line item.'); return null; }
-
-    const bizName = bizNameInput.value.trim() || 'Your Business';
-    const docType = invoiceType.value;
-    const client = invoiceClient.value.trim() || 'Client';
-    const date = new Date().toLocaleDateString();
-    const docNumber = docType.slice(0,1) + '-' + Date.now().toString().slice(-6);
-    const total = items.reduce((sum, i) => sum + parseAmount(i.amount), 0);
-    const rowsHtml = items.map(i =>
-      '<tr><td style="padding:8px 0;border-bottom:1px solid #eee;">' + i.desc + '</td>' +
-      '<td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;">' + (i.amount || '—') + '</td></tr>'
-    ).join('');
-    const logoBlock = currentLogoSvg ? '<div style="width:60px;height:60px;margin-bottom:10px;">' + currentLogoSvg + '</div>' : '';
-
-    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + docType + ' ' + docNumber + '</title>' +
-      '<style>body{font-family:Arial,sans-serif;color:#16202B;max-width:640px;margin:40px auto;padding:0 20px;}' +
-      'h1{font-size:22px;margin:0 0 4px;} .meta{color:#666;font-size:13px;margin-bottom:24px;}' +
-      'table{width:100%;border-collapse:collapse;margin-bottom:16px;} th{text-align:left;border-bottom:2px solid #16202B;padding-bottom:8px;font-size:13px;}' +
-      '.total{text-align:right;font-size:18px;font-weight:bold;margin-top:8px;}' +
-      '.parties{display:flex;justify-content:space-between;margin-bottom:28px;font-size:14px;}' +
-      '@media print{body{margin:0;}}</style></head><body>' +
-      logoBlock +
-      '<h1>' + bizName + '</h1>' +
-      '<div class="meta">' + docType + ' #' + docNumber + ' · ' + date + '</div>' +
-      '<div class="parties"><div><strong>To:</strong><br>' + client + '</div></div>' +
-      '<table><tr><th>Description</th><th style="text-align:right;">Amount</th></tr>' + rowsHtml + '</table>' +
-      '<div class="total">Total: ' + (total ? '$' + total.toFixed(2) : 'See items above') + '</div>' +
-      '</body></html>';
-
-    return { html: html, filename: docType.toLowerCase() + '-' + docNumber + '.html' };
-  }
-  generateInvoiceBtn.addEventListener('click', () => {
-    clearError();
-    const result = buildInvoiceHtml();
-    if (result) downloadTextAsFile(result.html, result.filename, 'text/html');
-  });
-  printInvoiceBtn.addEventListener('click', () => {
-    clearError();
-    const result = buildInvoiceHtml();
-    if (result) printHtml(result.html);
-  });
-
-  // ---------- contracts ----------
-  function buildContractHtml() {
-    const type = contractType.value;
-    const bizName = bizNameInput.value.trim() || 'Your Business';
-    const other = contractOtherParty.value.trim();
-    const scope = contractScope.value.trim();
-    const terms = contractTerms.value.trim();
-
-    if (!other) { showError('Add the other party\'s name.'); return null; }
-    if (!scope) { showError('Describe the scope of work or purpose.'); return null; }
-
-    const date = new Date().toLocaleDateString();
-    const docNumber = 'C-' + Date.now().toString().slice(-6);
-    const isNda = type === 'NDA';
-
-    const bodyParagraphs = isNda
-      ? [
-          'This Non-Disclosure Agreement ("Agreement") is entered into on ' + date + ' between ' + bizName + ' ("Disclosing Party") and ' + other + ' ("Receiving Party").',
-          '<strong>Purpose.</strong> ' + scope,
-          '<strong>Confidentiality.</strong> The Receiving Party agrees to keep confidential all non-public information shared in connection with the above purpose, and not to disclose it to third parties without prior written consent.',
-          terms ? '<strong>Additional terms.</strong> ' + terms : '',
-          '<strong>Term.</strong> This Agreement remains in effect until the information no longer qualifies as confidential, or either party terminates it in writing.'
-        ]
-      : [
-          'This ' + type + ' ("Agreement") is entered into on ' + date + ' between ' + bizName + ' and ' + other + '.',
-          '<strong>Scope.</strong> ' + scope,
-          terms ? '<strong>Payment &amp; terms.</strong> ' + terms : '',
-          '<strong>Independent relationship.</strong> Nothing in this Agreement creates an employment, partnership, or joint-venture relationship between the parties.',
-          '<strong>Termination.</strong> Either party may terminate this Agreement as described in the terms above, or with 14 days\' written notice if no other period is specified.'
-        ];
-    const bodyHtml = bodyParagraphs.filter(Boolean).map(p => '<p>' + p + '</p>').join('');
-
-    const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + type + ' ' + docNumber + '</title>' +
-      '<style>body{font-family:Arial,sans-serif;color:#16202B;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.6;}' +
-      'h1{font-size:20px;margin:0 0 4px;} .meta{color:#666;font-size:13px;margin-bottom:24px;}' +
-      'p{font-size:14px;margin:0 0 14px;}' +
-      '.sign-block{display:flex;gap:40px;margin-top:48px;}' +
-      '.sign{flex:1;} .sign-line{border-top:1px solid #16202B;margin-top:48px;padding-top:6px;font-size:12.5px;color:#666;}' +
-      '@media print{body{margin:0;}}</style></head><body>' +
-      '<h1>' + type + '</h1>' +
-      '<div class="meta">#' + docNumber + ' · ' + date + '</div>' +
-      bodyHtml +
-      '<div class="sign-block">' +
-      '<div class="sign"><div class="sign-line">' + bizName + ' — Signature &amp; date</div></div>' +
-      '<div class="sign"><div class="sign-line">' + other + ' — Signature &amp; date</div></div>' +
-      '</div>' +
-      '</body></html>';
-
-    return { html: html, filename: type.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + docNumber + '.html' };
-  }
-  generateContractBtn.addEventListener('click', () => {
-    clearError();
-    const result = buildContractHtml();
-    if (result) downloadTextAsFile(result.html, result.filename, 'text/html');
-  });
-  printContractBtn.addEventListener('click', () => {
-    clearError();
-    const result = buildContractHtml();
-    if (result) printHtml(result.html);
-  });
-
-  // ---------- powerpoint creator ----------
-  async function generatePptx() {
-    clearError();
-    const key = currentTextApiKey();
-    const brief = pptxBrief.value.trim();
-    if (!key) { showError('Add your API key first.'); return; }
-    if (!brief) { showError('Describe the presentation you need.'); return; }
-    if (typeof PptxGenJS === 'undefined') { showError('The PowerPoint library failed to load — check your internet connection and reload the page.'); return; }
-
-    generatePptxBtn.disabled = true;
-    generatePptxBtn.textContent = 'Building…';
-    const model = modelSelect.value;
-    const rules = [
-      'You plan PowerPoint presentations. Given a description, respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
-      '{"title": "presentation title", "slides": [{"title": "slide title", "bullets": ["point 1","point 2"]}]}',
-      '4-10 slides. Each slide: a short title and 2-5 short bullet points, real content (no placeholders).'
-    ].join('\n');
-
-    try {
-      const json = await callChat(key, model, rules, brief);
-      const plan = JSON.parse(json);
-
-      const pptx = new PptxGenJS();
-      pptx.defineLayout({ name: 'MB', width: 10, height: 5.63 });
-      pptx.layout = 'MB';
-
-      const titleSlide = pptx.addSlide();
-      titleSlide.background = { color: '0E2A47' };
-      titleSlide.addText(plan.title || brief, {
-        x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: 'EDEAE0', fontFace: 'Arial'
-      });
-
-      (plan.slides || []).forEach(s => {
-        const slide = pptx.addSlide();
-        slide.background = { color: 'FFFFFF' };
-        slide.addText(s.title || '', {
-          x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: '0E2A47', fontFace: 'Arial'
-        });
-        slide.addText((s.bullets || []).map(b => ({ text: b, options: { bullet: true, breakLine: true } })), {
-          x: 0.6, y: 1.4, w: 8.6, h: 3.8, fontSize: 16, color: '16202B', fontFace: 'Arial'
-        });
-      });
-
-      await pptx.writeFile({ fileName: (plan.title || 'presentation').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.pptx' });
-    } catch (err) {
-      showError(err.message || 'Could not generate the presentation.');
-    } finally {
-      generatePptxBtn.disabled = false;
-      generatePptxBtn.textContent = 'Generate .pptx';
-    }
-  }
-  generatePptxBtn.addEventListener('click', generatePptx);
 
   // ---------- mini-game page ----------
   function buildMazeGameHtml(theme, size) {
