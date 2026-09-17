@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Music Forge — generate original instrumental music</title>
-<meta name="description" content="Pick a mood, set the length, and generate an original instrumental track right in your browser — free to use, no attribution needed, download as a real WAV file.">
+<meta name="description" content="Pick a mood and generate an instrumental track instantly, or switch to Tracker mode and build your own multi-pattern beat with synth instruments and your own uploaded sounds — free, right in your browser.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Music Forge — generate original instrumental music">
-<meta property="og:description" content="Pick a mood, set the length, and generate an original instrumental track right in your browser — free to use, no attribution needed, download as a real WAV file.">
+<meta property="og:description" content="Pick a mood and generate an instrumental track instantly, or switch to Tracker mode and build your own multi-pattern beat with synth instruments and your own uploaded sounds — free, right in your browser.">
 <meta property="og:image" content="https://migabuilder.com/assets/og/music-forge.jpg">
 <meta property="og:url" content="https://migabuilder.com/music-forge.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Music Forge — generate original instrumental music">
-<meta name="twitter:description" content="Pick a mood, set the length, and generate an original instrumental track right in your browser — free to use, no attribution needed, download as a real WAV file.">
+<meta name="twitter:description" content="Pick a mood and generate an instrumental track instantly, or switch to Tracker mode and build your own multi-pattern beat with synth instruments and your own uploaded sounds — free, right in your browser.">
 <meta name="twitter:image" content="https://migabuilder.com/assets/og/music-forge.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +56,15 @@
   }
   header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
 
-  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 20px; }
+  .mode-toggle-wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px); }
+  .mode-toggle { display: flex; gap: 8px; margin-bottom: 20px; }
+  .mode-btn {
+    flex: 1; background: rgba(237,234,224,0.08); color: var(--paper); border: 1px solid var(--line-cyan-dim);
+    border-radius: var(--radius); padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .mode-btn.active { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); }
+
+  .solo-wrap { max-width: 560px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px) 56px; display: flex; flex-direction: column; gap: 20px; }
 
   .panel { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px; }
   .field { margin-bottom: 18px; }
@@ -64,7 +72,7 @@
   .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
   .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  input[type="number"], select {
+  input[type="text"], input[type="number"], select {
     width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 10px 11px;
     border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
   }
@@ -86,6 +94,8 @@
   .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
 
   .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .draft-btn, .btn-row button:not(.draft-btn) { flex: 1; }
 
   .error-box {
     margin-top: 16px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
@@ -99,7 +109,113 @@
   .result-label { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
   .result-sub { font-size: 12.5px; color: rgba(22, 32, 43, 0.6); margin-bottom: 16px; }
 
-  footer { padding: 0 clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 560px; margin: 0 auto; }
+  /* ---------- Tracker mode ---------- */
+  main.tracker-main {
+    display: grid; grid-template-columns: minmax(320px, 400px) 1fr; gap: 24px;
+    max-width: 1400px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 48px) 56px; align-items: start;
+  }
+  @media (max-width: 980px) { main.tracker-main { grid-template-columns: 1fr; } }
+
+  .tracker-panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px;
+    max-height: calc(100vh - 40px); overflow-y: auto; position: sticky; top: 20px;
+  }
+  @media (max-width: 980px) { .tracker-panel { position: static; max-height: none; } }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .track-row { background: #fff; border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius); padding: 10px; margin-bottom: 8px; }
+  .track-row-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+  .track-row-head input[type="text"] { flex: 1; font-weight: 600; font-size: 13px; padding: 6px 8px; }
+  .track-color-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .type-toggle { display: flex; gap: 4px; flex: none; }
+  .type-toggle button {
+    background: #fff; border: 1px solid rgba(22,32,43,0.25); border-radius: var(--radius); padding: 5px 8px;
+    font-size: 11px; cursor: pointer; color: var(--ink);
+  }
+  .type-toggle button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .track-row-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11.5px; color: rgba(22,32,43,0.65); }
+  .track-row-controls select { width: auto; padding: 5px 6px; font-size: 11.5px; }
+  .track-row-controls input[type="range"] { width: 60px; }
+  .note-stepper { display: inline-flex; align-items: center; gap: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; }
+  .note-stepper button { background: #fff; border: 1px solid rgba(22,32,43,0.25); border-radius: 2px; width: 18px; height: 18px; cursor: pointer; line-height: 1; padding: 0; }
+  .note-stepper .note-name { min-width: 32px; text-align: center; font-weight: 600; }
+  .sample-upload-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .sample-upload-row .upload-btn { flex: 1; font-size: 11.5px; padding: 6px 8px; }
+  .upload-btn {
+    display: inline-block; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 8px 10px; font-size: 12px; cursor: pointer; text-align: center;
+  }
+  .sample-name { font-size: 11px; color: rgba(22,32,43,0.6); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 110px; }
+
+  .pattern-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .pattern-tab {
+    background: #fff; border: 1px solid rgba(22,32,43,0.25); border-radius: var(--radius); padding: 7px 10px;
+    font-size: 12.5px; cursor: pointer; color: var(--ink);
+  }
+  .pattern-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .pattern-actions { display: flex; gap: 6px; }
+  .pattern-actions button { flex: 1; font-size: 11.5px; padding: 7px; }
+
+  .song-list { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; max-height: 160px; overflow-y: auto; }
+  .song-chip {
+    display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(22,32,43,0.18);
+    border-radius: var(--radius); padding: 5px 8px; font-size: 12px;
+  }
+  .song-chip .chip-index { font-family: 'IBM Plex Mono', monospace; color: rgba(22,32,43,0.5); flex: none; }
+  .song-chip .chip-name { flex: 1; }
+  .song-chip button { background: transparent; border: none; cursor: pointer; font-size: 12px; padding: 2px 4px; }
+  .song-empty { font-size: 12px; color: rgba(22,32,43,0.5); padding: 4px 0; }
+
+  .tracker-table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+
+  .grid-scroll { overflow-x: auto; flex: 1; }
+  .step-grid { display: grid; gap: 3px; min-width: max-content; }
+  .grid-row-label {
+    font-size: 11px; color: rgba(237,234,224,0.75); display: flex; align-items: center; padding-right: 8px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px;
+  }
+  .step-cell {
+    width: 24px; height: 24px; border-radius: 2px; background: rgba(237,234,224,0.08); cursor: pointer;
+    border: 1px solid rgba(237,234,224,0.12); position: relative;
+  }
+  .step-cell.beat-start { border-left: 2px solid rgba(111,209,224,0.4); }
+  .step-cell.active { background: var(--amber); border-color: var(--amber); }
+  .step-cell.playing { box-shadow: 0 0 0 2px var(--line-cyan); }
+  .step-cell .vel-bar { position: absolute; left: 0; bottom: 0; width: 100%; background: var(--amber-ink); opacity: 0.35; }
+
+  .cell-popover {
+    position: fixed; background: #fff; color: var(--ink); border-radius: var(--radius); padding: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35); z-index: 50; width: 200px; display: none;
+  }
+  .cell-popover.show { display: block; }
+  .cell-popover label { display: block; font-size: 11.5px; font-weight: 600; margin-bottom: 4px; }
+  .cell-popover .field { margin-bottom: 10px; }
+  .cell-popover-actions { display: flex; gap: 6px; }
+  .cell-popover-actions button { flex: 1; font-size: 11.5px; padding: 6px; border-radius: var(--radius); border: 1px solid rgba(22,32,43,0.25); background: #fff; cursor: pointer; }
+
+  .transport-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .transport-row button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer; flex: 1;
+  }
+  .transport-row button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .transport-row button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+  .transport-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 1100px; margin: 0 auto; }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
 </head>
@@ -114,11 +230,18 @@
   </svg>
   <div>
     <h1>Music Forge</h1>
-    <p>Pick a mood, set the length, and generate an original instrumental track — right in your browser.</p>
+    <p>Pick a mood for an instant track, or switch to Tracker mode and build your own beat.</p>
   </div>
 </header>
 
-<div class="solo-wrap">
+<div class="mode-toggle-wrap">
+  <div class="mode-toggle">
+    <button type="button" class="mode-btn active" id="presetModeBtn">🎹 Quick presets</button>
+    <button type="button" class="mode-btn" id="trackerModeBtn">🎛️ Tracker (advanced)</button>
+  </div>
+</div>
+
+<div class="solo-wrap" id="presetModeWrap">
   <div class="panel">
     <div class="field">
       <label>Mood</label>
@@ -160,16 +283,162 @@
   </div>
 </div>
 
-<footer>
+<main class="tracker-main" id="trackerModeWrap" style="display:none;">
+  <section class="tracker-panel">
+
+    <div class="section-title">Tracks</div>
+    <div id="tracksList"></div>
+    <p class="hint">Each track is either a synth instrument or a sound you upload. The note stepper sets the pitch used when you click a new step — right-click an active step to fine-tune just that one.</p>
+
+    <div class="section-title">Tempo &amp; grid</div>
+    <div class="field">
+      <div class="row-2">
+        <div>
+          <label for="trackerBpm">Tempo (BPM)</label>
+          <input type="number" id="trackerBpm" value="120" min="40" max="240" step="1">
+        </div>
+        <div>
+          <label for="stepsPerPattern">Steps per pattern</label>
+          <select id="stepsPerPattern">
+            <option value="8">8 (16th, half bar)</option>
+            <option value="16" selected>16 (16th, 1 bar)</option>
+            <option value="32">32 (16th, 2 bars)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">Patterns</div>
+    <div class="pattern-tabs" id="patternTabs"></div>
+    <div class="pattern-actions">
+      <button type="button" class="draft-btn secondary" id="addPatternBtn">+ New</button>
+      <button type="button" class="draft-btn secondary" id="dupPatternBtn">⧉ Duplicate</button>
+      <button type="button" class="draft-btn secondary" id="renamePatternBtn">✎ Rename</button>
+      <button type="button" class="draft-btn secondary" id="deletePatternBtn">✕ Delete</button>
+    </div>
+
+    <div class="section-title">Song arrangement</div>
+    <button type="button" class="draft-btn secondary" id="addToSongBtn">+ Add current pattern to song</button>
+    <div class="song-list" id="songList"></div>
+    <p class="song-empty" id="songEmpty">Song is empty — add patterns above to build a playback/export order.</p>
+
+    <div class="error-box" id="trackerErrorBox"></div>
+    <div class="error-box" id="trackerSuccessBox" style="background: rgba(78, 158, 115, 0.14); border-color: rgba(78, 158, 115, 0.4); color: #275238;"></div>
+  </section>
+
+  <section class="tracker-table">
+    <div class="title-block">
+      <span>TRACKER — <span id="activePatternLabel">PATTERN 1</span></span>
+      <span id="trackerStatus">STOPPED</span>
+    </div>
+
+    <div class="grid-scroll">
+      <div id="stepGrid"></div>
+    </div>
+
+    <div class="transport-row">
+      <button type="button" id="playSongBtn">▶ Play song</button>
+      <button type="button" id="stopBtn" disabled>■ Stop</button>
+      <button type="button" id="exportWavBtn" class="primary">⬇ Export song as .wav</button>
+    </div>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Playback uses the song arrangement on the left (or just the current pattern, looped, if the song is empty). Export renders the whole arrangement to a real .wav file.</p>
+  </section>
+</main>
+
+<div class="cell-popover" id="cellPopover">
+  <div class="field">
+    <label>Note</label>
+    <div class="note-stepper" id="popoverNoteStepper"></div>
+  </div>
+  <div class="field">
+    <label>Velocity</label>
+    <input type="range" id="popoverVelocity" min="0.1" max="1" step="0.05">
+  </div>
+  <div class="cell-popover-actions">
+    <button type="button" id="popoverClearBtn">Clear step</button>
+    <button type="button" id="popoverCloseBtn">Done</button>
+  </div>
+</div>
+
+<footer id="presetFooter">
   Part of <a href="index.html">MigaBuilder</a>. Every track is an original algorithmic composition generated on the
   spot from simple music-theory rules — not a sample, loop, or clip of existing music — so it's yours to use however
   you like, with no attribution or licensing needed. Nothing is uploaded; generation happens entirely in your browser.
  <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer id="trackerFooter" style="display:none;">
+  Part of <a href="index.html">MigaBuilder</a>. Sounds you upload and everything you compose stay in your browser —
+  nothing is uploaded anywhere. Uploaded sounds are pitch-shifted by playback speed to match each step's note, the
+  same way classic trackers played samples. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
   "use strict";
 
+  // ================= shared helpers =================
+  function audioBufferToWav(buffer) {
+    const numChannels = buffer.numberOfChannels;
+    const sampleRate = buffer.sampleRate;
+    const bitDepth = 16;
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+    const numFrames = buffer.length;
+    const dataSize = numFrames * blockAlign;
+    const arrayBuffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(arrayBuffer);
+
+    function writeString(offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
+
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    const channelData = [];
+    for (let c = 0; c < numChannels; c++) channelData.push(buffer.getChannelData(c));
+
+    let offset = 44;
+    for (let i = 0; i < numFrames; i++) {
+      for (let c = 0; c < numChannels; c++) {
+        let sample = Math.max(-1, Math.min(1, channelData[c][i]));
+        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+        view.setInt16(offset, sample, true);
+        offset += 2;
+      }
+    }
+    return new Blob([arrayBuffer], { type: 'audio/wav' });
+  }
+
+  // ================= mode toggle =================
+  const presetModeBtn = document.getElementById('presetModeBtn');
+  const trackerModeBtn = document.getElementById('trackerModeBtn');
+  const presetModeWrap = document.getElementById('presetModeWrap');
+  const trackerModeWrap = document.getElementById('trackerModeWrap');
+  const presetFooter = document.getElementById('presetFooter');
+  const trackerFooter = document.getElementById('trackerFooter');
+
+  function setMode(mode) {
+    const isTracker = mode === 'tracker';
+    presetModeBtn.classList.toggle('active', !isTracker);
+    trackerModeBtn.classList.toggle('active', isTracker);
+    presetModeWrap.style.display = isTracker ? 'none' : 'flex';
+    trackerModeWrap.style.display = isTracker ? 'grid' : 'none';
+    presetFooter.style.display = isTracker ? 'none' : 'block';
+    trackerFooter.style.display = isTracker ? 'block' : 'none';
+    if (isTracker) renderAll();
+  }
+  presetModeBtn.addEventListener('click', () => setMode('presets'));
+  trackerModeBtn.addEventListener('click', () => setMode('tracker'));
+
+  // ================= preset mode (unchanged) =================
   const presetGrid = document.getElementById('presetGrid');
   const durationInput = document.getElementById('durationInput');
   const tempoInput = document.getElementById('tempoInput');
@@ -333,48 +602,6 @@
     return ctx.startRendering();
   }
 
-  function audioBufferToWav(buffer) {
-    const numChannels = buffer.numberOfChannels;
-    const sampleRate = buffer.sampleRate;
-    const bitDepth = 16;
-    const bytesPerSample = bitDepth / 8;
-    const blockAlign = numChannels * bytesPerSample;
-    const numFrames = buffer.length;
-    const dataSize = numFrames * blockAlign;
-    const arrayBuffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(arrayBuffer);
-
-    function writeString(offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
-
-    writeString(0, 'RIFF');
-    view.setUint32(4, 36 + dataSize, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * blockAlign, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitDepth, true);
-    writeString(36, 'data');
-    view.setUint32(40, dataSize, true);
-
-    const channelData = [];
-    for (let c = 0; c < numChannels; c++) channelData.push(buffer.getChannelData(c));
-
-    let offset = 44;
-    for (let i = 0; i < numFrames; i++) {
-      for (let c = 0; c < numChannels; c++) {
-        let sample = Math.max(-1, Math.min(1, channelData[c][i]));
-        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-        view.setInt16(offset, sample, true);
-        offset += 2;
-      }
-    }
-    return new Blob([arrayBuffer], { type: 'audio/wav' });
-  }
-
   async function runGenerate() {
     clearError();
     if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) {
@@ -417,6 +644,564 @@
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   });
+
+  // ================= tracker mode =================
+  const NUM_TRACKS = 8;
+  const TRACK_COLORS = ['#E2A63B', '#6FD1E0', '#4E9E73', '#D8604A', '#9B7FD4', '#E288B0', '#7FB2E2', '#C9C24A'];
+  const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+  function noteName(semitone) {
+    const idx = ((semitone % 12) + 12) % 12;
+    const octave = 4 + Math.floor(semitone / 12);
+    return NOTE_NAMES[idx] + octave;
+  }
+  function noteFreq(semitone) {
+    return 261.6256 * Math.pow(2, semitone / 12); // C4 = middle C
+  }
+
+  const tracksList = document.getElementById('tracksList');
+  const trackerBpmInput = document.getElementById('trackerBpm');
+  const stepsPerPatternSelect = document.getElementById('stepsPerPattern');
+  const patternTabsEl = document.getElementById('patternTabs');
+  const addPatternBtn = document.getElementById('addPatternBtn');
+  const dupPatternBtn = document.getElementById('dupPatternBtn');
+  const renamePatternBtn = document.getElementById('renamePatternBtn');
+  const deletePatternBtn = document.getElementById('deletePatternBtn');
+  const addToSongBtn = document.getElementById('addToSongBtn');
+  const songListEl = document.getElementById('songList');
+  const songEmptyEl = document.getElementById('songEmpty');
+  const trackerErrorBox = document.getElementById('trackerErrorBox');
+  const trackerSuccessBox = document.getElementById('trackerSuccessBox');
+  const stepGridEl = document.getElementById('stepGrid');
+  const activePatternLabel = document.getElementById('activePatternLabel');
+  const trackerStatus = document.getElementById('trackerStatus');
+  const playSongBtn = document.getElementById('playSongBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const exportWavBtn = document.getElementById('exportWavBtn');
+  const cellPopover = document.getElementById('cellPopover');
+  const popoverNoteStepper = document.getElementById('popoverNoteStepper');
+  const popoverVelocity = document.getElementById('popoverVelocity');
+  const popoverClearBtn = document.getElementById('popoverClearBtn');
+  const popoverCloseBtn = document.getElementById('popoverCloseBtn');
+
+  function showTrackerError(msg) { trackerSuccessBox.classList.remove('show'); trackerErrorBox.textContent = msg; trackerErrorBox.classList.add('show'); }
+  function clearTrackerError() { trackerErrorBox.textContent = ''; trackerErrorBox.classList.remove('show'); }
+  function showTrackerSuccess(msg) { clearTrackerError(); trackerSuccessBox.textContent = msg; trackerSuccessBox.classList.add('show'); }
+
+  let stepsPerPattern = 16;
+  let trackIdCounter = 0;
+  let tracks = [];
+  for (let i = 0; i < NUM_TRACKS; i++) {
+    tracks.push({
+      id: ++trackIdCounter, name: 'Track ' + (i + 1), type: 'synth', wave: ['triangle', 'square', 'sawtooth', 'sine'][i % 4],
+      sampleBuffer: null, sampleName: '', baseNote: 0, penNote: 0, volume: 0.8, muted: false
+    });
+  }
+
+  function emptyCells() {
+    return tracks.map(() => new Array(stepsPerPattern).fill(null));
+  }
+
+  let patternIdCounter = 0;
+  let patterns = [{ id: ++patternIdCounter, name: 'Pattern 1', cells: emptyCells() }];
+  let activePatternId = patterns[0].id;
+  let songOrder = [];
+
+  function activePattern() { return patterns.find(p => p.id === activePatternId); }
+
+  function resizeAllPatternCells(newSteps) {
+    patterns.forEach(p => {
+      p.cells = p.cells.map(row => {
+        const next = row.slice(0, newSteps);
+        while (next.length < newSteps) next.push(null);
+        return next;
+      });
+    });
+  }
+
+  // ---------- note stepper widget ----------
+  function buildNoteStepper(container, getVal, setVal, onChange) {
+    container.innerHTML = '';
+    const down = document.createElement('button');
+    down.type = 'button'; down.textContent = '−';
+    const nameEl = document.createElement('span');
+    nameEl.className = 'note-name';
+    const up = document.createElement('button');
+    up.type = 'button'; up.textContent = '+';
+    function refresh() { nameEl.textContent = noteName(getVal()); }
+    down.addEventListener('click', () => { setVal(getVal() - 1); refresh(); if (onChange) onChange(); });
+    up.addEventListener('click', () => { setVal(getVal() + 1); refresh(); if (onChange) onChange(); });
+    container.appendChild(down); container.appendChild(nameEl); container.appendChild(up);
+    refresh();
+  }
+
+  // ---------- tracks UI ----------
+  function renderTracksList() {
+    tracksList.innerHTML = '';
+    tracks.forEach((track, idx) => {
+      const row = document.createElement('div');
+      row.className = 'track-row';
+
+      const head = document.createElement('div');
+      head.className = 'track-row-head';
+      const dot = document.createElement('span');
+      dot.className = 'track-color-dot';
+      dot.style.background = TRACK_COLORS[idx % TRACK_COLORS.length];
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = track.name;
+      nameInput.addEventListener('input', () => { track.name = nameInput.value; renderPatternTabs(); renderStepGrid(); });
+      const typeToggle = document.createElement('div');
+      typeToggle.className = 'type-toggle';
+      const synthBtn = document.createElement('button');
+      synthBtn.type = 'button'; synthBtn.textContent = 'Synth';
+      synthBtn.className = track.type === 'synth' ? 'active' : '';
+      const sampleBtn = document.createElement('button');
+      sampleBtn.type = 'button'; sampleBtn.textContent = 'Sample';
+      sampleBtn.className = track.type === 'sample' ? 'active' : '';
+      synthBtn.addEventListener('click', () => { track.type = 'synth'; renderTracksList(); });
+      sampleBtn.addEventListener('click', () => { track.type = 'sample'; renderTracksList(); });
+      typeToggle.appendChild(synthBtn); typeToggle.appendChild(sampleBtn);
+      head.appendChild(dot); head.appendChild(nameInput); head.appendChild(typeToggle);
+      row.appendChild(head);
+
+      const controls = document.createElement('div');
+      controls.className = 'track-row-controls';
+
+      if (track.type === 'synth') {
+        const waveSelect = document.createElement('select');
+        ['sine', 'triangle', 'square', 'sawtooth'].forEach(w => {
+          const opt = document.createElement('option');
+          opt.value = w; opt.textContent = w;
+          if (w === track.wave) opt.selected = true;
+          waveSelect.appendChild(opt);
+        });
+        waveSelect.addEventListener('change', () => { track.wave = waveSelect.value; });
+        controls.appendChild(waveSelect);
+      } else {
+        const uploadWrap = document.createElement('div');
+        uploadWrap.className = 'sample-upload-row';
+        uploadWrap.style.width = '100%';
+        const label = document.createElement('label');
+        label.className = 'upload-btn';
+        label.textContent = track.sampleName ? 'Replace sound' : '+ Upload a sound';
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file'; fileInput.accept = 'audio/*'; fileInput.style.display = 'none';
+        fileInput.addEventListener('change', async function (e) {
+          const file = (e.target.files || [])[0];
+          if (!file) return;
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const buf = await decodeCtx.decodeAudioData(arrayBuffer);
+            decodeCtx.close();
+            track.sampleBuffer = buf;
+            track.sampleName = file.name;
+            renderTracksList();
+          } catch (err) {
+            showTrackerError('Could not read "' + file.name + '": ' + err.message);
+          }
+        });
+        label.appendChild(fileInput);
+        uploadWrap.appendChild(label);
+        if (track.sampleName) {
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'sample-name';
+          nameSpan.textContent = track.sampleName;
+          uploadWrap.appendChild(nameSpan);
+        }
+        controls.appendChild(uploadWrap);
+
+        if (track.sampleName) {
+          const baseLabel = document.createElement('span');
+          baseLabel.textContent = 'Base pitch:';
+          const baseStepper = document.createElement('span');
+          buildNoteStepper(baseStepper, () => track.baseNote, v => { track.baseNote = v; });
+          controls.appendChild(baseLabel);
+          controls.appendChild(baseStepper);
+        }
+      }
+
+      const penLabel = document.createElement('span');
+      penLabel.textContent = 'Pen note:';
+      const penStepper = document.createElement('span');
+      buildNoteStepper(penStepper, () => track.penNote, v => { track.penNote = v; });
+      controls.appendChild(penLabel);
+      controls.appendChild(penStepper);
+
+      const volLabel = document.createElement('span');
+      volLabel.textContent = 'Vol:';
+      const volSlider = document.createElement('input');
+      volSlider.type = 'range'; volSlider.min = '0'; volSlider.max = '1'; volSlider.step = '0.05'; volSlider.value = track.volume;
+      volSlider.addEventListener('input', () => { track.volume = parseFloat(volSlider.value); });
+      controls.appendChild(volLabel); controls.appendChild(volSlider);
+
+      const muteLabel = document.createElement('label');
+      muteLabel.style.display = 'inline-flex'; muteLabel.style.alignItems = 'center'; muteLabel.style.gap = '3px';
+      const muteCheckbox = document.createElement('input');
+      muteCheckbox.type = 'checkbox'; muteCheckbox.style.width = 'auto'; muteCheckbox.checked = track.muted;
+      muteCheckbox.addEventListener('change', () => { track.muted = muteCheckbox.checked; renderStepGrid(); });
+      muteLabel.appendChild(muteCheckbox); muteLabel.appendChild(document.createTextNode('Mute'));
+      controls.appendChild(muteLabel);
+
+      row.appendChild(controls);
+      tracksList.appendChild(row);
+    });
+  }
+
+  // ---------- pattern tabs ----------
+  function renderPatternTabs() {
+    patternTabsEl.innerHTML = '';
+    patterns.forEach(p => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pattern-tab' + (p.id === activePatternId ? ' active' : '');
+      btn.textContent = p.name;
+      btn.addEventListener('click', () => { activePatternId = p.id; renderStepGrid(); renderPatternTabs(); });
+      patternTabsEl.appendChild(btn);
+    });
+    activePatternLabel.textContent = (activePattern() || patterns[0]).name.toUpperCase();
+  }
+
+  addPatternBtn.addEventListener('click', () => {
+    const p = { id: ++patternIdCounter, name: 'Pattern ' + patterns.length + 1 || 'Pattern', cells: emptyCells() };
+    p.name = 'Pattern ' + (patterns.length + 1);
+    patterns.push(p);
+    activePatternId = p.id;
+    renderPatternTabs(); renderStepGrid();
+  });
+  dupPatternBtn.addEventListener('click', () => {
+    const src = activePattern();
+    if (!src) return;
+    const copy = { id: ++patternIdCounter, name: src.name + ' copy', cells: src.cells.map(row => row.map(c => c ? Object.assign({}, c) : null)) };
+    patterns.push(copy);
+    activePatternId = copy.id;
+    renderPatternTabs(); renderStepGrid();
+  });
+  renamePatternBtn.addEventListener('click', () => {
+    const p = activePattern();
+    if (!p) return;
+    const name = window.prompt('Pattern name:', p.name);
+    if (name && name.trim()) { p.name = name.trim(); renderPatternTabs(); }
+  });
+  deletePatternBtn.addEventListener('click', () => {
+    if (patterns.length <= 1) { showTrackerError('You need at least one pattern.'); return; }
+    patterns = patterns.filter(p => p.id !== activePatternId);
+    songOrder = songOrder.filter(id => id !== activePatternId);
+    activePatternId = patterns[0].id;
+    renderPatternTabs(); renderStepGrid(); renderSongList();
+  });
+
+  stepsPerPatternSelect.addEventListener('change', () => {
+    stepsPerPattern = parseInt(stepsPerPatternSelect.value, 10);
+    resizeAllPatternCells(stepsPerPattern);
+    renderStepGrid();
+  });
+
+  // ---------- song arrangement ----------
+  function renderSongList() {
+    songListEl.innerHTML = '';
+    songEmptyEl.style.display = songOrder.length ? 'none' : 'block';
+    songOrder.forEach((pid, i) => {
+      const p = patterns.find(x => x.id === pid);
+      if (!p) return;
+      const chip = document.createElement('div');
+      chip.className = 'song-chip';
+      chip.innerHTML =
+        '<span class="chip-index">' + (i + 1) + '.</span>' +
+        '<span class="chip-name">' + p.name.replace(/</g, '&lt;') + '</span>' +
+        '<button type="button" data-up title="Move up">▲</button>' +
+        '<button type="button" data-down title="Move down">▼</button>' +
+        '<button type="button" data-remove title="Remove">✕</button>';
+      chip.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { [songOrder[i - 1], songOrder[i]] = [songOrder[i], songOrder[i - 1]]; renderSongList(); } });
+      chip.querySelector('[data-down]').addEventListener('click', () => { if (i < songOrder.length - 1) { [songOrder[i + 1], songOrder[i]] = [songOrder[i], songOrder[i + 1]]; renderSongList(); } });
+      chip.querySelector('[data-remove]').addEventListener('click', () => { songOrder.splice(i, 1); renderSongList(); });
+      songListEl.appendChild(chip);
+    });
+  }
+  addToSongBtn.addEventListener('click', () => {
+    songOrder.push(activePatternId);
+    renderSongList();
+  });
+
+  // ---------- step grid ----------
+  let popoverTarget = null; // {trackIdx, step}
+
+  function closePopover() { cellPopover.classList.remove('show'); popoverTarget = null; }
+
+  function renderStepGrid() {
+    const pattern = activePattern();
+    if (!pattern) return;
+    stepGridEl.style.gridTemplateColumns = '90px repeat(' + stepsPerPattern + ', 24px)';
+    stepGridEl.innerHTML = '';
+
+    // header row with step numbers (beat markers)
+    const cornerEl = document.createElement('div');
+    stepGridEl.appendChild(cornerEl);
+    for (let s = 0; s < stepsPerPattern; s++) {
+      const label = document.createElement('div');
+      label.style.fontSize = '9px';
+      label.style.color = 'rgba(237,234,224,0.4)';
+      label.style.textAlign = 'center';
+      label.textContent = s % 4 === 0 ? String(s / 4 + 1) : '';
+      stepGridEl.appendChild(label);
+    }
+
+    tracks.forEach((track, trackIdx) => {
+      const labelEl = document.createElement('div');
+      labelEl.className = 'grid-row-label';
+      labelEl.textContent = track.name + (track.muted ? ' (muted)' : '');
+      labelEl.style.opacity = track.muted ? '0.4' : '1';
+      stepGridEl.appendChild(labelEl);
+
+      for (let s = 0; s < stepsPerPattern; s++) {
+        const cell = document.createElement('div');
+        cell.className = 'step-cell' + (s % 4 === 0 ? ' beat-start' : '');
+        const cellData = pattern.cells[trackIdx][s];
+        if (cellData) {
+          cell.classList.add('active');
+          cell.style.background = TRACK_COLORS[trackIdx % TRACK_COLORS.length];
+          const velBar = document.createElement('div');
+          velBar.className = 'vel-bar';
+          velBar.style.height = Math.round(cellData.velocity * 100) + '%';
+          cell.appendChild(velBar);
+        }
+        cell.addEventListener('click', () => {
+          if (pattern.cells[trackIdx][s]) {
+            pattern.cells[trackIdx][s] = null;
+          } else {
+            pattern.cells[trackIdx][s] = { note: track.penNote, velocity: 0.85 };
+          }
+          renderStepGrid();
+        });
+        cell.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          if (!pattern.cells[trackIdx][s]) {
+            pattern.cells[trackIdx][s] = { note: track.penNote, velocity: 0.85 };
+            renderStepGrid();
+          }
+          openPopover(e, trackIdx, s);
+        });
+        stepGridEl.appendChild(cell);
+      }
+    });
+  }
+
+  function openPopover(evt, trackIdx, step) {
+    const pattern = activePattern();
+    const cellData = pattern.cells[trackIdx][step];
+    if (!cellData) return;
+    popoverTarget = { trackIdx, step };
+    buildNoteStepper(popoverNoteStepper, () => cellData.note, v => { cellData.note = v; }, () => renderStepGrid());
+    popoverVelocity.value = cellData.velocity;
+    popoverVelocity.oninput = () => { cellData.velocity = parseFloat(popoverVelocity.value); renderStepGrid(); };
+    const x = Math.min(evt.clientX, window.innerWidth - 220);
+    const y = Math.min(evt.clientY, window.innerHeight - 200);
+    cellPopover.style.left = x + 'px';
+    cellPopover.style.top = y + 'px';
+    cellPopover.classList.add('show');
+  }
+  popoverClearBtn.addEventListener('click', () => {
+    if (!popoverTarget) return;
+    const pattern = activePattern();
+    pattern.cells[popoverTarget.trackIdx][popoverTarget.step] = null;
+    closePopover();
+    renderStepGrid();
+  });
+  popoverCloseBtn.addEventListener('click', closePopover);
+  document.addEventListener('click', (e) => {
+    if (popoverTarget && !cellPopover.contains(e.target) && !e.target.closest('.step-cell')) closePopover();
+  });
+
+  function renderAll() {
+    renderTracksList();
+    renderPatternTabs();
+    renderSongList();
+    renderStepGrid();
+  }
+
+  // ---------- audio scheduling (shared by preview + export) ----------
+  function stepDurationSec() {
+    const bpm = Math.min(240, Math.max(40, parseInt(trackerBpmInput.value, 10) || 120));
+    return (60 / bpm) / 4; // steps are 16th notes
+  }
+
+  function triggerStep(ctx, dest, track, cellData, when) {
+    if (!cellData || track.muted) return;
+    const dur = stepDurationSec() * 0.92;
+    if (track.type === 'sample' && track.sampleBuffer) {
+      const src = ctx.createBufferSource();
+      src.buffer = track.sampleBuffer;
+      src.playbackRate.value = Math.pow(2, (cellData.note - track.baseNote) / 12);
+      const gain = ctx.createGain();
+      gain.gain.value = cellData.velocity * track.volume;
+      src.connect(gain).connect(dest);
+      src.start(when);
+    } else if (track.type === 'synth') {
+      const osc = ctx.createOscillator();
+      osc.type = track.wave;
+      osc.frequency.value = noteFreq(cellData.note);
+      const gain = ctx.createGain();
+      const peak = cellData.velocity * track.volume * 0.5;
+      const attack = Math.min(0.01, dur * 0.2);
+      const release = Math.min(dur * 0.5, 0.12);
+      gain.gain.setValueAtTime(0, when);
+      gain.gain.linearRampToValueAtTime(peak, when + attack);
+      gain.gain.setValueAtTime(peak, Math.max(when + attack, when + dur - release));
+      gain.gain.linearRampToValueAtTime(0, when + dur);
+      osc.connect(gain).connect(dest);
+      osc.start(when);
+      osc.stop(when + dur + 0.02);
+    }
+  }
+
+  function flattenedSong() {
+    if (songOrder.length) return songOrder.map(id => patterns.find(p => p.id === id)).filter(Boolean);
+    return [activePattern()].filter(Boolean);
+  }
+
+  // ---------- real-time preview ----------
+  let previewCtx = null;
+  let schedulerTimer = null;
+  let isPlaying = false;
+  let songSteps = []; // flattened {pattern, stepIndexInPattern}
+  let songPos = 0;
+  let nextStepTime = 0;
+  const SCHEDULE_AHEAD = 0.12;
+  const LOOKAHEAD_MS = 25;
+  let scheduledMarks = []; // {time, trackIdx, step} for UI highlight cleanup (not required but kept simple)
+  let highlightRaf = null;
+  let stepStartTimes = []; // parallel to songSteps, the absolute audioCtx time each step is scheduled to start
+  let loopBase = 0;
+
+  function buildSongSteps() {
+    const songPatterns = flattenedSong();
+    const flat = [];
+    songPatterns.forEach(p => {
+      for (let s = 0; s < stepsPerPattern; s++) flat.push({ pattern: p, step: s });
+    });
+    return flat;
+  }
+
+  function schedulerTick() {
+    while (nextStepTime < previewCtx.currentTime + SCHEDULE_AHEAD) {
+      const entry = songSteps[songPos % songSteps.length];
+      stepStartTimes[songPos % songSteps.length] = nextStepTime;
+      tracks.forEach((track, trackIdx) => {
+        const cellData = entry.pattern.cells[trackIdx][entry.step];
+        if (cellData) triggerStep(previewCtx, previewCtx.destination, track, cellData, nextStepTime);
+      });
+      nextStepTime += stepDurationSec();
+      songPos++;
+    }
+  }
+
+  function highlightLoop() {
+    if (!isPlaying) return;
+    const now = previewCtx.currentTime;
+    let currentIdx = -1;
+    for (let i = 0; i < stepStartTimes.length; i++) {
+      if (stepStartTimes[i] !== undefined && stepStartTimes[i] <= now) currentIdx = i;
+    }
+    document.querySelectorAll('.step-cell.playing').forEach(el => el.classList.remove('playing'));
+    if (currentIdx >= 0 && songSteps[currentIdx % songSteps.length]) {
+      const entry = songSteps[currentIdx % songSteps.length];
+      if (entry.pattern.id === activePatternId) {
+        const cells = stepGridEl.querySelectorAll('.step-cell');
+        // cells are laid out row-major per track after the header row; compute index
+        tracks.forEach((track, trackIdx) => {
+          const cellIndex = trackIdx * stepsPerPattern + entry.step;
+          const el = cells[cellIndex];
+          if (el) el.classList.add('playing');
+        });
+      }
+    }
+    highlightRaf = requestAnimationFrame(highlightLoop);
+  }
+
+  playSongBtn.addEventListener('click', function () {
+    clearTrackerError();
+    if (isPlaying) return;
+    songSteps = buildSongSteps();
+    if (!songSteps.length) { showTrackerError('Nothing to play — add some steps first.'); return; }
+    if (!previewCtx) previewCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (previewCtx.state === 'suspended') previewCtx.resume();
+    songPos = 0;
+    nextStepTime = previewCtx.currentTime + 0.05;
+    stepStartTimes = [];
+    isPlaying = true;
+    trackerStatus.textContent = 'PLAYING';
+    playSongBtn.disabled = true;
+    stopBtn.disabled = false;
+    schedulerTimer = setInterval(schedulerTick, LOOKAHEAD_MS);
+    highlightLoop();
+  });
+
+  function stopPlayback() {
+    isPlaying = false;
+    if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; }
+    if (highlightRaf) { cancelAnimationFrame(highlightRaf); highlightRaf = null; }
+    document.querySelectorAll('.step-cell.playing').forEach(el => el.classList.remove('playing'));
+    trackerStatus.textContent = 'STOPPED';
+    playSongBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
+  stopBtn.addEventListener('click', stopPlayback);
+
+  // ---------- export to WAV ----------
+  exportWavBtn.addEventListener('click', async function () {
+    clearTrackerError();
+    trackerSuccessBox.classList.remove('show');
+    const songPatterns = flattenedSong();
+    if (!songPatterns.length) { showTrackerError('Nothing to export — add some steps first.'); return; }
+    if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) {
+      showTrackerError('Your browser does not support the audio technology this tool needs.');
+      return;
+    }
+    const stepDur = stepDurationSec();
+    const totalSteps = songPatterns.length * stepsPerPattern;
+    const totalDuration = totalSteps * stepDur + 1.0; // tail for release/sample ring-out
+
+    exportWavBtn.disabled = true;
+    exportWavBtn.textContent = 'Rendering…';
+    try {
+      const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      const ctx = new AC(2, Math.ceil(44100 * totalDuration), 44100);
+      const master = ctx.createGain();
+      master.gain.value = 0.9;
+      master.connect(ctx.destination);
+
+      let t = 0;
+      songPatterns.forEach(pattern => {
+        for (let s = 0; s < stepsPerPattern; s++) {
+          tracks.forEach((track, trackIdx) => {
+            const cellData = pattern.cells[trackIdx][s];
+            if (cellData) triggerStep(ctx, master, track, cellData, t);
+          });
+          t += stepDur;
+        }
+      });
+
+      const rendered = await ctx.startRendering();
+      const blob = audioBufferToWav(rendered);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'music-forge-tracker-song.wav';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      showTrackerSuccess('Exported ' + Math.round(totalDuration) + 's of audio across ' + songPatterns.length + ' pattern' + (songPatterns.length === 1 ? '' : 's') + '.');
+    } catch (err) {
+      showTrackerError('Could not export: ' + err.message);
+    } finally {
+      exportWavBtn.disabled = false;
+      exportWavBtn.textContent = '⬇ Export song as .wav';
+    }
+  });
+
+  renderAll();
 })();
 </script>
 </body>
