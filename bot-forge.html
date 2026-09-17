@@ -213,6 +213,11 @@
         </select>
       </div>
     </div>
+    <div class="field">
+      <label for="dailyLimit">Max messages per visitor, per day</label>
+      <input type="text" id="dailyLimit" value="30">
+      <p class="hint">Protects your embedded API key from runaway cost/quota use — once a visitor hits this in one browser, the widget tells them to contact you directly instead of calling the AI again until the next day.</p>
+    </div>
 
     <button type="button" class="draft-btn" id="buildBtn">🔧 Build widget preview</button>
     <div class="error-box" id="errorBox"></div>
@@ -255,6 +260,7 @@
   const welcomeMsg = document.getElementById('welcomeMsg');
   const themeColor = document.getElementById('themeColor');
   const positionSelect = document.getElementById('position');
+  const dailyLimitInput = document.getElementById('dailyLimit');
   const buildBtn = document.getElementById('buildBtn');
   const errorBox = document.getElementById('errorBox');
   const statusBox = document.getElementById('statusBox');
@@ -316,7 +322,8 @@
     avatar: "${escapeJsString(cfg.avatar)}",
     welcome: "${escapeJsString(cfg.welcome)}",
     color: "${cfg.color}",
-    position: "${cfg.position}"
+    position: "${cfg.position}",
+    dailyLimit: ${cfg.dailyLimit}
   };
   var SYSTEM_PROMPT = "You are a helpful assistant for " + (CFG.bizName || "this business") + ". " +
     (CFG.bizDesc ? "About the business: " + CFG.bizDesc + " " : "") +
@@ -335,18 +342,22 @@
   var side = CFG.position === "left" ? "left:20px;" : "right:20px;";
   var root = el("div", { style: "position:fixed;bottom:20px;" + side + "z-index:999999;font-family:system-ui,sans-serif;" });
 
+  var styleTag = document.createElement("style");
+  styleTag.textContent =
+    ".mb-bf-panel{display:none;position:absolute;bottom:66px;" + (CFG.position === "left" ? "left:0;" : "right:0;") +
+    "width:320px;max-width:90vw;height:420px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.3);flex-direction:column;overflow:hidden;}" +
+    "@media (max-width:480px){.mb-bf-panel{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0;}}";
+  document.head.appendChild(styleTag);
+
   var bubble = el("button", {
     style: "width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:" + CFG.color + ";color:#fff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.25);"
   }, [CFG.avatar]);
 
-  var panel = el("div", {
-    style: "display:none;position:absolute;bottom:66px;" + (CFG.position === "left" ? "left:0;" : "right:0;") +
-      "width:320px;max-width:90vw;height:420px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.3);flex-direction:column;overflow:hidden;"
-  });
+  var panel = el("div", { class: "mb-bf-panel" });
   var head = el("div", { style: "background:" + CFG.color + ";color:#fff;padding:14px 16px;font-weight:600;font-size:14px;" }, [CFG.title]);
   var messages = el("div", { style: "flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;" });
   var inputRow = el("div", { style: "display:flex;border-top:1px solid #eee;" });
-  var input = el("input", { type: "text", placeholder: "Type a message…", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
+  var input = el("input", { type: "text", placeholder: "Type a message…", maxlength: "600", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
   var sendBtn = el("button", { style: "border:none;background:" + CFG.color + ";color:#fff;padding:0 16px;cursor:pointer;font-size:13.5px;" }, ["Send"]);
   inputRow.appendChild(input); inputRow.appendChild(sendBtn);
   panel.appendChild(head); panel.appendChild(messages); panel.appendChild(inputRow);
@@ -375,7 +386,7 @@
   }
 
   async function callGemini(userText) {
-    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + encodeURIComponent(CFG.apiKey);
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + encodeURIComponent(CFG.apiKey);
     var contents = history.concat([{ role: "user", parts: [{ text: userText }] }]);
     var res = await fetch(url, {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -418,11 +429,32 @@
     return stripFence(raw || "Sorry, I didn't catch that.");
   }
 
+  var USAGE_KEY = "migabuilder_bot_forge_usage";
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function getUsage() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(USAGE_KEY) || "null");
+      if (raw && raw.date === todayStr()) return raw;
+    } catch (e) {}
+    return { date: todayStr(), count: 0 };
+  }
+  function bumpUsage() {
+    var usage = getUsage();
+    usage.count += 1;
+    try { localStorage.setItem(USAGE_KEY, JSON.stringify(usage)); } catch (e) {}
+    return usage.count;
+  }
+
   async function handleSend() {
-    var text = input.value.trim();
+    var text = input.value.trim().slice(0, 600);
     if (!text) return;
+    if (CFG.dailyLimit > 0 && getUsage().count >= CFG.dailyLimit) {
+      addMessage("You've reached today's message limit for this chat — please contact us directly and we'll help right away.", "bot");
+      return;
+    }
     input.value = "";
     addMessage(text, "user");
+    bumpUsage();
     var thinking = el("div", { style: "align-self:flex-start;background:#f0f0f0;color:#888;padding:8px 11px;border-radius:10px;font-size:13px;" }, ["…"]);
     messages.appendChild(thinking); messages.scrollTop = messages.scrollHeight;
     try {
@@ -459,7 +491,8 @@
       avatar: botAvatar.value.trim() || '💬',
       welcome: welcomeMsg.value.trim() || 'Hi! How can I help?',
       color: themeColor.value,
-      position: positionSelect.value
+      position: positionSelect.value,
+      dailyLimit: Math.max(0, parseInt(dailyLimitInput.value, 10) || 0)
     };
   }
 
