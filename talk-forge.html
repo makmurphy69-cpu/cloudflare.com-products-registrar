@@ -122,6 +122,13 @@
   .face-item button { background: transparent; border: none; cursor: pointer; font-size: 12px; padding: 2px 5px; color: var(--ink); }
   .face-item button.remove { color: var(--error); }
   .faces-empty { font-size: 12.5px; color: rgba(22,32,43,0.55); padding: 6px 0; }
+  .scene-tab {
+    display: flex; align-items: center; gap: 6px; background: #fff; border: 2px solid transparent; border-radius: var(--radius);
+    padding: 4px 8px 4px 4px; cursor: pointer; font-size: 12px;
+  }
+  .scene-tab.active { border-color: var(--amber); }
+  .scene-tab img { width: 28px; height: 28px; object-fit: cover; border-radius: 2px; }
+  .scene-tab button { background: transparent; border: none; cursor: pointer; color: var(--error); font-size: 12px; padding: 0 2px; }
 
   .line-row {
     background: #fff; border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius); padding: 10px; margin-bottom: 8px;
@@ -180,14 +187,15 @@
 <main>
   <section class="panel">
 
-    <div class="section-title">Your photo</div>
+    <div class="section-title">Photos / scenes</div>
     <div class="field">
-      <label class="upload-btn" for="photoInput">+ Upload a photo</label>
+      <label class="upload-btn" for="photoInput">+ Add a photo (new scene)</label>
       <input type="file" id="photoInput" accept="image/*" style="display:none;">
-      <p class="hint" id="photoHint">One photo, one or more people. A front-facing, well-lit photo detects best.</p>
+      <p class="hint" id="photoHint">Each photo becomes its own scene. Add more than one to cut between people or locations mid-conversation — a script line picks which scene is on screen while it plays.</p>
     </div>
+    <div id="sceneStrip" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
 
-    <div class="section-title">Faces</div>
+    <div class="section-title" id="facesTitle">Faces</div>
     <div class="btn-row">
       <button type="button" class="draft-btn secondary" id="autoDetectBtn" disabled>🔍 Auto-detect faces</button>
       <button type="button" class="draft-btn secondary" id="manualAddBtn" disabled>+ Place manually</button>
@@ -244,6 +252,10 @@
       <button type="button" id="recordBtn" disabled>🔴 Record video</button>
       <button type="button" id="downloadBtn" disabled class="primary">⬇ Download video (.webm)</button>
     </div>
+    <div class="table-actions">
+      <button type="button" id="recordAudioBtn" disabled>🎙️ Record audio only</button>
+      <button type="button" id="downloadAudioBtn" disabled>⬇ Download audio (.webm)</button>
+    </div>
     <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">This is a simple, stylized talking effect (mouth stretch + blinking), not photorealistic lip-sync or full-body movement — that would need a paid cloud video-AI model, which this free tool intentionally doesn't use. Recording asks you to share "this tab" with audio, so it can capture the generated speech into the video — it never sees or sends your photo anywhere.</p>
   </section>
 </main>
@@ -277,6 +289,10 @@
   const titleBlockRight = document.getElementById('titleBlockRight');
   const recordBtn = document.getElementById('recordBtn');
   const downloadBtn = document.getElementById('downloadBtn');
+  const recordAudioBtn = document.getElementById('recordAudioBtn');
+  const downloadAudioBtn = document.getElementById('downloadAudioBtn');
+  const sceneStrip = document.getElementById('sceneStrip');
+  const facesTitle = document.getElementById('facesTitle');
 
   const ctx = stageCanvas.getContext('2d');
 
@@ -285,17 +301,32 @@
   function showStatus(msg) { clearError(); statusBox.textContent = msg; statusBox.classList.add('show'); }
 
   // ================= state =================
-  let photoImg = null;
+  // Multi-scene: each uploaded photo is its own scene with its own faces, so a
+  // script line can pick which scene (photo) is on screen while it plays —
+  // enabling a cut between two different people/photos mid-conversation.
+  let scenes = []; // {id, img, canvasWidth, canvasHeight, faces: [...]}
+  let sceneIdCounter = 0;
+  let activeSceneId = null; // which scene is shown/edited outside of playback
+  let playbackSceneId = null; // set while a line is speaking, overrides activeSceneId for rendering
   let modelsLoaded = false;
   const FACE_COLORS = ['#E2A63B', '#6FD1E0', '#4E9E73', '#D8604A', '#9B7FD4', '#E288B0'];
-  let faces = []; // {id, label, leftEye:{x,y,w,h}, rightEye:{x,y,w,h}, mouth:{x,y,w,h}, blinkUntil:0, nextBlinkAt:0}
-  let faceIdCounter = 0;
-  let lines = []; // {id, faceId: number|'narrator', text}
+  let faceIdCounter = 0; // unique across all scenes
+  let lines = []; // {id, sceneId, faceId: number|'narrator', text}
   let lineIdCounter = 0;
 
   let manualMode = null; // {step: 0|1|2, points: []}
+  let adjustMode = null; // {sceneId, faceId} — dragging an existing face's boxes
 
-  // ================= photo upload =================
+  function activeScene() { return scenes.find(s => s.id === activeSceneId) || null; }
+  function currentRenderScene() {
+    const id = playbackSceneId != null ? playbackSceneId : activeSceneId;
+    return scenes.find(s => s.id === id) || null;
+  }
+  function findFaceScene(faceId) {
+    return scenes.find(s => s.faces.some(f => f.id === faceId)) || null;
+  }
+
+  // ================= photo upload (adds a new scene) =================
   photoInput.addEventListener('change', function (e) {
     const file = (e.target.files || [])[0];
     if (!file) return;
@@ -303,29 +334,94 @@
     reader.onload = function () {
       const img = new Image();
       img.onload = function () {
-        photoImg = img;
         const maxW = 1000;
         const scale = Math.min(1, maxW / img.width);
-        stageCanvas.width = Math.round(img.width * scale);
-        stageCanvas.height = Math.round(img.height * scale);
+        const scene = {
+          id: ++sceneIdCounter, img: img, name: file.name,
+          canvasWidth: Math.round(img.width * scale), canvasHeight: Math.round(img.height * scale),
+          faces: []
+        };
+        scenes.push(scene);
+        setActiveScene(scene.id);
         stageEmpty.style.display = 'none';
         resultVideo.style.display = 'none';
         stageCanvas.style.display = 'block';
-        faces = [];
-        renderFacesList();
-        drawFrame();
         autoDetectBtn.disabled = false;
         manualAddBtn.disabled = false;
-        photoHint.textContent = file.name + ' — ' + img.width + '×' + img.height;
+        renderSceneStrip();
+        renderFacesList();
+        renderLinesList();
         refreshActionButtons();
       };
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
+    photoInput.value = '';
   });
 
+  function setActiveScene(id) {
+    activeSceneId = id;
+    const scene = activeScene();
+    if (!scene) return;
+    stageCanvas.width = scene.canvasWidth;
+    stageCanvas.height = scene.canvasHeight;
+    photoHint.textContent = scenes.length + ' scene' + (scenes.length === 1 ? '' : 's') + ' — editing "' + scene.name + '" (' + scene.img.width + '×' + scene.img.height + ')';
+    facesTitle.textContent = 'Faces — ' + sceneLabel(scene.id);
+    drawFrame();
+  }
+
+  function sceneLabel(id) {
+    const idx = scenes.findIndex(s => s.id === id);
+    return idx === -1 ? 'Scene' : 'Scene ' + (idx + 1);
+  }
+
+  function renderSceneStrip() {
+    sceneStrip.innerHTML = '';
+    if (scenes.length < 2) return; // no need to show a switcher for a single scene
+    scenes.forEach(scene => {
+      const tab = document.createElement('div');
+      tab.className = 'scene-tab' + (scene.id === activeSceneId ? ' active' : '');
+      const thumb = document.createElement('img');
+      thumb.src = scene.img.src;
+      const label = document.createElement('span');
+      label.textContent = sceneLabel(scene.id);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button'; removeBtn.textContent = '✕'; removeBtn.title = 'Remove scene';
+      removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeScene(scene.id); });
+      tab.appendChild(thumb); tab.appendChild(label); tab.appendChild(removeBtn);
+      tab.addEventListener('click', () => { setActiveScene(scene.id); renderSceneStrip(); renderFacesList(); });
+      sceneStrip.appendChild(tab);
+    });
+  }
+
+  function removeScene(id) {
+    scenes = scenes.filter(s => s.id !== id);
+    lines.forEach(l => {
+      if (l.sceneId === id) {
+        l.sceneId = scenes[0] ? scenes[0].id : null;
+        l.faceId = 'narrator';
+      }
+    });
+    if (activeSceneId === id) activeSceneId = scenes[0] ? scenes[0].id : null;
+    if (scenes.length) {
+      setActiveScene(activeSceneId);
+    } else {
+      stageEmpty.style.display = 'block';
+      stageCanvas.style.display = 'none';
+      autoDetectBtn.disabled = true;
+      manualAddBtn.disabled = true;
+      photoHint.textContent = 'One photo, one or more people. A front-facing, well-lit photo detects best.';
+      facesTitle.textContent = 'Faces';
+    }
+    renderSceneStrip();
+    renderFacesList();
+    renderLinesList();
+    refreshActionButtons();
+  }
+
   function imgToCanvasScale() {
-    return stageCanvas.width / photoImg.width;
+    const scene = activeScene();
+    return scene ? stageCanvas.width / scene.img.width : 1;
   }
 
   // ================= face detection (auto) =================
@@ -346,12 +442,14 @@
 
   autoDetectBtn.addEventListener('click', async function () {
     clearError();
+    const scene = activeScene();
+    if (!scene) return;
     autoDetectBtn.disabled = true;
     autoDetectBtn.textContent = 'Loading model…';
     try {
       await ensureModelsLoaded();
       autoDetectBtn.textContent = 'Detecting…';
-      const detections = await faceapi.detectAllFaces(photoImg, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+      const detections = await faceapi.detectAllFaces(scene.img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
       if (!detections.length) {
         showError('No faces found automatically. Try "Place manually" instead.');
       } else {
@@ -376,21 +474,25 @@
   });
 
   function addFace(boxesInImageSpace) {
+    const scene = activeScene();
+    if (!scene) return;
     const id = ++faceIdCounter;
-    faces.push({
-      id, label: 'Face ' + faces.length,
+    scene.faces.push({
+      id, label: 'Face ' + scene.faces.length,
       mouth: boxesInImageSpace.mouth, leftEye: boxesInImageSpace.leftEye, rightEye: boxesInImageSpace.rightEye,
       nextBlinkAt: performance.now() + 1500 + Math.random() * 3000, blinkUntil: 0
     });
     renderFacesList();
-    renderLineFaceOptions();
+    renderLinesList();
     drawFrame();
     refreshActionButtons();
   }
 
   // ================= manual placement =================
   manualAddBtn.addEventListener('click', function () {
+    if (!activeScene()) return;
     clearError();
+    adjustMode = null;
     manualMode = { step: 0, points: [] };
     manualHint.textContent = 'Click the LEFT eye (their left, your right)';
     manualHint.classList.add('show');
@@ -424,7 +526,10 @@
 
   function renderFacesList() {
     facesList.innerHTML = '';
+    const scene = activeScene();
+    const faces = scene ? scene.faces : [];
     facesEmpty.style.display = faces.length ? 'none' : 'block';
+    facesEmpty.textContent = scene ? 'No faces yet.' : 'Add a photo above first.';
     faces.forEach((face, i) => {
       const row = document.createElement('div');
       row.className = 'face-item';
@@ -433,12 +538,29 @@
       dot.style.background = FACE_COLORS[i % FACE_COLORS.length];
       const nameInput = document.createElement('input');
       nameInput.type = 'text'; nameInput.value = face.label;
-      nameInput.addEventListener('input', () => { face.label = nameInput.value; renderLineFaceOptions(); });
+      nameInput.addEventListener('input', () => { face.label = nameInput.value; renderLinesList(); });
+      const adjustBtn = document.createElement('button');
+      const isAdjustingThis = adjustMode && adjustMode.faceId === face.id;
+      adjustBtn.type = 'button'; adjustBtn.textContent = isAdjustingThis ? '✓ Done' : '✥';
+      adjustBtn.title = 'Drag to nudge or resize this face\'s eye/mouth boxes';
+      adjustBtn.addEventListener('click', () => {
+        if (isAdjustingThis) {
+          adjustMode = null;
+          manualHint.classList.remove('show');
+        } else {
+          manualMode = null;
+          adjustMode = { sceneId: scene.id, faceId: face.id };
+          manualHint.textContent = 'Drag inside a box to move it, drag its bottom-right corner to resize. Click "✓ Done" in the list when finished.';
+          manualHint.classList.add('show');
+        }
+        renderFacesList();
+      });
       const redoBtn = document.createElement('button');
-      redoBtn.type = 'button'; redoBtn.textContent = '↺'; redoBtn.title = 'Re-place manually';
+      redoBtn.type = 'button'; redoBtn.textContent = '↺'; redoBtn.title = 'Re-place manually from scratch';
       redoBtn.addEventListener('click', () => {
-        faces = faces.filter(f => f.id !== face.id);
-        renderFacesList(); renderLineFaceOptions(); drawFrame();
+        scene.faces = scene.faces.filter(f => f.id !== face.id);
+        adjustMode = null;
+        renderFacesList(); renderLinesList(); drawFrame();
         manualMode = { step: 0, points: [] };
         manualHint.textContent = 'Click the LEFT eye (their left, your right)';
         manualHint.classList.add('show');
@@ -446,37 +568,93 @@
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button'; removeBtn.className = 'remove'; removeBtn.textContent = '✕';
       removeBtn.addEventListener('click', () => {
-        faces = faces.filter(f => f.id !== face.id);
-        renderFacesList(); renderLineFaceOptions(); drawFrame();
+        scene.faces = scene.faces.filter(f => f.id !== face.id);
+        if (adjustMode && adjustMode.faceId === face.id) adjustMode = null;
+        renderFacesList(); renderLinesList(); drawFrame();
       });
-      row.appendChild(dot); row.appendChild(nameInput); row.appendChild(redoBtn); row.appendChild(removeBtn);
+      row.appendChild(dot); row.appendChild(nameInput); row.appendChild(adjustBtn); row.appendChild(redoBtn); row.appendChild(removeBtn);
       facesList.appendChild(row);
     });
   }
 
+  // ---- drag-to-adjust an existing face's eye/mouth boxes ----
+  function hitTestAdjust(face, imgX, imgY) {
+    const parts = ['leftEye', 'rightEye', 'mouth'];
+    for (const part of parts) {
+      const b = face[part];
+      const handleSize = Math.max(6, b.w * 0.25);
+      if (imgX >= b.x + b.w - handleSize && imgX <= b.x + b.w + handleSize &&
+          imgY >= b.y + b.h - handleSize && imgY <= b.y + b.h + handleSize) {
+        return { part: part, mode: 'resize' };
+      }
+      if (imgX >= b.x && imgX <= b.x + b.w && imgY >= b.y && imgY <= b.y + b.h) {
+        return { part: part, mode: 'move' };
+      }
+    }
+    return null;
+  }
+  let adjustDrag = null;
+  function canvasEventToImagePos(e) {
+    const rect = stageCanvas.getBoundingClientRect();
+    const scaleX = stageCanvas.width / rect.width, scaleY = stageCanvas.height / rect.height;
+    const cx = (e.clientX - rect.left) * scaleX, cy = (e.clientY - rect.top) * scaleY;
+    const scale = imgToCanvasScale();
+    return { x: cx / scale, y: cy / scale };
+  }
+  stageCanvas.addEventListener('mousedown', function (e) {
+    if (!adjustMode) return;
+    const scene = scenes.find(s => s.id === adjustMode.sceneId);
+    const face = scene && scene.faces.find(f => f.id === adjustMode.faceId);
+    if (!face) return;
+    const pos = canvasEventToImagePos(e);
+    const hit = hitTestAdjust(face, pos.x, pos.y);
+    if (!hit) return;
+    const b = face[hit.part];
+    adjustDrag = { face: face, part: hit.part, mode: hit.mode, startImgX: pos.x, startImgY: pos.y, orig: { x: b.x, y: b.y, w: b.w, h: b.h } };
+    e.preventDefault();
+  });
+  stageCanvas.addEventListener('mousemove', function (e) {
+    if (!adjustDrag) return;
+    const pos = canvasEventToImagePos(e);
+    const dx = pos.x - adjustDrag.startImgX, dy = pos.y - adjustDrag.startImgY;
+    const b = adjustDrag.face[adjustDrag.part];
+    if (adjustDrag.mode === 'move') {
+      b.x = adjustDrag.orig.x + dx;
+      b.y = adjustDrag.orig.y + dy;
+    } else {
+      b.w = Math.max(6, adjustDrag.orig.w + dx);
+      b.h = Math.max(6, adjustDrag.orig.h + dy);
+    }
+  });
+  window.addEventListener('mouseup', function () { adjustDrag = null; });
+
+  function drawAdjustOverlay(face, scale) {
+    ['leftEye', 'rightEye', 'mouth'].forEach(part => {
+      const b = face[part];
+      const x = b.x * scale, y = b.y * scale, w = b.w * scale, h = b.h * scale;
+      ctx.save();
+      ctx.strokeStyle = '#E2A63B';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(x, y, w, h);
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#E2A63B';
+      ctx.fillRect(x + w - 5, y + h - 5, 10, 10);
+      ctx.restore();
+    });
+  }
+
   // ================= script lines =================
-  function addLine(faceId, text) {
-    lines.push({ id: ++lineIdCounter, faceId: faceId !== undefined ? faceId : (faces[0] ? faces[0].id : 'narrator'), text: text || '' });
+  function addLine(sceneId, faceId, text) {
+    const scene = sceneId != null ? scenes.find(s => s.id === sceneId) : activeScene();
+    const resolvedSceneId = scene ? scene.id : (scenes[0] ? scenes[0].id : null);
+    const resolvedScene = scenes.find(s => s.id === resolvedSceneId);
+    const resolvedFaceId = faceId !== undefined ? faceId : (resolvedScene && resolvedScene.faces[0] ? resolvedScene.faces[0].id : 'narrator');
+    lines.push({ id: ++lineIdCounter, sceneId: resolvedSceneId, faceId: resolvedFaceId, text: text || '' });
     renderLinesList();
     refreshActionButtons();
   }
   addLineBtn.addEventListener('click', () => addLine());
-
-  function renderLineFaceOptions() {
-    document.querySelectorAll('.line-face-select').forEach(sel => {
-      const current = sel.value;
-      sel.innerHTML = '';
-      faces.forEach((f, i) => {
-        const opt = document.createElement('option');
-        opt.value = String(f.id); opt.textContent = f.label;
-        sel.appendChild(opt);
-      });
-      const narratorOpt = document.createElement('option');
-      narratorOpt.value = 'narrator'; narratorOpt.textContent = 'Off-screen narrator';
-      sel.appendChild(narratorOpt);
-      if ([...sel.options].some(o => o.value === current)) sel.value = current;
-    });
-  }
 
   function renderLinesList() {
     linesList.innerHTML = '';
@@ -485,23 +663,54 @@
       row.className = 'line-row';
       const head = document.createElement('div');
       head.className = 'line-row-head';
-      const select = document.createElement('select');
-      select.className = 'line-face-select';
-      faces.forEach(f => {
+
+      const sceneSelect = document.createElement('select');
+      sceneSelect.style.flex = 'none';
+      sceneSelect.style.width = '90px';
+      if (!scenes.length) {
         const opt = document.createElement('option');
-        opt.value = String(f.id); opt.textContent = f.label;
-        if (f.id === line.faceId) opt.selected = true;
-        select.appendChild(opt);
+        opt.value = ''; opt.textContent = 'No photo';
+        sceneSelect.appendChild(opt);
+        sceneSelect.disabled = true;
+      } else {
+        scenes.forEach(sc => {
+          const opt = document.createElement('option');
+          opt.value = String(sc.id); opt.textContent = sceneLabel(sc.id);
+          if (sc.id === line.sceneId) opt.selected = true;
+          sceneSelect.appendChild(opt);
+        });
+      }
+
+      const faceSelect = document.createElement('select');
+      faceSelect.className = 'line-face-select';
+      function populateFaceSelect() {
+        faceSelect.innerHTML = '';
+        const scene = scenes.find(s => s.id === line.sceneId);
+        (scene ? scene.faces : []).forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = String(f.id); opt.textContent = f.label;
+          if (f.id === line.faceId) opt.selected = true;
+          faceSelect.appendChild(opt);
+        });
+        const narratorOpt = document.createElement('option');
+        narratorOpt.value = 'narrator'; narratorOpt.textContent = 'Off-screen narrator';
+        if (line.faceId === 'narrator') narratorOpt.selected = true;
+        faceSelect.appendChild(narratorOpt);
+      }
+      populateFaceSelect();
+
+      sceneSelect.addEventListener('change', () => {
+        line.sceneId = Number(sceneSelect.value);
+        const scene = scenes.find(s => s.id === line.sceneId);
+        line.faceId = scene && scene.faces[0] ? scene.faces[0].id : 'narrator';
+        populateFaceSelect();
       });
-      const narratorOpt = document.createElement('option');
-      narratorOpt.value = 'narrator'; narratorOpt.textContent = 'Off-screen narrator';
-      if (line.faceId === 'narrator') narratorOpt.selected = true;
-      select.appendChild(narratorOpt);
-      select.addEventListener('change', () => { line.faceId = select.value === 'narrator' ? 'narrator' : Number(select.value); });
+      faceSelect.addEventListener('change', () => { line.faceId = faceSelect.value === 'narrator' ? 'narrator' : Number(faceSelect.value); });
+
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button'; removeBtn.textContent = '✕';
       removeBtn.addEventListener('click', () => { lines = lines.filter(l => l.id !== line.id); renderLinesList(); refreshActionButtons(); });
-      head.appendChild(select); head.appendChild(removeBtn);
+      head.appendChild(sceneSelect); head.appendChild(faceSelect); head.appendChild(removeBtn);
 
       const textArea = document.createElement('textarea');
       textArea.value = line.text;
@@ -530,23 +739,35 @@
   rateSlider.addEventListener('input', () => { document.getElementById('rateVal').textContent = parseFloat(rateSlider.value).toFixed(2); });
   pitchSlider.addEventListener('input', () => { document.getElementById('pitchVal').textContent = parseFloat(pitchSlider.value).toFixed(2); });
 
+  function totalFaceCount() { return scenes.reduce((sum, s) => sum + s.faces.length, 0); }
+
   function refreshActionButtons() {
-    const ready = !!photoImg && faces.length > 0 && lines.some(l => l.text.trim());
+    const ready = scenes.length > 0 && totalFaceCount() > 0 && lines.some(l => l.text.trim());
     previewBtn.disabled = !ready;
     recordBtn.disabled = !ready;
+    recordAudioBtn.disabled = !ready;
   }
 
   // ================= rendering =================
   function drawFrame() {
-    if (!photoImg) return;
-    const scale = imgToCanvasScale();
+    const scene = currentRenderScene();
+    if (!scene) return;
+    if (stageCanvas.width !== scene.canvasWidth || stageCanvas.height !== scene.canvasHeight) {
+      stageCanvas.width = scene.canvasWidth;
+      stageCanvas.height = scene.canvasHeight;
+    }
+    const scale = scene.canvasWidth / scene.img.width;
     ctx.clearRect(0, 0, stageCanvas.width, stageCanvas.height);
-    ctx.drawImage(photoImg, 0, 0, stageCanvas.width, stageCanvas.height);
+    ctx.drawImage(scene.img, 0, 0, stageCanvas.width, stageCanvas.height);
     const now = performance.now();
-    faces.forEach(face => drawFaceAnimation(face, scale, now));
+    scene.faces.forEach(face => drawFaceAnimation(face, scale, now, scene.img));
+    if (adjustMode && adjustMode.sceneId === scene.id) {
+      const face = scene.faces.find(f => f.id === adjustMode.faceId);
+      if (face) drawAdjustOverlay(face, scale);
+    }
   }
 
-  function drawFaceAnimation(face, scale, now) {
+  function drawFaceAnimation(face, scale, now, sourceImg) {
     // blink scheduling
     if (now > face.nextBlinkAt && face.blinkUntil < now) {
       face.blinkUntil = now + 160;
@@ -558,7 +779,7 @@
       if (blinking) {
         // squish the eye region vertically to ~15% height, simulating a closed eyelid
         const squishH = Math.max(1, h * 0.15);
-        ctx.drawImage(photoImg, eye.x, eye.y, eye.w, eye.h, x, y + (h - squishH) / 2, w, squishH);
+        ctx.drawImage(sourceImg, eye.x, eye.y, eye.w, eye.h, x, y + (h - squishH) / 2, w, squishH);
       }
     });
 
@@ -566,7 +787,7 @@
     const m = face.mouth;
     const x = m.x * scale, y = m.y * scale, w = m.w * scale, h = m.h * scale;
     const extra = h * openness * 0.9;
-    ctx.drawImage(photoImg, m.x, m.y, m.w, m.h, x, y, w, h + extra);
+    ctx.drawImage(sourceImg, m.x, m.y, m.w, m.h, x, y, w, h + extra);
     if (openness > 0.15) {
       ctx.save();
       ctx.globalAlpha = Math.min(0.55, openness * 0.6);
@@ -615,7 +836,9 @@
       if (idx >= playLines.length) { onDone(); return; }
       const line = playLines[idx];
       idx++;
-      const face = faces.find(f => f.id === line.faceId);
+      playbackSceneId = line.sceneId != null ? line.sceneId : playbackSceneId;
+      const scene = scenes.find(s => s.id === line.sceneId);
+      const face = scene ? scene.faces.find(f => f.id === line.faceId) : null;
       if (onLineStart) onLineStart(line, face);
       if (!line.text.trim()) { speakNext(); return; }
       const utter = new SpeechSynthesisUtterance(line.text);
@@ -657,16 +880,20 @@
     stopPreviewBtn.disabled = false;
     titleBlockRight.textContent = 'PREVIEWING';
     speakLines(playLines, function () {
+      playbackSceneId = null;
+      drawFrame();
       previewBtn.disabled = false;
       stopPreviewBtn.disabled = true;
-      titleBlockRight.textContent = faces.length + ' face' + (faces.length === 1 ? '' : 's') + ' ready';
+      titleBlockRight.textContent = totalFaceCount() + ' face' + (totalFaceCount() === 1 ? '' : 's') + ' ready';
     });
   });
   stopPreviewBtn.addEventListener('click', function () {
     if (window.speechSynthesis) speechSynthesis.cancel();
+    playbackSceneId = null;
+    drawFrame();
     previewBtn.disabled = false;
     stopPreviewBtn.disabled = true;
-    titleBlockRight.textContent = faces.length + ' face' + (faces.length === 1 ? '' : 's') + ' ready';
+    titleBlockRight.textContent = totalFaceCount() + ' face' + (totalFaceCount() === 1 ? '' : 's') + ' ready';
   });
 
   // ================= recording =================
@@ -742,6 +969,83 @@
     const a = document.createElement('a');
     a.href = url;
     a.download = 'talk-forge.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  // ================= standalone audio export =================
+  let recordedAudioBlob = null;
+  function pickAudioMimeType() {
+    const candidates = ['audio/webm;codecs=opus', 'audio/webm'];
+    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
+    return '';
+  }
+
+  recordAudioBtn.addEventListener('click', async function () {
+    clearError();
+    const playLines = lines.filter(l => l.text.trim());
+    if (!playLines.length) { showError('Add at least one script line with text.'); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      showError('Recording needs a desktop browser (Chrome, Edge, or Firefox).');
+      return;
+    }
+    const mimeType = pickAudioMimeType();
+    if (!mimeType) { showError('No supported audio recording format found in this browser.'); return; }
+
+    let displayStream;
+    try {
+      showStatus('Choose "This Tab" and check "Share tab audio" — video isn\'t needed here, only the audio is kept.');
+      displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    } catch (err) {
+      showError('Screen sharing was not started: ' + (err.message || err.name));
+      return;
+    }
+
+    const audioTracks = displayStream.getAudioTracks();
+    if (!audioTracks.length) {
+      showError('No tab audio was shared — make sure to check "Share tab audio" in the picker and try again.');
+      displayStream.getTracks().forEach(t => t.stop());
+      return;
+    }
+    displayStream.getVideoTracks().forEach(t => t.stop());
+
+    const recorder = new MediaRecorder(new MediaStream(audioTracks), { mimeType });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+
+    recordAudioBtn.disabled = true;
+    recordBtn.disabled = true;
+    previewBtn.disabled = true;
+    downloadAudioBtn.disabled = true;
+    titleBlockRight.textContent = 'RECORDING AUDIO';
+
+    recorder.onstop = function () {
+      recordedAudioBlob = new Blob(chunks, { type: 'audio/webm' });
+      downloadAudioBtn.disabled = false;
+      recordAudioBtn.disabled = false;
+      recordBtn.disabled = false;
+      previewBtn.disabled = false;
+      titleBlockRight.textContent = 'AUDIO SAVED';
+      displayStream.getTracks().forEach(t => t.stop());
+      clearError();
+      showStatus('Audio recorded — ' + playLines.length + ' line' + (playLines.length === 1 ? '' : 's') + '.');
+    };
+
+    recorder.start(500);
+    speakLines(playLines, function () {
+      playbackSceneId = null;
+      setTimeout(function () { recorder.stop(); }, 300);
+    });
+  });
+
+  downloadAudioBtn.addEventListener('click', function () {
+    if (!recordedAudioBlob) return;
+    const url = URL.createObjectURL(recordedAudioBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'talk-forge-audio.webm';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
