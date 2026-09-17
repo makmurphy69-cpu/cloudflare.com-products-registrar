@@ -286,6 +286,15 @@
 <main class="tracker-main" id="trackerModeWrap" style="display:none;">
   <section class="tracker-panel">
 
+    <div class="section-title">Project</div>
+    <div class="btn-row">
+      <button type="button" class="draft-btn secondary" id="undoBtn" disabled>↶ Undo</button>
+      <button type="button" class="draft-btn secondary" id="saveProjectBtn">💾 Save project</button>
+    </div>
+    <label class="upload-btn" for="loadProjectInput" style="display:block;margin-top:8px;">📂 Load project (.json)</label>
+    <input type="file" id="loadProjectInput" accept="application/json" style="display:none;">
+    <p class="hint">Save your whole session — tracks, patterns, song order, and uploaded sounds — to one file, or load one back later. Undo steps back through your last ~40 edits (Ctrl+Z also works).</p>
+
     <div class="section-title">Tracks</div>
     <div id="tracksList"></div>
     <p class="hint">Each track is either a synth instrument or a sound you upload. The note stepper sets the pitch used when you click a new step — right-click an active step to fine-tune just that one.</p>
@@ -683,6 +692,7 @@
   const popoverVelocity = document.getElementById('popoverVelocity');
   const popoverClearBtn = document.getElementById('popoverClearBtn');
   const popoverCloseBtn = document.getElementById('popoverCloseBtn');
+  const undoBtn = document.getElementById('undoBtn');
 
   function showTrackerError(msg) { trackerSuccessBox.classList.remove('show'); trackerErrorBox.textContent = msg; trackerErrorBox.classList.add('show'); }
   function clearTrackerError() { trackerErrorBox.textContent = ''; trackerErrorBox.classList.remove('show'); }
@@ -694,7 +704,7 @@
   for (let i = 0; i < NUM_TRACKS; i++) {
     tracks.push({
       id: ++trackIdCounter, name: 'Track ' + (i + 1), type: 'synth', wave: ['triangle', 'square', 'sawtooth', 'sine'][i % 4],
-      sampleBuffer: null, sampleName: '', baseNote: 0, penNote: 0, volume: 0.8, muted: false
+      sampleBuffer: null, sampleName: '', sampleDataUrl: '', baseNote: 0, penNote: 0, volume: 0.8, pan: 0, muted: false
     });
   }
 
@@ -719,8 +729,145 @@
     });
   }
 
+  // ---------- undo history ----------
+  function serializeState() {
+    return {
+      tracks: tracks.map(t => ({ id: t.id, name: t.name, type: t.type, wave: t.wave, sampleName: t.sampleName, baseNote: t.baseNote, penNote: t.penNote, volume: t.volume, pan: t.pan || 0, muted: t.muted })),
+      patterns: patterns.map(p => ({ id: p.id, name: p.name, cells: p.cells.map(row => row.map(c => c ? { note: c.note, velocity: c.velocity } : null)) })),
+      activePatternId: activePatternId,
+      songOrder: songOrder.slice(),
+      stepsPerPattern: stepsPerPattern,
+      bpm: parseInt(trackerBpmInput.value, 10) || 120,
+      patternIdCounter: patternIdCounter,
+      trackIdCounter: trackIdCounter
+    };
+  }
+
+  function applyState(state) {
+    const bufferById = {}, dataUrlById = {};
+    tracks.forEach(t => { bufferById[t.id] = t.sampleBuffer; dataUrlById[t.id] = t.sampleDataUrl; });
+    tracks = state.tracks.map(t => Object.assign({}, t, {
+      sampleBuffer: bufferById.hasOwnProperty(t.id) ? bufferById[t.id] : null,
+      sampleDataUrl: dataUrlById.hasOwnProperty(t.id) ? dataUrlById[t.id] : ''
+    }));
+    patterns = state.patterns.map(p => ({ id: p.id, name: p.name, cells: p.cells.map(row => row.map(c => c ? { note: c.note, velocity: c.velocity } : null)) }));
+    activePatternId = patterns.some(p => p.id === state.activePatternId) ? state.activePatternId : patterns[0].id;
+    songOrder = state.songOrder.filter(id => patterns.some(p => p.id === id));
+    stepsPerPattern = state.stepsPerPattern;
+    stepsPerPatternSelect.value = String(stepsPerPattern);
+    trackerBpmInput.value = state.bpm;
+    patternIdCounter = state.patternIdCounter;
+    trackIdCounter = state.trackIdCounter;
+    renderAll();
+  }
+
+  let undoStack = [];
+  const MAX_UNDO = 40;
+  function updateUndoBtn() { undoBtn.disabled = !undoStack.length; }
+  function pushHistory() {
+    undoStack.push(JSON.stringify(serializeState()));
+    if (undoStack.length > MAX_UNDO) undoStack.shift();
+    updateUndoBtn();
+  }
+  function undo() {
+    if (!undoStack.length) return;
+    const snap = JSON.parse(undoStack.pop());
+    applyState(snap);
+    updateUndoBtn();
+  }
+  undoBtn.addEventListener('click', undo);
+  document.addEventListener('keydown', (e) => {
+    if (trackerModeWrap.style.display === 'none') return;
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      undo();
+    }
+  });
+
+  // ---------- save / load project ----------
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error('Could not read file.'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function serializeProject() {
+    return {
+      version: 1,
+      bpm: parseInt(trackerBpmInput.value, 10) || 120,
+      stepsPerPattern: stepsPerPattern,
+      trackIdCounter: trackIdCounter,
+      patternIdCounter: patternIdCounter,
+      activePatternId: activePatternId,
+      songOrder: songOrder.slice(),
+      tracks: tracks.map(t => ({
+        id: t.id, name: t.name, type: t.type, wave: t.wave, sampleName: t.sampleName,
+        sampleDataUrl: t.sampleDataUrl || '', baseNote: t.baseNote, penNote: t.penNote,
+        volume: t.volume, pan: t.pan || 0, muted: t.muted
+      })),
+      patterns: patterns.map(p => ({ id: p.id, name: p.name, cells: p.cells.map(row => row.map(c => c ? { note: c.note, velocity: c.velocity } : null)) }))
+    };
+  }
+
+  document.getElementById('saveProjectBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(serializeProject())], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'music-forge-project.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  async function loadProject(data) {
+    pushHistory();
+    const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const loadedTracks = await Promise.all((data.tracks || []).map(async t => {
+      let sampleBuffer = null;
+      if (t.type === 'sample' && t.sampleDataUrl) {
+        try {
+          const resp = await fetch(t.sampleDataUrl);
+          const arrayBuffer = await resp.arrayBuffer();
+          sampleBuffer = await decodeCtx.decodeAudioData(arrayBuffer);
+        } catch (e) {}
+      }
+      return Object.assign({}, t, { sampleBuffer: sampleBuffer });
+    }));
+    decodeCtx.close();
+    tracks = loadedTracks;
+    stepsPerPattern = data.stepsPerPattern || 16;
+    stepsPerPatternSelect.value = String(stepsPerPattern);
+    trackerBpmInput.value = data.bpm || 120;
+    trackIdCounter = data.trackIdCounter || trackIdCounter;
+    patternIdCounter = data.patternIdCounter || patternIdCounter;
+    patterns = (data.patterns || []).map(p => ({ id: p.id, name: p.name, cells: p.cells.map(row => row.map(c => c ? { note: c.note, velocity: c.velocity } : null)) }));
+    if (!patterns.length) patterns = [{ id: ++patternIdCounter, name: 'Pattern 1', cells: emptyCells() }];
+    activePatternId = patterns.some(p => p.id === data.activePatternId) ? data.activePatternId : patterns[0].id;
+    songOrder = (data.songOrder || []).filter(id => patterns.some(p => p.id === id));
+    renderAll();
+  }
+
+  const loadProjectInput = document.getElementById('loadProjectInput');
+  loadProjectInput.addEventListener('change', async function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await loadProject(data);
+      showTrackerSuccess('Project loaded: ' + (data.tracks || []).length + ' tracks, ' + (data.patterns || []).length + ' patterns.');
+    } catch (err) {
+      showTrackerError('Could not load that project file: ' + err.message);
+    }
+    loadProjectInput.value = '';
+  });
+
   // ---------- note stepper widget ----------
-  function buildNoteStepper(container, getVal, setVal, onChange) {
+  function buildNoteStepper(container, getVal, setVal, onChange, beforeChange) {
     container.innerHTML = '';
     const down = document.createElement('button');
     down.type = 'button'; down.textContent = '−';
@@ -729,8 +876,8 @@
     const up = document.createElement('button');
     up.type = 'button'; up.textContent = '+';
     function refresh() { nameEl.textContent = noteName(getVal()); }
-    down.addEventListener('click', () => { setVal(getVal() - 1); refresh(); if (onChange) onChange(); });
-    up.addEventListener('click', () => { setVal(getVal() + 1); refresh(); if (onChange) onChange(); });
+    down.addEventListener('click', () => { if (beforeChange) beforeChange(); setVal(getVal() - 1); refresh(); if (onChange) onChange(); });
+    up.addEventListener('click', () => { if (beforeChange) beforeChange(); setVal(getVal() + 1); refresh(); if (onChange) onChange(); });
     container.appendChild(down); container.appendChild(nameEl); container.appendChild(up);
     refresh();
   }
@@ -750,7 +897,9 @@
       const nameInput = document.createElement('input');
       nameInput.type = 'text';
       nameInput.value = track.name;
-      nameInput.addEventListener('input', () => { track.name = nameInput.value; renderPatternTabs(); renderStepGrid(); });
+      let nameHistoryPushed = false;
+      nameInput.addEventListener('focus', () => { nameHistoryPushed = false; });
+      nameInput.addEventListener('input', () => { if (!nameHistoryPushed) { pushHistory(); nameHistoryPushed = true; } track.name = nameInput.value; renderPatternTabs(); renderStepGrid(); });
       const typeToggle = document.createElement('div');
       typeToggle.className = 'type-toggle';
       const synthBtn = document.createElement('button');
@@ -759,8 +908,8 @@
       const sampleBtn = document.createElement('button');
       sampleBtn.type = 'button'; sampleBtn.textContent = 'Sample';
       sampleBtn.className = track.type === 'sample' ? 'active' : '';
-      synthBtn.addEventListener('click', () => { track.type = 'synth'; renderTracksList(); });
-      sampleBtn.addEventListener('click', () => { track.type = 'sample'; renderTracksList(); });
+      synthBtn.addEventListener('click', () => { pushHistory(); track.type = 'synth'; renderTracksList(); });
+      sampleBtn.addEventListener('click', () => { pushHistory(); track.type = 'sample'; renderTracksList(); });
       typeToggle.appendChild(synthBtn); typeToggle.appendChild(sampleBtn);
       head.appendChild(dot); head.appendChild(nameInput); head.appendChild(typeToggle);
       row.appendChild(head);
@@ -776,7 +925,7 @@
           if (w === track.wave) opt.selected = true;
           waveSelect.appendChild(opt);
         });
-        waveSelect.addEventListener('change', () => { track.wave = waveSelect.value; });
+        waveSelect.addEventListener('change', () => { pushHistory(); track.wave = waveSelect.value; });
         controls.appendChild(waveSelect);
       } else {
         const uploadWrap = document.createElement('div');
@@ -790,6 +939,7 @@
         fileInput.addEventListener('change', async function (e) {
           const file = (e.target.files || [])[0];
           if (!file) return;
+          pushHistory();
           try {
             const arrayBuffer = await file.arrayBuffer();
             const decodeCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -797,6 +947,7 @@
             decodeCtx.close();
             track.sampleBuffer = buf;
             track.sampleName = file.name;
+            track.sampleDataUrl = await fileToDataUrl(file);
             renderTracksList();
           } catch (err) {
             showTrackerError('Could not read "' + file.name + '": ' + err.message);
@@ -816,7 +967,7 @@
           const baseLabel = document.createElement('span');
           baseLabel.textContent = 'Base pitch:';
           const baseStepper = document.createElement('span');
-          buildNoteStepper(baseStepper, () => track.baseNote, v => { track.baseNote = v; });
+          buildNoteStepper(baseStepper, () => track.baseNote, v => { track.baseNote = v; }, null, pushHistory);
           controls.appendChild(baseLabel);
           controls.appendChild(baseStepper);
         }
@@ -825,7 +976,7 @@
       const penLabel = document.createElement('span');
       penLabel.textContent = 'Pen note:';
       const penStepper = document.createElement('span');
-      buildNoteStepper(penStepper, () => track.penNote, v => { track.penNote = v; });
+      buildNoteStepper(penStepper, () => track.penNote, v => { track.penNote = v; }, null, pushHistory);
       controls.appendChild(penLabel);
       controls.appendChild(penStepper);
 
@@ -833,14 +984,25 @@
       volLabel.textContent = 'Vol:';
       const volSlider = document.createElement('input');
       volSlider.type = 'range'; volSlider.min = '0'; volSlider.max = '1'; volSlider.step = '0.05'; volSlider.value = track.volume;
-      volSlider.addEventListener('input', () => { track.volume = parseFloat(volSlider.value); });
+      let volHistoryPushed = false;
+      volSlider.addEventListener('pointerdown', () => { volHistoryPushed = false; });
+      volSlider.addEventListener('input', () => { if (!volHistoryPushed) { pushHistory(); volHistoryPushed = true; } track.volume = parseFloat(volSlider.value); });
       controls.appendChild(volLabel); controls.appendChild(volSlider);
+
+      const panLabel = document.createElement('span');
+      panLabel.textContent = 'Pan:';
+      const panSlider = document.createElement('input');
+      panSlider.type = 'range'; panSlider.min = '-1'; panSlider.max = '1'; panSlider.step = '0.1'; panSlider.value = track.pan || 0;
+      let panHistoryPushed = false;
+      panSlider.addEventListener('pointerdown', () => { panHistoryPushed = false; });
+      panSlider.addEventListener('input', () => { if (!panHistoryPushed) { pushHistory(); panHistoryPushed = true; } track.pan = parseFloat(panSlider.value); });
+      controls.appendChild(panLabel); controls.appendChild(panSlider);
 
       const muteLabel = document.createElement('label');
       muteLabel.style.display = 'inline-flex'; muteLabel.style.alignItems = 'center'; muteLabel.style.gap = '3px';
       const muteCheckbox = document.createElement('input');
       muteCheckbox.type = 'checkbox'; muteCheckbox.style.width = 'auto'; muteCheckbox.checked = track.muted;
-      muteCheckbox.addEventListener('change', () => { track.muted = muteCheckbox.checked; renderStepGrid(); });
+      muteCheckbox.addEventListener('change', () => { pushHistory(); track.muted = muteCheckbox.checked; renderStepGrid(); });
       muteLabel.appendChild(muteCheckbox); muteLabel.appendChild(document.createTextNode('Mute'));
       controls.appendChild(muteLabel);
 
@@ -864,6 +1026,7 @@
   }
 
   addPatternBtn.addEventListener('click', () => {
+    pushHistory();
     const p = { id: ++patternIdCounter, name: 'Pattern ' + patterns.length + 1 || 'Pattern', cells: emptyCells() };
     p.name = 'Pattern ' + (patterns.length + 1);
     patterns.push(p);
@@ -873,6 +1036,7 @@
   dupPatternBtn.addEventListener('click', () => {
     const src = activePattern();
     if (!src) return;
+    pushHistory();
     const copy = { id: ++patternIdCounter, name: src.name + ' copy', cells: src.cells.map(row => row.map(c => c ? Object.assign({}, c) : null)) };
     patterns.push(copy);
     activePatternId = copy.id;
@@ -882,10 +1046,11 @@
     const p = activePattern();
     if (!p) return;
     const name = window.prompt('Pattern name:', p.name);
-    if (name && name.trim()) { p.name = name.trim(); renderPatternTabs(); }
+    if (name && name.trim()) { pushHistory(); p.name = name.trim(); renderPatternTabs(); }
   });
   deletePatternBtn.addEventListener('click', () => {
     if (patterns.length <= 1) { showTrackerError('You need at least one pattern.'); return; }
+    pushHistory();
     patterns = patterns.filter(p => p.id !== activePatternId);
     songOrder = songOrder.filter(id => id !== activePatternId);
     activePatternId = patterns[0].id;
@@ -893,6 +1058,7 @@
   });
 
   stepsPerPatternSelect.addEventListener('change', () => {
+    pushHistory();
     stepsPerPattern = parseInt(stepsPerPatternSelect.value, 10);
     resizeAllPatternCells(stepsPerPattern);
     renderStepGrid();
@@ -913,13 +1079,14 @@
         '<button type="button" data-up title="Move up">▲</button>' +
         '<button type="button" data-down title="Move down">▼</button>' +
         '<button type="button" data-remove title="Remove">✕</button>';
-      chip.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { [songOrder[i - 1], songOrder[i]] = [songOrder[i], songOrder[i - 1]]; renderSongList(); } });
-      chip.querySelector('[data-down]').addEventListener('click', () => { if (i < songOrder.length - 1) { [songOrder[i + 1], songOrder[i]] = [songOrder[i], songOrder[i + 1]]; renderSongList(); } });
-      chip.querySelector('[data-remove]').addEventListener('click', () => { songOrder.splice(i, 1); renderSongList(); });
+      chip.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { pushHistory(); [songOrder[i - 1], songOrder[i]] = [songOrder[i], songOrder[i - 1]]; renderSongList(); } });
+      chip.querySelector('[data-down]').addEventListener('click', () => { if (i < songOrder.length - 1) { pushHistory(); [songOrder[i + 1], songOrder[i]] = [songOrder[i], songOrder[i + 1]]; renderSongList(); } });
+      chip.querySelector('[data-remove]').addEventListener('click', () => { pushHistory(); songOrder.splice(i, 1); renderSongList(); });
       songListEl.appendChild(chip);
     });
   }
   addToSongBtn.addEventListener('click', () => {
+    pushHistory();
     songOrder.push(activePatternId);
     renderSongList();
   });
@@ -967,6 +1134,7 @@
           cell.appendChild(velBar);
         }
         cell.addEventListener('click', () => {
+          pushHistory();
           if (pattern.cells[trackIdx][s]) {
             pattern.cells[trackIdx][s] = null;
           } else {
@@ -977,8 +1145,11 @@
         cell.addEventListener('contextmenu', (e) => {
           e.preventDefault();
           if (!pattern.cells[trackIdx][s]) {
+            pushHistory();
             pattern.cells[trackIdx][s] = { note: track.penNote, velocity: 0.85 };
             renderStepGrid();
+          } else {
+            pushHistory();
           }
           openPopover(e, trackIdx, s);
         });
@@ -1026,16 +1197,27 @@
     return (60 / bpm) / 4; // steps are 16th notes
   }
 
+  function panNodeFor(ctx, track) {
+    if (ctx.createStereoPanner) {
+      const panner = ctx.createStereoPanner();
+      panner.pan.value = track.pan || 0;
+      return panner;
+    }
+    return null;
+  }
+
   function triggerStep(ctx, dest, track, cellData, when) {
     if (!cellData || track.muted) return;
     const dur = stepDurationSec() * 0.92;
+    const panner = panNodeFor(ctx, track);
+    const output = panner ? (panner.connect(dest), panner) : dest;
     if (track.type === 'sample' && track.sampleBuffer) {
       const src = ctx.createBufferSource();
       src.buffer = track.sampleBuffer;
       src.playbackRate.value = Math.pow(2, (cellData.note - track.baseNote) / 12);
       const gain = ctx.createGain();
       gain.gain.value = cellData.velocity * track.volume;
-      src.connect(gain).connect(dest);
+      src.connect(gain).connect(output);
       src.start(when);
     } else if (track.type === 'synth') {
       const osc = ctx.createOscillator();
@@ -1049,7 +1231,7 @@
       gain.gain.linearRampToValueAtTime(peak, when + attack);
       gain.gain.setValueAtTime(peak, Math.max(when + attack, when + dur - release));
       gain.gain.linearRampToValueAtTime(0, when + dur);
-      osc.connect(gain).connect(dest);
+      osc.connect(gain).connect(output);
       osc.start(when);
       osc.stop(when + dur + 0.02);
     }
