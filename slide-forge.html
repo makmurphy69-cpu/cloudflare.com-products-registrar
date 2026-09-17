@@ -4,15 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Slide Forge — free PowerPoint generator</title>
-<meta name="description" content="Describe a presentation, get a real, downloadable .pptx — built live in your browser, free.">
+<meta name="description" content="Describe a presentation, choose how many slides you want, add your own photos and videos to specific slides, then download a real .pptx — built live in your browser, free.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Slide Forge — free PowerPoint generator">
-<meta property="og:description" content="Describe a presentation, get a real, downloadable .pptx — built live in your browser, free.">
+<meta property="og:description" content="Describe a presentation, choose how many slides you want, add your own photos and videos to specific slides, then download a real .pptx — built live in your browser, free.">
 <meta property="og:image" content="https://migabuilder.com/assets/og/slide-forge.jpg">
 <meta property="og:url" content="https://migabuilder.com/slide-forge.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Slide Forge — free PowerPoint generator">
-<meta name="twitter:description" content="Describe a presentation, get a real, downloadable .pptx — built live in your browser, free.">
+<meta name="twitter:description" content="Describe a presentation, choose how many slides you want, add your own photos and videos to specific slides, then download a real .pptx — built live in your browser, free.">
 <meta name="twitter:image" content="https://migabuilder.com/assets/og/slide-forge.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,214 +34,145 @@
     --error: #D8604A;
     --radius: 3px;
   }
-
   * { box-sizing: border-box; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--navy);
-    color: var(--paper);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    min-height: 100vh;
-  }
-
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
   body {
-    background-image:
-      linear-gradient(var(--line-cyan-dim) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
-    background-size: 28px 28px;
-    background-position: -1px -1px;
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
   }
-
   a { color: var(--line-cyan); }
   button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
 
-  :focus-visible {
-    outline: 2px solid var(--line-cyan);
-    outline-offset: 2px;
-  }
-
-  header.masthead {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 26px clamp(20px, 4vw, 48px) 22px;
-    position: relative;
-  }
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
   header.masthead::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 3px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--line-cyan) 0, var(--line-cyan) 1px,
-      transparent 1px, transparent 9px
-    );
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
     opacity: 0.55;
   }
-
-  .logo-mark {
-    width: 42px;
-    height: 42px;
-    flex: none;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35));
-  }
-
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
   header.masthead h1 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 0.005em;
-    margin: 0;
-    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
   }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
 
-  header.masthead p {
-    margin: 2px 0 0;
-    font-size: 14px;
-    color: rgba(237, 234, 224, 0.6);
-  }
-
-  .solo-wrap {
-    max-width: 520px;
-    margin: 0 auto;
+  main {
+    display: grid;
+    grid-template-columns: minmax(320px, 400px) 1fr;
+    gap: 24px;
     padding: 28px clamp(20px, 4vw, 48px) 56px;
+    align-items: start;
   }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
 
   .panel {
-    background: var(--paper);
-    color: var(--ink);
-    border-radius: var(--radius);
-    padding: 22px 22px 26px;
+    background: var(--paper); color: var(--ink); border-radius: var(--radius);
+    padding: 22px 22px 26px; max-height: calc(100vh - 40px); overflow-y: auto;
+    position: sticky; top: 20px;
   }
+  @media (max-width: 900px) { .panel { position: static; max-height: none; } }
 
-  .field { margin-bottom: 18px; }
-
-  .field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .field .hint {
-    font-size: 12.5px;
-    color: rgba(22, 32, 43, 0.62);
-    margin-top: 6px;
-    line-height: 1.45;
-  }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .section-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgba(22, 32, 43, 0.5);
-    margin: 22px 0 12px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(22, 32, 43, 0.14);
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
   }
   .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
 
-  input[type="password"],
-  input[type="text"],
-  textarea {
-    width: 100%;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 14px;
-    padding: 10px 11px;
-    border: 1px solid rgba(22, 32, 43, 0.28);
-    border-radius: var(--radius);
-    background: #fff;
-    color: var(--ink);
+  input[type="password"], input[type="text"], input[type="number"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 9px 10px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
   }
-
-  textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
 
   .key-row { display: flex; gap: 8px; }
   .key-row input { flex: 1; }
+  .toggle-key { background: transparent; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink); }
 
-  .toggle-key {
-    background: transparent;
-    border: 1px solid rgba(22, 32, 43, 0.28);
-    border-radius: var(--radius);
-    padding: 0 12px;
-    font-size: 12.5px;
-    cursor: pointer;
-    color: var(--ink);
+  .upload-btn {
+    display: inline-block; background: #fff; border: 1px dashed rgba(22, 32, 43, 0.35); border-radius: var(--radius);
+    padding: 9px 11px; font-size: 12.5px; cursor: pointer; text-align: center; width: 100%;
   }
-
-  select {
-    width: 100%;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 14px;
-    padding: 10px 11px;
-    border: 1px solid rgba(22, 32, 43, 0.28);
-    border-radius: var(--radius);
-    background: #fff;
-    color: var(--ink);
-  }
+  .upload-btn:hover { border-color: rgba(22, 32, 43, 0.55); }
 
   .draft-btn {
-    width: 100%;
-    background: var(--amber);
-    color: var(--amber-ink);
-    border: none;
-    border-radius: var(--radius);
-    font-weight: 600;
-    font-size: 15px;
-    padding: 13px;
-    cursor: pointer;
-    transition: filter 0.15s ease;
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 12px; cursor: pointer; transition: filter 0.15s ease;
   }
   .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
-  .draft-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .draft-btn { flex: 1; }
 
   .error-box {
-    margin-top: 16px;
-    padding: 12px 14px;
-    background: rgba(216, 96, 74, 0.14);
-    border: 1px solid rgba(216, 96, 74, 0.4);
-    border-radius: var(--radius);
-    font-size: 13px;
-    color: #6E2418;
-    display: none;
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
   }
   .error-box.show { display: block; }
-
   .success-box {
-    margin-top: 16px;
-    padding: 12px 14px;
-    background: rgba(78, 158, 115, 0.14);
-    border: 1px solid rgba(78, 158, 115, 0.4);
-    border-radius: var(--radius);
-    font-size: 13px;
-    color: #275238;
-    display: none;
+    margin-top: 12px; padding: 12px 14px; background: rgba(78, 158, 115, 0.14); border: 1px solid rgba(78, 158, 115, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #275238; display: none; line-height: 1.5;
   }
   .success-box.show { display: block; }
 
-  footer {
-    padding: 20px clamp(20px, 4vw, 48px) 40px;
-    font-size: 12.5px;
-    color: rgba(237, 234, 224, 0.45);
-    max-width: 520px;
-    margin: 0 auto;
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
   }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .slides-empty { margin: auto; text-align: center; color: rgba(237,234,224,0.45); font-size: 14px; max-width: 360px; padding: 40px 20px; }
+  .slides-empty strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; color: rgba(237,234,224,0.75); margin-bottom: 6px; }
+
+  .slide-card {
+    background: #fff; color: var(--ink); border-radius: var(--radius); padding: 14px; margin-bottom: 12px;
+  }
+  .slide-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .slide-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: #fff; background: var(--navy);
+    border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex: none;
+  }
+  .slide-card-head input[type="text"] { flex: 1; font-weight: 600; }
+  .slide-card-actions { display: flex; gap: 2px; flex: none; }
+  .slide-card-actions button { background: transparent; border: none; cursor: pointer; font-size: 14px; padding: 3px 5px; color: var(--ink); }
+  .slide-card-actions button.remove { color: var(--error); }
+  .slide-media-row { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
+  .slide-media-row .upload-btn { flex: 1; }
+  .slide-media-thumb {
+    display: flex; align-items: center; gap: 8px; background: var(--paper-dim); border-radius: var(--radius);
+    padding: 6px 8px; font-size: 12px; flex: 1;
+  }
+  .slide-media-thumb img { width: 36px; height: 36px; object-fit: cover; border-radius: 2px; flex: none; }
+  .slide-media-thumb .media-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex: none; }
+  .slide-media-thumb .media-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .slide-media-thumb button { background: transparent; border: none; cursor: pointer; color: var(--error); font-size: 13px; }
+  .slide-position-select { width: 130px; flex: none; }
+
+  .add-slide-btn {
+    width: 100%; background: transparent; border: 1px dashed var(--line-cyan-dim); color: rgba(237,234,224,0.8);
+    border-radius: var(--radius); padding: 12px; font-size: 13.5px; cursor: pointer; margin-top: 4px;
+  }
+  .add-slide-btn:hover { border-color: var(--line-cyan); }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer; flex: 1;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
 </head>
@@ -256,15 +187,14 @@
   </svg>
   <div>
     <h1>Slide Forge</h1>
-    <p>Describe a presentation. Get a real, downloadable .pptx — built live in your browser.</p>
+    <p>Describe a presentation, review and edit the slides, add your own photos or videos, then download a real .pptx.</p>
   </div>
 </header>
 
-<div class="solo-wrap">
-  <div class="panel">
+<main>
+  <section class="panel">
 
     <div class="section-title">Connection</div>
-
     <div class="field">
       <label for="provider">AI provider</label>
       <select id="provider">
@@ -273,7 +203,6 @@
         <option value="anthropic">Anthropic (Claude)</option>
       </select>
     </div>
-
     <div class="field" id="apiKeyField">
       <label for="apiKey" id="apiKeyLabel">Your OpenAI API key</label>
       <div class="key-row">
@@ -282,36 +211,53 @@
       </div>
       <p class="hint">Used only to call the provider above directly from your browser. Never stored, never sent anywhere else, and cleared if you reload the page.</p>
     </div>
-
     <div class="field" id="freeNoticeField" style="display:none;">
       <p class="hint" style="margin-top:0;">✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.</p>
     </div>
-
     <div class="field">
       <label for="model">Text model</label>
-      <select id="model">
-        <option value="gpt-4o-mini" selected>gpt-4o-mini (fast, cheap)</option>
-        <option value="gpt-4o">gpt-4o (higher quality)</option>
-        <option value="gpt-4.1">gpt-4.1</option>
-      </select>
+      <select id="model"></select>
     </div>
 
     <div class="section-title">The presentation</div>
-
     <div class="field">
       <label for="pptxBrief">Describe the presentation you need</label>
-      <textarea id="pptxBrief" placeholder="e.g. A 6-slide pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact"></textarea>
-      <p class="hint">4–10 slides, real content — no AI-generated images, just a clean, professional layout you can restyle in PowerPoint or Google Slides afterward.</p>
+      <textarea id="pptxBrief" placeholder="e.g. A pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact"></textarea>
+    </div>
+    <div class="field">
+      <label for="slideCountInput">Number of slides</label>
+      <input type="number" id="slideCountInput" min="1" max="20" placeholder="Let the AI decide (4–10)">
+      <p class="hint">Not counting the title slide. Leave blank to let the AI pick a reasonable number.</p>
     </div>
 
-    <button type="button" class="draft-btn" id="generatePptxBtn">Generate .pptx</button>
-
+    <button type="button" class="draft-btn" id="planBtn">✨ Plan slides with AI</button>
     <div class="error-box" id="errorBox"></div>
     <div class="success-box" id="successBox"></div>
-  </div>
-</div>
+    <p class="hint" style="margin-top:14px;">Planning rewrites the whole slide list below. Once planned, you can edit titles and bullets, add or remove slides by hand, and attach your own photo or video to any slide.</p>
+  </section>
 
-<footer>Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+  <section class="table">
+    <div class="title-block">
+      <span>SLIDE FORGE — SLIDES</span>
+      <span id="titleBlockRight">NOT STARTED</span>
+    </div>
+
+    <div id="slidesEmpty" class="slides-empty">
+      <strong>No slides yet.</strong>
+      Describe your presentation on the left and click "Plan slides with AI" — or click "+ Add slide" below to start from scratch.
+    </div>
+
+    <div id="slidesList"></div>
+    <button type="button" class="add-slide-btn" id="addSlideBtn" style="display:none;">+ Add slide</button>
+
+    <div class="table-actions">
+      <button type="button" id="buildBtn" class="primary" disabled>⬇ Build &amp; download .pptx</button>
+    </div>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Photos and videos you attach stay in your browser and are embedded directly into the .pptx file — nothing is uploaded anywhere. For best PowerPoint compatibility, use .mp4 video clips; .webm clips (e.g. from Record Forge or Clip Forge) often play in Google Slides but not always in Microsoft PowerPoint. Large videos make for a large file — trim clips short in <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> first if needed.</p>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type or attach here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function(){
@@ -325,24 +271,23 @@
   const freeNoticeField = document.getElementById('freeNoticeField');
   const modelSelect = document.getElementById('model');
   const pptxBrief = document.getElementById('pptxBrief');
-  const generatePptxBtn = document.getElementById('generatePptxBtn');
+  const slideCountInput = document.getElementById('slideCountInput');
+  const planBtn = document.getElementById('planBtn');
   const errorBox = document.getElementById('errorBox');
   const successBox = document.getElementById('successBox');
+  const slidesEmpty = document.getElementById('slidesEmpty');
+  const slidesList = document.getElementById('slidesList');
+  const addSlideBtn = document.getElementById('addSlideBtn');
+  const buildBtn = document.getElementById('buildBtn');
+  const titleBlockRight = document.getElementById('titleBlockRight');
 
   function showError(message) {
     successBox.classList.remove('show');
     errorBox.textContent = message;
     errorBox.classList.add('show');
   }
-  function clearError() {
-    errorBox.textContent = '';
-    errorBox.classList.remove('show');
-  }
-  function showSuccess(message) {
-    clearError();
-    successBox.textContent = message;
-    successBox.classList.add('show');
-  }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+  function showSuccess(message) { clearError(); successBox.textContent = message; successBox.classList.add('show'); }
 
   toggleKeyBtn.addEventListener('click', function () {
     const isPassword = apiKeyInput.type === 'password';
@@ -491,60 +436,266 @@
     return stripCodeFence(raw);
   }
 
-  async function generatePptx() {
+  // ---------- slide state ----------
+  let presentationTitle = '';
+  let slides = []; // {id, title, bullets: string[], mediaDataUrl, mediaType: 'image'|'video', mediaName, position}
+  let slideIdCounter = 0;
+
+  const POSITION_LABELS = {
+    right: 'Right of text',
+    bottom: 'Below text',
+    full: 'Full-slide'
+  };
+
+  function newSlide(title, bullets) {
+    return { id: ++slideIdCounter, title: title || 'New slide', bullets: bullets || [''], mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
+  }
+
+  function refreshBuildButton() {
+    buildBtn.disabled = slides.length === 0;
+  }
+
+  function renderSlidesList() {
+    slidesList.innerHTML = '';
+    slidesEmpty.style.display = slides.length ? 'none' : 'block';
+    addSlideBtn.style.display = 'block';
+    refreshBuildButton();
+
+    slides.forEach((s, i) => {
+      const card = document.createElement('div');
+      card.className = 'slide-card';
+
+      const head = document.createElement('div');
+      head.className = 'slide-card-head';
+      const num = document.createElement('span');
+      num.className = 'slide-num';
+      num.textContent = String(i + 1);
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.value = s.title;
+      titleInput.placeholder = 'Slide title';
+      titleInput.addEventListener('input', () => { s.title = titleInput.value; });
+      const actions = document.createElement('div');
+      actions.className = 'slide-card-actions';
+      actions.innerHTML =
+        '<button type="button" data-up title="Move up">▲</button>' +
+        '<button type="button" data-down title="Move down">▼</button>' +
+        '<button type="button" class="remove" data-remove title="Remove slide">✕</button>';
+      head.appendChild(num);
+      head.appendChild(titleInput);
+      head.appendChild(actions);
+      card.appendChild(head);
+
+      const bulletsArea = document.createElement('textarea');
+      bulletsArea.style.minHeight = '70px';
+      bulletsArea.placeholder = 'One bullet point per line';
+      bulletsArea.value = (s.bullets || []).join('\n');
+      bulletsArea.addEventListener('input', () => { s.bullets = bulletsArea.value.split('\n'); });
+      card.appendChild(bulletsArea);
+
+      const mediaRow = document.createElement('div');
+      mediaRow.className = 'slide-media-row';
+      if (s.mediaDataUrl) {
+        const thumb = document.createElement('div');
+        thumb.className = 'slide-media-thumb';
+        const preview = s.mediaType === 'image'
+          ? '<img src="' + s.mediaDataUrl + '" alt="">'
+          : '<div class="media-icon">🎬</div>';
+        thumb.innerHTML = preview + '<span class="media-name">' + s.mediaName.replace(/</g, '&lt;') + '</span><button type="button" data-remove-media title="Remove media">✕</button>';
+        mediaRow.appendChild(thumb);
+
+        const posSelect = document.createElement('select');
+        posSelect.className = 'slide-position-select';
+        Object.keys(POSITION_LABELS).forEach(key => {
+          const opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = POSITION_LABELS[key];
+          if (key === s.position) opt.selected = true;
+          posSelect.appendChild(opt);
+        });
+        posSelect.addEventListener('change', () => { s.position = posSelect.value; });
+        mediaRow.appendChild(posSelect);
+
+        thumb.querySelector('[data-remove-media]').addEventListener('click', () => {
+          s.mediaDataUrl = null; s.mediaType = null; s.mediaName = '';
+          renderSlidesList();
+        });
+      } else {
+        const uploadLabel = document.createElement('label');
+        uploadLabel.className = 'upload-btn';
+        uploadLabel.textContent = '+ Add a photo or video to this slide';
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*,video/*';
+        fileInput.style.display = 'none';
+        fileInput.addEventListener('change', function (e) {
+          const file = (e.target.files || [])[0];
+          if (!file) return;
+          const isVideo = file.type.startsWith('video/');
+          if (isVideo && file.size > 30 * 1024 * 1024) {
+            showError('That video is over 30MB — the resulting .pptx would be very large. Trim it shorter first (e.g. in Clip Forge) and try again.');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function () {
+            s.mediaDataUrl = reader.result;
+            s.mediaType = isVideo ? 'video' : 'image';
+            s.mediaName = file.name;
+            renderSlidesList();
+          };
+          reader.readAsDataURL(file);
+        });
+        uploadLabel.appendChild(fileInput);
+        mediaRow.appendChild(uploadLabel);
+      }
+      card.appendChild(mediaRow);
+
+      actions.querySelector('[data-up]').addEventListener('click', () => moveSlide(i, -1));
+      actions.querySelector('[data-down]').addEventListener('click', () => moveSlide(i, 1));
+      actions.querySelector('[data-remove]').addEventListener('click', () => {
+        slides = slides.filter(x => x.id !== s.id);
+        renderSlidesList();
+      });
+
+      slidesList.appendChild(card);
+    });
+  }
+  function moveSlide(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= slides.length) return;
+    const tmp = slides[i]; slides[i] = slides[j]; slides[j] = tmp;
+    renderSlidesList();
+  }
+
+  addSlideBtn.addEventListener('click', function () {
+    slides.push(newSlide('New slide', ['Point one']));
+    renderSlidesList();
+  });
+
+  // ---------- plan with AI ----------
+  async function planSlides() {
     clearError();
     successBox.classList.remove('show');
     const key = currentTextApiKey();
     const brief = pptxBrief.value.trim();
     if (!key) { showError('Add your API key first.'); return; }
     if (!brief) { showError('Describe the presentation you need.'); return; }
-    if (typeof PptxGenJS === 'undefined') { showError('The PowerPoint library failed to load — check your internet connection and reload the page.'); return; }
 
-    generatePptxBtn.disabled = true;
-    generatePptxBtn.textContent = 'Building…';
+    const requestedCount = parseInt(slideCountInput.value, 10);
+    const hasRequestedCount = Number.isInteger(requestedCount) && requestedCount > 0;
+
+    planBtn.disabled = true;
+    planBtn.textContent = 'Planning…';
+    titleBlockRight.textContent = 'PLANNING';
     const model = modelSelect.value;
     const rules = [
       'You plan PowerPoint presentations. Given a description, respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
       '{"title": "presentation title", "slides": [{"title": "slide title", "bullets": ["point 1","point 2"]}]}',
-      '4-10 slides. Each slide: a short title and 2-5 short bullet points, real content (no placeholders).'
+      hasRequestedCount
+        ? ('Return EXACTLY ' + requestedCount + ' slides in the slides array (not counting the title slide).')
+        : '4-10 slides.',
+      'Each slide: a short title and 2-5 short bullet points, real content (no placeholders).'
     ].join('\n');
 
     try {
       const json = await callChat(key, model, rules, brief);
       const plan = JSON.parse(json);
+      presentationTitle = plan.title || brief;
+      slides = (plan.slides || []).map(s => newSlide(s.title, s.bullets));
+      if (!slides.length) slides = [newSlide('New slide', ['Point one'])];
+      renderSlidesList();
+      titleBlockRight.textContent = slides.length + ' slide' + (slides.length === 1 ? '' : 's') + ' planned';
+      showSuccess('Planned ' + slides.length + ' slides. Edit them below, add photos or videos, then build the file.');
+    } catch (err) {
+      showError(err.message || 'Could not plan the presentation.');
+      titleBlockRight.textContent = 'NOT STARTED';
+    } finally {
+      planBtn.disabled = false;
+      planBtn.textContent = '✨ Plan slides with AI';
+    }
+  }
+  planBtn.addEventListener('click', planSlides);
 
+  // ---------- build .pptx ----------
+  const POSITION_LAYOUTS = {
+    right: { text: { x: 0.5, y: 1.3, w: 4.5, h: 3.9 }, media: { x: 5.3, y: 1.3, w: 4.2, h: 3.9 } },
+    bottom: { text: { x: 0.5, y: 1.3, w: 9, h: 1.9 }, media: { x: 1.8, y: 3.4, w: 6.4, h: 1.8 } },
+    full: { text: null, media: { x: 0, y: 0, w: 10, h: 5.63 } }
+  };
+
+  function addMediaToSlide(pptx, slide, s, box, sizingType) {
+    if (s.mediaType === 'video') {
+      slide.addMedia({ type: 'video', data: s.mediaDataUrl, x: box.x, y: box.y, w: box.w, h: box.h });
+    } else {
+      slide.addImage({ data: s.mediaDataUrl, x: box.x, y: box.y, w: box.w, h: box.h, sizing: { type: sizingType, w: box.w, h: box.h } });
+    }
+  }
+
+  function buildSlide(pptx, s) {
+    const slide = pptx.addSlide();
+    slide.background = { color: 'FFFFFF' };
+    const bullets = (s.bullets || []).filter(b => b && b.trim());
+    const hasMedia = !!s.mediaDataUrl;
+
+    if (hasMedia && s.position === 'full') {
+      addMediaToSlide(pptx, slide, s, POSITION_LAYOUTS.full.media, 'cover');
+      slide.addShape('rect', { x: 0, y: 3.9, w: 10, h: 1.73, fill: { color: '0E2A47', transparency: 25 }, line: { type: 'none' } });
+      slide.addText(s.title || '', { x: 0.5, y: 4.0, w: 9, h: 0.6, fontSize: 22, bold: true, color: 'FFFFFF', fontFace: 'Arial' });
+      if (bullets.length) {
+        slide.addText(bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } })), { x: 0.6, y: 4.6, w: 8.8, h: 0.9, fontSize: 12, color: 'EDEAE0', fontFace: 'Arial' });
+      }
+      return;
+    }
+
+    slide.addText(s.title || '', { x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: '0E2A47', fontFace: 'Arial' });
+
+    const layout = hasMedia ? POSITION_LAYOUTS[s.position] : null;
+    const textBox = layout ? layout.text : { x: 0.6, y: 1.4, w: 8.6, h: 3.8 };
+    if (bullets.length) {
+      slide.addText(
+        bullets.map(b => ({ text: b, options: { bullet: true, breakLine: true } })),
+        Object.assign({ fontSize: 16, color: '16202B', fontFace: 'Arial' }, textBox)
+      );
+    }
+    if (hasMedia) addMediaToSlide(pptx, slide, s, layout.media, 'contain');
+  }
+
+  buildBtn.addEventListener('click', async function () {
+    clearError();
+    successBox.classList.remove('show');
+    if (!slides.length) { showError('Plan or add at least one slide first.'); return; }
+    if (typeof PptxGenJS === 'undefined') { showError('The PowerPoint library failed to load — check your internet connection and reload the page.'); return; }
+
+    buildBtn.disabled = true;
+    buildBtn.textContent = 'Building…';
+    titleBlockRight.textContent = 'BUILDING';
+    try {
       const pptx = new PptxGenJS();
       pptx.defineLayout({ name: 'MB', width: 10, height: 5.63 });
       pptx.layout = 'MB';
 
       const titleSlide = pptx.addSlide();
       titleSlide.background = { color: '0E2A47' };
-      titleSlide.addText(plan.title || brief, {
+      titleSlide.addText(presentationTitle || pptxBrief.value.trim() || 'Presentation', {
         x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: 'EDEAE0', fontFace: 'Arial'
       });
 
-      (plan.slides || []).forEach(s => {
-        const slide = pptx.addSlide();
-        slide.background = { color: 'FFFFFF' };
-        slide.addText(s.title || '', {
-          x: 0.5, y: 0.4, w: 9, h: 0.8, fontSize: 24, bold: true, color: '0E2A47', fontFace: 'Arial'
-        });
-        slide.addText((s.bullets || []).map(b => ({ text: b, options: { bullet: true, breakLine: true } })), {
-          x: 0.6, y: 1.4, w: 8.6, h: 3.8, fontSize: 16, color: '16202B', fontFace: 'Arial'
-        });
-      });
+      slides.forEach(s => buildSlide(pptx, s));
 
-      const fileName = (plan.title || 'presentation').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.pptx';
+      const fileName = (presentationTitle || 'presentation').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.pptx';
       await pptx.writeFile({ fileName: fileName });
-      showSuccess('Downloaded ' + fileName + ' — ' + ((plan.slides || []).length + 1) + ' slides.');
+      titleBlockRight.textContent = (slides.length + 1) + ' slides';
+      showSuccess('Downloaded ' + fileName + ' — ' + (slides.length + 1) + ' slides.');
     } catch (err) {
-      showError(err.message || 'Could not generate the presentation.');
+      showError(err.message || 'Could not build the presentation.');
     } finally {
-      generatePptxBtn.disabled = false;
-      generatePptxBtn.textContent = 'Generate .pptx';
+      buildBtn.disabled = false;
+      buildBtn.textContent = '⬇ Build & download .pptx';
+      refreshBuildButton();
     }
-  }
-  generatePptxBtn.addEventListener('click', generatePptx);
+  });
+
+  renderSlidesList();
 })();
 </script>
 </body>
