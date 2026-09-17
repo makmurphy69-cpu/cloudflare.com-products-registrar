@@ -208,12 +208,19 @@
         <span class="opt-sub">Only works if you choose to share a browser tab (and check "Share tab audio" in the picker) — whole-desktop audio isn't supported on every OS.</span>
       </span>
     </label>
+    <label class="check-row">
+      <input type="checkbox" id="facecamCheckbox">
+      <span>📷 Show my webcam in a corner bubble
+        <span class="opt-sub">Composites a small circular webcam feed into the bottom-right corner of the recording — Loom-style, good for tutorials.</span>
+      </span>
+    </label>
     <p class="hint" style="margin: 0 0 14px;">When you click Start, your browser will ask which screen, window, or tab to share.</p>
     <p class="hint" style="margin: 0 0 14px;"><strong>Need to show something on another MigaBuilder page while recording?</strong> Open it in a new tab (right-click a link → "Open in new tab", or Ctrl/Cmd+click) instead of clicking away from this tab — navigating this tab to another page ends the recording and loses it, since the recording only exists in this page's memory. Screen sharing lets you switch to any other tab or window without stopping the recording, as long as this tab itself stays open.</p>
 
     <button type="button" class="draft-btn" id="startBtn">🔴 Start recording</button>
     <div class="btn-row" id="activeControls" style="display:none; margin-top:8px;">
       <button type="button" class="draft-btn secondary" id="pauseBtn">⏸ Pause</button>
+      <button type="button" class="draft-btn secondary" id="muteMicBtn" style="display:none;">🔇 Mute mic</button>
       <button type="button" class="draft-btn danger" id="stopBtn">⏹ Stop</button>
     </div>
     <div class="rec-status" id="recStatus" style="display:none;"><span class="rec-dot"></span><span id="recStatusText">00:00</span></div>
@@ -330,6 +337,9 @@
 
 <video id="trimSourceVideo" style="display:none;" playsinline></video>
 <canvas id="trimCanvas" style="display:none;"></canvas>
+<video id="displaySourceVideo" style="display:none;" playsinline muted></video>
+<video id="webcamSourceVideo" style="display:none;" playsinline muted></video>
+<canvas id="facecamCanvas" style="display:none;"></canvas>
 
 <script>
 (function () {
@@ -338,10 +348,16 @@
   // ---------- element refs ----------
   const micCheckbox = document.getElementById('micCheckbox');
   const sysAudioCheckbox = document.getElementById('sysAudioCheckbox');
+  const facecamCheckbox = document.getElementById('facecamCheckbox');
   const startBtn = document.getElementById('startBtn');
   const activeControls = document.getElementById('activeControls');
   const pauseBtn = document.getElementById('pauseBtn');
+  const muteMicBtn = document.getElementById('muteMicBtn');
   const stopBtn = document.getElementById('stopBtn');
+  const displaySourceVideo = document.getElementById('displaySourceVideo');
+  const webcamSourceVideo = document.getElementById('webcamSourceVideo');
+  const facecamCanvas = document.getElementById('facecamCanvas');
+  const facecamCtx = facecamCanvas.getContext('2d');
   const recStatus = document.getElementById('recStatus');
   const recStatusText = document.getElementById('recStatusText');
   const errorBox = document.getElementById('errorBox');
@@ -386,6 +402,9 @@
   // ---------- state ----------
   let displayStream = null;
   let micStream = null;
+  let webcamStream = null;
+  let facecamAnimId = null;
+  let micMuted = false;
   let mixedStream = null;
   let mediaRecorder = null;
   let recordedChunks = [];
@@ -439,6 +458,10 @@
   function stopMediaTracks() {
     if (displayStream) { displayStream.getTracks().forEach(t => t.stop()); displayStream = null; }
     if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+    if (webcamStream) { webcamStream.getTracks().forEach(t => t.stop()); webcamStream = null; }
+    if (facecamAnimId) { cancelAnimationFrame(facecamAnimId); facecamAnimId = null; }
+    displaySourceVideo.srcObject = null;
+    webcamSourceVideo.srcObject = null;
   }
 
   // Navigating this tab away — including to another MigaBuilder page — tears
@@ -483,6 +506,15 @@
       }
     }
 
+    if (facecamCheckbox.checked) {
+      try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+      } catch (err) {
+        showError('Could not access your webcam (' + (err.message || err.name) + ') — recording without the facecam bubble.');
+        webcamStream = null;
+      }
+    }
+
     if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const audioCtx = sharedAudioCtx;
     const dest = audioCtx.createMediaStreamDestination();
@@ -500,7 +532,45 @@
     }
 
     const videoTrack = displayStream.getVideoTracks()[0];
-    const combinedTracks = [videoTrack];
+    let finalVideoTrack = videoTrack;
+
+    if (webcamStream) {
+      const settings = videoTrack.getSettings();
+      const cw = settings.width || 1280, ch = settings.height || 720;
+      displaySourceVideo.srcObject = displayStream;
+      webcamSourceVideo.srcObject = webcamStream;
+      await Promise.all([
+        new Promise(function (resolve) { displaySourceVideo.onloadedmetadata = function () { displaySourceVideo.play().then(resolve).catch(resolve); }; }),
+        new Promise(function (resolve) { webcamSourceVideo.onloadedmetadata = function () { webcamSourceVideo.play().then(resolve).catch(resolve); }; })
+      ]);
+      facecamCanvas.width = cw;
+      facecamCanvas.height = ch;
+      const bubbleSize = Math.round(Math.min(cw, ch) * 0.22);
+      const margin = Math.round(bubbleSize * 0.12);
+      (function drawFacecamFrame() {
+        facecamCtx.drawImage(displaySourceVideo, 0, 0, cw, ch);
+        const bx = cw - bubbleSize - margin, by = ch - bubbleSize - margin;
+        facecamCtx.save();
+        facecamCtx.beginPath();
+        facecamCtx.arc(bx + bubbleSize / 2, by + bubbleSize / 2, bubbleSize / 2, 0, Math.PI * 2);
+        facecamCtx.closePath();
+        facecamCtx.clip();
+        const vw = webcamSourceVideo.videoWidth || 320, vh = webcamSourceVideo.videoHeight || 240;
+        const scale = Math.max(bubbleSize / vw, bubbleSize / vh);
+        const dw = vw * scale, dh = vh * scale;
+        facecamCtx.drawImage(webcamSourceVideo, bx + (bubbleSize - dw) / 2, by + (bubbleSize - dh) / 2, dw, dh);
+        facecamCtx.restore();
+        facecamCtx.beginPath();
+        facecamCtx.arc(bx + bubbleSize / 2, by + bubbleSize / 2, bubbleSize / 2, 0, Math.PI * 2);
+        facecamCtx.lineWidth = 3;
+        facecamCtx.strokeStyle = '#EDEAE0';
+        facecamCtx.stroke();
+        facecamAnimId = requestAnimationFrame(drawFacecamFrame);
+      })();
+      finalVideoTrack = facecamCanvas.captureStream(30).getVideoTracks()[0];
+    }
+
+    const combinedTracks = [finalVideoTrack];
     if (hasAudio) combinedTracks.push(...dest.stream.getAudioTracks());
     mixedStream = new MediaStream(combinedTracks);
 
@@ -540,7 +610,17 @@
     startBtn.style.display = 'none';
     activeControls.style.display = 'flex';
     pauseBtn.textContent = '⏸ Pause';
+    micMuted = false;
+    muteMicBtn.textContent = '🔇 Mute mic';
+    muteMicBtn.style.display = micStream ? 'inline-block' : 'none';
     titleBlockRight.textContent = 'RECORDING';
+  });
+
+  muteMicBtn.addEventListener('click', function () {
+    if (!micStream) return;
+    micMuted = !micMuted;
+    micStream.getAudioTracks().forEach(function (t) { t.enabled = !micMuted; });
+    muteMicBtn.textContent = micMuted ? '🔊 Unmute mic' : '🔇 Mute mic';
   });
 
   pauseBtn.addEventListener('click', function () {
@@ -567,6 +647,7 @@
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     recStatus.style.display = 'none';
     activeControls.style.display = 'none';
+    muteMicBtn.style.display = 'none';
     startBtn.style.display = 'block';
     startBtn.textContent = '🔴 Start recording';
   }
