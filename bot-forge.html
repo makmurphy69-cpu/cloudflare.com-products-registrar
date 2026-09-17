@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bot Forge — free website chat &amp; FAQ widget generator</title>
+<meta name="description" content="Describe your business and what it should know, then get a real, embeddable chat widget for your website that answers visitor questions — free, no backend, just paste one snippet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bot Forge — free website chat &amp; FAQ widget generator">
+<meta property="og:description" content="Describe your business and what it should know, then get a real, embeddable chat widget for your website that answers visitor questions — free, no backend, just paste one snippet.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/bot-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/bot-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Bot Forge — free website chat &amp; FAQ widget generator">
+<meta name="twitter:description" content="Describe your business and what it should know, then get a real, embeddable chat widget for your website that answers visitor questions — free, no backend, just paste one snippet.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/bot-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47; --navy-deep: #081826; --paper: #EDEAE0; --paper-dim: #E2DECE; --ink: #16202B;
+    --line-cyan: #6FD1E0; --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B; --amber-ink: #4A3410; --success: #4E9E73; --error: #D8604A; --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main { display: grid; grid-template-columns: minmax(340px, 420px) 1fr; gap: 24px; padding: 28px clamp(20px, 4vw, 48px) 56px; align-items: start; }
+  @media (max-width: 950px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px;
+    max-height: calc(100vh - 40px); overflow-y: auto; position: sticky; top: 20px;
+  }
+  @media (max-width: 950px) { .panel { position: static; max-height: none; } }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12px; color: rgba(22, 32, 43, 0.62); margin-top: 5px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  input[type="text"], input[type="password"], select, textarea {
+    width: 100%; font-size: 13.5px; padding: 8px 9px; border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.45; }
+  input[type="color"] { width: 100%; height: 34px; border: 1px solid rgba(22,32,43,0.28); border-radius: var(--radius); padding: 2px; background: #fff; }
+
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; }
+  .toggle-key { background: transparent; border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); padding: 0 12px; font-size: 12.5px; cursor: pointer; color: var(--ink); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 14px; padding: 11px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row button { flex: 1; }
+
+  .warn-box {
+    margin-top: 8px; padding: 10px 12px; background: rgba(226, 166, 59, 0.16); border: 1px solid rgba(226, 166, 59, 0.5);
+    border-radius: var(--radius); font-size: 12px; color: #4A3410; line-height: 1.45; display: none;
+  }
+  .warn-box.show { display: block; }
+  .error-box {
+    margin-top: 10px; padding: 10px 12px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 12.5px; color: #6E2418; display: none; line-height: 1.4;
+  }
+  .error-box.show { display: block; }
+  .status-box {
+    margin-top: 10px; padding: 10px 12px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 12.5px; color: #244731; display: none; line-height: 1.4;
+  }
+  .status-box.show { display: block; }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column; position: relative;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .preview-stage {
+    flex: 1; background: #fff; border-radius: 2px; position: relative; overflow: hidden; min-height: 460px;
+    background-image: linear-gradient(45deg, #f3f3f3 25%, transparent 25%), linear-gradient(-45deg, #f3f3f3 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f3f3f3 75%), linear-gradient(-45deg, transparent 75%, #f3f3f3 75%);
+    background-size: 24px 24px; background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+  }
+  #widgetMount { position: absolute; inset: 0; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer; flex: 1;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Bot Forge</h1>
+    <p>Describe your business, then get a real chat widget you paste onto your own website.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+
+    <div class="section-title">AI provider</div>
+    <div class="field">
+      <label for="provider">Which one answers visitors' questions</label>
+      <select id="provider">
+        <option value="gemini" selected>Google Gemini (recommended — free tier)</option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic (Claude)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="apiKey" id="apiKeyLabel">Your Gemini API key</label>
+      <div class="key-row">
+        <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+      </div>
+      <p class="hint" id="keyHint">Free from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. This key gets embedded in your website's own source code so the widget can call it directly — anyone could technically view and copy it. That's a low-risk trade for a <strong>free-tier</strong> key (nothing to bill), which is why Gemini is the recommended choice here.</p>
+      <div class="warn-box" id="paidKeyWarning">⚠️ OpenAI and Anthropic keys are normally billed per use. Putting one in your public website's source means anyone who finds it could run up charges on your account. Only proceed if you understand that risk — e.g. a key on a strict spending cap.</div>
+    </div>
+
+    <div class="section-title">Your business</div>
+    <div class="field">
+      <label for="bizName">Business name</label>
+      <input type="text" id="bizName" placeholder="Acme Plumbing">
+    </div>
+    <div class="field">
+      <label for="bizDesc">Short description</label>
+      <textarea id="bizDesc" placeholder="e.g. A family-owned plumbing company serving Austin, TX since 2005." style="min-height:50px;"></textarea>
+    </div>
+    <div class="field">
+      <label for="knowledge">What should it know? (FAQs, hours, pricing, policies…)</label>
+      <textarea id="knowledge" placeholder="e.g. We're open Mon-Fri 8am-6pm. Emergency call-outs are $150. We service Austin and surrounding areas within 30 miles. We do NOT work on commercial properties." style="min-height:120px;"></textarea>
+      <p class="hint">The bot only answers using what you put here — it's told to say "I'm not sure, please contact us" for anything else, to avoid making things up.</p>
+    </div>
+
+    <div class="section-title">Appearance</div>
+    <div class="row-2">
+      <div class="field">
+        <label for="botTitle">Widget title</label>
+        <input type="text" id="botTitle" placeholder="Ask us anything" value="Ask us anything">
+      </div>
+      <div class="field">
+        <label for="botAvatar">Avatar emoji</label>
+        <input type="text" id="botAvatar" value="💬" maxlength="4">
+      </div>
+    </div>
+    <div class="field">
+      <label for="welcomeMsg">Welcome message</label>
+      <input type="text" id="welcomeMsg" value="Hi! Ask me anything about us.">
+    </div>
+    <div class="row-2">
+      <div class="field">
+        <label for="themeColor">Color</label>
+        <input type="color" id="themeColor" value="#0E2A47">
+      </div>
+      <div class="field">
+        <label for="position">Position</label>
+        <select id="position">
+          <option value="right" selected>Bottom right</option>
+          <option value="left">Bottom left</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" class="draft-btn" id="buildBtn">🔧 Build widget preview</button>
+    <div class="error-box" id="errorBox"></div>
+    <div class="status-box" id="statusBox"></div>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>BOT FORGE — LIVE PREVIEW</span>
+      <span id="titleBlockRight">NOT BUILT</span>
+    </div>
+    <div class="preview-stage">
+      <div id="widgetMount"></div>
+    </div>
+    <div class="table-actions">
+      <button type="button" id="copyBtn" disabled>📋 Copy embed code</button>
+      <button type="button" id="downloadBtn" disabled class="primary">⬇ Download embed-code.html</button>
+    </div>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Paste the downloaded snippet right before <code>&lt;/body&gt;</code> on any page of your website. It calls the AI provider directly from each visitor's browser using the key above — there's no server, nothing to host, and nothing of yours goes through MigaBuilder.</p>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. What you type here stays in your browser until you download or copy the widget — it's your file to host however you like. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const providerSelect = document.getElementById('provider');
+  const apiKeyInput = document.getElementById('apiKey');
+  const apiKeyLabel = document.getElementById('apiKeyLabel');
+  const toggleKeyBtn = document.getElementById('toggleKey');
+  const keyHint = document.getElementById('keyHint');
+  const paidKeyWarning = document.getElementById('paidKeyWarning');
+  const bizName = document.getElementById('bizName');
+  const bizDesc = document.getElementById('bizDesc');
+  const knowledge = document.getElementById('knowledge');
+  const botTitle = document.getElementById('botTitle');
+  const botAvatar = document.getElementById('botAvatar');
+  const welcomeMsg = document.getElementById('welcomeMsg');
+  const themeColor = document.getElementById('themeColor');
+  const positionSelect = document.getElementById('position');
+  const buildBtn = document.getElementById('buildBtn');
+  const errorBox = document.getElementById('errorBox');
+  const statusBox = document.getElementById('statusBox');
+  const titleBlockRight = document.getElementById('titleBlockRight');
+  const widgetMount = document.getElementById('widgetMount');
+  const copyBtn = document.getElementById('copyBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  function showError(msg) { statusBox.classList.remove('show'); errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+  function showStatus(msg) { clearError(); statusBox.textContent = msg; statusBox.classList.add('show'); }
+
+  function applyProviderUI() {
+    const provider = providerSelect.value;
+    if (provider === 'gemini') {
+      apiKeyLabel.textContent = 'Your Gemini API key';
+      apiKeyInput.placeholder = 'AIza...';
+      keyHint.style.display = 'block';
+      paidKeyWarning.classList.remove('show');
+    } else {
+      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+      keyHint.style.display = 'none';
+      paidKeyWarning.classList.add('show');
+    }
+  }
+  providerSelect.addEventListener('change', applyProviderUI);
+  applyProviderUI();
+
+  toggleKeyBtn.addEventListener('click', function () {
+    const isPassword = apiKeyInput.type === 'password';
+    apiKeyInput.type = isPassword ? 'text' : 'password';
+    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+  });
+
+  let widgetHtml = '';
+
+  function escapeJsString(s) {
+    return String(s).replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // The widget script template. Provider call logic mirrors the direct-call
+  // patterns already used elsewhere in MigaBuilder (Clip Forge / Slide Forge),
+  // just running standalone with no proxy since this ships on a third-party site.
+  function buildWidgetScript(cfg) {
+    return `
+(function(){
+  "use strict";
+  var CFG = {
+    provider: "${cfg.provider}",
+    apiKey: "${escapeJsString(cfg.apiKey)}",
+    bizName: "${escapeJsString(cfg.bizName)}",
+    bizDesc: "${escapeJsString(cfg.bizDesc)}",
+    knowledge: "${escapeJsString(cfg.knowledge)}",
+    title: "${escapeJsString(cfg.title)}",
+    avatar: "${escapeJsString(cfg.avatar)}",
+    welcome: "${escapeJsString(cfg.welcome)}",
+    color: "${cfg.color}",
+    position: "${cfg.position}"
+  };
+  var SYSTEM_PROMPT = "You are a helpful assistant for " + (CFG.bizName || "this business") + ". " +
+    (CFG.bizDesc ? "About the business: " + CFG.bizDesc + " " : "") +
+    "Answer visitor questions using ONLY this information: " + CFG.knowledge + " " +
+    "If asked something you can't answer from that information, say you're not sure and suggest contacting the business directly. Keep answers short and friendly.";
+
+  var history = [];
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) { if (k === "style") e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    (children || []).forEach(function (c) { e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+
+  var side = CFG.position === "left" ? "left:20px;" : "right:20px;";
+  var root = el("div", { style: "position:fixed;bottom:20px;" + side + "z-index:999999;font-family:system-ui,sans-serif;" });
+
+  var bubble = el("button", {
+    style: "width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:" + CFG.color + ";color:#fff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.25);"
+  }, [CFG.avatar]);
+
+  var panel = el("div", {
+    style: "display:none;position:absolute;bottom:66px;" + (CFG.position === "left" ? "left:0;" : "right:0;") +
+      "width:320px;max-width:90vw;height:420px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.3);flex-direction:column;overflow:hidden;"
+  });
+  var head = el("div", { style: "background:" + CFG.color + ";color:#fff;padding:14px 16px;font-weight:600;font-size:14px;" }, [CFG.title]);
+  var messages = el("div", { style: "flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;" });
+  var inputRow = el("div", { style: "display:flex;border-top:1px solid #eee;" });
+  var input = el("input", { type: "text", placeholder: "Type a message…", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
+  var sendBtn = el("button", { style: "border:none;background:" + CFG.color + ";color:#fff;padding:0 16px;cursor:pointer;font-size:13.5px;" }, ["Send"]);
+  inputRow.appendChild(input); inputRow.appendChild(sendBtn);
+  panel.appendChild(head); panel.appendChild(messages); panel.appendChild(inputRow);
+  root.appendChild(panel); root.appendChild(bubble);
+  document.body.appendChild(root);
+
+  function addMessage(text, who) {
+    var bubbleEl = el("div", {
+      style: "max-width:82%;padding:8px 11px;border-radius:10px;line-height:1.4;" +
+        (who === "user" ? "align-self:flex-end;background:" + CFG.color + ";color:#fff;" : "align-self:flex-start;background:#f0f0f0;color:#222;")
+    }, [text]);
+    messages.appendChild(bubbleEl);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  var opened = false;
+  bubble.addEventListener("click", function () {
+    opened = !opened;
+    panel.style.display = opened ? "flex" : "none";
+    if (opened && !messages.childNodes.length) addMessage(CFG.welcome, "bot");
+  });
+
+  function stripFence(t) {
+    var m = t.trim().match(/^\`\`\`(?:json|text)?\\s*([\\s\\S]*?)\\s*\`\`\`$/i);
+    return (m ? m[1] : t).trim();
+  }
+
+  async function callGemini(userText) {
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + encodeURIComponent(CFG.apiKey);
+    var contents = history.concat([{ role: "user", parts: [{ text: userText }] }]);
+    var res = await fetch(url, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents: contents })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var cand = data.candidates && data.candidates[0];
+    var raw = cand && cand.content && cand.content.parts && cand.content.parts[0] ? cand.content.parts[0].text : "";
+    history.push({ role: "user", parts: [{ text: userText }] });
+    history.push({ role: "model", parts: [{ text: raw }] });
+    return stripFence(raw || "Sorry, I didn't catch that.");
+  }
+
+  async function callOpenAI(userText) {
+    var msgs = [{ role: "system", content: SYSTEM_PROMPT }].concat(history, [{ role: "user", content: userText }]);
+    var res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + CFG.apiKey },
+      body: JSON.stringify({ model: "gpt-4o-mini", messages: msgs, temperature: 0.5 })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "";
+    history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
+    return stripFence(raw || "Sorry, I didn't catch that.");
+  }
+
+  async function callAnthropic(userText) {
+    var msgs = history.concat([{ role: "user", content: userText }]);
+    var res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": CFG.apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 400, system: SYSTEM_PROMPT, messages: msgs })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var block = data.content && data.content.filter(function(b){return b.type === "text";})[0];
+    var raw = block ? block.text : "";
+    history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
+    return stripFence(raw || "Sorry, I didn't catch that.");
+  }
+
+  async function handleSend() {
+    var text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    addMessage(text, "user");
+    var thinking = el("div", { style: "align-self:flex-start;background:#f0f0f0;color:#888;padding:8px 11px;border-radius:10px;font-size:13px;" }, ["…"]);
+    messages.appendChild(thinking); messages.scrollTop = messages.scrollHeight;
+    try {
+      var reply;
+      if (CFG.provider === "openai") reply = await callOpenAI(text);
+      else if (CFG.provider === "anthropic") reply = await callAnthropic(text);
+      else reply = await callGemini(text);
+      thinking.remove();
+      addMessage(reply, "bot");
+    } catch (err) {
+      thinking.remove();
+      addMessage("Sorry, something went wrong: " + err.message, "bot");
+    }
+  }
+  sendBtn.addEventListener("click", handleSend);
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter") handleSend(); });
+})();
+`;
+  }
+
+  function buildEmbedFile(cfg) {
+    return '<' + 'script>\n' + buildWidgetScript(cfg) + '\n</' + 'script>\n' +
+      '<!-- Generated by Bot Forge (migabuilder.com). Paste this right before </body>. -->';
+  }
+
+  function readConfig() {
+    return {
+      provider: providerSelect.value,
+      apiKey: apiKeyInput.value.trim(),
+      bizName: bizName.value.trim(),
+      bizDesc: bizDesc.value.trim(),
+      knowledge: knowledge.value.trim(),
+      title: botTitle.value.trim() || 'Chat with us',
+      avatar: botAvatar.value.trim() || '💬',
+      welcome: welcomeMsg.value.trim() || 'Hi! How can I help?',
+      color: themeColor.value,
+      position: positionSelect.value
+    };
+  }
+
+  buildBtn.addEventListener('click', function () {
+    clearError();
+    const cfg = readConfig();
+    if (!cfg.apiKey) { showError('Add your API key first.'); return; }
+    if (!cfg.knowledge) { showError('Add at least some info the bot should know.'); return; }
+
+    widgetHtml = buildEmbedFile(cfg);
+
+    // Render the live preview inside an isolated iframe so the widget's own
+    // DOM/CSS never collides with this page's, and so testing it here is a
+    // true test of the exact code that gets copied out.
+    widgetMount.innerHTML = '';
+    const frame = document.createElement('iframe');
+    frame.style.cssText = 'width:100%;height:100%;border:0;';
+    widgetMount.appendChild(frame);
+    const doc = frame.contentDocument;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;font-family:system-ui,sans-serif;color:#999;display:flex;align-items:center;justify-content:center;height:100vh;}</style></head><body>Your website content would appear here' + widgetHtml + '</body></html>');
+    doc.close();
+
+    titleBlockRight.textContent = 'WIDGET READY';
+    copyBtn.disabled = false;
+    downloadBtn.disabled = false;
+    showStatus('Widget built — try chatting with it on the right, then copy or download it for your site.');
+  });
+
+  copyBtn.addEventListener('click', async function () {
+    if (!widgetHtml) return;
+    try {
+      await navigator.clipboard.writeText(widgetHtml);
+      showStatus('Copied! Paste it right before </body> on your website.');
+    } catch (err) {
+      showError('Could not copy automatically — use Download instead.');
+    }
+  });
+
+  downloadBtn.addEventListener('click', function () {
+    if (!widgetHtml) return;
+    const blob = new Blob([widgetHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'embed-code.html';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+})();
+</script>
+</body>
+</html>
