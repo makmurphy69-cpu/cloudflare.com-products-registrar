@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+(function () {
+  try {
+    var url = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
+    var page = location.pathname.split('/').pop() || 'index.html';
+    var body = JSON.stringify({ page: page });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(url + '/hit', new Blob([body], { type: 'application/json' }));
+    } else {
+      fetch(url + '/hit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+    }
+  } catch (e) { /* visit counting must never break the page */ }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Site Visits — MigaBuilder</title>
+<meta name="description" content="Private visitor and page-view dashboard for MigaBuilder.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main { max-width: 900px; margin: 0 auto; padding: 12px clamp(20px, 4vw, 48px) 56px; }
+
+  .key-card {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 24px;
+  }
+  .key-card label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .key-row { display: flex; gap: 8px; }
+  .key-row input { flex: 1; font-size: 14px; padding: 9px 10px; border: 1px solid rgba(22,32,43,0.28); border-radius: var(--radius); background: #fff; color: var(--ink); }
+  .key-row button {
+    background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 14px; padding: 0 18px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .key-row button:hover:not(:disabled) { filter: brightness(1.06); }
+  .key-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .key-card .hint { font-size: 12.5px; color: rgba(22,32,43,0.62); margin: 8px 0 0; line-height: 1.45; }
+
+  .error-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+
+  .stats-wrap { display: none; }
+  .stats-wrap.show { display: block; }
+
+  .stat-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .stat-tile {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .stat-tile .stat-value { font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; color: var(--paper); }
+  .stat-tile .stat-label { font-size: 12.5px; color: rgba(237,234,224,0.6); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .panel-block {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px 20px; margin-bottom: 20px;
+  }
+  .panel-block h2 { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; margin: 0 0 14px; color: rgba(237,234,224,0.85); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  .day-row { display: grid; grid-template-columns: 76px 1fr 40px; gap: 10px; align-items: center; font-size: 12px; margin-bottom: 7px; }
+  .day-row .day-label { color: rgba(237,234,224,0.6); font-family: 'IBM Plex Mono', monospace; }
+  .day-row .bar-track { background: rgba(237,234,224,0.1); border-radius: 3px; height: 14px; overflow: hidden; }
+  .day-row .bar-fill { height: 100%; background: var(--line-cyan); border-radius: 3px; }
+  .day-row .bar-fill.uniques { background: var(--amber); }
+  .day-row .day-count { text-align: right; color: rgba(237,234,224,0.85); font-family: 'IBM Plex Mono', monospace; }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: rgba(237,234,224,0.6); margin-bottom: 12px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .legend .dot.views { background: var(--line-cyan); }
+  .legend .dot.uniques { background: var(--amber); }
+
+  table.pages-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.pages-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: rgba(237,234,224,0.5); padding: 0 0 8px; font-weight: 600; }
+  table.pages-table td { padding: 7px 0; border-top: 1px solid var(--line-cyan-dim); color: rgba(237,234,224,0.9); }
+  table.pages-table td.num { text-align: right; font-family: 'IBM Plex Mono', monospace; }
+  .pages-empty { font-size: 13px; color: rgba(237,234,224,0.5); padding: 6px 0; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Site Visits</h1>
+    <p>Private page-view and visitor dashboard — not linked from the site.</p>
+  </div>
+</header>
+
+<main>
+  <div class="key-card">
+    <label for="statsKeyInput">Stats key</label>
+    <div class="key-row">
+      <input type="password" id="statsKeyInput" placeholder="the STATS_KEY you set on the Worker" autocomplete="off">
+      <button type="button" id="loadStatsBtn">Load stats</button>
+    </div>
+    <p class="hint">Saved only in this browser's local storage, and sent only to your own Worker over HTTPS to unlock the /stats endpoint.</p>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="stats-wrap" id="statsWrap">
+    <div class="stat-tiles">
+      <div class="stat-tile"><div class="stat-value" id="totalViewsValue">0</div><div class="stat-label">Total page views</div></div>
+      <div class="stat-tile"><div class="stat-value" id="totalUniquesValue">0</div><div class="stat-label">Total unique visitors</div></div>
+    </div>
+
+    <div class="panel-block">
+      <h2>Last 14 days</h2>
+      <div class="legend">
+        <span><span class="dot views"></span>Page views</span>
+        <span><span class="dot uniques"></span>Unique visitors</span>
+      </div>
+      <div id="daysList"></div>
+    </div>
+
+    <div class="panel-block">
+      <h2>Most-viewed pages</h2>
+      <table class="pages-table" id="pagesTable" style="display:none;">
+        <thead><tr><th>Page</th><th style="text-align:right;">Views</th></tr></thead>
+        <tbody id="pagesTableBody"></tbody>
+      </table>
+      <p class="pages-empty" id="pagesEmpty">No views recorded yet.</p>
+    </div>
+  </div>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Visitor counting is cookie-free and privacy-friendly — see <a href="https://github.com/makmurphy69-cpu/cloudflare.com-products-registrar/blob/main/cloudflare-worker/visits-counter.js" target="_blank" rel="noopener">visits-counter.js</a> for exactly what it records.</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const statsKeyInput = document.getElementById('statsKeyInput');
+  const loadStatsBtn = document.getElementById('loadStatsBtn');
+  const errorBox = document.getElementById('errorBox');
+  const statsWrap = document.getElementById('statsWrap');
+  const totalViewsValue = document.getElementById('totalViewsValue');
+  const totalUniquesValue = document.getElementById('totalUniquesValue');
+  const daysList = document.getElementById('daysList');
+  const pagesTable = document.getElementById('pagesTable');
+  const pagesTableBody = document.getElementById('pagesTableBody');
+  const pagesEmpty = document.getElementById('pagesEmpty');
+
+  const VISITS_URL = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
+  const STORAGE_KEY = 'migabuilderVisitsStatsKey';
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function formatNumber(n) { return (n || 0).toLocaleString(); }
+
+  function renderDays(viewsByDay, uniquesByDay) {
+    daysList.innerHTML = '';
+    const maxViews = Math.max(1, ...viewsByDay.map(d => d.views));
+    viewsByDay.forEach((d, i) => {
+      const uniques = (uniquesByDay[i] && uniquesByDay[i].visitors) || 0;
+      const viewsRow = document.createElement('div');
+      viewsRow.className = 'day-row';
+      viewsRow.innerHTML =
+        '<span class="day-label">' + d.day + '</span>' +
+        '<span class="bar-track"><span class="bar-fill" style="width:' + Math.round((d.views / maxViews) * 100) + '%;"></span></span>' +
+        '<span class="day-count">' + formatNumber(d.views) + '</span>';
+      daysList.appendChild(viewsRow);
+      const uniqueRow = document.createElement('div');
+      uniqueRow.className = 'day-row';
+      uniqueRow.style.marginBottom = '14px';
+      uniqueRow.innerHTML =
+        '<span class="day-label"></span>' +
+        '<span class="bar-track"><span class="bar-fill uniques" style="width:' + Math.round((uniques / maxViews) * 100) + '%;"></span></span>' +
+        '<span class="day-count">' + formatNumber(uniques) + '</span>';
+      daysList.appendChild(uniqueRow);
+    });
+  }
+
+  function renderPages(topPages) {
+    pagesTableBody.innerHTML = '';
+    if (!topPages.length) {
+      pagesTable.style.display = 'none';
+      pagesEmpty.style.display = 'block';
+      return;
+    }
+    pagesTable.style.display = 'table';
+    pagesEmpty.style.display = 'none';
+    topPages.slice(0, 25).forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td>' + p.page.replace(/</g, '&lt;') + '</td><td class="num">' + formatNumber(p.views) + '</td>';
+      pagesTableBody.appendChild(row);
+    });
+  }
+
+  async function loadStats(key) {
+    clearError();
+    loadStatsBtn.disabled = true;
+    loadStatsBtn.textContent = 'Loading…';
+    try {
+      const response = await fetch(VISITS_URL + '/stats?key=' + encodeURIComponent(key));
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error((body && body.error) || ('Request failed with status ' + response.status));
+      }
+      const data = await response.json();
+      totalViewsValue.textContent = formatNumber(data.totalViews);
+      totalUniquesValue.textContent = formatNumber(data.totalUniqueVisitors);
+      renderDays(data.viewsByDay || [], data.uniquesByDay || []);
+      renderPages(data.topPages || []);
+      statsWrap.classList.add('show');
+      try { localStorage.setItem(STORAGE_KEY, key); } catch (e) { /* private browsing or storage disabled — not essential */ }
+    } catch (err) {
+      showError('Could not load stats: ' + err.message);
+      statsWrap.classList.remove('show');
+    } finally {
+      loadStatsBtn.disabled = false;
+      loadStatsBtn.textContent = 'Load stats';
+    }
+  }
+
+  loadStatsBtn.addEventListener('click', function () {
+    const key = statsKeyInput.value.trim();
+    if (!key) { showError('Enter the stats key first.'); return; }
+    loadStats(key);
+  });
+  statsKeyInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') loadStatsBtn.click();
+  });
+
+  try {
+    const savedKey = localStorage.getItem(STORAGE_KEY);
+    if (savedKey) {
+      statsKeyInput.value = savedKey;
+      loadStats(savedKey);
+    }
+  } catch (e) { /* private browsing or storage disabled — not essential */ }
+})();
+</script>
+</body>
+</html>

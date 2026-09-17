@@ -118,3 +118,41 @@ Two things worth knowing:
 - Submitted feedback is genuinely public — it's a real GitHub issue anyone
   can read, comment on, or react to. Don't put anything in the form you
   wouldn't want visible on a public issue tracker.
+
+# Visit counter — deploy steps
+
+Every page on the site sends a tiny, cookie-free beacon to this Worker on
+load; it tallies page views and an approximate unique-visitor count in KV,
+and `visits.html` reads it back as a private dashboard (not linked from
+anywhere on the site — bookmark the URL yourself).
+
+1. Go to https://dash.cloudflare.com → **Workers & Pages** → **Create** →
+   **Create Worker**. Give it a name — it **must be `migabuilder-visits`**
+   (or, if you use a different name, you'll need to update the URL in every
+   page — see step 6) — and **Deploy** to create the placeholder.
+2. Click **Edit code**. Delete the sample code and paste in the contents of
+   `visits-counter.js` from this folder. Click **Deploy**.
+3. Go to the Worker's **Settings → Bindings** → **Add binding** →
+   **KV Namespace**. Create a new namespace (e.g. `VISITS_KV`) and bind it
+   to the variable name `VISITS_KV`. Save.
+4. Still under **Settings**, add a regular **variable** (not a secret, but
+   either works) named `STATS_KEY` — make up any hard-to-guess string. This
+   is the password `visits.html` asks for before showing any numbers.
+5. Copy the Worker's URL (shown at the top of its page, looks like
+   `https://migabuilder-visits.<your-subdomain>.workers.dev`).
+6. If your Worker's URL doesn't exactly match
+   `https://migabuilder-visits.makmurphy69.workers.dev` (i.e. you used a
+   different name or subdomain), replace that URL everywhere it appears —
+   it's the same one-line snippet repeated near the top of every page's
+   `<head>`, plus once in `visits.html`. A quick way: search the repo for
+   `migabuilder-visits.makmurphy69.workers.dev` and replace all matches.
+7. Also update `ALLOWED_ORIGINS` at the top of `visits-counter.js` if your
+   site isn't served from `migabuilder.com` / `www.migabuilder.com`.
+8. Open `visits.html` on your live site and enter the `STATS_KEY` from
+   step 4 to see real numbers as they come in.
+9. Commit and push.
+
+This runs entirely on Cloudflare's free plan. Privacy notes: no cookies, no
+fingerprinting, and no IP address is ever stored — each visit is hashed
+(IP + day + a fixed salt) purely to dedupe repeat same-day visits, and that
+hash expires from KV after about a day on its own.
