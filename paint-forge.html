@@ -227,6 +227,17 @@
       <button type="button" class="draft-btn secondary" id="deleteLayerBtn">✕ Delete</button>
     </div>
 
+    <div class="section-title">Transform (active layer)</div>
+    <div class="btn-row" style="margin-bottom:6px;">
+      <button type="button" class="draft-btn secondary" id="flipHBtn">⇋ Flip H</button>
+      <button type="button" class="draft-btn secondary" id="flipVBtn">⇵ Flip V</button>
+    </div>
+    <div class="btn-row">
+      <button type="button" class="draft-btn secondary" id="rotateCcwBtn">↺ Rotate CCW</button>
+      <button type="button" class="draft-btn secondary" id="rotateCwBtn">↻ Rotate CW</button>
+    </div>
+    <p class="field hint">Affects the active layer's pixels in place — content that no longer fits the frame is cropped.</p>
+
     <div class="section-title">Adjustments (active layer)</div>
     <div class="field">
       <label>Brightness <span id="brightnessVal">0</span></label>
@@ -450,7 +461,8 @@
     { id: 'fill', label: 'Fill', icon: '🪣' },
     { id: 'text', label: 'Text', icon: '🔤' },
     { id: 'eyedropper', label: 'Eyedrop', icon: '💧' },
-    { id: 'select', label: 'Select', icon: '⬚' }
+    { id: 'select', label: 'Select', icon: '⬚' },
+    { id: 'move', label: 'Move', icon: '✥' }
   ];
   const toolGrid = document.getElementById('toolGrid');
   TOOLS.forEach(t => {
@@ -530,6 +542,11 @@
       hint.className = 'hint';
       hint.textContent = 'Click anywhere on the canvas to pick that color.';
       toolOptionsEl.appendChild(hint);
+    } else if (currentTool === 'move') {
+      const hint = document.createElement('p');
+      hint.className = 'hint';
+      hint.textContent = 'Drag on the canvas to reposition the active layer\'s pixels.';
+      toolOptionsEl.appendChild(hint);
     } else if (currentTool === 'select') {
       const hint = document.createElement('p');
       hint.className = 'hint';
@@ -576,6 +593,7 @@
   let isDrawing = false;
   let lastPoint = null;
   let dragStart = null;
+  let moveSnapshot = null;
 
   function softBrushStamp(ctx, x, y, size, color, opacity, hardness) {
     const r = size / 2;
@@ -645,6 +663,15 @@
       overlayDraw = null;
       return;
     }
+    if (currentTool === 'move') {
+      pushHistory();
+      isDrawing = true;
+      dragStart = pos;
+      moveSnapshot = document.createElement('canvas');
+      moveSnapshot.width = canvasWidth; moveSnapshot.height = canvasHeight;
+      moveSnapshot.getContext('2d').drawImage(layer.canvas, 0, 0);
+      return;
+    }
 
     // brush / eraser / line / rect / ellipse
     pushHistory();
@@ -694,6 +721,11 @@
       const x = Math.min(dragStart.x, pos.x), y = Math.min(dragStart.y, pos.y), w = Math.abs(pos.x - dragStart.x), h = Math.abs(pos.y - dragStart.y);
       selection = { x, y, w, h };
       renderComposite();
+    } else if (currentTool === 'move' && moveSnapshot) {
+      const dx = pos.x - dragStart.x, dy = pos.y - dragStart.y;
+      layer.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      layer.ctx.drawImage(moveSnapshot, dx, dy);
+      renderComposite();
     }
   });
 
@@ -729,6 +761,9 @@
       renderLayersList();
     } else if (currentTool === 'select') {
       renderComposite();
+    } else if (currentTool === 'move') {
+      moveSnapshot = null;
+      renderLayersList();
     }
     dragStart = null; lastPoint = null;
   });
@@ -899,6 +934,59 @@
     layers.splice(activeLayerIndex, 1);
     activeLayerIndex = activeLayerIndex - 1;
     renderLayersList(); renderComposite();
+  });
+
+  // ================= transform (active layer) =================
+  function transformActiveLayer(type) {
+    const layer = activeLayer();
+    if (!layer) return;
+    pushHistory();
+    const scratch = document.createElement('canvas');
+    scratch.width = canvasWidth; scratch.height = canvasHeight;
+    const sctx = scratch.getContext('2d');
+    sctx.save();
+    if (type === 'flipH') { sctx.translate(canvasWidth, 0); sctx.scale(-1, 1); }
+    else if (type === 'flipV') { sctx.translate(0, canvasHeight); sctx.scale(1, -1); }
+    else if (type === 'rotateCW' || type === 'rotateCCW') {
+      sctx.translate(canvasWidth / 2, canvasHeight / 2);
+      sctx.rotate((type === 'rotateCW' ? 1 : -1) * Math.PI / 2);
+      sctx.translate(-canvasWidth / 2, -canvasHeight / 2);
+    }
+    sctx.drawImage(layer.canvas, 0, 0);
+    sctx.restore();
+    layer.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    layer.ctx.drawImage(scratch, 0, 0);
+    renderLayersList(); renderComposite();
+  }
+  document.getElementById('flipHBtn').addEventListener('click', () => transformActiveLayer('flipH'));
+  document.getElementById('flipVBtn').addEventListener('click', () => transformActiveLayer('flipV'));
+  document.getElementById('rotateCwBtn').addEventListener('click', () => transformActiveLayer('rotateCW'));
+  document.getElementById('rotateCcwBtn').addEventListener('click', () => transformActiveLayer('rotateCCW'));
+
+  // ================= keyboard shortcuts =================
+  document.addEventListener('keydown', function (e) {
+    const tag = document.activeElement && document.activeElement.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      document.getElementById('undoBtn').click();
+    } else if ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'y' || (e.shiftKey && e.key.toLowerCase() === 'z'))) {
+      e.preventDefault();
+      document.getElementById('redoBtn').click();
+    } else if (e.key === '[') {
+      brushSize = Math.max(1, brushSize - (e.shiftKey ? 10 : 2));
+      renderToolOptions();
+    } else if (e.key === ']') {
+      brushSize = Math.min(200, brushSize + (e.shiftKey ? 10 : 2));
+      renderToolOptions();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (currentTool === 'select' && selection && selection.w >= 1 && selection.h >= 1) {
+        e.preventDefault();
+        selectionAction('Delete');
+      } else {
+        e.preventDefault();
+      }
+    }
   });
 
   // ================= adjustments/filters =================
