@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Record Forge — screen recording with voice narration</title>
+<meta name="description" content="Record your screen with live voice narration, right in your browser. Trim it, save it, or upload it straight to YouTube — then combine it with other clips in Merge Forge.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Record Forge — screen recording with voice narration">
+<meta property="og:description" content="Record your screen with live voice narration, right in your browser. Trim it, save it, or upload it straight to YouTube — then combine it with other clips in Merge Forge.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/record-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/record-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Record Forge — screen recording with voice narration">
+<meta name="twitter:description" content="Record your screen with live voice narration, right in your browser. Trim it, save it, or upload it straight to YouTube — then combine it with other clips in Merge Forge.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/record-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+  :root {
+    --navy: #0E2A47;
+    --navy-deep: #081826;
+    --paper: #EDEAE0;
+    --paper-dim: #E2DECE;
+    --ink: #16202B;
+    --line-cyan: #6FD1E0;
+    --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B;
+    --amber-ink: #4A3410;
+    --success: #4E9E73;
+    --error: #D8604A;
+    --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(320px, 400px) 1fr;
+    gap: 24px;
+    padding: 28px clamp(20px, 4vw, 48px) 56px;
+    align-items: start;
+  }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius);
+    padding: 22px 22px 26px; max-height: calc(100vh - 40px); overflow-y: auto;
+    position: sticky; top: 20px;
+  }
+  @media (max-width: 900px) { .panel { position: static; max-height: none; } }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { font-size: 12.5px; color: rgba(22, 32, 43, 0.62); margin-top: 6px; line-height: 1.45; }
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  input[type="text"], input[type="number"], textarea, select {
+    width: 100%; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; padding: 9px 10px;
+    border: 1px solid rgba(22, 32, 43, 0.28); border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+  .check-row { display: flex; align-items: flex-start; gap: 9px; font-size: 13.5px; cursor: pointer; margin-bottom: 12px; }
+  .check-row input { margin-top: 3px; flex: none; width: auto; }
+  .check-row .opt-sub { display: block; font-weight: 400; font-size: 12px; color: rgba(22, 32, 43, 0.6); margin-top: 2px; }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 15px; padding: 12px; cursor: pointer; transition: filter 0.15s ease;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .draft-btn.danger { background: var(--error); color: #fff; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .draft-btn { flex: 1; }
+
+  .error-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 13px; color: #6E2418; display: none; line-height: 1.5;
+  }
+  .error-box.show { display: block; }
+  .status-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 13px; color: #244731; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+
+  .rec-status { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-top: 4px; }
+  .rec-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(22,32,43,0.25); flex: none; }
+  .rec-status.live .rec-dot { background: var(--error); animation: pulse 1.4s ease-in-out infinite; }
+  .rec-status.paused .rec-dot { background: var(--amber); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .stage-wrap { background: #000; border-radius: 2px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  #liveView, #resultVideo { width: 100%; height: auto; display: block; max-height: 62vh; }
+  .sheet-empty { margin: auto; text-align: center; color: rgba(237,234,224,0.45); font-size: 14px; max-width: 340px; padding: 40px 20px; }
+  .sheet-empty strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 17px; color: rgba(237,234,224,0.75); margin-bottom: 6px; }
+
+  .progress-wrap { margin-top: 14px; display: none; }
+  .progress-wrap.show { display: block; }
+  .progress-label { font-size: 12.5px; color: rgba(237,234,224,0.7); margin-bottom: 6px; display:flex; justify-content:space-between; }
+  .progress-track { height: 8px; border-radius: 4px; background: rgba(237,234,224,0.15); overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--line-cyan); transition: width 0.1s linear; }
+
+  .table-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .table-actions button {
+    background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 9px 14px; font-size: 13px; cursor: pointer;
+  }
+  .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
+  .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
+
+  .trim-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-cyan-dim); display: none; }
+  .trim-section.show { display: block; }
+  .trim-section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 14px; margin: 0 0 10px; color: rgba(237,234,224,0.9); }
+  .trim-section label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; color: rgba(237,234,224,0.85); }
+  .trim-section input { font-size: 13.5px; padding: 8px 10px; border-radius: var(--radius); border: 1px solid var(--line-cyan-dim); background: var(--navy); color: var(--paper); width: 100%; }
+  .trim-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .trim-hint { font-size: 12px; color: rgba(237,234,224,0.55); line-height: 1.5; margin-top: 4px; }
+
+  .yt-panel { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-cyan-dim); }
+  .yt-panel h2 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin: 0 0 10px; color: rgba(237,234,224,0.9); }
+  .yt-field { margin-bottom: 12px; }
+  .yt-field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; color: rgba(237,234,224,0.85); }
+  .yt-field input, .yt-field textarea, .yt-field select {
+    width: 100%; font-size: 13.5px; padding: 8px 10px; border-radius: var(--radius);
+    border: 1px solid var(--line-cyan-dim); background: var(--navy); color: var(--paper);
+  }
+  .yt-hint { font-size: 12px; color: rgba(237,234,224,0.55); line-height: 1.5; margin-top: 4px; }
+  .yt-hint a { color: var(--line-cyan); }
+  details.yt-setup summary { cursor: pointer; color: var(--paper); font-weight: 600; font-size: 13.5px; margin-bottom: 8px; }
+  details.yt-setup ol { margin: 10px 0 0; padding-left: 20px; line-height: 1.7; color: rgba(237,234,224,0.75); font-size: 13px; }
+  details.yt-setup code { background: rgba(237,234,224,0.1); padding: 1px 5px; border-radius: 3px; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Record Forge</h1>
+    <p>Record your screen with live voice narration — trim it, save it, or send it straight to YouTube.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+
+    <div class="section-title">Capture options</div>
+    <label class="check-row">
+      <input type="checkbox" id="micCheckbox" checked>
+      <span>🎙️ Record my voice while capturing
+        <span class="opt-sub">Narrate what you're doing as you record — your microphone is mixed into the video's audio track.</span>
+      </span>
+    </label>
+    <label class="check-row">
+      <input type="checkbox" id="sysAudioCheckbox">
+      <span>🔊 Include tab/system audio
+        <span class="opt-sub">Only works if you choose to share a browser tab (and check "Share tab audio" in the picker) — whole-desktop audio isn't supported on every OS.</span>
+      </span>
+    </label>
+    <p class="hint" style="margin: 0 0 14px;">When you click Start, your browser will ask which screen, window, or tab to share.</p>
+
+    <button type="button" class="draft-btn" id="startBtn">🔴 Start recording</button>
+    <div class="btn-row" id="activeControls" style="display:none; margin-top:8px;">
+      <button type="button" class="draft-btn secondary" id="pauseBtn">⏸ Pause</button>
+      <button type="button" class="draft-btn danger" id="stopBtn">⏹ Stop</button>
+    </div>
+    <div class="rec-status" id="recStatus" style="display:none;"><span class="rec-dot"></span><span id="recStatusText">00:00</span></div>
+    <div class="error-box" id="errorBox"></div>
+
+    <div class="section-title">Trim</div>
+    <p class="hint" id="trimPlaceholderHint">Record something first, then trim it here.</p>
+    <div id="trimControlsWrap" style="display:none;">
+      <div class="field">
+        <div class="row-2">
+          <div>
+            <label for="trimStartInput">Start (s)</label>
+            <input type="number" id="trimStartInput" value="0" min="0" step="0.1">
+            <button type="button" class="draft-btn secondary" id="setStartBtn" style="margin-top:6px;">Use current position</button>
+          </div>
+          <div>
+            <label for="trimEndInput">End (s)</label>
+            <input type="number" id="trimEndInput" value="0" min="0" step="0.1">
+            <button type="button" class="draft-btn secondary" id="setEndBtn" style="margin-top:6px;">Use current position</button>
+          </div>
+        </div>
+        <p class="hint">Play the recording on the right and pause where you want each point, then click "Use current position".</p>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="draft-btn secondary" id="applyTrimBtn">✂️ Apply trim</button>
+        <button type="button" class="draft-btn secondary" id="resetTrimBtn">↺ Reset</button>
+      </div>
+      <p class="hint">Need captions, translation, a watermark, or speed changes too? Download below, then open it in <a href="clip-forge.html" style="color:var(--navy);text-decoration:underline;">Clip Forge</a>. Combining several recordings into one video? Use <a href="merge-forge.html" style="color:var(--navy);text-decoration:underline;">Merge Forge</a> — it can patch multiple clips together and trim each one.</p>
+    </div>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>RECORD FORGE — PREVIEW</span>
+      <span id="titleBlockRight">NOT STARTED</span>
+    </div>
+
+    <div class="stage-wrap" id="stageWrap">
+      <div class="sheet-empty" id="stageEmpty">
+        <strong>Nothing recorded yet.</strong>
+        Choose your capture options on the left, then hit Start recording.
+      </div>
+      <video id="liveView" autoplay muted playsinline style="display:none;"></video>
+      <video id="resultVideo" controls style="display:none;"></video>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label"><span id="progressLabel">Working…</span><span id="progressPct">0%</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="table-actions">
+      <button type="button" id="cancelTrimBtn" style="display:none;">✕ Cancel</button>
+      <button type="button" id="downloadVideoBtn" disabled class="primary">⬇ Download recording (.webm)</button>
+    </div>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Recording happens live in your browser and never leaves it unless you use the YouTube button below. Screen recording needs a desktop browser (Chrome, Edge, or Firefox) — it isn't supported on mobile.</p>
+
+    <div class="yt-panel">
+      <h2>Upload straight to YouTube</h2>
+      <div class="yt-field">
+        <label for="ytClientId">Your Google OAuth Client ID</label>
+        <input type="text" id="ytClientId" placeholder="xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com">
+        <p class="yt-hint">This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Record Forge only sends it to Google, never anywhere else.</p>
+      </div>
+      <button type="button" class="draft-btn secondary" id="connectYtBtn">Connect Google account</button>
+      <div class="status-box" id="ytConnectedBox">✓ Connected to your Google account.</div>
+
+      <div id="ytUploadFields" style="display:none; margin-top:14px;">
+        <div class="yt-field"><label for="ytTitle">Video title</label><input type="text" id="ytTitle" placeholder="How to set up my project"></div>
+        <div class="yt-field"><label for="ytDesc">Description</label><textarea id="ytDesc" placeholder="Screen recording made with Record Forge."></textarea></div>
+        <div class="yt-field"><label for="ytTags">Tags (comma separated)</label><input type="text" id="ytTags" placeholder="tutorial, screen recording, how-to"></div>
+        <div class="row-2" style="margin-bottom:12px;">
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytPrivacy">Privacy</label>
+            <select id="ytPrivacy">
+              <option value="private" selected>Private</option>
+              <option value="unlisted">Unlisted</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytCategory">Category</label>
+            <select id="ytCategory">
+              <option value="27" selected>Education</option>
+              <option value="26">Howto &amp; Style</option>
+              <option value="28">Science &amp; Technology</option>
+              <option value="22">People &amp; Blogs</option>
+              <option value="24">Entertainment</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="draft-btn" id="uploadYtBtn" disabled>Upload to YouTube</button>
+        <p class="yt-hint">Record something first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.</p>
+      </div>
+      <div class="status-box" id="ytResultBox"></div>
+      <div class="error-box" id="ytErrorBox"></div>
+
+      <details class="yt-setup" style="margin-top:16px;">
+        <summary>One-time setup: get a Google OAuth Client ID (click to expand)</summary>
+        <ol>
+          <li>Go to the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, create (or pick) a project, and enable the <strong>YouTube Data API v3</strong>.</li>
+          <li>Under <strong>APIs &amp; Services → OAuth consent screen</strong>, set it up as "External", add the <code>youtube.upload</code> scope, and add your own Google account under "Test users" (this avoids needing Google's full app-verification review, since only you will use it).</li>
+          <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an <strong>OAuth client ID</strong> of type "Web application". Add the exact URL this page is running at (e.g. <code>https://your-username.github.io</code>) under "Authorized JavaScript origins".</li>
+          <li>Copy the generated Client ID (it ends in <code>.apps.googleusercontent.com</code>) into the field above.</li>
+          <li>Click "Connect Google account" and approve access — Google will warn that the app is unverified, which is expected for a personal project; click through as the test user you added.</li>
+        </ol>
+        <p class="yt-hint" style="margin-top:10px;">If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.</p>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your screen recording and microphone audio stay in your browser — nothing is uploaded unless you use the YouTube button, and that goes straight from your browser to your own Google account. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<video id="trimSourceVideo" style="display:none;" playsinline></video>
+<canvas id="trimCanvas" style="display:none;"></canvas>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- element refs ----------
+  const micCheckbox = document.getElementById('micCheckbox');
+  const sysAudioCheckbox = document.getElementById('sysAudioCheckbox');
+  const startBtn = document.getElementById('startBtn');
+  const activeControls = document.getElementById('activeControls');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const recStatus = document.getElementById('recStatus');
+  const recStatusText = document.getElementById('recStatusText');
+  const errorBox = document.getElementById('errorBox');
+
+  const trimPlaceholderHint = document.getElementById('trimPlaceholderHint');
+  const trimControlsWrap = document.getElementById('trimControlsWrap');
+  const trimStartInput = document.getElementById('trimStartInput');
+  const trimEndInput = document.getElementById('trimEndInput');
+  const setStartBtn = document.getElementById('setStartBtn');
+  const setEndBtn = document.getElementById('setEndBtn');
+  const applyTrimBtn = document.getElementById('applyTrimBtn');
+  const resetTrimBtn = document.getElementById('resetTrimBtn');
+
+  const titleBlockRight = document.getElementById('titleBlockRight');
+  const stageEmpty = document.getElementById('stageEmpty');
+  const liveView = document.getElementById('liveView');
+  const resultVideo = document.getElementById('resultVideo');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressPct = document.getElementById('progressPct');
+  const progressFill = document.getElementById('progressFill');
+  const cancelTrimBtn = document.getElementById('cancelTrimBtn');
+  const downloadVideoBtn = document.getElementById('downloadVideoBtn');
+
+  const trimSourceVideo = document.getElementById('trimSourceVideo');
+  const trimCanvas = document.getElementById('trimCanvas');
+  const trimCtx = trimCanvas.getContext('2d');
+
+  const ytClientId = document.getElementById('ytClientId');
+  const connectYtBtn = document.getElementById('connectYtBtn');
+  const ytConnectedBox = document.getElementById('ytConnectedBox');
+  const ytUploadFields = document.getElementById('ytUploadFields');
+  const ytTitle = document.getElementById('ytTitle');
+  const ytDesc = document.getElementById('ytDesc');
+  const ytTags = document.getElementById('ytTags');
+  const ytPrivacy = document.getElementById('ytPrivacy');
+  const ytCategory = document.getElementById('ytCategory');
+  const uploadYtBtn = document.getElementById('uploadYtBtn');
+  const ytResultBox = document.getElementById('ytResultBox');
+  const ytErrorBox = document.getElementById('ytErrorBox');
+
+  // ---------- state ----------
+  let displayStream = null;
+  let micStream = null;
+  let mixedStream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let rawBlob = null;       // the untouched original recording, for "Reset"
+  let exportBlob = null;    // current blob backing the preview/download/upload
+  let recordingDuration = 0;
+  let recordingSeconds = 0;
+  let timerInterval = null;
+  let isPaused = false;
+  let sharedAudioCtx = null;
+  let trimVideoSourceNode = null; // an element can only ever be wrapped once, so this is created lazily and reused
+  let trimState = null;
+  let accessToken = null;
+  let tokenClient = null;
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  function pickMimeType() {
+    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
+    return '';
+  }
+
+  function formatTime(totalSeconds) {
+    const m = Math.floor(totalSeconds / 60);
+    const s = Math.floor(totalSeconds % 60);
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function refreshUploadEnabled() {
+    uploadYtBtn.disabled = !(exportBlob && accessToken);
+  }
+
+  // Chromium's MediaRecorder output doesn't embed a duration in the WebM
+  // container, so a freshly recorded blob reports Infinity until the
+  // browser is forced to compute it by seeking past the end once.
+  function resolveVideoDuration(videoEl) {
+    return new Promise(function (resolve) {
+      if (isFinite(videoEl.duration)) { resolve(videoEl.duration); return; }
+      videoEl.ontimeupdate = function () {
+        videoEl.ontimeupdate = null;
+        videoEl.currentTime = 0;
+        resolve(isFinite(videoEl.duration) ? videoEl.duration : 0);
+      };
+      videoEl.currentTime = 1e101;
+    });
+  }
+
+  // ---------- recording ----------
+  function stopMediaTracks() {
+    if (displayStream) { displayStream.getTracks().forEach(t => t.stop()); displayStream = null; }
+    if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  }
+
+  startBtn.addEventListener('click', async function () {
+    clearError();
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      showError('Screen recording is not supported in this browser. Try the latest Chrome, Edge, or Firefox on desktop.');
+      return;
+    }
+    if (!window.MediaRecorder) {
+      showError('Your browser does not support MediaRecorder. Try the latest Chrome, Edge, or Firefox.');
+      return;
+    }
+    const mimeType = pickMimeType();
+    if (!mimeType) { showError('No supported recording format found in this browser.'); return; }
+
+    try {
+      displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { frameRate: { ideal: 30 }, cursor: 'always' },
+        audio: sysAudioCheckbox.checked
+      });
+    } catch (err) {
+      showError('Screen sharing was not started: ' + (err.message || err.name));
+      return;
+    }
+
+    if (micCheckbox.checked) {
+      try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        showError('Could not access your microphone (' + (err.message || err.name) + ') — recording without narration.');
+        micStream = null;
+      }
+    }
+
+    if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioCtx = sharedAudioCtx;
+    const dest = audioCtx.createMediaStreamDestination();
+    let hasAudio = false;
+    const sysAudioTracks = displayStream.getAudioTracks();
+    if (sysAudioTracks.length) {
+      const sysSource = audioCtx.createMediaStreamSource(new MediaStream([sysAudioTracks[0]]));
+      sysSource.connect(dest);
+      hasAudio = true;
+    }
+    if (micStream) {
+      const micSource = audioCtx.createMediaStreamSource(micStream);
+      micSource.connect(dest);
+      hasAudio = true;
+    }
+
+    const videoTrack = displayStream.getVideoTracks()[0];
+    const combinedTracks = [videoTrack];
+    if (hasAudio) combinedTracks.push(...dest.stream.getAudioTracks());
+    mixedStream = new MediaStream(combinedTracks);
+
+    videoTrack.onended = function () {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') stopRecording();
+    };
+
+    liveView.srcObject = mixedStream;
+    liveView.style.display = 'block';
+    stageEmpty.style.display = 'none';
+    resultVideo.style.display = 'none';
+    downloadVideoBtn.disabled = true;
+    trimControlsWrap.style.display = 'none';
+    trimPlaceholderHint.style.display = 'block';
+
+    recordedChunks = [];
+    mediaRecorder = new MediaRecorder(mixedStream, { mimeType, videoBitsPerSecond: 8000000 });
+    mediaRecorder.ondataavailable = function (e) { if (e.data.size) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = function () {
+      rawBlob = new Blob(recordedChunks, { type: 'video/webm' });
+      exportBlob = rawBlob;
+      showResult(exportBlob);
+      stopMediaTracks();
+    };
+    mediaRecorder.start(1000);
+
+    recordingSeconds = 0;
+    isPaused = false;
+    recStatusText.textContent = formatTime(0);
+    recStatus.style.display = 'flex';
+    recStatus.classList.add('live');
+    recStatus.classList.remove('paused');
+    timerInterval = setInterval(function () {
+      if (!isPaused) { recordingSeconds++; recStatusText.textContent = formatTime(recordingSeconds); }
+    }, 1000);
+
+    startBtn.style.display = 'none';
+    activeControls.style.display = 'flex';
+    pauseBtn.textContent = '⏸ Pause';
+    titleBlockRight.textContent = 'RECORDING';
+  });
+
+  pauseBtn.addEventListener('click', function () {
+    if (!mediaRecorder) return;
+    if (isPaused) {
+      mediaRecorder.resume();
+      isPaused = false;
+      pauseBtn.textContent = '⏸ Pause';
+      recStatus.classList.add('live');
+      recStatus.classList.remove('paused');
+      titleBlockRight.textContent = 'RECORDING';
+    } else {
+      mediaRecorder.pause();
+      isPaused = true;
+      pauseBtn.textContent = '▶ Resume';
+      recStatus.classList.remove('live');
+      recStatus.classList.add('paused');
+      titleBlockRight.textContent = 'PAUSED';
+    }
+  });
+
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    recStatus.style.display = 'none';
+    activeControls.style.display = 'none';
+    startBtn.style.display = 'block';
+    startBtn.textContent = '🔴 Start recording';
+  }
+  stopBtn.addEventListener('click', stopRecording);
+
+  function showResult(blob) {
+    liveView.style.display = 'none';
+    liveView.srcObject = null;
+    const url = URL.createObjectURL(blob);
+    resultVideo.src = url;
+    resultVideo.style.display = 'block';
+    downloadVideoBtn.disabled = false;
+    titleBlockRight.textContent = 'RECORDING SAVED';
+    refreshUploadEnabled();
+    resultVideo.onloadedmetadata = async function () {
+      recordingDuration = await resolveVideoDuration(resultVideo);
+      trimStartInput.value = '0';
+      trimEndInput.value = recordingDuration.toFixed(1);
+      trimPlaceholderHint.style.display = 'none';
+      trimControlsWrap.style.display = 'block';
+    };
+  }
+
+  setStartBtn.addEventListener('click', function () { trimStartInput.value = resultVideo.currentTime.toFixed(2); });
+  setEndBtn.addEventListener('click', function () { trimEndInput.value = resultVideo.currentTime.toFixed(2); });
+
+  resetTrimBtn.addEventListener('click', function () {
+    if (!rawBlob) return;
+    exportBlob = rawBlob;
+    const url = URL.createObjectURL(exportBlob);
+    resultVideo.src = url;
+    resultVideo.onloadedmetadata = async function () {
+      recordingDuration = await resolveVideoDuration(resultVideo);
+      trimStartInput.value = '0';
+      trimEndInput.value = recordingDuration.toFixed(1);
+    };
+    titleBlockRight.textContent = 'RECORDING SAVED';
+    refreshUploadEnabled();
+  });
+
+  // ---------- trim (re-encodes through a hidden canvas, same technique as Clip Forge) ----------
+  applyTrimBtn.addEventListener('click', async function () {
+    clearError();
+    if (!exportBlob) return;
+    const trimStart = Math.max(0, parseFloat(trimStartInput.value) || 0);
+    const trimEnd = Math.min(recordingDuration, parseFloat(trimEndInput.value) || recordingDuration);
+    if (trimEnd <= trimStart) { showError('The end point must be after the start point.'); return; }
+    if (trimStart <= 0.05 && trimEnd >= recordingDuration - 0.05) { showError('Adjust the start or end point first — there is nothing to trim.'); return; }
+    if (!window.MediaRecorder || !trimCanvas.captureStream) {
+      showError('Your browser does not support re-encoding video. Try the latest Chrome, Edge, or Firefox.');
+      return;
+    }
+    const mimeType = pickMimeType();
+    if (!mimeType) { showError('No supported video format found in this browser.'); return; }
+
+    resultVideo.pause();
+    trimSourceVideo.src = URL.createObjectURL(exportBlob);
+    await new Promise(function (resolve) { trimSourceVideo.onloadedmetadata = resolve; });
+    const cw = trimSourceVideo.videoWidth, ch = trimSourceVideo.videoHeight;
+    trimCanvas.width = cw; trimCanvas.height = ch;
+
+    if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioCtx = sharedAudioCtx;
+    const dest = audioCtx.createMediaStreamDestination();
+    if (!trimVideoSourceNode) trimVideoSourceNode = audioCtx.createMediaElementSource(trimSourceVideo);
+    trimVideoSourceNode.disconnect();
+    trimVideoSourceNode.connect(dest);
+    trimSourceVideo.muted = true;
+
+    const canvasStream = trimCanvas.captureStream(30);
+    const combined = new MediaStream([...canvasStream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+    const recorder = new MediaRecorder(combined, { mimeType, videoBitsPerSecond: 8000000 });
+    const chunks = [];
+    recorder.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+
+    applyTrimBtn.disabled = true;
+    resetTrimBtn.disabled = true;
+    cancelTrimBtn.style.display = 'inline-block';
+    progressWrap.classList.add('show');
+    progressLabel.textContent = 'Trimming…';
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+    titleBlockRight.textContent = 'TRIMMING';
+
+    let cancelled = false;
+    let rafId = null;
+    const outputDuration = trimEnd - trimStart;
+
+    function finish() {
+      progressWrap.classList.remove('show');
+      cancelTrimBtn.style.display = 'none';
+      applyTrimBtn.disabled = false;
+      resetTrimBtn.disabled = false;
+      trimVideoSourceNode.disconnect();
+      trimState = null;
+    }
+
+    recorder.onstop = function () {
+      if (rafId) cancelAnimationFrame(rafId);
+      trimSourceVideo.pause();
+      if (cancelled) { finish(); titleBlockRight.textContent = 'RECORDING SAVED'; return; }
+      exportBlob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(exportBlob);
+      resultVideo.src = url;
+      resultVideo.style.display = 'block';
+      recordingDuration = outputDuration;
+      trimStartInput.value = '0';
+      trimEndInput.value = recordingDuration.toFixed(1);
+      titleBlockRight.textContent = 'TRIM APPLIED';
+      refreshUploadEnabled();
+      finish();
+    };
+
+    function step() {
+      if (cancelled) { recorder.stop(); return; }
+      if (trimSourceVideo.currentTime >= trimEnd || trimSourceVideo.ended) { recorder.stop(); return; }
+      trimCtx.drawImage(trimSourceVideo, 0, 0, cw, ch);
+      const outT = trimSourceVideo.currentTime - trimStart;
+      const pct = Math.min(100, Math.round((outT / outputDuration) * 100));
+      progressFill.style.width = pct + '%';
+      progressPct.textContent = pct + '%';
+      rafId = requestAnimationFrame(step);
+    }
+
+    try {
+      trimSourceVideo.currentTime = trimStart;
+      await new Promise(function (resolve) { trimSourceVideo.onseeked = resolve; });
+      await trimSourceVideo.play();
+      recorder.start();
+      rafId = requestAnimationFrame(step);
+    } catch (err) {
+      showError('Could not start trimming: ' + err.message);
+      finish();
+      return;
+    }
+
+    trimState = { cancel: function () { cancelled = true; } };
+  });
+
+  cancelTrimBtn.addEventListener('click', function () { if (trimState) trimState.cancel(); });
+
+  downloadVideoBtn.addEventListener('click', function () {
+    if (!exportBlob) return;
+    const url = URL.createObjectURL(exportBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'record-forge.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  });
+
+  // ---------- YouTube upload (same flow as Video Forge) ----------
+  function showYtError(msg) { ytErrorBox.textContent = msg; ytErrorBox.classList.add('show'); }
+  function clearYtError() { ytErrorBox.textContent = ''; ytErrorBox.classList.remove('show'); }
+
+  function ensureTokenClient() {
+    if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
+    const clientId = ytClientId.value.trim();
+    if (!clientId) return null;
+    if (tokenClient && tokenClient.__clientId === clientId) return tokenClient;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/youtube.upload',
+      callback: function (resp) {
+        if (resp.error) { showYtError('Google sign-in failed: ' + resp.error); return; }
+        accessToken = resp.access_token;
+        clearYtError();
+        ytConnectedBox.classList.add('show');
+        ytUploadFields.style.display = 'block';
+        refreshUploadEnabled();
+      }
+    });
+    tokenClient.__clientId = clientId;
+    return tokenClient;
+  }
+
+  connectYtBtn.addEventListener('click', function () {
+    clearYtError();
+    if (!ytClientId.value.trim()) { showYtError('Paste your Google OAuth Client ID first — see the setup steps below.'); return; }
+    const client = ensureTokenClient();
+    if (!client) { showYtError("Google's sign-in library hasn't finished loading yet — wait a second and try again."); return; }
+    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+  });
+
+  uploadYtBtn.addEventListener('click', async function () {
+    clearYtError();
+    ytResultBox.classList.remove('show');
+    if (!exportBlob) { showYtError('Record something first.'); return; }
+    if (!accessToken) { showYtError('Connect your Google account first.'); return; }
+
+    const metadata = {
+      snippet: {
+        title: ytTitle.value.trim() || 'Record Forge upload',
+        description: ytDesc.value.trim(),
+        tags: ytTags.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
+        categoryId: ytCategory.value
+      },
+      status: { privacyStatus: ytPrivacy.value }
+    };
+
+    uploadYtBtn.disabled = true;
+    uploadYtBtn.textContent = 'Starting upload…';
+    progressWrap.classList.add('show');
+    progressLabel.textContent = 'Uploading to YouTube…';
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    try {
+      const initResp = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': exportBlob.type || 'video/webm',
+          'X-Upload-Content-Length': String(exportBlob.size)
+        },
+        body: JSON.stringify(metadata)
+      });
+      if (!initResp.ok) {
+        const errBody = await initResp.json().catch(function () { return null; });
+        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : ('Request failed with status ' + initResp.status);
+        throw new Error(msg);
+      }
+      const uploadUrl = initResp.headers.get('Location');
+      if (!uploadUrl) {
+        throw new Error('Google did not return an upload session URL — your browser or an extension may be blocking it. Try downloading the video and uploading it manually at studio.youtube.com instead.');
+      }
+
+      await new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', exportBlob.type || 'video/webm');
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+            progressPct.textContent = pct + '%';
+          }
+        };
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try { resolve(JSON.parse(xhr.responseText)); }
+            catch (e) { reject(new Error('Upload finished but the response could not be read.')); }
+          } else {
+            reject(new Error('Upload failed with status ' + xhr.status + ': ' + xhr.responseText));
+          }
+        };
+        xhr.onerror = function () { reject(new Error('A network error interrupted the upload — this can happen if a browser extension blocks requests to Google.')); };
+        xhr.send(exportBlob);
+      }).then(function (data) {
+        ytResultBox.innerHTML = '✓ Uploaded! <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">Watch it on YouTube</a> (' + (ytPrivacy.value === 'private' ? 'private — only you can see it' : ytPrivacy.value) + ').';
+        ytResultBox.classList.add('show');
+      });
+    } catch (err) {
+      showYtError(err.message || 'Upload failed.');
+    } finally {
+      uploadYtBtn.disabled = false;
+      uploadYtBtn.textContent = 'Upload to YouTube';
+      progressWrap.classList.remove('show');
+      refreshUploadEnabled();
+    }
+  });
+})();
+</script>
+</body>
+</html>
