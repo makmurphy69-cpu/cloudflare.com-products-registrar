@@ -214,6 +214,21 @@
       <label for="themeColor">Theme color</label>
       <input type="color" id="themeColor" value="#0E2A47">
     </div>
+    <div class="field" id="iconUploadField">
+      <label>App icon (optional)</label>
+      <input type="file" id="iconInput" accept="image/*" style="display:none;">
+      <label class="draft-btn secondary" for="iconInput" style="display:block;text-align:center;cursor:pointer;" id="iconUploadLabel">+ Upload an icon</label>
+      <div id="iconPreviewWrap" style="display:none;align-items:center;gap:8px;margin-top:8px;">
+        <img id="iconPreview" style="width:40px;height:40px;border-radius:8px;object-fit:cover;">
+        <button type="button" id="removeIconBtn" style="background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;font-size:12px;padding:0;">Remove</button>
+      </div>
+      <p class="hint">Leave blank to auto-generate a simple lettermark icon from the app name.</p>
+    </div>
+    <div class="field" id="packageIdField" style="display:none;">
+      <label for="packageId">Package / bundle ID</label>
+      <input type="text" id="packageId" placeholder="com.example.appname">
+      <p class="hint">The Android/iOS app identifier — pick something unique (reverse-domain style) before publishing. Leave blank to use com.example.&lt;app-slug&gt;.</p>
+    </div>
 
     <button type="button" class="draft-btn" id="generateBtn">✨ Generate app</button>
     <div class="error-box" id="errorBox"></div>
@@ -242,6 +257,7 @@
     </div>
 
     <div class="table-actions">
+      <button type="button" id="undoBtn" disabled>↶ Undo</button>
       <button type="button" id="downloadBtn" disabled class="primary">⬇ Download</button>
     </div>
     <p class="hint" id="modeHint" style="color: rgba(237,234,224,0.55); margin-top: 8px;"></p>
@@ -280,7 +296,10 @@
   const modeNote = document.getElementById('modeNote');
   const modeHint = document.getElementById('modeHint');
   const themeColorField = document.getElementById('themeColorField');
+  const packageIdField = document.getElementById('packageIdField');
+  const packageId = document.getElementById('packageId');
   const downloadBtn = document.getElementById('downloadBtn');
+  const undoBtn = document.getElementById('undoBtn');
 
   function setMode(mode) {
     currentMode = mode;
@@ -290,6 +309,7 @@
     modeNote.textContent = MODES[mode].note;
     modeHint.textContent = MODES[mode].hint;
     themeColorField.style.display = mode === 'utility' ? 'none' : 'block';
+    packageIdField.style.display = mode === 'mobile' ? 'block' : 'none';
     downloadBtn.textContent = mode === 'utility' ? '⬇ Download app.html' : '⬇ Download .zip';
   }
   modeWebBtn.addEventListener('click', () => setMode('web'));
@@ -435,6 +455,7 @@
   ].join('\n');
 
   let currentAppHtml = '';
+  let appHistory = [];
 
   function showPreview(html) {
     currentAppHtml = html;
@@ -443,6 +464,64 @@
     previewFrame.srcdoc = html;
     refineRow.style.display = 'flex';
     downloadBtn.disabled = false;
+  }
+
+  function pushHistory() {
+    if (!currentAppHtml) return;
+    appHistory.push(currentAppHtml);
+    undoBtn.disabled = false;
+  }
+  undoBtn.addEventListener('click', function () {
+    if (!appHistory.length) return;
+    showPreview(appHistory.pop());
+    undoBtn.disabled = !appHistory.length;
+    showStatus('Reverted to the previous version.');
+  });
+
+  // ================= icon upload =================
+  const iconInput = document.getElementById('iconInput');
+  const iconUploadLabel = document.getElementById('iconUploadLabel');
+  const iconPreviewWrap = document.getElementById('iconPreviewWrap');
+  const iconPreview = document.getElementById('iconPreview');
+  const removeIconBtn = document.getElementById('removeIconBtn');
+  let customIconDataUrl = '';
+
+  iconInput.addEventListener('change', function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      customIconDataUrl = reader.result;
+      iconPreview.src = customIconDataUrl;
+      iconPreviewWrap.style.display = 'flex';
+      iconUploadLabel.textContent = 'Replace icon';
+    };
+    reader.readAsDataURL(file);
+  });
+  removeIconBtn.addEventListener('click', function () {
+    customIconDataUrl = '';
+    iconInput.value = '';
+    iconPreviewWrap.style.display = 'none';
+    iconUploadLabel.textContent = '+ Upload an icon';
+  });
+
+  function loadImage(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Could not load the uploaded icon.'));
+      img.src = src;
+    });
+  }
+  async function resizeIconDataUrl(dataUrl, size) {
+    const img = await loadImage(dataUrl);
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const scale = Math.max(size / img.width, size / img.height);
+    const w = img.width * scale, h = img.height * scale;
+    ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+    return canvas.toDataURL('image/png');
   }
 
   async function generateApp() {
@@ -458,6 +537,7 @@
     try {
       const model = modelSelect.value;
       const html = await callChat(key, model, APP_RULES, brief);
+      pushHistory();
       showPreview(html);
       titleBlockRight.textContent = 'READY';
       showStatus('Built. Try it on the right, ask for changes below, or download it.');
@@ -491,6 +571,7 @@
     const userMsg = 'CURRENT APP HTML:\n' + currentAppHtml + '\n\nREQUESTED CHANGE:\n' + instruction;
     try {
       const html = await callChat(key, model, rules, userMsg);
+      pushHistory();
       showPreview(html);
       refineInput.value = '';
       showStatus('Updated.');
@@ -569,8 +650,8 @@
     downloadBtn.disabled = true;
     downloadBtn.textContent = 'Zipping…';
     try {
-      const icon192 = makeIconDataUrl(192, name, color);
-      const icon512 = makeIconDataUrl(512, name, color);
+      const icon192 = customIconDataUrl ? await resizeIconDataUrl(customIconDataUrl, 192) : makeIconDataUrl(192, name, color);
+      const icon512 = customIconDataUrl ? await resizeIconDataUrl(customIconDataUrl, 512) : makeIconDataUrl(512, name, color);
       const zip = new JSZip();
 
       if (currentMode === 'web') {
@@ -605,7 +686,8 @@
           dependencies: { '@capacitor/core': '^6.0.0', '@capacitor/android': '^6.0.0', '@capacitor/ios': '^6.0.0' },
           devDependencies: { '@capacitor/cli': '^6.0.0' }
         }, null, 2));
-        zip.file('capacitor.config.json', JSON.stringify({ appId: 'com.example.' + slug.replace(/-/g, ''), appName: name, webDir: 'www' }, null, 2));
+        const appId = packageId.value.trim() || ('com.example.' + slug.replace(/-/g, ''));
+        zip.file('capacitor.config.json', JSON.stringify({ appId: appId, appName: name, webDir: 'www' }, null, 2));
         zip.file('README.md',
           '# ' + name + ' — mobile app starter project\n\n' +
           'This is a real starting point, not a finished app-store app — no browser can compile a native ' +
