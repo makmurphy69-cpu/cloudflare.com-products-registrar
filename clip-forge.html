@@ -4,19 +4,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Clip Forge — trim, caption, and translate your videos</title>
-<meta name="description" content="Upload a video, trim it, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export — all in your browser.">
+<meta name="description" content="Upload a video, trim it, add music, crop it for any platform, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export or upload straight to YouTube — all in your browser.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Clip Forge — trim, caption, and translate your videos">
-<meta property="og:description" content="Upload a video, trim it, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export — all in your browser.">
+<meta property="og:description" content="Upload a video, trim it, add music, crop it for any platform, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export or upload straight to YouTube — all in your browser.">
 <meta property="og:image" content="https://migabuilder.com/assets/og/clip-forge.jpg">
 <meta property="og:url" content="https://migabuilder.com/clip-forge.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Clip Forge — trim, caption, and translate your videos">
-<meta name="twitter:description" content="Upload a video, trim it, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export — all in your browser.">
+<meta name="twitter:description" content="Upload a video, trim it, add music, crop it for any platform, add timed text overlays and translated captions, stamp a watermark, adjust speed and volume, then export or upload straight to YouTube — all in your browser.">
 <meta name="twitter:image" content="https://migabuilder.com/assets/og/clip-forge.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <style>
   :root {
@@ -160,6 +161,26 @@
   .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
   .table-actions button.primary { background: var(--amber); color: var(--amber-ink); border-color: var(--amber); font-weight: 600; }
 
+  .status-box {
+    margin-top: 12px; padding: 12px 14px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 13px; color: #244731; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+
+  .yt-panel { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-cyan-dim); }
+  .yt-panel h2 { font-family: 'Space Grotesk', sans-serif; font-size: 15px; margin: 0 0 10px; color: rgba(237,234,224,0.9); }
+  .yt-field { margin-bottom: 12px; }
+  .yt-field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; color: rgba(237,234,224,0.85); }
+  .yt-field input, .yt-field textarea, .yt-field select {
+    width: 100%; font-size: 13.5px; padding: 8px 10px; border-radius: var(--radius);
+    border: 1px solid var(--line-cyan-dim); background: var(--navy); color: var(--paper);
+  }
+  .yt-hint { font-size: 12px; color: rgba(237,234,224,0.55); line-height: 1.5; margin-top: 4px; }
+  .yt-hint a { color: var(--line-cyan); }
+  details.yt-setup summary { cursor: pointer; color: var(--paper); font-weight: 600; font-size: 13.5px; margin-bottom: 8px; }
+  details.yt-setup ol { margin: 10px 0 0; padding-left: 20px; line-height: 1.7; color: rgba(237,234,224,0.75); font-size: 13px; }
+  details.yt-setup code { background: rgba(237,234,224,0.1); padding: 1px 5px; border-radius: 3px; }
+
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
@@ -175,7 +196,7 @@
   </svg>
   <div>
     <h1>Clip Forge</h1>
-    <p>Upload a video, trim it, add captions (with translation), stamp a watermark, adjust speed — then export.</p>
+    <p>Upload a video, trim it, mix in music, crop it for any platform, add captions (with translation), stamp a watermark — then export or send it straight to YouTube.</p>
   </div>
 </header>
 
@@ -225,6 +246,30 @@
     </div>
     <div class="field">
       <label class="check-row"><input type="checkbox" id="muteCheckbox"><span>Mute audio entirely</span></label>
+    </div>
+    <div class="field">
+      <label class="upload-btn" for="musicInput">+ Add music or narration (optional)</label>
+      <input type="file" id="musicInput" accept="audio/*" style="display:none;">
+      <p class="hint" id="musicHint"></p>
+    </div>
+    <div class="field" id="musicOptions" style="display:none;">
+      <label for="musicVolume">Music volume</label>
+      <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.8">
+      <label class="check-row" style="margin-top:8px;"><input type="checkbox" id="musicLoopCheckbox" checked><span>Loop if shorter than the clip</span></label>
+      <button type="button" class="draft-btn secondary" id="removeMusicBtn" style="margin-top:8px;">✕ Remove music</button>
+    </div>
+
+    <div class="section-title">Output format</div>
+    <div class="field">
+      <label for="aspectSelect">Aspect ratio</label>
+      <select id="aspectSelect">
+        <option value="original" selected>Original (no cropping)</option>
+        <option value="16:9">16:9 — widescreen (YouTube)</option>
+        <option value="9:16">9:16 — vertical (Shorts / Reels / TikTok)</option>
+        <option value="1:1">1:1 — square (Instagram feed)</option>
+        <option value="4:5">4:5 — portrait (Instagram feed)</option>
+      </select>
+      <p class="hint">Cropping is centered on the frame.</p>
     </div>
 
     <div class="section-title">Watermark / logo (optional)</div>
@@ -308,6 +353,7 @@
       <video id="sourceVideo" controls style="display:none;"></video>
       <canvas id="stageCanvas" style="display:none;"></canvas>
       <video id="resultVideo" controls style="display:none;"></video>
+      <audio id="musicAudioEl" style="display:none;"></audio>
     </div>
 
     <div class="progress-wrap" id="progressWrap">
@@ -320,10 +366,63 @@
       <button type="button" id="downloadVideoBtn" disabled class="primary">⬇ Download video (.webm)</button>
     </div>
     <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Rendering happens in real time in your browser (a 20-second clip takes about 20 seconds, divided by your chosen speed) — nothing is uploaded. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited. Got several clips to stitch together, or slides to combine with one? Try <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.</p>
+
+    <div class="yt-panel">
+      <h2>Upload straight to YouTube</h2>
+      <div class="yt-field">
+        <label for="ytClientId">Your Google OAuth Client ID</label>
+        <input type="text" id="ytClientId" placeholder="xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com">
+        <p class="yt-hint">This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Clip Forge only sends it to Google, never anywhere else.</p>
+      </div>
+      <button type="button" class="draft-btn secondary" id="connectYtBtn">Connect Google account</button>
+      <div class="status-box" id="ytConnectedBox">✓ Connected to your Google account.</div>
+
+      <div id="ytUploadFields" style="display:none; margin-top:14px;">
+        <div class="yt-field"><label for="ytTitle">Video title</label><input type="text" id="ytTitle" placeholder="My edited clip"></div>
+        <div class="yt-field"><label for="ytDesc">Description</label><textarea id="ytDesc" placeholder="Made with Clip Forge."></textarea></div>
+        <div class="yt-field"><label for="ytTags">Tags (comma separated)</label><input type="text" id="ytTags" placeholder="tutorial, how-to, clip"></div>
+        <div class="row-2" style="margin-bottom:12px;">
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytPrivacy">Privacy</label>
+            <select id="ytPrivacy">
+              <option value="private" selected>Private</option>
+              <option value="unlisted">Unlisted</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="yt-field" style="margin-bottom:0;">
+            <label for="ytCategory">Category</label>
+            <select id="ytCategory">
+              <option value="27" selected>Education</option>
+              <option value="26">Howto &amp; Style</option>
+              <option value="28">Science &amp; Technology</option>
+              <option value="22">People &amp; Blogs</option>
+              <option value="24">Entertainment</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" class="draft-btn" id="uploadYtBtn" disabled>Upload to YouTube</button>
+        <p class="yt-hint">Render your video first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.</p>
+      </div>
+      <div class="status-box" id="ytResultBox"></div>
+      <div class="error-box" id="ytErrorBox"></div>
+
+      <details class="yt-setup" style="margin-top:16px;">
+        <summary>One-time setup: get a Google OAuth Client ID (click to expand)</summary>
+        <ol>
+          <li>Go to the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, create (or pick) a project, and enable the <strong>YouTube Data API v3</strong>.</li>
+          <li>Under <strong>APIs &amp; Services → OAuth consent screen</strong>, set it up as "External", add the <code>youtube.upload</code> scope, and add your own Google account under "Test users" (this avoids needing Google's full app-verification review, since only you will use it).</li>
+          <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an <strong>OAuth client ID</strong> of type "Web application". Add the exact URL this page is running at (e.g. <code>https://your-username.github.io</code>) under "Authorized JavaScript origins".</li>
+          <li>Copy the generated Client ID (it ends in <code>.apps.googleusercontent.com</code>) into the field above.</li>
+          <li>Click "Connect Google account" and approve access — Google will warn that the app is unverified, which is expected for a personal project; click through as the test user you added.</li>
+        </ol>
+        <p class="yt-hint" style="margin-top:10px;">If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.</p>
+      </details>
+    </div>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Your video, watermark, and captions stay in your browser except for the text you choose to translate, which is sent only to the AI provider you selected above. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your video, music, watermark, and captions stay in your browser except for the text you choose to translate (sent only to the AI provider you selected above) and the rendered video if you choose to upload it to YouTube (sent straight from your browser to your own Google account). <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -339,6 +438,14 @@
   const speedSelect = document.getElementById('speedSelect');
   const volumeInput = document.getElementById('volumeInput');
   const muteCheckbox = document.getElementById('muteCheckbox');
+  const musicInput = document.getElementById('musicInput');
+  const musicHint = document.getElementById('musicHint');
+  const musicOptions = document.getElementById('musicOptions');
+  const musicVolume = document.getElementById('musicVolume');
+  const musicLoopCheckbox = document.getElementById('musicLoopCheckbox');
+  const removeMusicBtn = document.getElementById('removeMusicBtn');
+  const musicAudioEl = document.getElementById('musicAudioEl');
+  const aspectSelect = document.getElementById('aspectSelect');
   const watermarkInput = document.getElementById('watermarkInput');
   const watermarkHint = document.getElementById('watermarkHint');
   const watermarkOptions = document.getElementById('watermarkOptions');
@@ -376,6 +483,19 @@
   const cancelRenderBtn = document.getElementById('cancelRenderBtn');
   const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 
+  const ytClientId = document.getElementById('ytClientId');
+  const connectYtBtn = document.getElementById('connectYtBtn');
+  const ytConnectedBox = document.getElementById('ytConnectedBox');
+  const ytUploadFields = document.getElementById('ytUploadFields');
+  const ytTitle = document.getElementById('ytTitle');
+  const ytDesc = document.getElementById('ytDesc');
+  const ytTags = document.getElementById('ytTags');
+  const ytPrivacy = document.getElementById('ytPrivacy');
+  const ytCategory = document.getElementById('ytCategory');
+  const uploadYtBtn = document.getElementById('uploadYtBtn');
+  const ytResultBox = document.getElementById('ytResultBox');
+  const ytErrorBox = document.getElementById('ytErrorBox');
+
   const ctx = stageCanvas.getContext('2d');
 
   // ---------- state ----------
@@ -388,6 +508,32 @@
   let renderState = null;
   let sharedAudioCtx = null;
   let mediaElementSourceNode = null; // an element can only ever be wrapped once, so this is created lazily and reused
+  let musicAudioSourceNode = null; // same one-time-wrap rule as mediaElementSourceNode above
+  let musicObjectUrl = null;
+  let accessToken = null;
+  let tokenClient = null;
+
+  const ASPECT_RATIOS = { original: null, '16:9': 16 / 9, '9:16': 9 / 16, '1:1': 1, '4:5': 4 / 5 };
+
+  function outputDimensions(sourceW, sourceH, ratioKey) {
+    const ratio = ASPECT_RATIOS[ratioKey];
+    if (!ratio) return { width: sourceW, height: sourceH };
+    const sourceRatio = sourceW / sourceH;
+    let width, height;
+    if (ratio > sourceRatio) { width = sourceW; height = Math.round(width / ratio); }
+    else { height = sourceH; width = Math.round(height * ratio); }
+    width -= width % 2; height -= height % 2;
+    return { width: Math.max(2, width), height: Math.max(2, height) };
+  }
+
+  function cropRectForOutput(sourceW, sourceH, outW, outH) {
+    const targetRatio = outW / outH;
+    const sourceRatio = sourceW / sourceH;
+    let sw, sh;
+    if (sourceRatio > targetRatio) { sh = sourceH; sw = sh * targetRatio; }
+    else { sw = sourceW; sh = sw / targetRatio; }
+    return { sx: (sourceW - sw) / 2, sy: (sourceH - sh) / 2, sw, sh };
+  }
 
   const LANGUAGES = [
     ['Spanish', 'Spanish'], ['French', 'French'], ['German', 'German'], ['Portuguese', 'Portuguese'],
@@ -397,6 +543,7 @@
 
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+  function refreshUploadEnabled() { uploadYtBtn.disabled = !(renderedVideoBlob && accessToken); }
 
   // ---------- video upload ----------
   videoInput.addEventListener('change', function (e) {
@@ -410,6 +557,7 @@
     resultVideo.style.display = 'none';
     downloadVideoBtn.disabled = true;
     renderedVideoBlob = null;
+    refreshUploadEnabled();
     videoInfoHint.textContent = 'Loading "' + file.name + '"…';
 
     sourceVideo.onloadedmetadata = function () {
@@ -444,6 +592,25 @@
     watermarkHint.textContent = '';
     watermarkOptions.style.display = 'none';
     watermarkInput.value = '';
+  });
+
+  // ---------- music / narration ----------
+  musicInput.addEventListener('change', function (e) {
+    const file = (e.target.files || [])[0];
+    if (!file) return;
+    if (musicObjectUrl) URL.revokeObjectURL(musicObjectUrl);
+    musicObjectUrl = URL.createObjectURL(file);
+    musicAudioEl.src = musicObjectUrl;
+    musicHint.textContent = 'Added: ' + file.name;
+    musicOptions.style.display = 'block';
+  });
+  removeMusicBtn.addEventListener('click', function () {
+    if (musicObjectUrl) { URL.revokeObjectURL(musicObjectUrl); musicObjectUrl = null; }
+    musicAudioEl.removeAttribute('src');
+    musicAudioEl.load();
+    musicHint.textContent = '';
+    musicOptions.style.display = 'none';
+    musicInput.value = '';
   });
 
   // ---------- AI provider (for translation only) ----------
@@ -723,7 +890,10 @@
     if (!mimeType) { showError('No supported video format found in this browser.'); return; }
 
     sourceVideo.pause();
-    const cw = sourceVideo.videoWidth, ch = sourceVideo.videoHeight;
+    const sourceW = sourceVideo.videoWidth, sourceH = sourceVideo.videoHeight;
+    const outDims = outputDimensions(sourceW, sourceH, aspectSelect.value);
+    const cw = outDims.width, ch = outDims.height;
+    const cropRect = cropRectForOutput(sourceW, sourceH, cw, ch);
     stageCanvas.width = cw; stageCanvas.height = ch;
     sourceVideo.style.display = 'none';
     resultVideo.style.display = 'none';
@@ -731,20 +901,38 @@
     downloadVideoBtn.disabled = true;
     renderedVideoBlob = null;
 
+    const hasMusic = !!musicObjectUrl;
+    const hasOriginalAudio = !muteCheckbox.checked;
+
     if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const audioCtx = sharedAudioCtx;
     const dest = audioCtx.createMediaStreamDestination();
     let audioTracks = [];
-    if (!muteCheckbox.checked) {
+
+    if (hasOriginalAudio) {
       if (!mediaElementSourceNode) mediaElementSourceNode = audioCtx.createMediaElementSource(sourceVideo);
       mediaElementSourceNode.disconnect();
       const gainNode = audioCtx.createGain();
       gainNode.gain.value = parseFloat(volumeInput.value) || 1;
       mediaElementSourceNode.connect(gainNode).connect(dest);
-      audioTracks = dest.stream.getAudioTracks();
     } else if (mediaElementSourceNode) {
       mediaElementSourceNode.disconnect();
     }
+
+    if (hasMusic) {
+      if (!musicAudioSourceNode) musicAudioSourceNode = audioCtx.createMediaElementSource(musicAudioEl);
+      musicAudioSourceNode.disconnect();
+      const musicGainNode = audioCtx.createGain();
+      musicGainNode.gain.value = parseFloat(musicVolume.value) || 0.8;
+      musicAudioSourceNode.connect(musicGainNode).connect(dest);
+      musicAudioEl.loop = musicLoopCheckbox.checked;
+      musicAudioEl.currentTime = 0;
+      musicAudioEl.muted = true; // routed through the Web Audio graph above, not the element itself
+    } else if (musicAudioSourceNode) {
+      musicAudioSourceNode.disconnect();
+    }
+
+    if (hasOriginalAudio || hasMusic) audioTracks = dest.stream.getAudioTracks();
 
     sourceVideo.muted = true; // audio now routes through the Web Audio graph above (or is silent if muted), not the element itself
     sourceVideo.playbackRate = speed;
@@ -771,6 +959,8 @@
       renderBtn.disabled = false;
       sourceVideo.muted = false;
       sourceVideo.playbackRate = 1;
+      musicAudioEl.pause();
+      musicAudioEl.muted = false;
       renderState = null;
     }
 
@@ -787,14 +977,14 @@
       downloadVideoBtn.disabled = false;
       titleBlockRight.textContent = 'RENDER COMPLETE';
       finish();
+      refreshUploadEnabled();
     };
 
     function startLoop() {
-      const startWallTime = performance.now();
       function step() {
         if (cancelled) { recorder.stop(); return; }
         if (sourceVideo.currentTime >= trimEnd || sourceVideo.ended) { recorder.stop(); return; }
-        ctx.drawImage(sourceVideo, 0, 0, cw, ch);
+        ctx.drawImage(sourceVideo, cropRect.sx, cropRect.sy, cropRect.sw, cropRect.sh, 0, 0, cw, ch);
         const outT = (sourceVideo.currentTime - trimStart) / speed;
         drawWatermark(ctx, cw, ch);
         drawCaptionsAt(ctx, cw, ch, outT);
@@ -811,6 +1001,7 @@
       sourceVideo.currentTime = trimStart;
       await new Promise(resolve => { sourceVideo.onseeked = resolve; });
       await sourceVideo.play();
+      if (hasMusic) { try { await musicAudioEl.play(); } catch (e) {} }
       startLoop();
     } catch (err) {
       showError('Could not start rendering: ' + err.message);
@@ -835,6 +1026,118 @@
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  // ---------- YouTube upload (same flow as Record Forge / Video Forge) ----------
+  function showYtError(msg) { ytErrorBox.textContent = msg; ytErrorBox.classList.add('show'); }
+  function clearYtError() { ytErrorBox.textContent = ''; ytErrorBox.classList.remove('show'); }
+
+  function ensureTokenClient() {
+    if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
+    const clientId = ytClientId.value.trim();
+    if (!clientId) return null;
+    if (tokenClient && tokenClient.__clientId === clientId) return tokenClient;
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/youtube.upload',
+      callback: function (resp) {
+        if (resp.error) { showYtError('Google sign-in failed: ' + resp.error); return; }
+        accessToken = resp.access_token;
+        clearYtError();
+        ytConnectedBox.classList.add('show');
+        ytUploadFields.style.display = 'block';
+        refreshUploadEnabled();
+      }
+    });
+    tokenClient.__clientId = clientId;
+    return tokenClient;
+  }
+
+  connectYtBtn.addEventListener('click', function () {
+    clearYtError();
+    if (!ytClientId.value.trim()) { showYtError('Paste your Google OAuth Client ID first — see the setup steps below.'); return; }
+    const client = ensureTokenClient();
+    if (!client) { showYtError("Google's sign-in library hasn't finished loading yet — wait a second and try again."); return; }
+    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
+  });
+
+  uploadYtBtn.addEventListener('click', async function () {
+    clearYtError();
+    ytResultBox.classList.remove('show');
+    if (!renderedVideoBlob) { showYtError('Render your video first.'); return; }
+    if (!accessToken) { showYtError('Connect your Google account first.'); return; }
+
+    const metadata = {
+      snippet: {
+        title: ytTitle.value.trim() || 'Clip Forge upload',
+        description: ytDesc.value.trim(),
+        tags: ytTags.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
+        categoryId: ytCategory.value
+      },
+      status: { privacyStatus: ytPrivacy.value }
+    };
+
+    uploadYtBtn.disabled = true;
+    uploadYtBtn.textContent = 'Starting upload…';
+    progressWrap.classList.add('show');
+    progressLabel.textContent = 'Uploading to YouTube…';
+    progressFill.style.width = '0%';
+    progressPct.textContent = '0%';
+
+    try {
+      const initResp = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': renderedVideoBlob.type || 'video/webm',
+          'X-Upload-Content-Length': String(renderedVideoBlob.size)
+        },
+        body: JSON.stringify(metadata)
+      });
+      if (!initResp.ok) {
+        const errBody = await initResp.json().catch(function () { return null; });
+        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : ('Request failed with status ' + initResp.status);
+        throw new Error(msg);
+      }
+      const uploadUrl = initResp.headers.get('Location');
+      if (!uploadUrl) {
+        throw new Error('Google did not return an upload session URL — your browser or an extension may be blocking it. Try downloading the video and uploading it manually at studio.youtube.com instead.');
+      }
+
+      await new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', uploadUrl);
+        xhr.setRequestHeader('Content-Type', renderedVideoBlob.type || 'video/webm');
+        xhr.upload.onprogress = function (e) {
+          if (e.lengthComputable) {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = pct + '%';
+            progressPct.textContent = pct + '%';
+          }
+        };
+        xhr.onload = function () {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try { resolve(JSON.parse(xhr.responseText)); }
+            catch (e) { reject(new Error('Upload finished but the response could not be read.')); }
+          } else {
+            reject(new Error('Upload failed with status ' + xhr.status + ': ' + xhr.responseText));
+          }
+        };
+        xhr.onerror = function () { reject(new Error('A network error interrupted the upload — this can happen if a browser extension blocks requests to Google.')); };
+        xhr.send(renderedVideoBlob);
+      }).then(function (data) {
+        ytResultBox.innerHTML = '✓ Uploaded! <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">Watch it on YouTube</a> (' + (ytPrivacy.value === 'private' ? 'private — only you can see it' : ytPrivacy.value) + ').';
+        ytResultBox.classList.add('show');
+      });
+    } catch (err) {
+      showYtError(err.message || 'Upload failed.');
+    } finally {
+      uploadYtBtn.disabled = false;
+      uploadYtBtn.textContent = 'Upload to YouTube';
+      progressWrap.classList.remove('show');
+      refreshUploadEnabled();
+    }
   });
 })();
 </script>
