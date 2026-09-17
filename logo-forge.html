@@ -99,8 +99,13 @@
   .result-card.show { display: block; }
   .logo-preview { width: 96px; height: 96px; margin: 0 auto 16px; }
   .logo-preview svg { width: 100%; height: 100%; }
-  .swatches { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
-  .swatch { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); }
+  .swatches { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+  .swatch { width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); cursor: pointer; padding: 0; position: relative; overflow: hidden; }
+  .swatch input[type="color"] { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); opacity: 0; cursor: pointer; border: none; padding: 0; }
+  .variant-strip { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+  .variant-thumb { width: 56px; height: 56px; padding: 4px; border-radius: 6px; border: 2px solid transparent; background: #fff; cursor: pointer; }
+  .variant-thumb svg { width: 100%; height: 100%; }
+  .variant-thumb.active { border-color: var(--amber); }
 
   .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media (max-width: 420px) { .btn-grid { grid-template-columns: 1fr; } }
@@ -170,13 +175,19 @@
   </div>
 
   <div class="result-card" id="resultCard">
+    <div class="variant-strip" id="variantStrip"></div>
     <div class="logo-preview" id="logoPreview"></div>
     <div class="swatches" id="swatches"></div>
+    <p class="hint" style="text-align:center;margin-top:-8px;margin-bottom:16px;">Click a color swatch to recolor the logo instantly — no AI call needed.</p>
+
+    <button type="button" class="draft-btn secondary" id="regenerateBtn" style="margin-bottom:14px;">🔁 Regenerate (new designs)</button>
 
     <div class="section-title" style="border-top:none;padding-top:0;margin-top:0;">Downloads</div>
     <div class="btn-grid">
       <button type="button" class="draft-btn secondary" id="downloadSvgBtn">Logo (.svg)</button>
       <button type="button" class="draft-btn secondary" id="downloadCardBtn">Business card (.html)</button>
+      <button type="button" class="draft-btn secondary" id="downloadFullPngBtn">Full-res PNG (1024×1024)</button>
+      <button type="button" class="draft-btn secondary" id="downloadSocialBtn">Social banner (1200×630)</button>
     </div>
 
     <div class="section-title">Favicon sizes</div>
@@ -208,10 +219,14 @@
   const brandKitBtn = document.getElementById('brandKitBtn');
   const errorBox = document.getElementById('errorBox');
   const resultCard = document.getElementById('resultCard');
+  const variantStripEl = document.getElementById('variantStrip');
   const logoPreview = document.getElementById('logoPreview');
   const swatchesEl = document.getElementById('swatches');
+  const regenerateBtn = document.getElementById('regenerateBtn');
   const downloadSvgBtn = document.getElementById('downloadSvgBtn');
   const downloadCardBtn = document.getElementById('downloadCardBtn');
+  const downloadFullPngBtn = document.getElementById('downloadFullPngBtn');
+  const downloadSocialBtn = document.getElementById('downloadSocialBtn');
 
   function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
@@ -375,8 +390,56 @@
     URL.revokeObjectURL(url);
   }
 
-  let currentLogoSvg = '';
+  let variants = []; // [{logoSvg, colors}]
+  let activeVariantIndex = 0;
   let currentCardHtml = '';
+
+  function currentLogoSvg() {
+    return variants[activeVariantIndex] ? variants[activeVariantIndex].logoSvg : '';
+  }
+
+  function renderVariantStrip() {
+    variantStripEl.innerHTML = '';
+    if (variants.length < 2) return;
+    variants.forEach((v, i) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = 'variant-thumb' + (i === activeVariantIndex ? ' active' : '');
+      thumb.innerHTML = v.logoSvg;
+      thumb.title = 'Design ' + (i + 1);
+      thumb.addEventListener('click', () => { activeVariantIndex = i; renderActiveVariant(); });
+      variantStripEl.appendChild(thumb);
+    });
+  }
+
+  function renderActiveVariant() {
+    const v = variants[activeVariantIndex];
+    if (!v) return;
+    logoPreview.innerHTML = v.logoSvg;
+    swatchesEl.innerHTML = '';
+    (v.colors || []).forEach((hex, colorIdx) => {
+      const sw = document.createElement('button');
+      sw.type = 'button';
+      sw.className = 'swatch';
+      sw.style.background = hex;
+      sw.title = hex + ' — click to recolor';
+      const colorInput = document.createElement('input');
+      colorInput.type = 'color';
+      colorInput.value = hex;
+      colorInput.addEventListener('input', () => {
+        const newHex = colorInput.value;
+        const oldHex = v.colors[colorIdx];
+        const re = new RegExp(oldHex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        v.logoSvg = v.logoSvg.replace(re, newHex);
+        v.colors[colorIdx] = newHex;
+        renderActiveVariant();
+        renderVariantStrip();
+      });
+      sw.appendChild(colorInput);
+      swatchesEl.appendChild(sw);
+    });
+    renderVariantStrip();
+  }
 
   async function runBrandKit() {
     clearError();
@@ -385,53 +448,106 @@
     if (!key) { showError('Add your API key first.'); return; }
     if (!brief) { showError('Describe the business first.'); return; }
 
+    const isRegenerate = resultCard.classList.contains('show');
+    const activeBtn = isRegenerate ? regenerateBtn : brandKitBtn;
     brandKitBtn.disabled = true;
-    brandKitBtn.textContent = 'Designing…';
+    regenerateBtn.disabled = true;
+    const originalLabel = activeBtn.textContent;
+    activeBtn.textContent = 'Designing…';
     const model = modelSelect.value;
     const nameHint = bizNameInput.value.trim();
     const rules = [
-      'You are a brand designer. Given a business brief, design a simple, professional wordmark-style logo as inline SVG, a 3-color palette, and a printable business card.',
+      'You are a brand designer. Given a business brief, design THREE distinct simple, professional wordmark-style logo concepts as inline SVG, each with its own 3-color palette, plus one printable business card using the first concept.',
       nameHint ? ('The business is named "' + nameHint + '" — use this exact name.') : 'Invent a fitting business name if one is not implied by the brief.',
       'Respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
-      '{"logoSvg": "<svg viewBox=\\"0 0 200 200\\" xmlns=\\"http://www.w3.org/2000/svg\\">...</svg>", "colors": ["#hex1","#hex2","#hex3"], "cardHtml": "<!DOCTYPE html>...a complete, self-contained, printable business-card-sized HTML page, 3.5in x 2in, with inline CSS, using the business name, slogan if any, and contact info if given"}',
-      'The logo must be a simple geometric mark or monogram (not a photo), must look correct on a light background, and must use only the given palette. Keep the SVG under 2000 characters.'
+      '{"variants": [{"logoSvg": "<svg viewBox=\\"0 0 200 200\\" xmlns=\\"http://www.w3.org/2000/svg\\">...</svg>", "colors": ["#hex1","#hex2","#hex3"]}, {...}, {...}], "cardHtml": "<!DOCTYPE html>...a complete, self-contained, printable business-card-sized HTML page, 3.5in x 2in, with inline CSS, using the business name, slogan if any, and contact info if given"}',
+      'Each logo must be a simple geometric mark or monogram (not a photo), must look correct on a light background, and must use only its own given palette (each hex value must literally appear as a fill or stroke color in that logo\'s SVG, so it can be swapped later by find-and-replace). Keep each SVG under 2000 characters. Make the three concepts genuinely different from each other (e.g. different mark style, layout, or type treatment), not color variations of the same design.'
     ].join('\n');
 
     try {
       const json = await callChat(key, model, rules, brief);
       const kit = JSON.parse(json);
-      currentLogoSvg = kit.logoSvg;
-      currentCardHtml = kit.cardHtml;
-
-      logoPreview.innerHTML = kit.logoSvg;
-      swatchesEl.innerHTML = '';
-      (kit.colors || []).forEach(hex => {
-        const sw = document.createElement('div');
-        sw.className = 'swatch';
-        sw.style.background = hex;
-        sw.title = hex;
-        swatchesEl.appendChild(sw);
-      });
+      variants = kit.variants || (kit.logoSvg ? [{ logoSvg: kit.logoSvg, colors: kit.colors || [] }] : []);
+      if (!variants.length) throw new Error('The model did not return any logo designs.');
+      activeVariantIndex = 0;
+      currentCardHtml = kit.cardHtml || '';
+      renderActiveVariant();
       resultCard.classList.add('show');
     } catch (err) {
       showError(err.message || 'Could not generate a brand kit.');
     } finally {
       brandKitBtn.disabled = false;
+      regenerateBtn.disabled = false;
       brandKitBtn.textContent = 'Generate a logo & brand kit';
+      regenerateBtn.textContent = '🔁 Regenerate (new designs)';
     }
   }
   brandKitBtn.addEventListener('click', runBrandKit);
+  regenerateBtn.addEventListener('click', runBrandKit);
 
   downloadSvgBtn.addEventListener('click', () => {
-    if (currentLogoSvg) downloadTextAsFile(currentLogoSvg, 'logo.svg', 'image/svg+xml');
+    if (currentLogoSvg()) downloadTextAsFile(currentLogoSvg(), 'logo.svg', 'image/svg+xml');
   });
   downloadCardBtn.addEventListener('click', () => {
     if (currentCardHtml) downloadTextAsFile(currentCardHtml, 'business-card.html', 'text/html');
   });
 
+  function renderLogoToCanvas(size, background) {
+    return new Promise((resolve, reject) => {
+      const svg = currentLogoSvg();
+      if (!svg) { reject(new Error('Generate a logo first.')); return; }
+      const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size.width;
+        canvas.height = size.height;
+        const ctx = canvas.getContext('2d');
+        if (background) { ctx.fillStyle = background; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+        URL.revokeObjectURL(url);
+        resolve({ canvas: canvas, ctx: ctx, img: img });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Could not render the logo.')); };
+      img.src = url;
+    });
+  }
+
+  downloadFullPngBtn.addEventListener('click', async () => {
+    try {
+      const { canvas, ctx, img } = await renderLogoToCanvas({ width: 1024, height: 1024 }, null);
+      ctx.drawImage(img, 0, 0, 1024, 1024);
+      canvas.toBlob((blob) => {
+        if (!blob) { showError('Could not render the full-res PNG.'); return; }
+        const dlUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dlUrl; a.download = 'logo-1024x1024.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(dlUrl), 4000);
+      }, 'image/png');
+    } catch (err) { showError(err.message); }
+  });
+
+  downloadSocialBtn.addEventListener('click', async () => {
+    try {
+      const { canvas, ctx, img } = await renderLogoToCanvas({ width: 1200, height: 630 }, '#ffffff');
+      const logoSize = 380;
+      ctx.drawImage(img, (1200 - logoSize) / 2, (630 - logoSize) / 2, logoSize, logoSize);
+      canvas.toBlob((blob) => {
+        if (!blob) { showError('Could not render the social banner.'); return; }
+        const dlUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = dlUrl; a.download = 'logo-social-banner-1200x630.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(dlUrl), 4000);
+      }, 'image/png');
+    } catch (err) { showError(err.message); }
+  });
+
   function downloadFaviconSize(size) {
-    if (!currentLogoSvg) return;
-    const svgBlob = new Blob([currentLogoSvg], { type: 'image/svg+xml' });
+    const svg = currentLogoSvg();
+    if (!svg) return;
+    const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(svgBlob);
     const img = new Image();
     img.onload = () => {
