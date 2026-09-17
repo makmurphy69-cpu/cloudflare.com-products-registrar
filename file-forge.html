@@ -17,6 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <style>
   :root {
@@ -156,6 +157,7 @@
   .file-row .file-meta { flex: 1; min-width: 0; }
   .file-row .file-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .file-row .file-size { font-size: 11.5px; color: rgba(22, 32, 43, 0.55); }
+  .file-row .file-size .estimate { color: rgba(22, 32, 43, 0.4); }
   .file-row .file-status { font-size: 11.5px; flex: none; }
   .file-row .remove-file { background: transparent; border: none; color: var(--error); font-size: 16px; cursor: pointer; flex: none; padding: 2px 6px; }
 
@@ -226,6 +228,22 @@
       <input type="range" id="qualitySlider" min="10" max="100" value="85" step="5">
       <p class="hint">Lower quality means a smaller file. 100% keeps the most detail.</p>
     </div>
+    <div class="field">
+      <label for="maxDimension">Resize — max width or height (optional)</label>
+      <select id="maxDimension">
+        <option value="0" selected>Keep original size</option>
+        <option value="3840">3840px (4K)</option>
+        <option value="1920">1920px</option>
+        <option value="1280">1280px</option>
+        <option value="800">800px</option>
+        <option value="500">500px</option>
+      </select>
+      <p class="hint">Scales the longer side down to fit if the image is bigger — the shorter side follows to keep proportions. Never scales up.</p>
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer;"><input type="checkbox" id="zipOutput" checked style="width:auto;"> Bundle results into one .zip file</label>
+      <p class="hint">Off downloads each file separately instead — handy for just one or two images.</p>
+    </div>
 
     <button type="button" class="draft-btn" id="convertBtn" disabled>Convert &amp; download all</button>
     <div class="error-box" id="errorBox"></div>
@@ -245,10 +263,13 @@
   const qualityField = document.getElementById('qualityField');
   const qualitySlider = document.getElementById('qualitySlider');
   const qualityValue = document.getElementById('qualityValue');
+  const maxDimensionSelect = document.getElementById('maxDimension');
+  const zipOutputCheckbox = document.getElementById('zipOutput');
   const convertBtn = document.getElementById('convertBtn');
   const errorBox = document.getElementById('errorBox');
 
   let files = [];
+  let estimateToken = 0;
 
   function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
@@ -268,7 +289,8 @@
       img.src = f.previewUrl;
       const meta = document.createElement('div');
       meta.className = 'file-meta';
-      meta.innerHTML = '<div class="file-name">' + f.file.name + '</div><div class="file-size">' + formatBytes(f.file.size) + '</div>';
+      const estimateText = f.estimatedSize != null ? ' → <span class="estimate">~' + formatBytes(f.estimatedSize) + '</span>' : '';
+      meta.innerHTML = '<div class="file-name">' + f.file.name + '</div><div class="file-size">' + formatBytes(f.file.size) + estimateText + '</div>';
       const status = document.createElement('div');
       status.className = 'file-status';
       status.textContent = f.status || '';
@@ -296,10 +318,11 @@
     const incoming = Array.from(fileListArg).filter(f => f.type.startsWith('image/'));
     if (!incoming.length) { showError('Please choose image files (PNG, JPG, WebP, GIF, or BMP).'); return; }
     incoming.forEach(file => {
-      files.push({ file: file, previewUrl: URL.createObjectURL(file), status: '' });
+      files.push({ file: file, previewUrl: URL.createObjectURL(file), status: '', estimatedSize: null });
     });
     renderFileList();
     convertBtn.disabled = files.length === 0;
+    scheduleEstimate();
   }
 
   fileInput.addEventListener('change', (e) => addFiles(e.target.files));
@@ -315,10 +338,11 @@
   function updateQualityVisibility() {
     qualityField.style.display = formatSelect.value === 'image/png' ? 'none' : 'block';
   }
-  formatSelect.addEventListener('change', updateQualityVisibility);
+  formatSelect.addEventListener('change', () => { updateQualityVisibility(); scheduleEstimate(); });
   updateQualityVisibility();
 
-  qualitySlider.addEventListener('input', () => { qualityValue.textContent = qualitySlider.value + '%'; });
+  qualitySlider.addEventListener('input', () => { qualityValue.textContent = qualitySlider.value + '%'; scheduleEstimate(); });
+  maxDimensionSelect.addEventListener('change', scheduleEstimate);
 
   function extensionFor(mime) {
     if (mime === 'image/png') return 'png';
@@ -326,19 +350,26 @@
     return 'jpg';
   }
 
-  function convertOne(entry, mime, quality) {
+  function scaledDimensions(width, height, maxDimension) {
+    if (!maxDimension || (width <= maxDimension && height <= maxDimension)) return { width: width, height: height };
+    const scale = maxDimension / Math.max(width, height);
+    return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+  }
+
+  function convertOne(entry, mime, quality, maxDimension) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
+        const size = scaledDimensions(img.naturalWidth, img.naturalHeight, maxDimension);
         const canvas = document.createElement('canvas');
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
+        canvas.width = size.width;
+        canvas.height = size.height;
         const ctx = canvas.getContext('2d');
         if (mime === 'image/jpeg') {
           ctx.fillStyle = '#ffffff';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, 0, 0, size.width, size.height);
         canvas.toBlob((blob) => {
           if (!blob) { reject(new Error('Conversion failed for ' + entry.file.name)); return; }
           resolve(blob);
@@ -349,6 +380,51 @@
     });
   }
 
+  let estimateTimer = null;
+  function scheduleEstimate() {
+    if (estimateTimer) clearTimeout(estimateTimer);
+    estimateTimer = setTimeout(runEstimate, 350);
+  }
+
+  async function runEstimate() {
+    if (!files.length) return;
+    const token = ++estimateToken;
+    const mime = formatSelect.value;
+    const quality = parseInt(qualitySlider.value, 10) / 100;
+    const maxDimension = parseInt(maxDimensionSelect.value, 10) || 0;
+    for (const entry of files) {
+      if (token !== estimateToken) return; // superseded by a newer change
+      try {
+        const blob = await convertOne(entry, mime, quality, maxDimension);
+        if (token !== estimateToken) return;
+        entry.estimatedSize = blob.size;
+      } catch (e) {
+        if (token !== estimateToken) return;
+        entry.estimatedSize = null;
+      }
+      renderFileList();
+    }
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  function uniqueName(baseName, ext, usedNames) {
+    let name = baseName + '.' + ext;
+    let n = 2;
+    while (usedNames.has(name)) { name = baseName + '-' + n + '.' + ext; n++; }
+    usedNames.add(name);
+    return name;
+  }
+
   convertBtn.addEventListener('click', async () => {
     clearError();
     if (!files.length) return;
@@ -356,31 +432,42 @@
     convertBtn.textContent = 'Converting…';
     const mime = formatSelect.value;
     const quality = parseInt(qualitySlider.value, 10) / 100;
+    const maxDimension = parseInt(maxDimensionSelect.value, 10) || 0;
     const ext = extensionFor(mime);
+    const useZip = zipOutputCheckbox.checked && typeof JSZip !== 'undefined';
 
+    const zip = useZip ? new JSZip() : null;
+    const usedNames = new Set();
     let failCount = 0;
     for (let i = 0; i < files.length; i++) {
       const entry = files[i];
       entry.status = 'Converting…';
       renderFileList();
       try {
-        const blob = await convertOne(entry, mime, quality);
+        const blob = await convertOne(entry, mime, quality, maxDimension);
         const baseName = entry.file.name.replace(/\.[^.]+$/, '');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = baseName + '.' + ext;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        const filename = uniqueName(baseName, ext, usedNames);
+        if (zip) {
+          zip.file(filename, blob);
+        } else {
+          downloadBlob(blob, filename);
+        }
         entry.status = '✓ Done';
       } catch (err) {
         entry.status = '✗ Failed';
         failCount++;
       }
       renderFileList();
-      await new Promise(r => setTimeout(r, 250)); // avoid overwhelming the browser's download prompts
+      if (!zip) await new Promise(r => setTimeout(r, 250)); // avoid overwhelming the browser's download prompts
+    }
+
+    if (zip) {
+      try {
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(zipBlob, 'file-forge-converted.zip');
+      } catch (err) {
+        showError('Could not build the .zip file: ' + err.message);
+      }
     }
 
     convertBtn.disabled = false;
