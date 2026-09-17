@@ -100,6 +100,16 @@
   }
   .upload-btn:hover { border-color: rgba(22, 32, 43, 0.55); }
 
+  .preload-item {
+    display: grid; grid-template-columns: 32px 1fr auto; gap: 8px; align-items: center;
+    background: #fff; border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius); padding: 6px 8px; margin-top: 6px;
+  }
+  .preload-item img { width: 32px; height: 32px; object-fit: cover; border-radius: 2px; }
+  .preload-item .preload-name { font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .preload-item .preload-actions { display: flex; gap: 2px; }
+  .preload-item .preload-actions button { background: transparent; border: none; cursor: pointer; font-size: 13px; padding: 2px 4px; color: var(--ink); }
+  .preload-item .preload-actions button.remove { color: var(--error); }
+
   .draft-btn {
     width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
     font-weight: 600; font-size: 15px; padding: 12px; cursor: pointer; transition: filter 0.15s ease;
@@ -230,6 +240,14 @@
       <p class="hint">Not counting the title slide. Leave blank to let the AI pick a reasonable number.</p>
     </div>
 
+    <div class="field">
+      <label>Photos (optional, one per slide)</label>
+      <label class="upload-btn" for="preloadPhotosInput">+ Add photos</label>
+      <input type="file" id="preloadPhotosInput" accept="image/*" multiple style="display:none;">
+      <p class="hint">Uploaded in order — the 1st photo goes on slide 1, the 2nd on slide 2, and so on, as soon as you plan. You can still swap or add media per-slide afterward.</p>
+    </div>
+    <div id="preloadPhotosList"></div>
+
     <button type="button" class="draft-btn" id="planBtn">✨ Plan slides with AI</button>
     <div class="error-box" id="errorBox"></div>
     <div class="success-box" id="successBox"></div>
@@ -280,6 +298,8 @@
   const addSlideBtn = document.getElementById('addSlideBtn');
   const buildBtn = document.getElementById('buildBtn');
   const titleBlockRight = document.getElementById('titleBlockRight');
+  const preloadPhotosInput = document.getElementById('preloadPhotosInput');
+  const preloadPhotosList = document.getElementById('preloadPhotosList');
 
   function showError(message) {
     successBox.classList.remove('show');
@@ -451,6 +471,43 @@
     return { id: ++slideIdCounter, title: title || 'New slide', bullets: bullets || [''], mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
   }
 
+  // ---------- preloaded photos (paired one-per-slide when planning) ----------
+  let preloadPhotos = []; // {id, dataUrl, name}
+  let preloadIdCounter = 0;
+
+  preloadPhotosInput.addEventListener('change', function (e) {
+    const files = Array.from(e.target.files || []);
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function () {
+        preloadPhotos.push({ id: ++preloadIdCounter, dataUrl: reader.result, name: file.name });
+        renderPreloadPhotosList();
+      };
+      reader.readAsDataURL(file);
+    });
+    preloadPhotosInput.value = '';
+  });
+
+  function renderPreloadPhotosList() {
+    preloadPhotosList.innerHTML = '';
+    preloadPhotos.forEach((photo, i) => {
+      const row = document.createElement('div');
+      row.className = 'preload-item';
+      row.innerHTML =
+        '<img src="' + photo.dataUrl + '" alt="">' +
+        '<span class="preload-name">' + (i + 1) + '. ' + photo.name.replace(/</g, '&lt;') + '</span>' +
+        '<span class="preload-actions">' +
+          '<button type="button" data-up title="Move up">▲</button>' +
+          '<button type="button" data-down title="Move down">▼</button>' +
+          '<button type="button" class="remove" data-remove title="Remove">✕</button>' +
+        '</span>';
+      row.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { [preloadPhotos[i - 1], preloadPhotos[i]] = [preloadPhotos[i], preloadPhotos[i - 1]]; renderPreloadPhotosList(); } });
+      row.querySelector('[data-down]').addEventListener('click', () => { if (i < preloadPhotos.length - 1) { [preloadPhotos[i + 1], preloadPhotos[i]] = [preloadPhotos[i], preloadPhotos[i + 1]]; renderPreloadPhotosList(); } });
+      row.querySelector('[data-remove]').addEventListener('click', () => { preloadPhotos = preloadPhotos.filter(p => p.id !== photo.id); renderPreloadPhotosList(); });
+      preloadPhotosList.appendChild(row);
+    });
+  }
+
   function refreshBuildButton() {
     buildBtn.disabled = slides.length === 0;
   }
@@ -603,9 +660,25 @@
       presentationTitle = plan.title || brief;
       slides = (plan.slides || []).map(s => newSlide(s.title, s.bullets));
       if (!slides.length) slides = [newSlide('New slide', ['Point one'])];
+
+      let pairedCount = 0;
+      slides.forEach((s, i) => {
+        if (preloadPhotos[i]) {
+          s.mediaDataUrl = preloadPhotos[i].dataUrl;
+          s.mediaType = 'image';
+          s.mediaName = preloadPhotos[i].name;
+          s.position = 'right';
+          pairedCount++;
+        }
+      });
+
       renderSlidesList();
       titleBlockRight.textContent = slides.length + ' slide' + (slides.length === 1 ? '' : 's') + ' planned';
-      showSuccess('Planned ' + slides.length + ' slides. Edit them below, add photos or videos, then build the file.');
+      showSuccess(
+        'Planned ' + slides.length + ' slides' +
+        (pairedCount ? ', paired with ' + pairedCount + ' photo' + (pairedCount === 1 ? '' : 's') : '') +
+        '. Edit them below, add photos or videos, then build the file.'
+      );
     } catch (err) {
       showError(err.message || 'Could not plan the presentation.');
       titleBlockRight.textContent = 'NOT STARTED';
