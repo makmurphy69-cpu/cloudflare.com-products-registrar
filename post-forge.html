@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Post Forge — post an announcement to Discord, Bluesky &amp; Mastodon at once</title>
+<meta name="description" content="Write one announcement and post it to your own Discord, Bluesky, and Mastodon accounts at once — free, right in your browser, using your own credentials.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Post Forge — post an announcement to Discord, Bluesky &amp; Mastodon at once">
+<meta property="og:description" content="Write one announcement and post it to your own Discord, Bluesky, and Mastodon accounts at once — free, right in your browser, using your own credentials.">
+<meta property="og:image" content="https://migabuilder.com/assets/og/post-forge.jpg">
+<meta property="og:url" content="https://migabuilder.com/post-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Post Forge — post an announcement to Discord, Bluesky &amp; Mastodon at once">
+<meta name="twitter:description" content="Write one announcement and post it to your own Discord, Bluesky, and Mastodon accounts at once — free, right in your browser, using your own credentials.">
+<meta name="twitter:image" content="https://migabuilder.com/assets/og/post-forge.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #0E2A47; --navy-deep: #081826; --paper: #EDEAE0; --paper-dim: #E2DECE; --ink: #16202B;
+    --line-cyan: #6FD1E0; --line-cyan-dim: rgba(111, 209, 224, 0.28);
+    --amber: #E2A63B; --amber-ink: #4A3410; --success: #4E9E73; --error: #D8604A; --radius: 3px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--navy); color: var(--paper); font-family: 'IBM Plex Sans', system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background-image: linear-gradient(var(--line-cyan-dim) 1px, transparent 1px), linear-gradient(90deg, var(--line-cyan-dim) 1px, transparent 1px);
+    background-size: 28px 28px; background-position: -1px -1px;
+  }
+  a { color: var(--line-cyan); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--line-cyan); outline-offset: 2px; }
+
+  header.masthead { display: flex; align-items: center; gap: 16px; padding: 26px clamp(20px, 4vw, 48px) 22px; position: relative; }
+  header.masthead::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+    background-image: repeating-linear-gradient(90deg, var(--line-cyan) 0, var(--line-cyan) 1px, transparent 1px, transparent 9px);
+    opacity: 0.55;
+  }
+  .logo-mark { width: 42px; height: 42px; flex: none; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.35)); }
+  header.masthead h1 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700; margin: 0;
+    background: linear-gradient(90deg, var(--paper), var(--line-cyan) 140%); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  header.masthead p { margin: 2px 0 0; font-size: 14px; color: rgba(237, 234, 224, 0.6); }
+
+  main { display: grid; grid-template-columns: minmax(340px, 420px) 1fr; gap: 24px; padding: 28px clamp(20px, 4vw, 48px) 56px; align-items: start; }
+  @media (max-width: 950px) { main { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px 22px 26px;
+    max-height: calc(100vh - 40px); overflow-y: auto; position: sticky; top: 20px;
+  }
+  @media (max-width: 950px) { .panel { position: static; max-height: none; } }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(22, 32, 43, 0.5); margin: 20px 0 12px; padding-top: 16px; border-top: 1px solid rgba(22, 32, 43, 0.14);
+  }
+  .section-title:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+
+  .field { margin-bottom: 12px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 5px; }
+  .field .hint { font-size: 11.5px; color: rgba(22, 32, 43, 0.62); margin-top: 4px; line-height: 1.4; }
+
+  input[type="text"], input[type="password"], textarea {
+    width: 100%; font-size: 13px; padding: 7px 9px; border: 1px solid rgba(22, 32, 43, 0.28);
+    border-radius: var(--radius); background: #fff; color: var(--ink);
+  }
+  textarea { resize: vertical; min-height: 90px; line-height: 1.45; }
+
+  .platform-card {
+    background: #fff; border: 1px solid rgba(22,32,43,0.18); border-radius: var(--radius); padding: 12px; margin-bottom: 10px;
+  }
+  .platform-card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .platform-card-head .ic { font-size: 18px; }
+  .platform-card-head .name { font-weight: 600; font-size: 13.5px; flex: 1; }
+  .conn-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(22,32,43,0.25); flex: none; }
+  .conn-dot.ok { background: var(--success); }
+  .conn-dot.bad { background: var(--error); }
+
+  .draft-btn {
+    width: 100%; background: var(--amber); color: var(--amber-ink); border: none; border-radius: var(--radius);
+    font-weight: 600; font-size: 13.5px; padding: 9px; cursor: pointer;
+  }
+  .draft-btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .draft-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .draft-btn.secondary { background: #fff; color: var(--ink); border: 1px solid rgba(22, 32, 43, 0.28); }
+  .btn-row { display: flex; gap: 6px; }
+  .btn-row button { flex: 1; }
+
+  .platform-status { font-size: 11.5px; margin-top: 6px; line-height: 1.4; }
+  .platform-status.ok { color: #275238; }
+  .platform-status.bad { color: #6E2418; }
+
+  .table {
+    background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
+    padding: 18px; min-height: 560px; display: flex; flex-direction: column;
+  }
+  .title-block {
+    display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: rgba(111, 209, 224, 0.75); padding-bottom: 12px;
+    margin-bottom: 14px; border-bottom: 1px solid var(--line-cyan-dim); flex-wrap: wrap; gap: 8px;
+  }
+  .compose-card { background: #fff; color: var(--ink); border-radius: var(--radius); padding: 16px; }
+  .char-count { font-size: 11.5px; color: rgba(22,32,43,0.5); text-align: right; margin-top: 4px; }
+  .char-count.warn { color: var(--error); }
+
+  .target-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  .target-chip { display: flex; align-items: center; gap: 6px; font-size: 12.5px; background: var(--paper-dim); padding: 6px 10px; border-radius: 20px; }
+  .target-chip input { width: auto; }
+
+  .error-box {
+    margin-top: 10px; padding: 10px 12px; background: rgba(216, 96, 74, 0.14); border: 1px solid rgba(216, 96, 74, 0.4);
+    border-radius: var(--radius); font-size: 12.5px; color: #6E2418; display: none; line-height: 1.4;
+  }
+  .error-box.show { display: block; }
+
+  .results-list { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+  .result-row { background: #fff; color: var(--ink); border-radius: var(--radius); padding: 8px 10px; font-size: 12.5px; display: flex; gap: 8px; align-items: center; }
+  .result-row .ic { flex: none; }
+
+  .history-list { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
+  .history-item { background: rgba(237,234,224,0.06); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius); padding: 8px 10px; font-size: 12px; color: rgba(237,234,224,0.75); }
+  .history-item .ts { color: rgba(237,234,224,0.45); font-size: 11px; }
+
+  footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); }
+  footer a { color: rgba(237, 234, 224, 0.7); }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <svg class="logo-mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/>
+    <path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 10 L32.5 5.5" stroke="#E2A63B" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="34" cy="4" r="2" fill="#E2A63B"/>
+  </svg>
+  <div>
+    <h1>Post Forge</h1>
+    <p>Write one announcement, post it to Discord, Bluesky, and Mastodon at once.</p>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="section-title">Your accounts</div>
+    <p class="hint" style="margin-top:0;">Saved only in this browser (localStorage) — never sent anywhere except directly to each platform when you post. X/Twitter isn't included: posting there needs a paid API tier and server-side request signing, unlike these three.</p>
+
+    <div class="platform-card">
+      <div class="platform-card-head"><span class="ic">💬</span><span class="name">Discord</span><span class="conn-dot" id="discordDot"></span></div>
+      <div class="field">
+        <label for="discordWebhook">Webhook URL</label>
+        <input type="password" id="discordWebhook" placeholder="https://discord.com/api/webhooks/...">
+        <p class="hint">Server Settings → Integrations → Webhooks → New Webhook → Copy URL.</p>
+      </div>
+      <button type="button" class="draft-btn secondary" data-test="discord">Test connection</button>
+      <div class="platform-status" id="discordStatus"></div>
+    </div>
+
+    <div class="platform-card">
+      <div class="platform-card-head"><span class="ic">🦋</span><span class="name">Bluesky</span><span class="conn-dot" id="blueskyDot"></span></div>
+      <div class="field">
+        <label for="blueskyHandle">Handle</label>
+        <input type="text" id="blueskyHandle" placeholder="yourname.bsky.social">
+      </div>
+      <div class="field">
+        <label for="blueskyPassword">App password</label>
+        <input type="password" id="blueskyPassword" placeholder="xxxx-xxxx-xxxx-xxxx">
+        <p class="hint">Settings → App Passwords → Add app password. Not your main login password.</p>
+      </div>
+      <button type="button" class="draft-btn secondary" data-test="bluesky">Test connection</button>
+      <div class="platform-status" id="blueskyStatus"></div>
+    </div>
+
+    <div class="platform-card">
+      <div class="platform-card-head"><span class="ic">🐘</span><span class="name">Mastodon</span><span class="conn-dot" id="mastodonDot"></span></div>
+      <div class="field">
+        <label for="mastodonInstance">Instance</label>
+        <input type="text" id="mastodonInstance" placeholder="mastodon.social">
+      </div>
+      <div class="field">
+        <label for="mastodonToken">Access token</label>
+        <input type="password" id="mastodonToken" placeholder="paste your token">
+        <p class="hint">Preferences → Development → New Application → check "write:statuses" → save, then copy "Your access token".</p>
+      </div>
+      <button type="button" class="draft-btn secondary" data-test="mastodon">Test connection</button>
+      <div class="platform-status" id="mastodonStatus"></div>
+    </div>
+
+    <button type="button" class="draft-btn" id="saveBtn" style="margin-top:8px;">💾 Save accounts</button>
+  </section>
+
+  <section class="table">
+    <div class="title-block">
+      <span>POST FORGE — COMPOSE</span>
+      <span id="titleBlockRight">READY</span>
+    </div>
+
+    <div class="compose-card">
+      <div class="field">
+        <label for="postText">Announcement</label>
+        <textarea id="postText" placeholder="New tool just launched: Paint Forge — a free layered image editor, right in your browser."></textarea>
+        <div class="char-count" id="charCount">0 characters</div>
+      </div>
+      <div class="field">
+        <label for="postLink">Link (optional)</label>
+        <input type="text" id="postLink" placeholder="https://migabuilder.com/paint-forge.html">
+      </div>
+      <div class="target-list" id="targetList"></div>
+      <div class="error-box" id="errorBox"></div>
+      <button type="button" class="draft-btn" id="postBtn" style="margin-top:14px;">🚀 Post now</button>
+      <div class="results-list" id="resultsList"></div>
+    </div>
+
+    <div class="section-title" style="color: rgba(237,234,224,0.5);">Recent posts</div>
+    <div class="history-list" id="historyList"></div>
+    <p class="hint" style="color: rgba(237,234,224,0.55);" id="historyEmpty">Nothing posted yet.</p>
+  </section>
+</main>
+
+<footer>Part of <a href="index.html">MigaBuilder</a>. Your credentials and post history stay in this browser only. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = 'postForgeAccounts_v1';
+  const HISTORY_KEY = 'postForgeHistory_v1';
+
+  const discordWebhook = document.getElementById('discordWebhook');
+  const blueskyHandle = document.getElementById('blueskyHandle');
+  const blueskyPassword = document.getElementById('blueskyPassword');
+  const mastodonInstance = document.getElementById('mastodonInstance');
+  const mastodonToken = document.getElementById('mastodonToken');
+  const saveBtn = document.getElementById('saveBtn');
+  const postText = document.getElementById('postText');
+  const postLink = document.getElementById('postLink');
+  const charCount = document.getElementById('charCount');
+  const targetList = document.getElementById('targetList');
+  const postBtn = document.getElementById('postBtn');
+  const errorBox = document.getElementById('errorBox');
+  const resultsList = document.getElementById('resultsList');
+  const historyList = document.getElementById('historyList');
+  const historyEmpty = document.getElementById('historyEmpty');
+
+  function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+
+  // ---------- persistence ----------
+  function loadAccounts() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function fillFromStorage() {
+    const a = loadAccounts();
+    discordWebhook.value = a.discordWebhook || '';
+    blueskyHandle.value = a.blueskyHandle || '';
+    blueskyPassword.value = a.blueskyPassword || '';
+    mastodonInstance.value = a.mastodonInstance || '';
+    mastodonToken.value = a.mastodonToken || '';
+  }
+  fillFromStorage();
+
+  saveBtn.addEventListener('click', function () {
+    const a = {
+      discordWebhook: discordWebhook.value.trim(),
+      blueskyHandle: blueskyHandle.value.trim(),
+      blueskyPassword: blueskyPassword.value.trim(),
+      mastodonInstance: mastodonInstance.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, ''),
+      mastodonToken: mastodonToken.value.trim()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(a));
+    renderTargetList();
+    saveBtn.textContent = '✓ Saved';
+    setTimeout(() => { saveBtn.textContent = '💾 Save accounts'; }, 1500);
+  });
+
+  function setDot(id, state) {
+    const dot = document.getElementById(id);
+    dot.className = 'conn-dot' + (state === 'ok' ? ' ok' : state === 'bad' ? ' bad' : '');
+  }
+  function setStatus(id, msg, ok) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.className = 'platform-status ' + (ok ? 'ok' : 'bad');
+  }
+
+  // ---------- platform calls ----------
+  async function testDiscord() {
+    const url = discordWebhook.value.trim();
+    if (!url) throw new Error('Add a webhook URL first.');
+    const res = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: '✅ Post Forge is connected to this channel.' })
+    });
+    if (!res.ok && res.status !== 204) throw new Error('Webhook responded with status ' + res.status);
+  }
+  async function postDiscord(message) {
+    const url = discordWebhook.value.trim();
+    const res = await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: message })
+    });
+    if (!res.ok && res.status !== 204) {
+      const body = await res.text().catch(() => '');
+      throw new Error('Discord responded with status ' + res.status + (body ? ': ' + body.slice(0, 150) : ''));
+    }
+  }
+
+  async function blueskySession() {
+    const identifier = blueskyHandle.value.trim();
+    const password = blueskyPassword.value.trim();
+    if (!identifier || !password) throw new Error('Add your handle and app password first.');
+    const res = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identifier, password })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.message) || 'Could not sign in to Bluesky.');
+    return data;
+  }
+  async function testBluesky() { await blueskySession(); }
+  async function postBluesky(message) {
+    const session = await blueskySession();
+    const res = await fetch('https://bsky.social/xrpc/com.atproto.repo.createRecord', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.accessJwt },
+      body: JSON.stringify({
+        repo: session.did, collection: 'app.bsky.feed.post',
+        record: { text: message, createdAt: new Date().toISOString(), $type: 'app.bsky.feed.post' }
+      })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.message) || 'Bluesky post failed.');
+  }
+
+  function mastodonBase() {
+    const instance = mastodonInstance.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (!instance) throw new Error('Add your Mastodon instance first.');
+    return 'https://' + instance;
+  }
+  async function testMastodon() {
+    const token = mastodonToken.value.trim();
+    if (!token) throw new Error('Add your access token first.');
+    const res = await fetch(mastodonBase() + '/api/v1/accounts/verify_credentials', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.error) || 'Could not verify Mastodon credentials.');
+  }
+  async function postMastodon(message) {
+    const token = mastodonToken.value.trim();
+    const res = await fetch(mastodonBase() + '/api/v1/statuses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ status: message })
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.error) || 'Mastodon post failed.');
+  }
+
+  const PLATFORMS = {
+    discord: { label: '💬 Discord', test: testDiscord, post: postDiscord, configured: () => !!discordWebhook.value.trim() },
+    bluesky: { label: '🦋 Bluesky', test: testBluesky, post: postBluesky, configured: () => !!(blueskyHandle.value.trim() && blueskyPassword.value.trim()) },
+    mastodon: { label: '🐘 Mastodon', test: testMastodon, post: postMastodon, configured: () => !!(mastodonInstance.value.trim() && mastodonToken.value.trim()) }
+  };
+
+  document.querySelectorAll('[data-test]').forEach(btn => {
+    btn.addEventListener('click', async function () {
+      const key = btn.dataset.test;
+      const dotId = key + 'Dot', statusId = key + 'Status';
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.textContent = 'Testing…';
+      try {
+        await PLATFORMS[key].test();
+        setDot(dotId, 'ok');
+        setStatus(statusId, '✓ Connected', true);
+      } catch (err) {
+        setDot(dotId, 'bad');
+        setStatus(statusId, err.message, false);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+        renderTargetList();
+      }
+    });
+  });
+
+  // ---------- compose ----------
+  function fullMessage() {
+    const text = postText.value.trim();
+    const link = postLink.value.trim();
+    return link ? text + '\n\n' + link : text;
+  }
+  postText.addEventListener('input', updateCharCount);
+  postLink.addEventListener('input', updateCharCount);
+  function updateCharCount() {
+    const len = fullMessage().length;
+    charCount.textContent = len + ' characters';
+    charCount.classList.toggle('warn', len > 280);
+  }
+  updateCharCount();
+
+  function renderTargetList() {
+    targetList.innerHTML = '';
+    Object.keys(PLATFORMS).forEach(key => {
+      const configured = PLATFORMS[key].configured();
+      const chip = document.createElement('label');
+      chip.className = 'target-chip';
+      chip.style.opacity = configured ? '1' : '0.4';
+      chip.innerHTML =
+        '<input type="checkbox" data-target="' + key + '"' + (configured ? ' checked' : ' disabled') + '>' +
+        PLATFORMS[key].label + (configured ? '' : ' (not connected)');
+      targetList.appendChild(chip);
+    });
+  }
+  renderTargetList();
+
+  // ---------- history ----------
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); } catch (e) { return []; }
+  }
+  function renderHistory() {
+    const items = loadHistory();
+    historyList.innerHTML = '';
+    historyEmpty.style.display = items.length ? 'none' : 'block';
+    items.slice(0, 10).forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'history-item';
+      row.innerHTML = '<div class="ts">' + new Date(item.at).toLocaleString() + ' — ' + item.targets.join(', ') + '</div>' + item.text.replace(/</g, '&lt;');
+      historyList.appendChild(row);
+    });
+  }
+  renderHistory();
+
+  // ---------- post ----------
+  postBtn.addEventListener('click', async function () {
+    clearError();
+    resultsList.innerHTML = '';
+    const message = fullMessage();
+    if (!postText.value.trim()) { showError('Write something to post first.'); return; }
+    const selected = Array.from(targetList.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.dataset.target);
+    if (!selected.length) { showError('Connect and check at least one platform first.'); return; }
+
+    postBtn.disabled = true;
+    postBtn.textContent = 'Posting…';
+    const succeeded = [];
+    for (const key of selected) {
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML = '<span class="ic">⏳</span><span>' + PLATFORMS[key].label + '…</span>';
+      resultsList.appendChild(row);
+      try {
+        await PLATFORMS[key].post(message);
+        row.innerHTML = '<span class="ic">✅</span><span>' + PLATFORMS[key].label + ' — posted</span>';
+        succeeded.push(key);
+      } catch (err) {
+        row.innerHTML = '<span class="ic">❌</span><span>' + PLATFORMS[key].label + ' — ' + err.message + '</span>';
+      }
+    }
+    if (succeeded.length) {
+      const items = loadHistory();
+      items.unshift({ at: Date.now(), text: postText.value.trim(), targets: succeeded });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(items.slice(0, 30)));
+      renderHistory();
+    }
+    postBtn.disabled = false;
+    postBtn.textContent = '🚀 Post now';
+  });
+})();
+</script>
+</body>
+</html>
