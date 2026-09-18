@@ -31,6 +31,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -158,103 +159,104 @@
   </svg>
   <div>
     <h1>Bot Forge</h1>
-    <p>Describe your business, then get a real chat widget you paste onto your own website.</p>
+    <p data-i18n="heroSubtitle">Describe your business, then get a real chat widget you paste onto your own website.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main>
   <section class="panel">
 
-    <div class="section-title">AI provider</div>
+    <div class="section-title" data-i18n="providerHeading">AI provider</div>
     <div class="field">
-      <label for="provider">Which one answers visitors' questions</label>
+      <label for="provider" data-i18n="providerLabel">Which one answers visitors' questions</label>
       <select id="provider">
-        <option value="gemini" selected>Google Gemini (recommended — free tier)</option>
-        <option value="openai">OpenAI</option>
-        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="gemini" data-i18n="providerGeminiOption" selected>Google Gemini (recommended — free tier)</option>
+        <option value="openai" data-i18n="providerOpenaiOption">OpenAI</option>
+        <option value="anthropic" data-i18n="providerAnthropicOption">Anthropic (Claude)</option>
       </select>
     </div>
     <div class="field">
       <label for="apiKey" id="apiKeyLabel">Your Gemini API key</label>
       <div class="key-row">
-        <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+        <input type="password" id="apiKey" data-i18n-placeholder="apiKeyPlaceholderGemini" placeholder="AIza..." autocomplete="off">
         <button type="button" class="toggle-key" id="toggleKey">Show</button>
       </div>
-      <p class="hint" id="keyHint">Free from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. This key gets embedded in your website's own source code so the widget can call it directly — anyone could technically view and copy it. That's a low-risk trade for a <strong>free-tier</strong> key (nothing to bill), which is why Gemini is the recommended choice here.</p>
-      <div class="warn-box" id="paidKeyWarning">⚠️ OpenAI and Anthropic keys are normally billed per use. Putting one in your public website's source means anyone who finds it could run up charges on your account. Only proceed if you understand that risk — e.g. a key on a strict spending cap.</div>
+      <p class="hint" id="keyHint" data-i18n-html="keyHintText">Free from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. This key gets embedded in your website's own source code so the widget can call it directly — anyone could technically view and copy it. That's a low-risk trade for a <strong>free-tier</strong> key (nothing to bill), which is why Gemini is the recommended choice here.</p>
+      <div class="warn-box" id="paidKeyWarning" data-i18n="paidKeyWarningText">⚠️ OpenAI and Anthropic keys are normally billed per use. Putting one in your public website's source means anyone who finds it could run up charges on your account. Only proceed if you understand that risk — e.g. a key on a strict spending cap.</div>
     </div>
 
-    <div class="section-title">Your business</div>
+    <div class="section-title" data-i18n="businessHeading">Your business</div>
     <div class="field">
-      <label for="bizName">Business name</label>
-      <input type="text" id="bizName" placeholder="Acme Plumbing">
+      <label for="bizName" data-i18n="bizNameLabel">Business name</label>
+      <input type="text" id="bizName" data-i18n-placeholder="bizNamePlaceholder" placeholder="Acme Plumbing">
     </div>
     <div class="field">
-      <label for="bizDesc">Short description</label>
-      <textarea id="bizDesc" placeholder="e.g. A family-owned plumbing company serving Austin, TX since 2005." style="min-height:50px;"></textarea>
+      <label for="bizDesc" data-i18n="bizDescLabel">Short description</label>
+      <textarea id="bizDesc" data-i18n-placeholder="bizDescPlaceholder" placeholder="e.g. A family-owned plumbing company serving Austin, TX since 2005." style="min-height:50px;"></textarea>
     </div>
     <div class="field">
-      <label for="knowledge">What should it know? (FAQs, hours, pricing, policies…)</label>
-      <textarea id="knowledge" placeholder="e.g. We're open Mon-Fri 8am-6pm. Emergency call-outs are $150. We service Austin and surrounding areas within 30 miles. We do NOT work on commercial properties." style="min-height:120px;"></textarea>
-      <p class="hint">The bot only answers using what you put here — it's told to say "I'm not sure, please contact us" for anything else, to avoid making things up.</p>
+      <label for="knowledge" data-i18n="knowledgeLabel">What should it know? (FAQs, hours, pricing, policies…)</label>
+      <textarea id="knowledge" data-i18n-placeholder="knowledgePlaceholder" placeholder="e.g. We're open Mon-Fri 8am-6pm. Emergency call-outs are $150. We service Austin and surrounding areas within 30 miles. We do NOT work on commercial properties." style="min-height:120px;"></textarea>
+      <p class="hint" data-i18n="knowledgeHint">The bot only answers using what you put here — it's told to say "I'm not sure, please contact us" for anything else, to avoid making things up.</p>
     </div>
 
-    <div class="section-title">Appearance</div>
+    <div class="section-title" data-i18n="appearanceHeading">Appearance</div>
     <div class="row-2">
       <div class="field">
-        <label for="botTitle">Widget title</label>
-        <input type="text" id="botTitle" placeholder="Ask us anything" value="Ask us anything">
+        <label for="botTitle" data-i18n="botTitleLabel">Widget title</label>
+        <input type="text" id="botTitle">
       </div>
       <div class="field">
-        <label for="botAvatar">Avatar emoji</label>
+        <label for="botAvatar" data-i18n="botAvatarLabel">Avatar emoji</label>
         <input type="text" id="botAvatar" value="💬" maxlength="4">
       </div>
     </div>
     <div class="field">
-      <label for="welcomeMsg">Welcome message</label>
-      <input type="text" id="welcomeMsg" value="Hi! Ask me anything about us.">
+      <label for="welcomeMsg" data-i18n="welcomeMsgLabel">Welcome message</label>
+      <input type="text" id="welcomeMsg">
     </div>
     <div class="row-2">
       <div class="field">
-        <label for="themeColor">Color</label>
+        <label for="themeColor" data-i18n="themeColorLabel">Color</label>
         <input type="color" id="themeColor" value="#0E2A47">
       </div>
       <div class="field">
-        <label for="position">Position</label>
+        <label for="position" data-i18n="positionLabel">Position</label>
         <select id="position">
-          <option value="right" selected>Bottom right</option>
-          <option value="left">Bottom left</option>
+          <option value="right" data-i18n="positionRight" selected>Bottom right</option>
+          <option value="left" data-i18n="positionLeft">Bottom left</option>
         </select>
       </div>
     </div>
     <div class="field">
-      <label for="dailyLimit">Max messages per visitor, per day</label>
+      <label for="dailyLimit" data-i18n="dailyLimitLabel">Max messages per visitor, per day</label>
       <input type="text" id="dailyLimit" value="30">
-      <p class="hint">Protects your embedded API key from runaway cost/quota use — once a visitor hits this in one browser, the widget tells them to contact you directly instead of calling the AI again until the next day.</p>
+      <p class="hint" data-i18n="dailyLimitHint">Protects your embedded API key from runaway cost/quota use — once a visitor hits this in one browser, the widget tells them to contact you directly instead of calling the AI again until the next day.</p>
     </div>
 
-    <button type="button" class="draft-btn" id="buildBtn">🔧 Build widget preview</button>
+    <button type="button" class="draft-btn" id="buildBtn" data-i18n="buildBtnLabel">🔧 Build widget preview</button>
     <div class="error-box" id="errorBox"></div>
     <div class="status-box" id="statusBox"></div>
   </section>
 
   <section class="table">
     <div class="title-block">
-      <span>BOT FORGE — LIVE PREVIEW</span>
-      <span id="titleBlockRight">NOT BUILT</span>
+      <span data-i18n="previewTitle">BOT FORGE — LIVE PREVIEW</span>
+      <span id="titleBlockRight" data-i18n="statusNotBuilt">NOT BUILT</span>
     </div>
     <div class="preview-stage">
       <div id="widgetMount"></div>
     </div>
     <div class="table-actions">
-      <button type="button" id="copyBtn" disabled>📋 Copy embed code</button>
-      <button type="button" id="downloadBtn" disabled class="primary">⬇ Download embed-code.html</button>
+      <button type="button" id="copyBtn" disabled data-i18n="copyBtnLabel">📋 Copy embed code</button>
+      <button type="button" id="downloadBtn" disabled class="primary" data-i18n="downloadBtnLabel">⬇ Download embed-code.html</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Paste the downloaded snippet right before <code>&lt;/body&gt;</code> on any page of your website. It calls the AI provider directly from each visitor's browser using the key above — there's no server, nothing to host, and nothing of yours goes through MigaBuilder.</p>
+    <p class="hint" data-i18n-html="pasteHint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Paste the downloaded snippet right before <code>&lt;/body&gt;</code> on any page of your website. It calls the AI provider directly from each visitor's browser using the key above — there's no server, nothing to host, and nothing of yours goes through MigaBuilder.</p>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. What you type here stays in your browser until you download or copy the widget — it's your file to host however you like. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. What you type here stays in your browser until you download or copy the widget — it's your file to host however you like. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -290,24 +292,23 @@
   function applyProviderUI() {
     const provider = providerSelect.value;
     if (provider === 'gemini') {
-      apiKeyLabel.textContent = 'Your Gemini API key';
-      apiKeyInput.placeholder = 'AIza...';
+      apiKeyLabel.textContent = I18N.t('apiKeyLabelGemini');
+      apiKeyInput.placeholder = I18N.t('apiKeyPlaceholderGemini');
       keyHint.style.display = 'block';
       paidKeyWarning.classList.remove('show');
     } else {
-      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
-      apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
+      apiKeyLabel.textContent = provider === 'openai' ? I18N.t('apiKeyLabelOpenai') : I18N.t('apiKeyLabelAnthropic');
+      apiKeyInput.placeholder = provider === 'openai' ? I18N.t('apiKeyPlaceholderOpenai') : I18N.t('apiKeyPlaceholderAnthropic');
       keyHint.style.display = 'none';
       paidKeyWarning.classList.add('show');
     }
   }
   providerSelect.addEventListener('change', applyProviderUI);
-  applyProviderUI();
 
   toggleKeyBtn.addEventListener('click', function () {
     const isPassword = apiKeyInput.type === 'password';
     apiKeyInput.type = isPassword ? 'text' : 'password';
-    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+    toggleKeyBtn.textContent = isPassword ? I18N.t('hide') : I18N.t('show');
   });
 
   let widgetHtml = '';
@@ -337,7 +338,12 @@
     welcome: "${escapeJsString(cfg.welcome)}",
     color: "${cfg.color}",
     position: "${cfg.position}",
-    dailyLimit: ${cfg.dailyLimit}
+    dailyLimit: ${cfg.dailyLimit},
+    uiSend: "${escapeJsString(cfg.uiSend)}",
+    uiPlaceholder: "${escapeJsString(cfg.uiPlaceholder)}",
+    uiLimitReached: "${escapeJsString(cfg.uiLimitReached)}",
+    uiFallback: "${escapeJsString(cfg.uiFallback)}",
+    uiErrorPrefix: "${escapeJsString(cfg.uiErrorPrefix)}"
   };
   var SYSTEM_PROMPT = "You are a helpful assistant for " + (CFG.bizName || "this business") + ". " +
     (CFG.bizDesc ? "About the business: " + CFG.bizDesc + " " : "") +
@@ -371,8 +377,8 @@
   var head = el("div", { style: "background:" + CFG.color + ";color:#fff;padding:14px 16px;font-weight:600;font-size:14px;" }, [CFG.title]);
   var messages = el("div", { style: "flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;" });
   var inputRow = el("div", { style: "display:flex;border-top:1px solid #eee;" });
-  var input = el("input", { type: "text", placeholder: "Type a message…", maxlength: "600", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
-  var sendBtn = el("button", { style: "border:none;background:" + CFG.color + ";color:#fff;padding:0 16px;cursor:pointer;font-size:13.5px;" }, ["Send"]);
+  var input = el("input", { type: "text", placeholder: CFG.uiPlaceholder, maxlength: "600", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
+  var sendBtn = el("button", { style: "border:none;background:" + CFG.color + ";color:#fff;padding:0 16px;cursor:pointer;font-size:13.5px;" }, [CFG.uiSend]);
   inputRow.appendChild(input); inputRow.appendChild(sendBtn);
   panel.appendChild(head); panel.appendChild(messages); panel.appendChild(inputRow);
   root.appendChild(panel); root.appendChild(bubble);
@@ -412,7 +418,7 @@
     var raw = cand && cand.content && cand.content.parts && cand.content.parts[0] ? cand.content.parts[0].text : "";
     history.push({ role: "user", parts: [{ text: userText }] });
     history.push({ role: "model", parts: [{ text: raw }] });
-    return stripFence(raw || "Sorry, I didn't catch that.");
+    return stripFence(raw || CFG.uiFallback);
   }
 
   async function callOpenAI(userText) {
@@ -425,7 +431,7 @@
     var data = await res.json();
     var raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "";
     history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
-    return stripFence(raw || "Sorry, I didn't catch that.");
+    return stripFence(raw || CFG.uiFallback);
   }
 
   async function callAnthropic(userText) {
@@ -440,7 +446,7 @@
     var block = data.content && data.content.filter(function(b){return b.type === "text";})[0];
     var raw = block ? block.text : "";
     history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
-    return stripFence(raw || "Sorry, I didn't catch that.");
+    return stripFence(raw || CFG.uiFallback);
   }
 
   var USAGE_KEY = "migabuilder_bot_forge_usage";
@@ -463,7 +469,7 @@
     var text = input.value.trim().slice(0, 600);
     if (!text) return;
     if (CFG.dailyLimit > 0 && getUsage().count >= CFG.dailyLimit) {
-      addMessage("You've reached today's message limit for this chat — please contact us directly and we'll help right away.", "bot");
+      addMessage(CFG.uiLimitReached, "bot");
       return;
     }
     input.value = "";
@@ -480,7 +486,7 @@
       addMessage(reply, "bot");
     } catch (err) {
       thinking.remove();
-      addMessage("Sorry, something went wrong: " + err.message, "bot");
+      addMessage(CFG.uiErrorPrefix + err.message, "bot");
     }
   }
   sendBtn.addEventListener("click", handleSend);
@@ -501,20 +507,25 @@
       bizName: bizName.value.trim(),
       bizDesc: bizDesc.value.trim(),
       knowledge: knowledge.value.trim(),
-      title: botTitle.value.trim() || 'Chat with us',
+      title: botTitle.value.trim() || I18N.t('defaultBotTitle'),
       avatar: botAvatar.value.trim() || '💬',
-      welcome: welcomeMsg.value.trim() || 'Hi! How can I help?',
+      welcome: welcomeMsg.value.trim() || I18N.t('defaultWelcomeMsg'),
       color: themeColor.value,
       position: positionSelect.value,
-      dailyLimit: Math.max(0, parseInt(dailyLimitInput.value, 10) || 0)
+      dailyLimit: Math.max(0, parseInt(dailyLimitInput.value, 10) || 0),
+      uiSend: I18N.t('widgetSend'),
+      uiPlaceholder: I18N.t('widgetPlaceholder'),
+      uiLimitReached: I18N.t('widgetLimitReached'),
+      uiFallback: I18N.t('widgetFallback'),
+      uiErrorPrefix: I18N.t('widgetErrorPrefix')
     };
   }
 
   buildBtn.addEventListener('click', function () {
     clearError();
     const cfg = readConfig();
-    if (!cfg.apiKey) { showError('Add your API key first.'); return; }
-    if (!cfg.knowledge) { showError('Add at least some info the bot should know.'); return; }
+    if (!cfg.apiKey) { showError(I18N.t('errorNoApiKey')); return; }
+    if (!cfg.knowledge) { showError(I18N.t('errorNoKnowledge')); return; }
 
     widgetHtml = buildEmbedFile(cfg);
 
@@ -527,22 +538,22 @@
     widgetMount.appendChild(frame);
     const doc = frame.contentDocument;
     doc.open();
-    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;font-family:system-ui,sans-serif;color:#999;display:flex;align-items:center;justify-content:center;height:100vh;}</style></head><body>Your website content would appear here' + widgetHtml + '</body></html>');
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;font-family:system-ui,sans-serif;color:#999;display:flex;align-items:center;justify-content:center;height:100vh;}</style></head><body>' + escapeHtml(I18N.t('previewPlaceholder')) + widgetHtml + '</body></html>');
     doc.close();
 
-    titleBlockRight.textContent = 'WIDGET READY';
+    titleBlockRight.textContent = I18N.t('statusWidgetReady');
     copyBtn.disabled = false;
     downloadBtn.disabled = false;
-    showStatus('Widget built — try chatting with it on the right, then copy or download it for your site.');
+    showStatus(I18N.t('statusBuilt'));
   });
 
   copyBtn.addEventListener('click', async function () {
     if (!widgetHtml) return;
     try {
       await navigator.clipboard.writeText(widgetHtml);
-      showStatus('Copied! Paste it right before </body> on your website.');
+      showStatus(I18N.t('statusCopied'));
     } catch (err) {
-      showError('Could not copy automatically — use Download instead.');
+      showError(I18N.t('errorCopyFailed'));
     }
   });
 
@@ -554,6 +565,303 @@
     a.href = url; a.download = 'embed-code.html';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'Describe your business, then get a real chat widget you paste onto your own website.',
+      providerHeading: 'AI provider',
+      providerLabel: "Which one answers visitors' questions",
+      providerGeminiOption: 'Google Gemini (recommended — free tier)',
+      providerOpenaiOption: 'OpenAI',
+      providerAnthropicOption: 'Anthropic (Claude)',
+      apiKeyLabelGemini: 'Your Gemini API key',
+      apiKeyLabelOpenai: 'Your OpenAI API key',
+      apiKeyLabelAnthropic: 'Your Anthropic API key',
+      apiKeyPlaceholderGemini: 'AIza...',
+      apiKeyPlaceholderOpenai: 'sk-...',
+      apiKeyPlaceholderAnthropic: 'sk-ant-...',
+      keyHintText: 'Free from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. This key gets embedded in your website\'s own source code so the widget can call it directly — anyone could technically view and copy it. That\'s a low-risk trade for a <strong>free-tier</strong> key (nothing to bill), which is why Gemini is the recommended choice here.',
+      paidKeyWarningText: '⚠️ OpenAI and Anthropic keys are normally billed per use. Putting one in your public website\'s source means anyone who finds it could run up charges on your account. Only proceed if you understand that risk — e.g. a key on a strict spending cap.',
+      businessHeading: 'Your business',
+      bizNameLabel: 'Business name',
+      bizNamePlaceholder: 'Acme Plumbing',
+      bizDescLabel: 'Short description',
+      bizDescPlaceholder: 'e.g. A family-owned plumbing company serving Austin, TX since 2005.',
+      knowledgeLabel: 'What should it know? (FAQs, hours, pricing, policies…)',
+      knowledgePlaceholder: "e.g. We're open Mon-Fri 8am-6pm. Emergency call-outs are $150. We service Austin and surrounding areas within 30 miles. We do NOT work on commercial properties.",
+      knowledgeHint: 'The bot only answers using what you put here — it\'s told to say "I\'m not sure, please contact us" for anything else, to avoid making things up.',
+      appearanceHeading: 'Appearance',
+      botTitleLabel: 'Widget title',
+      botAvatarLabel: 'Avatar emoji',
+      welcomeMsgLabel: 'Welcome message',
+      themeColorLabel: 'Color',
+      positionLabel: 'Position',
+      positionRight: 'Bottom right',
+      positionLeft: 'Bottom left',
+      dailyLimitLabel: 'Max messages per visitor, per day',
+      dailyLimitHint: "Protects your embedded API key from runaway cost/quota use — once a visitor hits this in one browser, the widget tells them to contact you directly instead of calling the AI again until the next day.",
+      buildBtnLabel: '🔧 Build widget preview',
+      previewTitle: 'BOT FORGE — LIVE PREVIEW',
+      statusNotBuilt: 'NOT BUILT',
+      statusWidgetReady: 'WIDGET READY',
+      statusBuilt: 'Widget built — try chatting with it on the right, then copy or download it for your site.',
+      statusCopied: "Copied! Paste it right before </body> on your website.",
+      copyBtnLabel: '📋 Copy embed code',
+      downloadBtnLabel: '⬇ Download embed-code.html',
+      pasteHint: 'Paste the downloaded snippet right before <code>&lt;/body&gt;</code> on any page of your website. It calls the AI provider directly from each visitor\'s browser using the key above — there\'s no server, nothing to host, and nothing of yours goes through MigaBuilder.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. What you type here stays in your browser until you download or copy the widget — it\'s your file to host however you like. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      errorNoApiKey: 'Add your API key first.',
+      errorNoKnowledge: 'Add at least some info the bot should know.',
+      errorCopyFailed: 'Could not copy automatically — use Download instead.',
+      previewPlaceholder: 'Your website content would appear here',
+      defaultBotTitle: 'Chat with us',
+      defaultWelcomeMsg: 'Hi! How can I help?',
+      exampleBotTitle: 'Ask us anything',
+      exampleWelcomeMsg: 'Hi! Ask me anything about us.',
+      widgetSend: 'Send',
+      widgetPlaceholder: 'Type a message…',
+      widgetLimitReached: "You've reached today's message limit for this chat — please contact us directly and we'll help right away.",
+      widgetFallback: "Sorry, I didn't catch that.",
+      widgetErrorPrefix: 'Sorry, something went wrong: '
+    },
+    es: {
+      heroSubtitle: 'Describe tu negocio y luego obtén un widget de chat real para pegar en tu propio sitio web.',
+      providerHeading: 'Proveedor de IA',
+      providerLabel: '¿Cuál responderá las preguntas de los visitantes?',
+      providerGeminiOption: 'Google Gemini (recomendado — nivel gratuito)',
+      providerOpenaiOption: 'OpenAI',
+      providerAnthropicOption: 'Anthropic (Claude)',
+      apiKeyLabelGemini: 'Tu clave API de Gemini',
+      apiKeyLabelOpenai: 'Tu clave API de OpenAI',
+      apiKeyLabelAnthropic: 'Tu clave API de Anthropic',
+      apiKeyPlaceholderGemini: 'AIza...',
+      apiKeyPlaceholderOpenai: 'sk-...',
+      apiKeyPlaceholderAnthropic: 'sk-ant-...',
+      keyHintText: 'Gratis desde <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Esta clave queda incrustada en el código fuente de tu sitio web para que el widget pueda usarla directamente — cualquiera podría técnicamente verla y copiarla. Es un riesgo bajo para una clave de <strong>nivel gratuito</strong> (nada que facturar), por eso Gemini es la opción recomendada aquí.',
+      paidKeyWarningText: '⚠️ Las claves de OpenAI y Anthropic normalmente se facturan por uso. Poner una en el código fuente público de tu sitio significa que cualquiera que la encuentre podría generar cargos en tu cuenta. Continúa solo si entiendes ese riesgo — por ejemplo, una clave con un límite de gasto estricto.',
+      businessHeading: 'Tu negocio',
+      bizNameLabel: 'Nombre del negocio',
+      bizNamePlaceholder: 'Plomería Acme',
+      bizDescLabel: 'Descripción breve',
+      bizDescPlaceholder: 'p. ej. Una empresa familiar de plomería que atiende Austin, TX desde 2005.',
+      knowledgeLabel: '¿Qué debe saber? (preguntas frecuentes, horarios, precios, políticas…)',
+      knowledgePlaceholder: 'p. ej. Abrimos de lunes a viernes de 8am a 6pm. Las visitas de emergencia cuestan $150. Damos servicio en Austin y alrededores dentro de 30 millas. NO trabajamos en propiedades comerciales.',
+      knowledgeHint: 'El bot solo responde con lo que pongas aquí — se le indica decir "No estoy seguro, por favor contáctanos" para cualquier otra cosa, para evitar que invente respuestas.',
+      appearanceHeading: 'Apariencia',
+      botTitleLabel: 'Título del widget',
+      botAvatarLabel: 'Emoji del avatar',
+      welcomeMsgLabel: 'Mensaje de bienvenida',
+      themeColorLabel: 'Color',
+      positionLabel: 'Posición',
+      positionRight: 'Abajo a la derecha',
+      positionLeft: 'Abajo a la izquierda',
+      dailyLimitLabel: 'Máximo de mensajes por visitante, por día',
+      dailyLimitHint: 'Protege tu clave API incrustada de un uso descontrolado de costo/cuota — una vez que un visitante alcanza este límite en un navegador, el widget le indica que te contacte directamente en lugar de volver a llamar a la IA hasta el día siguiente.',
+      buildBtnLabel: '🔧 Generar vista previa del widget',
+      previewTitle: 'BOT FORGE — VISTA PREVIA EN VIVO',
+      statusNotBuilt: 'NO GENERADO',
+      statusWidgetReady: 'WIDGET LISTO',
+      statusBuilt: 'Widget generado — pruébalo chateando a la derecha, luego cópialo o descárgalo para tu sitio.',
+      statusCopied: '¡Copiado! Pégalo justo antes de </body> en tu sitio web.',
+      copyBtnLabel: '📋 Copiar código de inserción',
+      downloadBtnLabel: '⬇ Descargar embed-code.html',
+      pasteHint: 'Pega el fragmento descargado justo antes de <code>&lt;/body&gt;</code> en cualquier página de tu sitio web. Llama al proveedor de IA directamente desde el navegador de cada visitante usando la clave anterior — no hay servidor, nada que alojar, y nada tuyo pasa por MigaBuilder.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Lo que escribes aquí permanece en tu navegador hasta que descargues o copies el widget — es tu archivo para alojar como quieras. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      errorNoApiKey: 'Añade primero tu clave API.',
+      errorNoKnowledge: 'Añade al menos algo de información que el bot deba saber.',
+      errorCopyFailed: 'No se pudo copiar automáticamente — usa Descargar en su lugar.',
+      previewPlaceholder: 'Aquí aparecería el contenido de tu sitio web',
+      defaultBotTitle: 'Chatea con nosotros',
+      defaultWelcomeMsg: '¡Hola! ¿Cómo puedo ayudarte?',
+      exampleBotTitle: 'Pregúntanos lo que sea',
+      exampleWelcomeMsg: '¡Hola! Pregúntame lo que quieras sobre nosotros.',
+      widgetSend: 'Enviar',
+      widgetPlaceholder: 'Escribe un mensaje…',
+      widgetLimitReached: 'Has alcanzado el límite de mensajes de hoy para este chat — por favor contáctanos directamente y te ayudaremos de inmediato.',
+      widgetFallback: 'Lo siento, no entendí eso.',
+      widgetErrorPrefix: 'Lo siento, algo salió mal: '
+    },
+    ar: {
+      heroSubtitle: 'صف عملك، ثم احصل على أداة دردشة حقيقية تلصقها في موقعك الإلكتروني.',
+      providerHeading: 'مزوّد الذكاء الاصطناعي',
+      providerLabel: 'من سيجيب على أسئلة الزوار',
+      providerGeminiOption: 'Google Gemini (موصى به — مستوى مجاني)',
+      providerOpenaiOption: 'OpenAI',
+      providerAnthropicOption: 'Anthropic (Claude)',
+      apiKeyLabelGemini: 'مفتاح Gemini API الخاص بك',
+      apiKeyLabelOpenai: 'مفتاح OpenAI API الخاص بك',
+      apiKeyLabelAnthropic: 'مفتاح Anthropic API الخاص بك',
+      apiKeyPlaceholderGemini: 'AIza...',
+      apiKeyPlaceholderOpenai: 'sk-...',
+      apiKeyPlaceholderAnthropic: 'sk-ant-...',
+      keyHintText: 'مجانًا من <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. يتم تضمين هذا المفتاح في الكود المصدري لموقعك حتى تتمكن الأداة من استدعائه مباشرة — يمكن لأي شخص من الناحية الفنية رؤيته ونسخه. هذه مخاطرة منخفضة لمفتاح من <strong>المستوى المجاني</strong> (لا شيء يُفوتر)، ولهذا يُوصى باستخدام Gemini هنا.',
+      paidKeyWarningText: '⚠️ عادةً ما تُفوتر مفاتيح OpenAI وAnthropic حسب الاستخدام. وضع أحدها في الكود المصدري العام لموقعك يعني أن أي شخص يجده يمكنه تكبيد حسابك رسومًا. تابع فقط إذا كنت تفهم هذه المخاطرة — مثلاً مفتاح بحد إنفاق صارم.',
+      businessHeading: 'عملك',
+      bizNameLabel: 'اسم العمل',
+      bizNamePlaceholder: 'سباكة أكمي',
+      bizDescLabel: 'وصف قصير',
+      bizDescPlaceholder: 'مثال: شركة سباكة عائلية تخدم أوستن، تكساس منذ عام 2005.',
+      knowledgeLabel: 'ماذا يجب أن تعرف؟ (الأسئلة الشائعة، ساعات العمل، الأسعار، السياسات…)',
+      knowledgePlaceholder: 'مثال: نحن مفتوحون من الاثنين إلى الجمعة من 8 صباحًا حتى 6 مساءً. زيارات الطوارئ تكلف 150 دولارًا. نخدم أوستن والمناطق المحيطة ضمن 30 ميلاً. نحن لا نعمل في العقارات التجارية.',
+      knowledgeHint: 'يجيب البوت فقط باستخدام ما تضعه هنا — تم إخباره بقول "لست متأكدًا، يرجى التواصل معنا" لأي شيء آخر، لتجنب اختلاق الإجابات.',
+      appearanceHeading: 'المظهر',
+      botTitleLabel: 'عنوان الأداة',
+      botAvatarLabel: 'رمز تعبيري للصورة الرمزية',
+      welcomeMsgLabel: 'رسالة الترحيب',
+      themeColorLabel: 'اللون',
+      positionLabel: 'الموضع',
+      positionRight: 'أسفل اليمين',
+      positionLeft: 'أسفل اليسار',
+      dailyLimitLabel: 'الحد الأقصى للرسائل لكل زائر، يوميًا',
+      dailyLimitHint: 'يحمي مفتاح API المضمّن من الاستخدام الجامح للتكلفة/الحصة — بمجرد أن يصل الزائر إلى هذا الحد في متصفح واحد، تخبره الأداة بالتواصل معك مباشرة بدلاً من استدعاء الذكاء الاصطناعي مرة أخرى حتى اليوم التالي.',
+      buildBtnLabel: '🔧 إنشاء معاينة الأداة',
+      previewTitle: 'BOT FORGE — معاينة مباشرة',
+      statusNotBuilt: 'لم يُنشأ',
+      statusWidgetReady: 'الأداة جاهزة',
+      statusBuilt: 'تم إنشاء الأداة — جرّب الدردشة معها على اليمين، ثم انسخها أو نزّلها لموقعك.',
+      statusCopied: 'تم النسخ! الصقها قبل </body> مباشرة في موقعك.',
+      copyBtnLabel: '📋 نسخ كود التضمين',
+      downloadBtnLabel: '⬇ تنزيل embed-code.html',
+      pasteHint: 'الصق المقتطف الذي نزّلته قبل <code>&lt;/body&gt;</code> مباشرة في أي صفحة من موقعك. يستدعي مزوّد الذكاء الاصطناعي مباشرة من متصفح كل زائر باستخدام المفتاح أعلاه — لا يوجد خادم، ولا شيء لاستضافته، ولا شيء منك يمر عبر MigaBuilder.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. ما تكتبه هنا يبقى في متصفحك حتى تُنزّل الأداة أو تنسخها — إنه ملفك لاستضافته كيفما تشاء. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      errorNoApiKey: 'أضف مفتاح API الخاص بك أولاً.',
+      errorNoKnowledge: 'أضف بعض المعلومات على الأقل التي يجب أن يعرفها البوت.',
+      errorCopyFailed: 'تعذر النسخ تلقائيًا — استخدم التنزيل بدلاً من ذلك.',
+      previewPlaceholder: 'سيظهر محتوى موقعك هنا',
+      defaultBotTitle: 'تحدث معنا',
+      defaultWelcomeMsg: 'مرحبًا! كيف يمكنني المساعدة؟',
+      exampleBotTitle: 'اسألنا عن أي شيء',
+      exampleWelcomeMsg: 'مرحبًا! اسألني أي شيء عنّا.',
+      widgetSend: 'إرسال',
+      widgetPlaceholder: 'اكتب رسالة…',
+      widgetLimitReached: 'لقد وصلت إلى الحد الأقصى لرسائل اليوم في هذه المحادثة — يرجى التواصل معنا مباشرة وسنساعدك على الفور.',
+      widgetFallback: 'عذرًا، لم أفهم ذلك.',
+      widgetErrorPrefix: 'عذرًا، حدث خطأ ما: '
+    },
+    zh: {
+      heroSubtitle: '描述你的商家，然后获得一个可以粘贴到你自己网站上的真实聊天小部件。',
+      providerHeading: 'AI 提供商',
+      providerLabel: '由谁来回答访客的问题',
+      providerGeminiOption: 'Google Gemini（推荐 — 免费额度）',
+      providerOpenaiOption: 'OpenAI',
+      providerAnthropicOption: 'Anthropic（Claude）',
+      apiKeyLabelGemini: '你的 Gemini API 密钥',
+      apiKeyLabelOpenai: '你的 OpenAI API 密钥',
+      apiKeyLabelAnthropic: '你的 Anthropic API 密钥',
+      apiKeyPlaceholderGemini: 'AIza...',
+      apiKeyPlaceholderOpenai: 'sk-...',
+      apiKeyPlaceholderAnthropic: 'sk-ant-...',
+      keyHintText: '免费获取，来自 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>。此密钥会嵌入到你网站自己的源代码中，以便小部件可以直接调用它——任何人理论上都可以查看并复制它。对于<strong>免费额度</strong>密钥（无需付费）来说，这是一个低风险的权衡，这就是为什么 Gemini 是这里推荐的选择。',
+      paidKeyWarningText: '⚠️ OpenAI 和 Anthropic 的密钥通常按使用量计费。将其放在你公开网站的源代码中意味着任何发现它的人都可能为你的账户产生费用。仅在你理解此风险的情况下继续——例如使用有严格消费上限的密钥。',
+      businessHeading: '你的商家',
+      bizNameLabel: '商家名称',
+      bizNamePlaceholder: 'Acme 水管公司',
+      bizDescLabel: '简短描述',
+      bizDescPlaceholder: '例如：一家自2005年起服务德州奥斯汀的家族水管公司。',
+      knowledgeLabel: '它应该知道什么？（常见问题、营业时间、价格、政策……）',
+      knowledgePlaceholder: '例如：我们周一至周五早上8点至晚上6点营业。紧急上门服务150美元。我们服务奥斯汀及周边30英里范围内的地区。我们不承接商业物业的业务。',
+      knowledgeHint: '机器人只会使用你在此填写的内容来回答问题——对于其他任何问题，它会被告知说"我不确定，请联系我们"，以避免编造答案。',
+      appearanceHeading: '外观',
+      botTitleLabel: '小部件标题',
+      botAvatarLabel: '头像表情符号',
+      welcomeMsgLabel: '欢迎消息',
+      themeColorLabel: '颜色',
+      positionLabel: '位置',
+      positionRight: '右下角',
+      positionLeft: '左下角',
+      dailyLimitLabel: '每位访客每天的最大消息数',
+      dailyLimitHint: '保护你嵌入的 API 密钥免受失控的费用/额度消耗——一旦访客在一个浏览器中达到此限制，小部件会告诉他们直接联系你，而不是在第二天之前再次调用 AI。',
+      buildBtnLabel: '🔧 生成小部件预览',
+      previewTitle: 'BOT FORGE — 实时预览',
+      statusNotBuilt: '未生成',
+      statusWidgetReady: '小部件已就绪',
+      statusBuilt: '小部件已生成——在右侧试着和它聊聊，然后复制或下载到你的网站。',
+      statusCopied: '已复制！请将其粘贴在你网站的 </body> 之前。',
+      copyBtnLabel: '📋 复制嵌入代码',
+      downloadBtnLabel: '⬇ 下载 embed-code.html',
+      pasteHint: '将下载的代码片段粘贴在你网站任意页面的 <code>&lt;/body&gt;</code> 之前。它会使用上面的密钥直接从每个访客的浏览器调用 AI 提供商——没有服务器，无需托管任何东西，你的任何内容都不会经过 MigaBuilder。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。你在此输入的内容会一直保留在浏览器中，直到你下载或复制该小部件——这是你的文件，可以按你喜欢的方式托管。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      errorNoApiKey: '请先添加你的 API 密钥。',
+      errorNoKnowledge: '请至少添加一些机器人应该知道的信息。',
+      errorCopyFailed: '无法自动复制——请改用下载。',
+      previewPlaceholder: '你网站的内容会显示在这里',
+      defaultBotTitle: '与我们聊天',
+      defaultWelcomeMsg: '你好！我能帮你什么？',
+      exampleBotTitle: '有什么都可以问我们',
+      exampleWelcomeMsg: '你好！关于我们的任何问题都可以问我。',
+      widgetSend: '发送',
+      widgetPlaceholder: '输入消息…',
+      widgetLimitReached: '你已达到今天此聊天的消息上限——请直接联系我们，我们会立即为你提供帮助。',
+      widgetFallback: '抱歉，我没听懂。',
+      widgetErrorPrefix: '抱歉，出了点问题：'
+    },
+    sw: {
+      heroSubtitle: 'Eleza biashara yako, kisha upate kifaa halisi cha mazungumzo unachoweza kubandika kwenye tovuti yako mwenyewe.',
+      providerHeading: 'Mtoa huduma wa AI',
+      providerLabel: 'Ni yupi atakayejibu maswali ya wageni',
+      providerGeminiOption: 'Google Gemini (inapendekezwa — kiwango cha bure)',
+      providerOpenaiOption: 'OpenAI',
+      providerAnthropicOption: 'Anthropic (Claude)',
+      apiKeyLabelGemini: 'Ufunguo wako wa API wa Gemini',
+      apiKeyLabelOpenai: 'Ufunguo wako wa API wa OpenAI',
+      apiKeyLabelAnthropic: 'Ufunguo wako wa API wa Anthropic',
+      apiKeyPlaceholderGemini: 'AIza...',
+      apiKeyPlaceholderOpenai: 'sk-...',
+      apiKeyPlaceholderAnthropic: 'sk-ant-...',
+      keyHintText: 'Bure kutoka <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>. Ufunguo huu unaingizwa kwenye msimbo chanzo wa tovuti yako ili kifaa kiweze kuutumia moja kwa moja — mtu yeyote anaweza kiufundi kuuona na kuunakili. Hilo ni hatari ndogo kwa ufunguo wa <strong>kiwango cha bure</strong> (hakuna cha kutozwa), ndiyo maana Gemini ndiyo chaguo linalopendekezwa hapa.',
+      paidKeyWarningText: '⚠️ Funguo za OpenAI na Anthropic kwa kawaida hutozwa kulingana na matumizi. Kuweka moja kwenye msimbo chanzo wa umma wa tovuti yako kunamaanisha yeyote anayeipata anaweza kusababisha malipo kwenye akaunti yako. Endelea tu ikiwa unaelewa hatari hiyo — mfano, ufunguo wenye kikomo kikali cha matumizi.',
+      businessHeading: 'Biashara yako',
+      bizNameLabel: 'Jina la biashara',
+      bizNamePlaceholder: 'Mabomba ya Acme',
+      bizDescLabel: 'Maelezo mafupi',
+      bizDescPlaceholder: 'mfano: Kampuni ya familia ya mabomba inayohudumia Austin, TX tangu 2005.',
+      knowledgeLabel: 'Inapaswa kujua nini? (Maswali yanayoulizwa mara kwa mara, saa, bei, sera…)',
+      knowledgePlaceholder: 'mfano: Tunafunguliwa Jumatatu-Ijumaa 8am-6pm. Ziara za dharura ni $150. Tunahudumia Austin na maeneo ya jirani ndani ya maili 30. HATUFANYI kazi kwenye mali za kibiashara.',
+      knowledgeHint: 'Roboti hujibu tu kwa kutumia unachoweka hapa — imeambiwa kusema "Sina uhakika, tafadhali wasiliana nasi" kwa kitu kingine chochote, ili kuepuka kubuni majibu.',
+      appearanceHeading: 'Mwonekano',
+      botTitleLabel: 'Kichwa cha kifaa',
+      botAvatarLabel: 'Ishara ya avatar',
+      welcomeMsgLabel: 'Ujumbe wa kukaribisha',
+      themeColorLabel: 'Rangi',
+      positionLabel: 'Nafasi',
+      positionRight: 'Chini kulia',
+      positionLeft: 'Chini kushoto',
+      dailyLimitLabel: 'Idadi kubwa zaidi ya ujumbe kwa kila mgeni, kwa siku',
+      dailyLimitHint: 'Inalinda ufunguo wako wa API uliopachikwa dhidi ya matumizi makubwa ya gharama/kiwango — mgeni anapofikia kikomo hiki kwenye kivinjari kimoja, kifaa humwambia awasiliane nawe moja kwa moja badala ya kupiga simu tena kwa AI hadi siku inayofuata.',
+      buildBtnLabel: '🔧 Tengeneza muonekano wa kifaa',
+      previewTitle: 'BOT FORGE — MUONEKANO WA MOJA KWA MOJA',
+      statusNotBuilt: 'HAIJAJENGWA',
+      statusWidgetReady: 'KIFAA TAYARI',
+      statusBuilt: 'Kifaa kimetengenezwa — jaribu kuzungumza nacho upande wa kulia, kisha kinakili au kipakue kwa tovuti yako.',
+      statusCopied: 'Imenakiliwa! Ibandike kabla ya </body> kwenye tovuti yako.',
+      copyBtnLabel: '📋 Nakili msimbo wa kupachika',
+      downloadBtnLabel: '⬇ Pakua embed-code.html',
+      pasteHint: 'Bandika kipande kilichopakuliwa kabla ya <code>&lt;/body&gt;</code> kwenye ukurasa wowote wa tovuti yako. Kinawasiliana na mtoa huduma wa AI moja kwa moja kutoka kivinjari cha kila mgeni kwa kutumia ufunguo ulio hapo juu — hakuna seva, hakuna kitu cha kuhifadhi, na hakuna kinachopitia MigaBuilder.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Unachoandika hapa kinabaki kwenye kivinjari chako hadi upakue au kunakili kifaa — ni faili lako la kuhifadhi vyovyote unavyopenda. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      errorNoApiKey: 'Ongeza ufunguo wako wa API kwanza.',
+      errorNoKnowledge: 'Ongeza angalau taarifa fulani ambazo roboti inapaswa kujua.',
+      errorCopyFailed: 'Imeshindwa kunakili kiotomatiki — tumia Pakua badala yake.',
+      previewPlaceholder: 'Maudhui ya tovuti yako yangeonekana hapa',
+      defaultBotTitle: 'Zungumza nasi',
+      defaultWelcomeMsg: 'Habari! Ninawezaje kusaidia?',
+      exampleBotTitle: 'Tuulize chochote',
+      exampleWelcomeMsg: 'Habari! Niulize chochote kutuhusu.',
+      widgetSend: 'Tuma',
+      widgetPlaceholder: 'Andika ujumbe…',
+      widgetLimitReached: 'Umefikia kikomo cha ujumbe cha leo kwa mazungumzo haya — tafadhali wasiliana nasi moja kwa moja na tutakusaidia mara moja.',
+      widgetFallback: 'Samahani, sikuelewa hilo.',
+      widgetErrorPrefix: 'Samahani, hitilafu imetokea: '
+    }
+  });
+
+  applyProviderUI();
+  botTitle.value = I18N.t('exampleBotTitle');
+  welcomeMsg.value = I18N.t('exampleWelcomeMsg');
+  toggleKeyBtn.textContent = apiKeyInput.type === 'password' ? I18N.t('show') : I18N.t('hide');
+  I18N.onChange(function () {
+    applyProviderUI();
+    toggleKeyBtn.textContent = apiKeyInput.type === 'password' ? I18N.t('show') : I18N.t('hide');
   });
 })();
 </script>
