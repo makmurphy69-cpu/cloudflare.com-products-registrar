@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -130,114 +131,115 @@
   </svg>
   <div>
     <h1>QR Forge</h1>
-    <p>Turn any link or text into a downloadable QR code — instantly, in your browser.</p>
+    <p data-i18n="heroSubtitle">Turn any link or text into a downloadable QR code — instantly, in your browser.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <div class="solo-wrap">
   <div class="panel">
-    <div class="section-title">Content</div>
+    <div class="section-title" data-i18n="contentHeading">Content</div>
     <div class="field">
-      <label for="qrType">Type</label>
+      <label for="qrType" data-i18n="typeLabel">Type</label>
       <select id="qrType">
-        <option value="text" selected>Link or plain text</option>
-        <option value="wifi">Wi-Fi network</option>
-        <option value="vcard">Contact card (vCard)</option>
-        <option value="phone">Phone number</option>
-        <option value="email">Email address</option>
+        <option value="text" selected data-i18n="typeOptText">Link or plain text</option>
+        <option value="wifi" data-i18n="typeOptWifi">Wi-Fi network</option>
+        <option value="vcard" data-i18n="typeOptVcard">Contact card (vCard)</option>
+        <option value="phone" data-i18n="typeOptPhone">Phone number</option>
+        <option value="email" data-i18n="typeOptEmail">Email address</option>
       </select>
     </div>
     <div class="field" id="fieldsText">
-      <label for="qrText">Link or text to encode</label>
+      <label for="qrText" data-i18n="qrTextLabel">Link or text to encode</label>
       <input type="text" id="qrText" placeholder="https://yourbusiness.com or any text" value="https://migabuilder.com">
-      <p class="hint">Works for URLs, phone numbers, plain text — anything a QR scanner can read.</p>
+      <p class="hint" data-i18n="qrTextHint">Works for URLs, phone numbers, plain text — anything a QR scanner can read.</p>
     </div>
     <div class="field" id="fieldsWifi" style="display:none;">
-      <label for="wifiSsid">Network name (SSID)</label>
+      <label for="wifiSsid" data-i18n="wifiSsidLabel">Network name (SSID)</label>
       <input type="text" id="wifiSsid" placeholder="MyHomeWiFi">
       <div class="row-2" style="margin-top:10px;">
         <div>
-          <label for="wifiSecurity">Security</label>
+          <label for="wifiSecurity" data-i18n="wifiSecurityLabel">Security</label>
           <select id="wifiSecurity">
-            <option value="WPA" selected>WPA/WPA2</option>
-            <option value="WEP">WEP</option>
-            <option value="nopass">None (open network)</option>
+            <option value="WPA" selected data-i18n="wifiSecWpa">WPA/WPA2</option>
+            <option value="WEP" data-i18n="wifiSecWep">WEP</option>
+            <option value="nopass" data-i18n="wifiSecNone">None (open network)</option>
           </select>
         </div>
         <div>
-          <label for="wifiPassword">Password</label>
-          <input type="text" id="wifiPassword" placeholder="Leave blank if open">
+          <label for="wifiPassword" data-i18n="wifiPasswordLabel">Password</label>
+          <input type="text" id="wifiPassword" data-i18n-placeholder="wifiPasswordPlaceholder" placeholder="Leave blank if open">
         </div>
       </div>
-      <p class="hint">Scanning this connects a phone directly to the network — no typing required.</p>
+      <p class="hint" data-i18n="wifiHint">Scanning this connects a phone directly to the network — no typing required.</p>
     </div>
     <div class="field" id="fieldsVcard" style="display:none;">
-      <label for="vcardName">Full name</label>
+      <label for="vcardName" data-i18n="vcardNameLabel">Full name</label>
       <input type="text" id="vcardName" placeholder="Jane Smith">
       <div class="row-2" style="margin-top:10px;">
         <div>
-          <label for="vcardPhone">Phone</label>
+          <label for="vcardPhone" data-i18n="vcardPhoneLabel">Phone</label>
           <input type="text" id="vcardPhone" placeholder="+1 555 0100">
         </div>
         <div>
-          <label for="vcardEmail">Email</label>
+          <label for="vcardEmail" data-i18n="vcardEmailLabel">Email</label>
           <input type="text" id="vcardEmail" placeholder="jane@example.com">
         </div>
       </div>
-      <p class="hint">Scanning saves this as a new contact.</p>
+      <p class="hint" data-i18n="vcardHint">Scanning saves this as a new contact.</p>
     </div>
     <div class="field" id="fieldsPhone" style="display:none;">
-      <label for="phoneNumber">Phone number</label>
+      <label for="phoneNumber" data-i18n="phoneNumberLabel">Phone number</label>
       <input type="text" id="phoneNumber" placeholder="+1 555 0100">
-      <p class="hint">Scanning dials this number directly.</p>
+      <p class="hint" data-i18n="phoneHint">Scanning dials this number directly.</p>
     </div>
     <div class="field" id="fieldsEmail" style="display:none;">
-      <label for="emailAddress">Email address</label>
+      <label for="emailAddress" data-i18n="emailAddressLabel">Email address</label>
       <input type="text" id="emailAddress" placeholder="jane@example.com">
-      <p class="hint">Scanning opens a new email addressed to this.</p>
+      <p class="hint" data-i18n="emailHint">Scanning opens a new email addressed to this.</p>
     </div>
 
-    <div class="section-title">Logo overlay (optional)</div>
+    <div class="section-title" data-i18n="logoHeading">Logo overlay (optional)</div>
     <div class="field">
-      <label class="upload-btn" for="logoInput" id="logoUploadLabel">+ Add a logo to the center</label>
+      <label class="upload-btn" for="logoInput" id="logoUploadLabel" data-i18n="logoUploadInitial">+ Add a logo to the center</label>
       <input type="file" id="logoInput" accept="image/*" style="display:none;">
-      <p class="hint">Automatically switches error correction to High so the code still scans with the center covered.</p>
-      <button type="button" id="removeLogoBtn" style="display:none;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:12.5px;">Remove logo</button>
+      <p class="hint" data-i18n="logoHint">Automatically switches error correction to High so the code still scans with the center covered.</p>
+      <button type="button" id="removeLogoBtn" data-i18n="removeLogoBtnLabel" style="display:none;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:12.5px;">Remove logo</button>
     </div>
 
-    <div class="section-title">Style</div>
+    <div class="section-title" data-i18n="styleHeading">Style</div>
     <div class="field row-2">
       <div>
-        <label for="qrSize">Size</label>
+        <label for="qrSize" data-i18n="sizeLabel">Size</label>
         <select id="qrSize">
-          <option value="200">200 × 200 (web)</option>
-          <option value="400" selected>400 × 400 (standard)</option>
-          <option value="800">800 × 800 (print)</option>
+          <option value="200" data-i18n="size200">200 × 200 (web)</option>
+          <option value="400" selected data-i18n="size400">400 × 400 (standard)</option>
+          <option value="800" data-i18n="size800">800 × 800 (print)</option>
         </select>
       </div>
       <div>
-        <label for="qrLevel">Error correction</label>
+        <label for="qrLevel" data-i18n="levelLabel">Error correction</label>
         <select id="qrLevel">
-          <option value="L">Low — smallest pattern</option>
-          <option value="M" selected>Medium — recommended</option>
-          <option value="Q">Quartile — sturdier</option>
-          <option value="H">High — best for logos overlaid</option>
+          <option value="L" data-i18n="levelL">Low — smallest pattern</option>
+          <option value="M" selected data-i18n="levelM">Medium — recommended</option>
+          <option value="Q" data-i18n="levelQ">Quartile — sturdier</option>
+          <option value="H" data-i18n="levelH">High — best for logos overlaid</option>
         </select>
-        <p class="hint" id="levelForcedHint" style="display:none;">Forced to High while a logo is overlaid.</p>
+        <p class="hint" id="levelForcedHint" data-i18n="levelForcedHint" style="display:none;">Forced to High while a logo is overlaid.</p>
       </div>
     </div>
     <div class="field row-2">
       <div>
-        <label for="qrDark">Code color</label>
+        <label for="qrDark" data-i18n="darkLabel">Code color</label>
         <input type="color" id="qrDark" value="#0e2a47">
       </div>
       <div>
-        <label for="qrLight">Background color</label>
+        <label for="qrLight" data-i18n="lightLabel">Background color</label>
         <input type="color" id="qrLight" value="#ffffff">
       </div>
     </div>
 
-    <button type="button" class="draft-btn" id="downloadBtn">Download PNG</button>
+    <button type="button" class="draft-btn" id="downloadBtn" data-i18n="downloadBtnLabel">Download PNG</button>
     <div class="error-box" id="errorBox"></div>
   </div>
 
@@ -246,7 +248,7 @@
   </div>
 </div>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Everything is generated locally — nothing you type is sent anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. Everything is generated locally — nothing you type is sent anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function(){
@@ -336,11 +338,11 @@
       const img = new Image();
       img.onload = () => {
         logoImg = img;
-        logoUploadLabel.textContent = 'Replace logo';
+        logoUploadLabel.textContent = I18N.t('logoUploadReplace');
         removeLogoBtn.style.display = 'inline';
         render();
       };
-      img.onerror = () => showError('Could not read that image.');
+      img.onerror = () => showError(I18N.t('errorReadImage'));
       img.src = reader.result;
     };
     reader.readAsDataURL(file);
@@ -348,7 +350,7 @@
   removeLogoBtn.addEventListener('click', () => {
     logoImg = null;
     logoInput.value = '';
-    logoUploadLabel.textContent = '+ Add a logo to the center';
+    logoUploadLabel.textContent = I18N.t('logoUploadInitial');
     removeLogoBtn.style.display = 'none';
     render();
   });
@@ -360,7 +362,7 @@
     qrLevel.disabled = !!logoImg;
     levelForcedHint.style.display = logoImg ? 'block' : 'none';
     if (!text) {
-      qrTarget.innerHTML = '<div class="preview-empty">Fill in the fields above to see the code</div>';
+      qrTarget.innerHTML = '<div class="preview-empty">' + I18N.t('previewEmpty') + '</div>';
       downloadBtn.disabled = true;
       return;
     }
@@ -390,7 +392,7 @@
       }
       downloadBtn.disabled = false;
     } catch (err) {
-      showError('Could not generate a QR code for that input — try shorter text.');
+      showError(I18N.t('errorGenerate'));
       downloadBtn.disabled = true;
     }
   }
@@ -402,7 +404,7 @@
 
   downloadBtn.addEventListener('click', () => {
     const canvas = qrTarget.querySelector('canvas');
-    if (!canvas) { showError('Nothing to download yet.'); return; }
+    if (!canvas) { showError(I18N.t('errorNothingToDownload')); return; }
     const url = canvas.toDataURL('image/png');
     const a = document.createElement('a');
     a.href = url;
@@ -412,6 +414,109 @@
     document.body.removeChild(a);
   });
 
+  I18N.onChange(render);
+  I18N.init({
+    en: {
+      heroSubtitle: 'Turn any link or text into a downloadable QR code — instantly, in your browser.',
+      contentHeading: 'Content', typeLabel: 'Type',
+      typeOptText: 'Link or plain text', typeOptWifi: 'Wi-Fi network', typeOptVcard: 'Contact card (vCard)', typeOptPhone: 'Phone number', typeOptEmail: 'Email address',
+      qrTextLabel: 'Link or text to encode', qrTextHint: 'Works for URLs, phone numbers, plain text — anything a QR scanner can read.',
+      wifiSsidLabel: 'Network name (SSID)', wifiSecurityLabel: 'Security', wifiSecWpa: 'WPA/WPA2', wifiSecWep: 'WEP', wifiSecNone: 'None (open network)',
+      wifiPasswordLabel: 'Password', wifiPasswordPlaceholder: 'Leave blank if open', wifiHint: 'Scanning this connects a phone directly to the network — no typing required.',
+      vcardNameLabel: 'Full name', vcardPhoneLabel: 'Phone', vcardEmailLabel: 'Email', vcardHint: 'Scanning saves this as a new contact.',
+      phoneNumberLabel: 'Phone number', phoneHint: 'Scanning dials this number directly.',
+      emailAddressLabel: 'Email address', emailHint: 'Scanning opens a new email addressed to this.',
+      logoHeading: 'Logo overlay (optional)', logoUploadInitial: '+ Add a logo to the center', logoUploadReplace: 'Replace logo',
+      logoHint: 'Automatically switches error correction to High so the code still scans with the center covered.', removeLogoBtnLabel: 'Remove logo',
+      styleHeading: 'Style', sizeLabel: 'Size', size200: '200 × 200 (web)', size400: '400 × 400 (standard)', size800: '800 × 800 (print)',
+      levelLabel: 'Error correction', levelL: 'Low — smallest pattern', levelM: 'Medium — recommended', levelQ: 'Quartile — sturdier', levelH: 'High — best for logos overlaid',
+      levelForcedHint: 'Forced to High while a logo is overlaid.',
+      darkLabel: 'Code color', lightLabel: 'Background color', downloadBtnLabel: 'Download PNG',
+      previewEmpty: 'Fill in the fields above to see the code',
+      errorReadImage: 'Could not read that image.', errorGenerate: 'Could not generate a QR code for that input — try shorter text.', errorNothingToDownload: 'Nothing to download yet.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. Everything is generated locally — nothing you type is sent anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>'
+    },
+    es: {
+      heroSubtitle: 'Convierte cualquier enlace o texto en un código QR descargable — al instante, en tu navegador.',
+      contentHeading: 'Contenido', typeLabel: 'Tipo',
+      typeOptText: 'Enlace o texto plano', typeOptWifi: 'Red Wi-Fi', typeOptVcard: 'Tarjeta de contacto (vCard)', typeOptPhone: 'Número de teléfono', typeOptEmail: 'Dirección de correo',
+      qrTextLabel: 'Enlace o texto a codificar', qrTextHint: 'Funciona con URLs, números de teléfono, texto plano — cualquier cosa que un lector de QR pueda leer.',
+      wifiSsidLabel: 'Nombre de la red (SSID)', wifiSecurityLabel: 'Seguridad', wifiSecWpa: 'WPA/WPA2', wifiSecWep: 'WEP', wifiSecNone: 'Ninguna (red abierta)',
+      wifiPasswordLabel: 'Contraseña', wifiPasswordPlaceholder: 'Deja en blanco si es abierta', wifiHint: 'Escanear esto conecta un teléfono directamente a la red — sin necesidad de escribir nada.',
+      vcardNameLabel: 'Nombre completo', vcardPhoneLabel: 'Teléfono', vcardEmailLabel: 'Correo', vcardHint: 'Escanear esto lo guarda como un nuevo contacto.',
+      phoneNumberLabel: 'Número de teléfono', phoneHint: 'Escanear esto marca este número directamente.',
+      emailAddressLabel: 'Dirección de correo', emailHint: 'Escanear esto abre un nuevo correo dirigido a esta dirección.',
+      logoHeading: 'Logotipo superpuesto (opcional)', logoUploadInitial: '+ Añadir un logotipo en el centro', logoUploadReplace: 'Reemplazar logotipo',
+      logoHint: 'Cambia automáticamente la corrección de errores a Alta para que el código siga siendo legible con el centro cubierto.', removeLogoBtnLabel: 'Quitar logotipo',
+      styleHeading: 'Estilo', sizeLabel: 'Tamaño', size200: '200 × 200 (web)', size400: '400 × 400 (estándar)', size800: '800 × 800 (impresión)',
+      levelLabel: 'Corrección de errores', levelL: 'Baja — patrón más pequeño', levelM: 'Media — recomendada', levelQ: 'Cuartil — más resistente', levelH: 'Alta — mejor para logotipos superpuestos',
+      levelForcedHint: 'Forzado a Alta mientras haya un logotipo superpuesto.',
+      darkLabel: 'Color del código', lightLabel: 'Color de fondo', downloadBtnLabel: 'Descargar PNG',
+      previewEmpty: 'Completa los campos de arriba para ver el código',
+      errorReadImage: 'No se pudo leer esa imagen.', errorGenerate: 'No se pudo generar un código QR para esa entrada — prueba con un texto más corto.', errorNothingToDownload: 'Aún no hay nada que descargar.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Todo se genera localmente — nada de lo que escribes se envía a ningún lugar. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>'
+    },
+    ar: {
+      heroSubtitle: 'حوّل أي رابط أو نص إلى رمز QR قابل للتنزيل — فورًا، في متصفحك.',
+      contentHeading: 'المحتوى', typeLabel: 'النوع',
+      typeOptText: 'رابط أو نص عادي', typeOptWifi: 'شبكة Wi-Fi', typeOptVcard: 'بطاقة تواصل (vCard)', typeOptPhone: 'رقم هاتف', typeOptEmail: 'عنوان بريد إلكتروني',
+      qrTextLabel: 'الرابط أو النص المراد ترميزه', qrTextHint: 'يعمل مع الروابط وأرقام الهواتف والنصوص العادية — أي شيء يمكن لقارئ QR قراءته.',
+      wifiSsidLabel: 'اسم الشبكة (SSID)', wifiSecurityLabel: 'الأمان', wifiSecWpa: 'WPA/WPA2', wifiSecWep: 'WEP', wifiSecNone: 'بدون (شبكة مفتوحة)',
+      wifiPasswordLabel: 'كلمة المرور', wifiPasswordPlaceholder: 'اتركه فارغًا إذا كانت مفتوحة', wifiHint: 'المسح يصل الهاتف مباشرة بالشبكة — دون الحاجة للكتابة.',
+      vcardNameLabel: 'الاسم الكامل', vcardPhoneLabel: 'الهاتف', vcardEmailLabel: 'البريد الإلكتروني', vcardHint: 'المسح يحفظ هذا كجهة اتصال جديدة.',
+      phoneNumberLabel: 'رقم الهاتف', phoneHint: 'المسح يتصل بهذا الرقم مباشرة.',
+      emailAddressLabel: 'عنوان البريد الإلكتروني', emailHint: 'المسح يفتح رسالة بريد إلكتروني جديدة موجهة إلى هذا العنوان.',
+      logoHeading: 'شعار مُدرج (اختياري)', logoUploadInitial: '+ إضافة شعار في المنتصف', logoUploadReplace: 'استبدال الشعار',
+      logoHint: 'يُحوّل تلقائيًا تصحيح الأخطاء إلى المستوى العالي حتى يظل الرمز قابلاً للمسح مع تغطية المنتصف.', removeLogoBtnLabel: 'إزالة الشعار',
+      styleHeading: 'النمط', sizeLabel: 'الحجم', size200: '200 × 200 (ويب)', size400: '400 × 400 (قياسي)', size800: '800 × 800 (طباعة)',
+      levelLabel: 'تصحيح الأخطاء', levelL: 'منخفض — أصغر نمط', levelM: 'متوسط — موصى به', levelQ: 'ربعي — أكثر متانة', levelH: 'عالٍ — الأفضل للشعارات المُدرجة',
+      levelForcedHint: 'يُفرض المستوى العالي أثناء وجود شعار مُدرج.',
+      darkLabel: 'لون الرمز', lightLabel: 'لون الخلفية', downloadBtnLabel: 'تنزيل PNG',
+      previewEmpty: 'املأ الحقول أعلاه لرؤية الرمز',
+      errorReadImage: 'تعذّرت قراءة تلك الصورة.', errorGenerate: 'تعذّر إنشاء رمز QR لهذا الإدخال — جرّب نصًا أقصر.', errorNothingToDownload: 'لا يوجد شيء لتنزيله بعد.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. يتم إنشاء كل شيء محليًا — لا يُرسل أي شيء تكتبه إلى أي مكان. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>'
+    },
+    zh: {
+      heroSubtitle: '将任何链接或文本转换为可下载的二维码——就在你的浏览器中，即时完成。',
+      contentHeading: '内容', typeLabel: '类型',
+      typeOptText: '链接或纯文本', typeOptWifi: 'Wi-Fi 网络', typeOptVcard: '联系人名片（vCard）', typeOptPhone: '电话号码', typeOptEmail: '电子邮件地址',
+      qrTextLabel: '要编码的链接或文本', qrTextHint: '支持网址、电话号码、纯文本——任何二维码扫描器可以读取的内容。',
+      wifiSsidLabel: '网络名称（SSID）', wifiSecurityLabel: '安全方式', wifiSecWpa: 'WPA/WPA2', wifiSecWep: 'WEP', wifiSecNone: '无（开放网络）',
+      wifiPasswordLabel: '密码', wifiPasswordPlaceholder: '开放网络请留空', wifiHint: '扫描后手机会直接连接到该网络——无需手动输入。',
+      vcardNameLabel: '姓名', vcardPhoneLabel: '电话', vcardEmailLabel: '电子邮件', vcardHint: '扫描后会将其保存为新联系人。',
+      phoneNumberLabel: '电话号码', phoneHint: '扫描后会直接拨打此号码。',
+      emailAddressLabel: '电子邮件地址', emailHint: '扫描后会打开一封发往此地址的新邮件。',
+      logoHeading: '徽标叠加（可选）', logoUploadInitial: '+ 在中心添加徽标', logoUploadReplace: '替换徽标',
+      logoHint: '会自动将纠错级别切换为高，以便中心被遮挡后二维码仍可扫描。', removeLogoBtnLabel: '移除徽标',
+      styleHeading: '样式', sizeLabel: '尺寸', size200: '200 × 200（网页）', size400: '400 × 400（标准）', size800: '800 × 800（印刷）',
+      levelLabel: '纠错级别', levelL: '低 — 图案最小', levelM: '中 — 推荐', levelQ: '四分之一 — 更耐用', levelH: '高 — 最适合叠加徽标',
+      levelForcedHint: '叠加徽标时会强制使用高纠错级别。',
+      darkLabel: '二维码颜色', lightLabel: '背景颜色', downloadBtnLabel: '下载 PNG',
+      previewEmpty: '填写上方字段即可看到二维码',
+      errorReadImage: '无法读取该图片。', errorGenerate: '无法为该输入生成二维码——请尝试更短的文本。', errorNothingToDownload: '目前还没有可下载的内容。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。一切都在本地生成——你输入的任何内容都不会被发送到任何地方。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>'
+    },
+    sw: {
+      heroSubtitle: 'Geuza kiungo au maandishi yoyote kuwa msimbo wa QR unaoweza kupakuliwa — papo hapo, kwenye kivinjari chako.',
+      contentHeading: 'Maudhui', typeLabel: 'Aina',
+      typeOptText: 'Kiungo au maandishi wazi', typeOptWifi: 'Mtandao wa Wi-Fi', typeOptVcard: 'Kadi ya mawasiliano (vCard)', typeOptPhone: 'Nambari ya simu', typeOptEmail: 'Anwani ya barua pepe',
+      qrTextLabel: 'Kiungo au maandishi ya kusimba', qrTextHint: 'Inafanya kazi na URL, nambari za simu, maandishi wazi — chochote kinachoweza kusomwa na kisoma QR.',
+      wifiSsidLabel: 'Jina la mtandao (SSID)', wifiSecurityLabel: 'Usalama', wifiSecWpa: 'WPA/WPA2', wifiSecWep: 'WEP', wifiSecNone: 'Hakuna (mtandao wazi)',
+      wifiPasswordLabel: 'Nenosiri', wifiPasswordPlaceholder: 'Acha wazi ikiwa hauna nenosiri', wifiHint: 'Kuskani hii huunganisha simu moja kwa moja kwenye mtandao — hakuna uandishi unaohitajika.',
+      vcardNameLabel: 'Jina kamili', vcardPhoneLabel: 'Simu', vcardEmailLabel: 'Barua pepe', vcardHint: 'Kuskani huhifadhi hii kama mawasiliano mapya.',
+      phoneNumberLabel: 'Nambari ya simu', phoneHint: 'Kuskani hupiga nambari hii moja kwa moja.',
+      emailAddressLabel: 'Anwani ya barua pepe', emailHint: 'Kuskani hufungua barua pepe mpya iliyoelekezwa kwa hii.',
+      logoHeading: 'Nembo juu ya msimbo (hiari)', logoUploadInitial: '+ Ongeza nembo katikati', logoUploadReplace: 'Badilisha nembo',
+      logoHint: 'Hubadilisha kiotomatiki urekebishaji wa hitilafu kuwa Juu ili msimbo uendelee kusomeka hata katikati ikiwa imefunikwa.', removeLogoBtnLabel: 'Ondoa nembo',
+      styleHeading: 'Mtindo', sizeLabel: 'Ukubwa', size200: '200 × 200 (wavuti)', size400: '400 × 400 (kawaida)', size800: '800 × 800 (uchapishaji)',
+      levelLabel: 'Urekebishaji wa hitilafu', levelL: 'Chini — muundo mdogo zaidi', levelM: 'Wastani — inapendekezwa', levelQ: 'Robo — imara zaidi', levelH: 'Juu — bora kwa nembo zilizowekwa juu',
+      levelForcedHint: 'Inalazimishwa kuwa Juu wakati nembo imewekwa juu ya msimbo.',
+      darkLabel: 'Rangi ya msimbo', lightLabel: 'Rangi ya mandharinyuma', downloadBtnLabel: 'Pakua PNG',
+      previewEmpty: 'Jaza sehemu zilizo hapo juu kuona msimbo',
+      errorReadImage: 'Imeshindwa kusoma picha hiyo.', errorGenerate: 'Imeshindwa kutengeneza msimbo wa QR kwa ingizo hilo — jaribu maandishi mafupi zaidi.', errorNothingToDownload: 'Hakuna bado cha kupakua.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Kila kitu hutengenezwa ndani ya kivinjari chako — hakuna unachoandika kinachotumwa popote. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>'
+    }
+  });
   render();
 })();
 </script>
