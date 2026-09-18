@@ -136,6 +136,12 @@
   }
   .error-box.show { display: block; }
 
+  .status-box {
+    margin-top: 0; margin-bottom: 12px; padding: 12px 14px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 13px; color: #244731; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+
   /* ---------- canvas area ---------- */
   .canvas-table {
     background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
@@ -186,6 +192,15 @@
 
 <main class="paint-main">
   <section class="panel">
+    <div class="status-box" id="draftBanner">
+      <span id="draftBannerText"></span>
+      <div class="btn-row" style="margin-top:8px;">
+        <button type="button" class="draft-btn secondary" id="resumeDraftBtn" style="flex:1;" data-i18n="resumeDraftLabel">↺ Resume draft</button>
+        <button type="button" class="draft-btn secondary" id="discardDraftBtn" style="flex:1;" data-i18n="discardLabel">✕ Discard</button>
+      </div>
+    </div>
+    <p class="field hint" id="autosaveHint" style="margin:0 0 12px;"><span data-i18n="autosaveHintText">Your progress autosaves to this browser as you work, so a refresh won't lose it.</span> <span id="autosaveStatus"></span> <a href="#" id="clearDraftLink" style="color:var(--navy);text-decoration:underline;" data-i18n="clearDraftLinkText">Clear saved draft</a></p>
+
     <div class="section-title" data-i18n="toolsHeading">Tools</div>
     <div class="tool-grid" id="toolGrid"></div>
 
@@ -314,6 +329,13 @@
   const canvasScroll = document.querySelector('.canvas-scroll');
   const errorBox = document.getElementById('errorBox');
 
+  const draftBanner = document.getElementById('draftBanner');
+  const draftBannerText = document.getElementById('draftBannerText');
+  const resumeDraftBtn = document.getElementById('resumeDraftBtn');
+  const discardDraftBtn = document.getElementById('discardDraftBtn');
+  const autosaveStatus = document.getElementById('autosaveStatus');
+  const clearDraftLink = document.getElementById('clearDraftLink');
+
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
 
@@ -380,6 +402,7 @@
     if (undoStack.length > MAX_HISTORY) undoStack.shift();
     redoStack = [];
     refreshHistoryButtons();
+    scheduleAutosave();
   }
   function refreshHistoryButtons() {
     document.getElementById('undoBtn').disabled = undoStack.length === 0;
@@ -389,13 +412,13 @@
     if (!undoStack.length) return;
     redoStack.push(snapshotState());
     const state = undoStack.pop();
-    restoreState(state, refreshHistoryButtons);
+    restoreState(state, function () { refreshHistoryButtons(); scheduleAutosave(); });
   });
   document.getElementById('redoBtn').addEventListener('click', function () {
     if (!redoStack.length) return;
     undoStack.push(snapshotState());
     const state = redoStack.pop();
-    restoreState(state, refreshHistoryButtons);
+    restoreState(state, function () { refreshHistoryButtons(); scheduleAutosave(); });
   });
 
   // ================= compositing =================
@@ -880,7 +903,7 @@
       const visCheckbox = document.createElement('input');
       visCheckbox.type = 'checkbox'; visCheckbox.checked = layer.visible; visCheckbox.style.width = 'auto';
       visCheckbox.addEventListener('click', e => e.stopPropagation());
-      visCheckbox.addEventListener('change', (e) => { e.stopPropagation(); layer.visible = visCheckbox.checked; renderComposite(); });
+      visCheckbox.addEventListener('change', (e) => { e.stopPropagation(); layer.visible = visCheckbox.checked; renderComposite(); scheduleAutosave(); });
       const thumb = document.createElement('img');
       thumb.src = layer.canvas.toDataURL();
       const info = document.createElement('div');
@@ -888,11 +911,11 @@
       const nameInput = document.createElement('input');
       nameInput.type = 'text'; nameInput.value = layer.name;
       nameInput.addEventListener('click', e => e.stopPropagation());
-      nameInput.addEventListener('input', () => { layer.name = nameInput.value; });
+      nameInput.addEventListener('input', () => { layer.name = nameInput.value; scheduleAutosave(); });
       const opacitySlider = document.createElement('input');
       opacitySlider.type = 'range'; opacitySlider.min = '0'; opacitySlider.max = '1'; opacitySlider.step = '0.05'; opacitySlider.value = layer.opacity;
       opacitySlider.addEventListener('click', e => e.stopPropagation());
-      opacitySlider.addEventListener('input', () => { layer.opacity = parseFloat(opacitySlider.value); renderComposite(); });
+      opacitySlider.addEventListener('input', () => { layer.opacity = parseFloat(opacitySlider.value); renderComposite(); scheduleAutosave(); });
       info.appendChild(nameInput); info.appendChild(opacitySlider);
 
       const actions = document.createElement('div');
@@ -1059,6 +1082,7 @@
     const h = Math.max(16, Math.min(4000, parseInt(hStr, 10) || canvasHeight));
     const bg = window.confirm(I18N.t('backgroundConfirmPrompt')) ? 'white' : 'transparent';
     initCanvas(w, h, bg);
+    scheduleAutosave();
   });
   document.getElementById('resizeCanvasBtn').addEventListener('click', function () {
     const wStr = window.prompt(I18N.t('newWidthPrompt'), String(canvasWidth));
@@ -1134,6 +1158,83 @@
   });
   document.getElementById('exportJpgBtn').addEventListener('click', function () {
     downloadCanvas(flattenToCanvas('#ffffff'), 'paint-forge.jpg', 'image/jpeg');
+  });
+
+  // ================= draft autosave / resume (localStorage) =================
+  const DRAFT_KEY = 'paintForgeDraft_v1';
+  let autosaveTimer = null;
+  let suppressAutosave = false; // true while a draft is being loaded, so loading it doesn't immediately re-save it
+
+  function scheduleAutosave() {
+    if (suppressAutosave) return;
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(saveDraft, 900);
+  }
+
+  function saveDraft() {
+    try {
+      const state = { version: 1, savedAt: Date.now(), canvas: snapshotState() };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+      autosaveStatus.textContent = I18N.t('savedJustNowText');
+    } catch (err) {
+      autosaveStatus.textContent = I18N.t('autosaveFailedText');
+    }
+  }
+
+  function clearDraft() {
+    localStorage.removeItem(DRAFT_KEY);
+    autosaveStatus.textContent = '';
+  }
+
+  function loadDraftIntoState(state) {
+    return new Promise(function (resolve) {
+      suppressAutosave = true;
+      const maxId = state.canvas.layers.reduce(function (m, l) { return Math.max(m, l.id); }, 0);
+      layerIdCounter = Math.max(layerIdCounter, maxId);
+      restoreState(state.canvas, function () {
+        refreshHistoryButtons();
+        suppressAutosave = false;
+        resolve();
+      });
+    });
+  }
+
+  function checkForSavedDraft() {
+    let raw;
+    try { raw = localStorage.getItem(DRAFT_KEY); } catch (e) { return; }
+    if (!raw) return;
+    let state;
+    try { state = JSON.parse(raw); } catch (e) { clearDraft(); return; }
+    if (!state.canvas || !Array.isArray(state.canvas.layers)) { clearDraft(); return; }
+    const layerCount = state.canvas.layers.length;
+    const when = new Date(state.savedAt || Date.now());
+    const layerKey = layerCount === 1 ? 'draftLayerOne' : 'draftLayersMany';
+    draftBannerText.textContent = I18N.t('draftBannerPrefix') + ' ' + when.toLocaleString() + ' (' + layerCount + ' ' + I18N.t(layerKey);
+    draftBanner.classList.add('show');
+    resumeDraftBtn.onclick = async function () {
+      clearError();
+      resumeDraftBtn.disabled = true;
+      resumeDraftBtn.textContent = I18N.t('loadingLabel');
+      try {
+        await loadDraftIntoState(state);
+        draftBanner.classList.remove('show');
+      } catch (err) {
+        showError(I18N.t('errorCouldNotLoadDraft') + ' ' + err.message);
+      } finally {
+        resumeDraftBtn.disabled = false;
+        resumeDraftBtn.textContent = I18N.t('resumeDraftLabel');
+      }
+    };
+    discardDraftBtn.onclick = function () {
+      clearDraft();
+      draftBanner.classList.remove('show');
+    };
+  }
+
+  clearDraftLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!window.confirm(I18N.t('clearDraftConfirm'))) return;
+    clearDraft();
   });
 
   // ================= init =================
@@ -1227,7 +1328,19 @@
       canvasHeightPrompt: 'Canvas height (px):',
       backgroundConfirmPrompt: 'Click OK for a white background, Cancel for transparent.',
       newWidthPrompt: 'New width (px):',
-      newHeightPrompt: 'New height (px):'
+      newHeightPrompt: 'New height (px):',
+      resumeDraftLabel: '↺ Resume draft',
+      discardLabel: '✕ Discard',
+      autosaveHintText: "Your progress autosaves to this browser as you work, so a refresh won't lose it.",
+      clearDraftLinkText: 'Clear saved draft',
+      savedJustNowText: 'Saved just now.',
+      autosaveFailedText: "Couldn't autosave (your project may be too large for browser storage) — remember to download when you're done.",
+      draftBannerPrefix: 'You have an unsaved draft from',
+      draftLayerOne: 'layer).',
+      draftLayersMany: 'layers).',
+      loadingLabel: 'Loading…',
+      errorCouldNotLoadDraft: 'Could not load the saved draft:',
+      clearDraftConfirm: 'Clear the autosaved draft? This only removes the saved copy in this browser — anything currently on screen is untouched.'
     },
     es: {
       heroSubtitle: 'Un editor de imágenes por capas — pinceles, formas, texto, relleno, selección, filtros y deshacer/rehacer.',
@@ -1310,7 +1423,19 @@
       canvasHeightPrompt: 'Alto del lienzo (px):',
       backgroundConfirmPrompt: 'Haz clic en Aceptar para un fondo blanco, Cancelar para transparente.',
       newWidthPrompt: 'Nuevo ancho (px):',
-      newHeightPrompt: 'Nuevo alto (px):'
+      newHeightPrompt: 'Nuevo alto (px):',
+      resumeDraftLabel: '↺ Reanudar borrador',
+      discardLabel: '✕ Descartar',
+      autosaveHintText: 'Tu progreso se autoguarda en este navegador mientras trabajas, así que una actualización no lo perderá.',
+      clearDraftLinkText: 'Borrar borrador guardado',
+      savedJustNowText: 'Guardado justo ahora.',
+      autosaveFailedText: 'No se pudo autoguardar (tu proyecto puede ser demasiado grande para el almacenamiento del navegador) — recuerda descargarlo cuando termines.',
+      draftBannerPrefix: 'Tienes un borrador sin guardar desde el',
+      draftLayerOne: 'capa).',
+      draftLayersMany: 'capas).',
+      loadingLabel: 'Cargando…',
+      errorCouldNotLoadDraft: 'No se pudo cargar el borrador guardado:',
+      clearDraftConfirm: 'Borrar el borrador autoguardado? Esto solo elimina la copia guardada en este navegador — todo lo que está actualmente en pantalla no se ve afectado.'
     },
     ar: {
       heroSubtitle: 'محرر صور متعدد الطبقات — فرش، أشكال، نص، تعبئة، تحديد، مرشحات، وتراجع/إعادة.',
@@ -1393,7 +1518,19 @@
       canvasHeightPrompt: 'ارتفاع اللوحة (بكسل):',
       backgroundConfirmPrompt: 'انقر موافق لخلفية بيضاء، إلغاء للشفافة.',
       newWidthPrompt: 'العرض الجديد (بكسل):',
-      newHeightPrompt: 'الارتفاع الجديد (بكسل):'
+      newHeightPrompt: 'الارتفاع الجديد (بكسل):',
+      resumeDraftLabel: '↺ استئناف المسودة',
+      discardLabel: '✕ تجاهل',
+      autosaveHintText: 'يُحفظ تقدمك تلقائيًا في هذا المتصفح أثناء عملك، لذا لن يؤدي التحديث إلى فقدانه.',
+      clearDraftLinkText: 'مسح المسودة المحفوظة',
+      savedJustNowText: 'تم الحفظ للتو.',
+      autosaveFailedText: 'تعذّر الحفظ التلقائي (قد يكون مشروعك كبيرًا جدًا على تخزين المتصفح) — تذكّر التنزيل عند الانتهاء.',
+      draftBannerPrefix: 'لديك مسودة غير محفوظة منذ',
+      draftLayerOne: 'طبقة واحدة).',
+      draftLayersMany: 'طبقات).',
+      loadingLabel: 'جارٍ التحميل…',
+      errorCouldNotLoadDraft: 'تعذّر تحميل المسودة المحفوظة:',
+      clearDraftConfirm: 'مسح المسودة المحفوظة تلقائيًا؟ هذا يزيل فقط النسخة المحفوظة في هذا المتصفح — أي شيء معروض حاليًا على الشاشة لن يتأثر.'
     },
     zh: {
       heroSubtitle: '分层图像编辑器——画笔、形状、文字、填充、选区、滤镜和撤销/重做。',
@@ -1476,7 +1613,19 @@
       canvasHeightPrompt: '画布高度（像素）：',
       backgroundConfirmPrompt: '点击"确定"使用白色背景，点击"取消"使用透明背景。',
       newWidthPrompt: '新宽度（像素）：',
-      newHeightPrompt: '新高度（像素）：'
+      newHeightPrompt: '新高度（像素）：',
+      resumeDraftLabel: '↺ 恢复草稿',
+      discardLabel: '✕ 丢弃',
+      autosaveHintText: '你的进度会在你操作时自动保存到此浏览器，因此刷新不会丢失它。',
+      clearDraftLinkText: '清除已保存的草稿',
+      savedJustNowText: '刚刚已保存。',
+      autosaveFailedText: '无法自动保存（你的项目可能对于浏览器存储来说太大了）——完成后记得下载。',
+      draftBannerPrefix: '你有一份未保存的草稿，来自',
+      draftLayerOne: '个图层）。',
+      draftLayersMany: '个图层）。',
+      loadingLabel: '加载中…',
+      errorCouldNotLoadDraft: '无法加载已保存的草稿：',
+      clearDraftConfirm: '清除自动保存的草稿？这只会移除此浏览器中保存的副本——当前屏幕上的任何内容不受影响。'
     },
     sw: {
       heroSubtitle: 'Kihariri cha picha chenye tabaka — brashi, maumbo, maandishi, ujazo, uteuzi, vichujio, na tendua/rudia.',
@@ -1559,9 +1708,23 @@
       canvasHeightPrompt: 'Urefu wa turubai (px):',
       backgroundConfirmPrompt: 'Bofya Sawa kwa mandhari nyeupe, Ghairi kwa uwazi.',
       newWidthPrompt: 'Upana mpya (px):',
-      newHeightPrompt: 'Urefu mpya (px):'
+      newHeightPrompt: 'Urefu mpya (px):',
+      resumeDraftLabel: '↺ Endelea na rasimu',
+      discardLabel: '✕ Ondoa',
+      autosaveHintText: 'Maendeleo yako yanahifadhiwa kiotomatiki kwenye kivinjari hiki unapofanya kazi, hivyo kuonyesha upya hakutayapoteza.',
+      clearDraftLinkText: 'Futa rasimu iliyohifadhiwa',
+      savedJustNowText: 'Imehifadhiwa sasa hivi.',
+      autosaveFailedText: 'Imeshindwa kuhifadhi kiotomatiki (mradi wako unaweza kuwa mkubwa mno kwa hifadhi ya kivinjari) — kumbuka kupakua ukimaliza.',
+      draftBannerPrefix: 'Una rasimu isiyohifadhiwa kutoka',
+      draftLayerOne: 'tabaka).',
+      draftLayersMany: 'matabaka).',
+      loadingLabel: 'Inapakia…',
+      errorCouldNotLoadDraft: 'Imeshindwa kupakia rasimu iliyohifadhiwa:',
+      clearDraftConfirm: 'Futa rasimu iliyohifadhiwa kiotomatiki? Hii inaondoa tu nakala iliyohifadhiwa kwenye kivinjari hiki — chochote kilicho kwenye skrini kwa sasa hakiathiriwi.'
     }
   });
+
+  checkForSavedDraft();
 })();
 </script>
 </body>
