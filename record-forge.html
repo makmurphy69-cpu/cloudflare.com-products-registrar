@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="i18n.js"></script>
+<script src="media-utils.js"></script>
 
 <style>
   :root {
@@ -439,12 +440,6 @@
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
 
-  function pickMimeType() {
-    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
-    return '';
-  }
-
   function formatTime(totalSeconds) {
     const m = Math.floor(totalSeconds / 60);
     const s = Math.floor(totalSeconds % 60);
@@ -500,7 +495,7 @@
       showError(I18N.t('errorNoMediaRecorder'));
       return;
     }
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoRecordingFormat')); return; }
 
     try {
@@ -716,7 +711,7 @@
       showError(I18N.t('errorNoReencodeSupport'));
       return;
     }
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoVideoFormat')); return; }
 
     resultVideo.pause();
