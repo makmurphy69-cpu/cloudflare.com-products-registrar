@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -211,20 +212,21 @@
   </svg>
   <div>
     <h1>Slide Forge</h1>
-    <p>Describe a presentation, review and edit the slides, add your own photos or videos, then download a real .pptx.</p>
+    <p data-i18n="heroSubtitle">Describe a presentation, review and edit the slides, add your own photos or videos, then download a real .pptx.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main>
   <section class="panel">
 
-    <div class="section-title">Connection</div>
+    <div class="section-title" data-i18n="connectionHeading">Connection</div>
     <div class="field">
-      <label for="provider">AI provider</label>
+      <label for="provider" data-i18n="providerLabel">AI provider</label>
       <select id="provider">
-        <option value="gemini" selected>Gemini — free, no key needed</option>
-        <option value="openai">OpenAI</option>
-        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="gemini" data-i18n="providerGemini" selected>Gemini — free, no key needed</option>
+        <option value="openai" data-i18n="providerOpenai">OpenAI</option>
+        <option value="anthropic" data-i18n="providerAnthropic">Anthropic (Claude)</option>
       </select>
     </div>
     <div class="field" id="apiKeyField">
@@ -233,72 +235,72 @@
         <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
         <button type="button" class="toggle-key" id="toggleKey">Show</button>
       </div>
-      <p class="hint">Used only to call the provider above directly from your browser. Never stored, never sent anywhere else, and cleared if you reload the page.</p>
+      <p class="hint" data-i18n="apiKeyHint">Used only to call the provider above directly from your browser. Never stored, never sent anywhere else, and cleared if you reload the page.</p>
     </div>
     <div class="field" id="freeNoticeField" style="display:none;">
-      <p class="hint" style="margin-top:0;">✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.</p>
+      <p class="hint" data-i18n="freeNoticeText" style="margin-top:0;">✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.</p>
     </div>
     <div class="field">
-      <label for="model">Text model</label>
+      <label for="model" data-i18n="modelLabel">Text model</label>
       <select id="model"></select>
     </div>
 
-    <div class="section-title">The presentation</div>
+    <div class="section-title" data-i18n="presentationHeading">The presentation</div>
     <div class="field">
-      <label for="pptxBrief">Describe the presentation you need</label>
-      <textarea id="pptxBrief" placeholder="e.g. A pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact"></textarea>
+      <label for="pptxBrief" data-i18n="briefLabel">Describe the presentation you need</label>
+      <textarea id="pptxBrief" data-i18n-placeholder="briefPlaceholder" placeholder="e.g. A pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact"></textarea>
     </div>
     <div class="field">
-      <label for="slideCountInput">Number of slides</label>
-      <input type="number" id="slideCountInput" min="1" max="20" placeholder="Let the AI decide (4–10)">
-      <p class="hint">Not counting the title slide. Leave blank to let the AI pick a reasonable number.</p>
+      <label for="slideCountInput" data-i18n="slideCountLabel">Number of slides</label>
+      <input type="number" id="slideCountInput" min="1" max="20" data-i18n-placeholder="slideCountPlaceholder" placeholder="Let the AI decide (4–10)">
+      <p class="hint" data-i18n="slideCountHint">Not counting the title slide. Leave blank to let the AI pick a reasonable number.</p>
     </div>
     <div class="field">
-      <label for="themeSelect">Color theme</label>
+      <label for="themeSelect" data-i18n="themeLabel">Color theme</label>
       <select id="themeSelect">
-        <option value="navy" selected>Navy &amp; Amber</option>
-        <option value="slate">Slate &amp; Teal</option>
-        <option value="forest">Forest &amp; Gold</option>
-        <option value="plum">Plum &amp; Rose</option>
+        <option value="navy" data-i18n="themeNavy" selected>Navy &amp; Amber</option>
+        <option value="slate" data-i18n="themeSlate">Slate &amp; Teal</option>
+        <option value="forest" data-i18n="themeForest">Forest &amp; Gold</option>
+        <option value="plum" data-i18n="themePlum">Plum &amp; Rose</option>
       </select>
     </div>
 
     <div class="field">
-      <label>Photos (optional, one per slide)</label>
-      <label class="upload-btn" for="preloadPhotosInput">+ Add photos</label>
+      <label data-i18n="photosLabel">Photos (optional, one per slide)</label>
+      <label class="upload-btn" for="preloadPhotosInput" data-i18n="addPhotosLabel">+ Add photos</label>
       <input type="file" id="preloadPhotosInput" accept="image/*" multiple style="display:none;">
-      <p class="hint">Uploaded in order — the 1st photo goes on slide 1, the 2nd on slide 2, and so on, as soon as you plan. You can still swap or add media per-slide afterward.</p>
+      <p class="hint" data-i18n="photosHint">Uploaded in order — the 1st photo goes on slide 1, the 2nd on slide 2, and so on, as soon as you plan. You can still swap or add media per-slide afterward.</p>
     </div>
     <div id="preloadPhotosList"></div>
 
-    <button type="button" class="draft-btn" id="planBtn">✨ Plan slides with AI</button>
+    <button type="button" class="draft-btn" id="planBtn" data-i18n="planBtnLabel">✨ Plan slides with AI</button>
     <div class="error-box" id="errorBox"></div>
     <div class="success-box" id="successBox"></div>
-    <p class="hint" style="margin-top:14px;">Planning rewrites the whole slide list below. Once planned, you can edit titles and bullets, add or remove slides by hand, and attach your own photo or video to any slide.</p>
+    <p class="hint" data-i18n="planningHint" style="margin-top:14px;">Planning rewrites the whole slide list below. Once planned, you can edit titles and bullets, add or remove slides by hand, and attach your own photo or video to any slide.</p>
   </section>
 
   <section class="table">
     <div class="title-block">
-      <span>SLIDE FORGE — SLIDES</span>
-      <span id="titleBlockRight">NOT STARTED</span>
+      <span data-i18n="previewTitle">SLIDE FORGE — SLIDES</span>
+      <span id="titleBlockRight" data-i18n="statusNotStarted">NOT STARTED</span>
     </div>
 
     <div id="slidesEmpty" class="slides-empty">
-      <strong>No slides yet.</strong>
-      Describe your presentation on the left and click "Plan slides with AI" — or click "+ Add slide" below to start from scratch.
+      <strong data-i18n="slidesEmptyStrong">No slides yet.</strong>
+      <span data-i18n="slidesEmptyText">Describe your presentation on the left and click "Plan slides with AI" — or click "+ Add slide" below to start from scratch.</span>
     </div>
 
     <div id="slidesList"></div>
-    <button type="button" class="add-slide-btn" id="addSlideBtn" style="display:none;">+ Add slide</button>
+    <button type="button" class="add-slide-btn" id="addSlideBtn" data-i18n="addSlideBtnLabel" style="display:none;">+ Add slide</button>
 
     <div class="table-actions">
-      <button type="button" id="buildBtn" class="primary" disabled>⬇ Build &amp; download .pptx</button>
+      <button type="button" id="buildBtn" class="primary" data-i18n="buildBtnLabel" disabled>⬇ Build &amp; download .pptx</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Photos and videos you attach stay in your browser and are embedded directly into the .pptx file — nothing is uploaded anywhere. For best PowerPoint compatibility, use .mp4 video clips; .webm clips (e.g. from Record Forge or Clip Forge) often play in Google Slides but not always in Microsoft PowerPoint. Large videos make for a large file — trim clips short in <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> first if needed.</p>
+    <p class="hint" data-i18n-html="mediaHint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Photos and videos you attach stay in your browser and are embedded directly into the .pptx file — nothing is uploaded anywhere. For best PowerPoint compatibility, use .mp4 video clips; .webm clips (e.g. from Record Forge or Clip Forge) often play in Google Slides but not always in Microsoft PowerPoint. Large videos make for a large file — trim clips short in <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> first if needed.</p>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type or attach here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type or attach here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function(){
@@ -335,7 +337,7 @@
   toggleKeyBtn.addEventListener('click', function () {
     const isPassword = apiKeyInput.type === 'password';
     apiKeyInput.type = isPassword ? 'text' : 'password';
-    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+    toggleKeyBtn.textContent = isPassword ? I18N.t('hide') : I18N.t('show');
   });
 
   const modelOptions = {
@@ -363,7 +365,7 @@
     } else {
       apiKeyField.style.display = 'block';
       freeNoticeField.style.display = 'none';
-      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyLabel.textContent = provider === 'openai' ? I18N.t('apiKeyLabelOpenai') : I18N.t('apiKeyLabelAnthropic');
       apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
     }
     modelSelect.innerHTML = '';
@@ -377,7 +379,6 @@
     });
   }
   providerSelect.addEventListener('change', applyProvider);
-  applyProvider();
 
   // The real Gemini key lives server-side as a Cloudflare Worker secret — see
   // cloudflare-worker/README.md. Never put an actual key on this line; this
@@ -409,7 +410,7 @@
         const errBody = await response.json().catch(() => null);
         const msg = errBody && errBody.error && errBody.error.message
           ? errBody.error.message
-          : (errBody && errBody.error) || ('Request failed with status ' + response.status + ' — the free daily limit may have been reached.');
+          : (errBody && errBody.error) || I18N.t('errorRequestFailedFreeLimit').replace('{status}', response.status);
         throw new Error(msg);
       }
       const data = await response.json();
@@ -417,7 +418,7 @@
       const raw = cand && cand.content && cand.content.parts && cand.content.parts[0]
         ? cand.content.parts[0].text
         : '';
-      if (!raw) throw new Error('The model returned an empty response.');
+      if (!raw) throw new Error(I18N.t('errorEmptyResponse'));
       return stripCodeFence(raw);
     }
 
@@ -441,13 +442,13 @@
         const errBody = await response.json().catch(() => null);
         const msg = errBody && errBody.error && errBody.error.message
           ? errBody.error.message
-          : ('Request failed with status ' + response.status);
+          : I18N.t('errorRequestFailed').replace('{status}', response.status);
         throw new Error(msg);
       }
       const data = await response.json();
       const block = data.content && data.content.find(b => b.type === 'text');
       const raw = block ? block.text : '';
-      if (!raw) throw new Error('The model returned an empty response.');
+      if (!raw) throw new Error(I18N.t('errorEmptyResponse'));
       return stripCodeFence(raw);
     }
 
@@ -470,12 +471,12 @@
       const errBody = await response.json().catch(() => null);
       const msg = errBody && errBody.error && errBody.error.message
         ? errBody.error.message
-        : ('Request failed with status ' + response.status);
+        : I18N.t('errorRequestFailed').replace('{status}', response.status);
       throw new Error(msg);
     }
     const data = await response.json();
     const raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : '';
-    if (!raw) throw new Error('The model returned an empty response.');
+    if (!raw) throw new Error(I18N.t('errorEmptyResponse'));
     return stripCodeFence(raw);
   }
 
@@ -493,14 +494,21 @@
   };
   function currentTheme() { return THEMES[themeSelect.value] || THEMES.navy; }
 
-  const POSITION_LABELS = {
-    right: 'Right of text',
-    bottom: 'Below text',
-    full: 'Full-slide'
+  const POSITION_LABEL_KEYS = {
+    right: 'positionRight',
+    bottom: 'positionBottom',
+    full: 'positionFull'
   };
 
+  const UI_LANGUAGE_NAMES = { en: 'English', es: 'Spanish', ar: 'Arabic', zh: 'Mandarin Chinese', sw: 'Swahili' };
+  function contentLanguageInstruction() {
+    const lang = window.I18N ? I18N.getLang() : 'en';
+    if (lang === 'en') return '';
+    return ' Write all slide content in ' + UI_LANGUAGE_NAMES[lang] + '.';
+  }
+
   function newSlide(title, bullets, notes) {
-    return { id: ++slideIdCounter, title: title || 'New slide', bullets: bullets || [''], notes: notes || '', mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
+    return { id: ++slideIdCounter, title: title || I18N.t('defaultSlideTitle'), bullets: bullets || [''], notes: notes || '', mediaDataUrl: null, mediaType: null, mediaName: '', position: 'right' };
   }
 
   // ---------- preloaded photos (paired one-per-slide when planning) ----------
@@ -529,10 +537,13 @@
         '<img src="' + photo.dataUrl + '" alt="">' +
         '<span class="preload-name">' + (i + 1) + '. ' + photo.name.replace(/</g, '&lt;') + '</span>' +
         '<span class="preload-actions">' +
-          '<button type="button" data-up title="Move up">▲</button>' +
-          '<button type="button" data-down title="Move down">▼</button>' +
-          '<button type="button" class="remove" data-remove title="Remove">✕</button>' +
+          '<button type="button" data-up>▲</button>' +
+          '<button type="button" data-down>▼</button>' +
+          '<button type="button" class="remove" data-remove>✕</button>' +
         '</span>';
+      row.querySelector('[data-up]').title = I18N.t('moveUpTitle');
+      row.querySelector('[data-down]').title = I18N.t('moveDownTitle');
+      row.querySelector('[data-remove]').title = I18N.t('removeTitle');
       row.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { [preloadPhotos[i - 1], preloadPhotos[i]] = [preloadPhotos[i], preloadPhotos[i - 1]]; renderPreloadPhotosList(); } });
       row.querySelector('[data-down]').addEventListener('click', () => { if (i < preloadPhotos.length - 1) { [preloadPhotos[i + 1], preloadPhotos[i]] = [preloadPhotos[i], preloadPhotos[i + 1]]; renderPreloadPhotosList(); } });
       row.querySelector('[data-remove]').addEventListener('click', () => { preloadPhotos = preloadPhotos.filter(p => p.id !== photo.id); renderPreloadPhotosList(); });
@@ -562,15 +573,19 @@
       const titleInput = document.createElement('input');
       titleInput.type = 'text';
       titleInput.value = s.title;
-      titleInput.placeholder = 'Slide title';
+      titleInput.placeholder = I18N.t('slideTitlePlaceholder');
       titleInput.addEventListener('input', () => { s.title = titleInput.value; });
       const actions = document.createElement('div');
       actions.className = 'slide-card-actions';
       actions.innerHTML =
-        '<button type="button" data-regen title="Regenerate this slide with AI">🔁</button>' +
-        '<button type="button" data-up title="Move up">▲</button>' +
-        '<button type="button" data-down title="Move down">▼</button>' +
-        '<button type="button" class="remove" data-remove title="Remove slide">✕</button>';
+        '<button type="button" data-regen>🔁</button>' +
+        '<button type="button" data-up>▲</button>' +
+        '<button type="button" data-down>▼</button>' +
+        '<button type="button" class="remove" data-remove>✕</button>';
+      actions.querySelector('[data-regen]').title = I18N.t('regenerateTitle');
+      actions.querySelector('[data-up]').title = I18N.t('moveUpTitle');
+      actions.querySelector('[data-down]').title = I18N.t('moveDownTitle');
+      actions.querySelector('[data-remove]').title = I18N.t('removeSlideTitle');
       head.appendChild(num);
       head.appendChild(titleInput);
       head.appendChild(actions);
@@ -578,7 +593,7 @@
 
       const bulletsArea = document.createElement('textarea');
       bulletsArea.style.minHeight = '70px';
-      bulletsArea.placeholder = 'One bullet point per line';
+      bulletsArea.placeholder = I18N.t('bulletsPlaceholder');
       bulletsArea.value = (s.bullets || []).join('\n');
       bulletsArea.addEventListener('input', () => { s.bullets = bulletsArea.value.split('\n'); });
       card.appendChild(bulletsArea);
@@ -586,7 +601,7 @@
       const notesArea = document.createElement('textarea');
       notesArea.style.minHeight = '44px';
       notesArea.style.marginTop = '8px';
-      notesArea.placeholder = 'Speaker notes (optional) — not shown on the slide, only in presenter view';
+      notesArea.placeholder = I18N.t('notesPlaceholder');
       notesArea.value = s.notes || '';
       notesArea.addEventListener('input', () => { s.notes = notesArea.value; });
       card.appendChild(notesArea);
@@ -599,15 +614,16 @@
         const preview = s.mediaType === 'image'
           ? '<img src="' + s.mediaDataUrl + '" alt="">'
           : '<div class="media-icon">🎬</div>';
-        thumb.innerHTML = preview + '<span class="media-name">' + s.mediaName.replace(/</g, '&lt;') + '</span><button type="button" data-remove-media title="Remove media">✕</button>';
+        thumb.innerHTML = preview + '<span class="media-name">' + s.mediaName.replace(/</g, '&lt;') + '</span><button type="button" data-remove-media>✕</button>';
+        thumb.querySelector('[data-remove-media]').title = I18N.t('removeMediaTitle');
         mediaRow.appendChild(thumb);
 
         const posSelect = document.createElement('select');
         posSelect.className = 'slide-position-select';
-        Object.keys(POSITION_LABELS).forEach(key => {
+        Object.keys(POSITION_LABEL_KEYS).forEach(key => {
           const opt = document.createElement('option');
           opt.value = key;
-          opt.textContent = POSITION_LABELS[key];
+          opt.textContent = I18N.t(POSITION_LABEL_KEYS[key]);
           if (key === s.position) opt.selected = true;
           posSelect.appendChild(opt);
         });
@@ -621,7 +637,7 @@
       } else {
         const uploadLabel = document.createElement('label');
         uploadLabel.className = 'upload-btn';
-        uploadLabel.textContent = '+ Add a photo or video to this slide';
+        uploadLabel.textContent = I18N.t('addMediaToSlideLabel');
         const fileInput = document.createElement('input');
         fileInput.type = 'file';
         fileInput.accept = 'image/*,video/*';
@@ -631,7 +647,7 @@
           if (!file) return;
           const isVideo = file.type.startsWith('video/');
           if (isVideo && file.size > 30 * 1024 * 1024) {
-            showError('That video is over 30MB — the resulting .pptx would be very large. Trim it shorter first (e.g. in Clip Forge) and try again.');
+            showError(I18N.t('errorVideoTooBig'));
             return;
           }
           const reader = new FileReader();
@@ -667,7 +683,7 @@
   }
 
   addSlideBtn.addEventListener('click', function () {
-    slides.push(newSlide('New slide', ['Point one']));
+    slides.push(newSlide(I18N.t('defaultSlideTitle'), [I18N.t('defaultBulletPoint')]));
     renderSlidesList();
   });
 
@@ -677,15 +693,15 @@
     successBox.classList.remove('show');
     const key = currentTextApiKey();
     const brief = pptxBrief.value.trim();
-    if (!key) { showError('Add your API key first.'); return; }
-    if (!brief) { showError('Describe the presentation you need.'); return; }
+    if (!key) { showError(I18N.t('errorNoApiKey')); return; }
+    if (!brief) { showError(I18N.t('errorNoBrief')); return; }
 
     const requestedCount = parseInt(slideCountInput.value, 10);
     const hasRequestedCount = Number.isInteger(requestedCount) && requestedCount > 0;
 
     planBtn.disabled = true;
-    planBtn.textContent = 'Planning…';
-    titleBlockRight.textContent = 'PLANNING';
+    planBtn.textContent = I18N.t('planningLabel');
+    titleBlockRight.textContent = I18N.t('statusPlanning');
     const model = modelSelect.value;
     const rules = [
       'You plan PowerPoint presentations. Given a description, respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
@@ -693,7 +709,7 @@
       hasRequestedCount
         ? ('Return EXACTLY ' + requestedCount + ' slides in the slides array (not counting the title slide).')
         : '4-10 slides.',
-      'Each slide: a short title, 2-5 short bullet points, and speaker notes — all real content (no placeholders).'
+      'Each slide: a short title, 2-5 short bullet points, and speaker notes — all real content (no placeholders).' + contentLanguageInstruction()
     ].join('\n');
 
     try {
@@ -701,7 +717,7 @@
       const plan = JSON.parse(json);
       presentationTitle = plan.title || brief;
       slides = (plan.slides || []).map(s => newSlide(s.title, s.bullets, s.notes));
-      if (!slides.length) slides = [newSlide('New slide', ['Point one'])];
+      if (!slides.length) slides = [newSlide(I18N.t('defaultSlideTitle'), [I18N.t('defaultBulletPoint')])];
 
       let pairedCount = 0;
       slides.forEach((s, i) => {
@@ -715,18 +731,15 @@
       });
 
       renderSlidesList();
-      titleBlockRight.textContent = slides.length + ' slide' + (slides.length === 1 ? '' : 's') + ' planned';
-      showSuccess(
-        'Planned ' + slides.length + ' slides' +
-        (pairedCount ? ', paired with ' + pairedCount + ' photo' + (pairedCount === 1 ? '' : 's') : '') +
-        '. Edit them below, add photos or videos, then build the file.'
-      );
+      titleBlockRight.textContent = slides.length === 1 ? I18N.t('slidePlannedOne') : I18N.t('slidesPlannedMany').replace('{count}', slides.length);
+      const pairedSuffix = pairedCount ? (pairedCount === 1 ? I18N.t('pairedOne') : I18N.t('pairedMany').replace('{n}', pairedCount)) : '';
+      showSuccess(I18N.t('successPlanned').replace('{count}', slides.length).replace('{paired}', pairedSuffix));
     } catch (err) {
-      showError(err.message || 'Could not plan the presentation.');
-      titleBlockRight.textContent = 'NOT STARTED';
+      showError(err.message || I18N.t('errorCouldNotPlan'));
+      titleBlockRight.textContent = I18N.t('statusNotStarted');
     } finally {
       planBtn.disabled = false;
-      planBtn.textContent = '✨ Plan slides with AI';
+      planBtn.textContent = I18N.t('planBtnLabel');
     }
   }
   planBtn.addEventListener('click', planSlides);
@@ -735,7 +748,7 @@
   async function regenerateSlide(s, btn) {
     clearError();
     const key = currentTextApiKey();
-    if (!key) { showError('Add your API key first.'); return; }
+    if (!key) { showError(I18N.t('errorNoApiKey')); return; }
 
     const original = btn.textContent;
     btn.disabled = true;
@@ -745,7 +758,7 @@
       'You are reworking ONE slide of an existing presentation. Given the presentation\'s overall topic and this slide\'s current content, rewrite just this slide.',
       'Respond with ONLY valid JSON, no markdown fences, in exactly this shape:',
       '{"title": "slide title", "bullets": ["point 1","point 2"], "notes": "1-3 sentences a presenter could read aloud"}',
-      '2-5 short bullet points, real content (no placeholders). Keep it consistent with the presentation\'s topic and tone but feel free to rephrase, reorganize, or improve the current version.'
+      '2-5 short bullet points, real content (no placeholders). Keep it consistent with the presentation\'s topic and tone but feel free to rephrase, reorganize, or improve the current version.' + contentLanguageInstruction()
     ].join('\n');
     const userMsg = 'PRESENTATION TOPIC:\n' + (pptxBrief.value.trim() || presentationTitle) +
       '\n\nCURRENT SLIDE:\nTitle: ' + s.title + '\nBullets:\n' + (s.bullets || []).join('\n') +
@@ -758,9 +771,9 @@
       s.bullets = updated.bullets && updated.bullets.length ? updated.bullets : s.bullets;
       s.notes = updated.notes != null ? updated.notes : s.notes;
       renderSlidesList();
-      showSuccess('Regenerated "' + s.title + '".');
+      showSuccess(I18N.t('successRegenerated').replace('{title}', s.title));
     } catch (err) {
-      showError(err.message || 'Could not regenerate that slide.');
+      showError(err.message || I18N.t('errorCouldNotRegenerate'));
       btn.disabled = false;
       btn.textContent = original;
     }
@@ -815,12 +828,12 @@
   buildBtn.addEventListener('click', async function () {
     clearError();
     successBox.classList.remove('show');
-    if (!slides.length) { showError('Plan or add at least one slide first.'); return; }
-    if (typeof PptxGenJS === 'undefined') { showError('The PowerPoint library failed to load — check your internet connection and reload the page.'); return; }
+    if (!slides.length) { showError(I18N.t('errorNoSlides')); return; }
+    if (typeof PptxGenJS === 'undefined') { showError(I18N.t('errorPptxLibFailed')); return; }
 
     buildBtn.disabled = true;
-    buildBtn.textContent = 'Building…';
-    titleBlockRight.textContent = 'BUILDING';
+    buildBtn.textContent = I18N.t('buildingLabel');
+    titleBlockRight.textContent = I18N.t('statusBuilding');
     try {
       const pptx = new PptxGenJS();
       pptx.defineLayout({ name: 'MB', width: 10, height: 5.63 });
@@ -829,7 +842,7 @@
       const theme = currentTheme();
       const titleSlide = pptx.addSlide();
       titleSlide.background = { color: theme.title };
-      titleSlide.addText(presentationTitle || pptxBrief.value.trim() || 'Presentation', {
+      titleSlide.addText(presentationTitle || pptxBrief.value.trim() || I18N.t('defaultPresentationTitle'), {
         x: 0.6, y: 2.2, w: 8.8, h: 1.2, fontSize: 32, bold: true, color: theme.titleText, fontFace: 'Arial'
       });
 
@@ -837,17 +850,386 @@
 
       const fileName = (presentationTitle || 'presentation').replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.pptx';
       await pptx.writeFile({ fileName: fileName });
-      titleBlockRight.textContent = (slides.length + 1) + ' slides';
-      showSuccess('Downloaded ' + fileName + ' — ' + (slides.length + 1) + ' slides.');
+      titleBlockRight.textContent = I18N.t('statusSlidesCount').replace('{count}', slides.length + 1);
+      showSuccess(I18N.t('successDownloaded').replace('{filename}', fileName).replace('{count}', slides.length + 1));
     } catch (err) {
-      showError(err.message || 'Could not build the presentation.');
+      showError(err.message || I18N.t('errorCouldNotBuild'));
     } finally {
       buildBtn.disabled = false;
-      buildBtn.textContent = '⬇ Build & download .pptx';
+      buildBtn.textContent = I18N.t('buildBtnLabel');
       refreshBuildButton();
     }
   });
 
+  I18N.init({
+    en: {
+      heroSubtitle: 'Describe a presentation, review and edit the slides, add your own photos or videos, then download a real .pptx.',
+      connectionHeading: 'Connection',
+      providerLabel: 'AI provider',
+      apiKeyLabelOpenai: 'Your OpenAI API key',
+      apiKeyLabelAnthropic: 'Your Anthropic API key',
+      apiKeyHint: 'Used only to call the provider above directly from your browser. Never stored, never sent anywhere else, and cleared if you reload the page.',
+      freeNoticeText: '✓ Free to use — this site includes a shared key with a limited daily capacity. If it stops working, it likely hit that daily limit; try again tomorrow, or switch to OpenAI/Anthropic above with your own key.',
+      modelLabel: 'Text model',
+      presentationHeading: 'The presentation',
+      briefLabel: 'Describe the presentation you need',
+      briefPlaceholder: 'e.g. A pitch deck for a plumbing business: intro, the problem, our services, why us, pricing, contact',
+      slideCountLabel: 'Number of slides',
+      slideCountPlaceholder: 'Let the AI decide (4–10)',
+      slideCountHint: 'Not counting the title slide. Leave blank to let the AI pick a reasonable number.',
+      themeLabel: 'Color theme',
+      themeNavy: 'Navy & Amber',
+      themeSlate: 'Slate & Teal',
+      themeForest: 'Forest & Gold',
+      themePlum: 'Plum & Rose',
+      photosLabel: 'Photos (optional, one per slide)',
+      addPhotosLabel: '+ Add photos',
+      photosHint: 'Uploaded in order — the 1st photo goes on slide 1, the 2nd on slide 2, and so on, as soon as you plan. You can still swap or add media per-slide afterward.',
+      planBtnLabel: '✨ Plan slides with AI',
+      planningHint: 'Planning rewrites the whole slide list below. Once planned, you can edit titles and bullets, add or remove slides by hand, and attach your own photo or video to any slide.',
+      previewTitle: 'SLIDE FORGE — SLIDES',
+      statusNotStarted: 'NOT STARTED',
+      slidesEmptyStrong: 'No slides yet.',
+      slidesEmptyText: 'Describe your presentation on the left and click "Plan slides with AI" — or click "+ Add slide" below to start from scratch.',
+      addSlideBtnLabel: '+ Add slide',
+      buildBtnLabel: '⬇ Build & download .pptx',
+      mediaHint: 'Photos and videos you attach stay in your browser and are embedded directly into the .pptx file — nothing is uploaded anywhere. For best PowerPoint compatibility, use .mp4 video clips; .webm clips (e.g. from Record Forge or Clip Forge) often play in Google Slides but not always in Microsoft PowerPoint. Large videos make for a large file — trim clips short in <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> first if needed.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a> — free to use, no account needed. Nothing you type or attach here is stored anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      errorRequestFailedFreeLimit: 'Request failed with status {status} — the free daily limit may have been reached.',
+      errorRequestFailed: 'Request failed with status {status}',
+      errorEmptyResponse: 'The model returned an empty response.',
+      positionRight: 'Right of text',
+      positionBottom: 'Below text',
+      positionFull: 'Full-slide',
+      defaultSlideTitle: 'New slide',
+      defaultBulletPoint: 'Point one',
+      moveUpTitle: 'Move up',
+      moveDownTitle: 'Move down',
+      removeTitle: 'Remove',
+      regenerateTitle: 'Regenerate this slide with AI',
+      removeSlideTitle: 'Remove slide',
+      removeMediaTitle: 'Remove media',
+      slideTitlePlaceholder: 'Slide title',
+      bulletsPlaceholder: 'One bullet point per line',
+      notesPlaceholder: 'Speaker notes (optional) — not shown on the slide, only in presenter view',
+      addMediaToSlideLabel: '+ Add a photo or video to this slide',
+      errorVideoTooBig: 'That video is over 30MB — the resulting .pptx would be very large. Trim it shorter first (e.g. in Clip Forge) and try again.',
+      errorNoApiKey: 'Add your API key first.',
+      errorNoBrief: 'Describe the presentation you need.',
+      planningLabel: 'Planning…',
+      statusPlanning: 'PLANNING',
+      slidePlannedOne: '1 slide planned',
+      slidesPlannedMany: '{count} slides planned',
+      successPlanned: 'Planned {count} slides{paired}. Edit them below, add photos or videos, then build the file.',
+      pairedOne: ', paired with 1 photo',
+      pairedMany: ', paired with {n} photos',
+      errorCouldNotPlan: 'Could not plan the presentation.',
+      successRegenerated: 'Regenerated "{title}".',
+      errorCouldNotRegenerate: 'Could not regenerate that slide.',
+      errorNoSlides: 'Plan or add at least one slide first.',
+      errorPptxLibFailed: 'The PowerPoint library failed to load — check your internet connection and reload the page.',
+      buildingLabel: 'Building…',
+      statusBuilding: 'BUILDING',
+      defaultPresentationTitle: 'Presentation',
+      statusSlidesCount: '{count} slides',
+      successDownloaded: 'Downloaded {filename} — {count} slides.',
+      errorCouldNotBuild: 'Could not build the presentation.'
+    },
+    es: {
+      heroSubtitle: 'Describe una presentación, revisa y edita las diapositivas, añade tus propias fotos o videos, y luego descarga un .pptx real.',
+      connectionHeading: 'Conexión',
+      providerLabel: 'Proveedor de IA',
+      apiKeyLabelOpenai: 'Tu clave API de OpenAI',
+      apiKeyLabelAnthropic: 'Tu clave API de Anthropic',
+      apiKeyHint: 'Se usa solo para llamar al proveedor anterior directamente desde tu navegador. Nunca se almacena, nunca se envía a ningún otro lugar, y se borra al recargar la página.',
+      freeNoticeText: '✓ Gratis para usar — este sitio incluye una clave compartida con una capacidad diaria limitada. Si deja de funcionar, probablemente alcanzó ese límite diario; intenta de nuevo mañana, o cambia a OpenAI/Anthropic arriba con tu propia clave.',
+      modelLabel: 'Modelo de texto',
+      presentationHeading: 'La presentación',
+      briefLabel: 'Describe la presentación que necesitas',
+      briefPlaceholder: 'p. ej. Un pitch deck para un negocio de plomería: introducción, el problema, nuestros servicios, por qué nosotros, precios, contacto',
+      slideCountLabel: 'Número de diapositivas',
+      slideCountPlaceholder: 'Deja que la IA decida (4–10)',
+      slideCountHint: 'Sin contar la diapositiva de título. Déjalo en blanco para que la IA elija un número razonable.',
+      themeLabel: 'Tema de color',
+      themeNavy: 'Azul marino y ámbar',
+      themeSlate: 'Pizarra y turquesa',
+      themeForest: 'Bosque y oro',
+      themePlum: 'Ciruela y rosa',
+      photosLabel: 'Fotos (opcional, una por diapositiva)',
+      addPhotosLabel: '+ Añadir fotos',
+      photosHint: 'Subidas en orden — la 1ª foto va en la diapositiva 1, la 2ª en la diapositiva 2, y así sucesivamente, en cuanto planifiques. Aún puedes cambiar o añadir medios por diapositiva después.',
+      planBtnLabel: '✨ Planificar diapositivas con IA',
+      planningHint: 'Planificar reescribe toda la lista de diapositivas de abajo. Una vez planificadas, puedes editar títulos y viñetas, añadir o quitar diapositivas a mano, y adjuntar tu propia foto o video a cualquier diapositiva.',
+      previewTitle: 'SLIDE FORGE — DIAPOSITIVAS',
+      statusNotStarted: 'SIN INICIAR',
+      slidesEmptyStrong: 'Aún no hay diapositivas.',
+      slidesEmptyText: 'Describe tu presentación a la izquierda y haz clic en "Planificar diapositivas con IA" — o haz clic en "+ Añadir diapositiva" abajo para empezar desde cero.',
+      addSlideBtnLabel: '+ Añadir diapositiva',
+      buildBtnLabel: '⬇ Generar y descargar .pptx',
+      mediaHint: 'Las fotos y videos que adjuntes permanecen en tu navegador y se incrustan directamente en el archivo .pptx — nada se sube a ningún lugar. Para la mejor compatibilidad con PowerPoint, usa clips de video .mp4; los clips .webm (p. ej. de Record Forge o Clip Forge) suelen reproducirse en Google Slides pero no siempre en Microsoft PowerPoint. Los videos grandes generan un archivo grande — recorta los clips antes en <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> si es necesario.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a> — gratis, sin necesidad de cuenta. Nada de lo que escribes o adjuntas aquí se almacena en ningún lugar. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      errorRequestFailedFreeLimit: 'La solicitud falló con estado {status} — es posible que se haya alcanzado el límite diario gratuito.',
+      errorRequestFailed: 'La solicitud falló con estado {status}',
+      errorEmptyResponse: 'El modelo devolvió una respuesta vacía.',
+      positionRight: 'A la derecha del texto',
+      positionBottom: 'Debajo del texto',
+      positionFull: 'Diapositiva completa',
+      defaultSlideTitle: 'Nueva diapositiva',
+      defaultBulletPoint: 'Punto uno',
+      moveUpTitle: 'Subir',
+      moveDownTitle: 'Bajar',
+      removeTitle: 'Eliminar',
+      regenerateTitle: 'Regenerar esta diapositiva con IA',
+      removeSlideTitle: 'Eliminar diapositiva',
+      removeMediaTitle: 'Eliminar contenido multimedia',
+      slideTitlePlaceholder: 'Título de la diapositiva',
+      bulletsPlaceholder: 'Un punto por línea',
+      notesPlaceholder: 'Notas del orador (opcional) — no se muestran en la diapositiva, solo en la vista de presentador',
+      addMediaToSlideLabel: '+ Añadir una foto o video a esta diapositiva',
+      errorVideoTooBig: 'Ese video supera los 30MB — el .pptx resultante sería muy grande. Recórtalo antes (p. ej. en Clip Forge) e inténtalo de nuevo.',
+      errorNoApiKey: 'Añade primero tu clave API.',
+      errorNoBrief: 'Describe la presentación que necesitas.',
+      planningLabel: 'Planificando…',
+      statusPlanning: 'PLANIFICANDO',
+      slidePlannedOne: '1 diapositiva planificada',
+      slidesPlannedMany: '{count} diapositivas planificadas',
+      successPlanned: 'Se planificaron {count} diapositivas{paired}. Edítalas abajo, añade fotos o videos, y luego genera el archivo.',
+      pairedOne: ', emparejada con 1 foto',
+      pairedMany: ', emparejadas con {n} fotos',
+      errorCouldNotPlan: 'No se pudo planificar la presentación.',
+      successRegenerated: 'Se regeneró "{title}".',
+      errorCouldNotRegenerate: 'No se pudo regenerar esa diapositiva.',
+      errorNoSlides: 'Planifica o añade al menos una diapositiva primero.',
+      errorPptxLibFailed: 'La librería de PowerPoint no se cargó — revisa tu conexión a internet y recarga la página.',
+      buildingLabel: 'Generando…',
+      statusBuilding: 'GENERANDO',
+      defaultPresentationTitle: 'Presentación',
+      statusSlidesCount: '{count} diapositivas',
+      successDownloaded: 'Descargado {filename} — {count} diapositivas.',
+      errorCouldNotBuild: 'No se pudo generar la presentación.'
+    },
+    ar: {
+      heroSubtitle: 'صف عرضًا تقديميًا، راجع الشرائح وعدّلها، أضف صورك أو مقاطع الفيديو الخاصة بك، ثم نزّل ملف .pptx حقيقيًا.',
+      connectionHeading: 'الاتصال',
+      providerLabel: 'مزوّد الذكاء الاصطناعي',
+      apiKeyLabelOpenai: 'مفتاح OpenAI API الخاص بك',
+      apiKeyLabelAnthropic: 'مفتاح Anthropic API الخاص بك',
+      apiKeyHint: 'يُستخدم فقط لاستدعاء المزوّد أعلاه مباشرة من متصفحك. لا يُخزَّن أبدًا، ولا يُرسل إلى أي مكان آخر، ويُمسح عند إعادة تحميل الصفحة.',
+      freeNoticeText: '✓ مجاني للاستخدام — يتضمن هذا الموقع مفتاحًا مشتركًا بسعة يومية محدودة. إذا توقف عن العمل، فمن المحتمل أنه وصل إلى ذلك الحد اليومي؛ حاول مرة أخرى غدًا، أو انتقل إلى OpenAI/Anthropic أعلاه بمفتاحك الخاص.',
+      modelLabel: 'نموذج النص',
+      presentationHeading: 'العرض التقديمي',
+      briefLabel: 'صف العرض التقديمي الذي تحتاجه',
+      briefPlaceholder: 'مثال: عرض تقديمي لأعمال السباكة: مقدمة، المشكلة، خدماتنا، لماذا نحن، الأسعار، التواصل',
+      slideCountLabel: 'عدد الشرائح',
+      slideCountPlaceholder: 'اترك الذكاء الاصطناعي يقرر (4–10)',
+      slideCountHint: 'لا تشمل شريحة العنوان. اتركه فارغًا ليختار الذكاء الاصطناعي رقمًا معقولاً.',
+      themeLabel: 'نسق الألوان',
+      themeNavy: 'كحلي وكهرماني',
+      themeSlate: 'رمادي وفيروزي',
+      themeForest: 'أخضر غابي وذهبي',
+      themePlum: 'أرجواني ووردي',
+      photosLabel: 'الصور (اختياري، واحدة لكل شريحة)',
+      addPhotosLabel: '+ إضافة صور',
+      photosHint: 'تُرفع بالترتيب — الصورة الأولى في الشريحة 1، والثانية في الشريحة 2، وهكذا، بمجرد التخطيط. لا يزال بإمكانك تبديل أو إضافة وسائط لكل شريحة لاحقًا.',
+      planBtnLabel: '✨ خطط للشرائح بالذكاء الاصطناعي',
+      planningHint: 'يعيد التخطيط كتابة قائمة الشرائح بأكملها أدناه. بمجرد التخطيط، يمكنك تعديل العناوين والنقاط، وإضافة أو إزالة الشرائح يدويًا، وإرفاق صورتك أو مقطع الفيديو الخاص بك بأي شريحة.',
+      previewTitle: 'SLIDE FORGE — الشرائح',
+      statusNotStarted: 'لم يبدأ',
+      slidesEmptyStrong: 'لا توجد شرائح بعد.',
+      slidesEmptyText: 'صف عرضك التقديمي على اليسار وانقر على "خطط للشرائح بالذكاء الاصطناعي" — أو انقر على "+ إضافة شريحة" أدناه للبدء من الصفر.',
+      addSlideBtnLabel: '+ إضافة شريحة',
+      buildBtnLabel: '⬇ إنشاء وتنزيل .pptx',
+      mediaHint: 'الصور ومقاطع الفيديو التي ترفقها تبقى في متصفحك ويتم تضمينها مباشرة في ملف .pptx — لا يُرفع شيء إلى أي مكان. للحصول على أفضل توافق مع PowerPoint، استخدم مقاطع فيديو .mp4؛ غالبًا ما تعمل مقاطع .webm (مثل تلك من Record Forge أو Clip Forge) في Google Slides لكن ليس دائمًا في Microsoft PowerPoint. مقاطع الفيديو الكبيرة تنتج ملفًا كبيرًا — قص المقاطع أولاً في <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> إذا لزم الأمر.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a> — مجاني الاستخدام، بدون الحاجة لحساب. لا شيء مما تكتبه أو ترفقه هنا يُخزَّن في أي مكان. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      errorRequestFailedFreeLimit: 'فشل الطلب بالحالة {status} — ربما تم الوصول إلى الحد اليومي المجاني.',
+      errorRequestFailed: 'فشل الطلب بالحالة {status}',
+      errorEmptyResponse: 'أعاد النموذج استجابة فارغة.',
+      positionRight: 'يمين النص',
+      positionBottom: 'أسفل النص',
+      positionFull: 'ملء الشريحة',
+      defaultSlideTitle: 'شريحة جديدة',
+      defaultBulletPoint: 'النقطة الأولى',
+      moveUpTitle: 'تحريك لأعلى',
+      moveDownTitle: 'تحريك لأسفل',
+      removeTitle: 'إزالة',
+      regenerateTitle: 'إعادة إنشاء هذه الشريحة بالذكاء الاصطناعي',
+      removeSlideTitle: 'إزالة الشريحة',
+      removeMediaTitle: 'إزالة الوسائط',
+      slideTitlePlaceholder: 'عنوان الشريحة',
+      bulletsPlaceholder: 'نقطة واحدة في كل سطر',
+      notesPlaceholder: 'ملاحظات المتحدث (اختياري) — لا تظهر في الشريحة، فقط في عرض المُقدِّم',
+      addMediaToSlideLabel: '+ إضافة صورة أو فيديو إلى هذه الشريحة',
+      errorVideoTooBig: 'هذا الفيديو يتجاوز 30 ميغابايت — سيكون ملف .pptx الناتج كبيرًا جدًا. قصّه أولاً (مثلاً في Clip Forge) وحاول مرة أخرى.',
+      errorNoApiKey: 'أضف مفتاح API الخاص بك أولاً.',
+      errorNoBrief: 'صف العرض التقديمي الذي تحتاجه.',
+      planningLabel: 'جارٍ التخطيط…',
+      statusPlanning: 'جارٍ التخطيط',
+      slidePlannedOne: 'تم تخطيط شريحة واحدة',
+      slidesPlannedMany: 'تم تخطيط {count} شريحة',
+      successPlanned: 'تم تخطيط {count} شريحة{paired}. عدّلها أدناه، أضف صورًا أو مقاطع فيديو، ثم أنشئ الملف.',
+      pairedOne: '، مقترنة بصورة واحدة',
+      pairedMany: '، مقترنة بـ {n} صور',
+      errorCouldNotPlan: 'تعذر تخطيط العرض التقديمي.',
+      successRegenerated: 'تمت إعادة إنشاء "{title}".',
+      errorCouldNotRegenerate: 'تعذر إعادة إنشاء تلك الشريحة.',
+      errorNoSlides: 'خطط أو أضف شريحة واحدة على الأقل أولاً.',
+      errorPptxLibFailed: 'فشل تحميل مكتبة PowerPoint — تحقق من اتصالك بالإنترنت وأعد تحميل الصفحة.',
+      buildingLabel: 'جارٍ الإنشاء…',
+      statusBuilding: 'جارٍ الإنشاء',
+      defaultPresentationTitle: 'عرض تقديمي',
+      statusSlidesCount: '{count} شريحة',
+      successDownloaded: 'تم تنزيل {filename} — {count} شريحة.',
+      errorCouldNotBuild: 'تعذر إنشاء العرض التقديمي.'
+    },
+    zh: {
+      heroSubtitle: '描述一个演示文稿，查看并编辑幻灯片，添加你自己的照片或视频，然后下载真正的 .pptx 文件。',
+      connectionHeading: '连接',
+      providerLabel: 'AI 提供商',
+      apiKeyLabelOpenai: '你的 OpenAI API 密钥',
+      apiKeyLabelAnthropic: '你的 Anthropic API 密钥',
+      apiKeyHint: '仅用于从你的浏览器直接调用上述提供商。绝不存储，绝不发送到其他任何地方，重新加载页面时会被清除。',
+      freeNoticeText: '✓ 免费使用——本网站包含一个共享密钥，具有有限的每日额度。如果停止工作，可能是达到了每日限额；请明天再试，或切换到上方的 OpenAI/Anthropic 并使用你自己的密钥。',
+      modelLabel: '文本模型',
+      presentationHeading: '演示文稿',
+      briefLabel: '描述你需要的演示文稿',
+      briefPlaceholder: '例如：一份水管工程业务的宣传演示文稿：介绍、问题、我们的服务、为什么选择我们、价格、联系方式',
+      slideCountLabel: '幻灯片数量',
+      slideCountPlaceholder: '让 AI 决定（4–10）',
+      slideCountHint: '不包括标题幻灯片。留空则让 AI 选择一个合理的数量。',
+      themeLabel: '配色主题',
+      themeNavy: '藏青与琥珀',
+      themeSlate: '板岩与青绿',
+      themeForest: '森林与金色',
+      themePlum: '梅紫与玫瑰',
+      photosLabel: '照片（可选，每张幻灯片一张）',
+      addPhotosLabel: '+ 添加照片',
+      photosHint: '按顺序上传——第1张照片放在第1张幻灯片，第2张放在第2张，以此类推，一旦你规划好。规划后仍可为每张幻灯片更换或添加媒体。',
+      planBtnLabel: '✨ 用 AI 规划幻灯片',
+      planningHint: '规划会重写下方的整个幻灯片列表。规划完成后，你可以编辑标题和要点，手动添加或删除幻灯片，并为任意幻灯片附加你自己的照片或视频。',
+      previewTitle: 'SLIDE FORGE — 幻灯片',
+      statusNotStarted: '尚未开始',
+      slidesEmptyStrong: '还没有幻灯片。',
+      slidesEmptyText: '在左侧描述你的演示文稿，然后点击"用 AI 规划幻灯片"——或点击下方的"+ 添加幻灯片"从头开始。',
+      addSlideBtnLabel: '+ 添加幻灯片',
+      buildBtnLabel: '⬇ 生成并下载 .pptx',
+      mediaHint: '你附加的照片和视频会保留在浏览器中，并直接嵌入到 .pptx 文件中——不会上传到任何地方。为获得最佳 PowerPoint 兼容性，请使用 .mp4 视频片段；.webm 片段（例如来自 Record Forge 或 Clip Forge 的）通常可以在 Google 幻灯片中播放，但不一定能在 Microsoft PowerPoint 中播放。大视频会生成大文件——如有需要，请先在 <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> 中裁剪片段。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a> —— 免费使用，无需账号。你在此输入或附加的内容不会存储在任何地方。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      errorRequestFailedFreeLimit: '请求失败，状态码 {status}——可能已达到每日免费额度上限。',
+      errorRequestFailed: '请求失败，状态码 {status}',
+      errorEmptyResponse: '模型返回了空响应。',
+      positionRight: '文字右侧',
+      positionBottom: '文字下方',
+      positionFull: '整页幻灯片',
+      defaultSlideTitle: '新幻灯片',
+      defaultBulletPoint: '要点一',
+      moveUpTitle: '上移',
+      moveDownTitle: '下移',
+      removeTitle: '移除',
+      regenerateTitle: '用 AI 重新生成此幻灯片',
+      removeSlideTitle: '删除幻灯片',
+      removeMediaTitle: '移除媒体',
+      slideTitlePlaceholder: '幻灯片标题',
+      bulletsPlaceholder: '每行一个要点',
+      notesPlaceholder: '演讲者备注（可选）——不会显示在幻灯片上，仅在演示者视图中显示',
+      addMediaToSlideLabel: '+ 为此幻灯片添加照片或视频',
+      errorVideoTooBig: '该视频超过30MB——生成的 .pptx 文件会非常大。请先剪短（例如在 Clip Forge 中），然后重试。',
+      errorNoApiKey: '请先添加你的 API 密钥。',
+      errorNoBrief: '请描述你需要的演示文稿。',
+      planningLabel: '规划中…',
+      statusPlanning: '规划中',
+      slidePlannedOne: '已规划1张幻灯片',
+      slidesPlannedMany: '已规划{count}张幻灯片',
+      successPlanned: '已规划{count}张幻灯片{paired}。请在下方编辑，添加照片或视频，然后生成文件。',
+      pairedOne: '，已与1张照片配对',
+      pairedMany: '，已与{n}张照片配对',
+      errorCouldNotPlan: '无法规划该演示文稿。',
+      successRegenerated: '已重新生成"{title}"。',
+      errorCouldNotRegenerate: '无法重新生成该幻灯片。',
+      errorNoSlides: '请先规划或添加至少一张幻灯片。',
+      errorPptxLibFailed: 'PowerPoint 库加载失败——请检查你的网络连接并重新加载页面。',
+      buildingLabel: '生成中…',
+      statusBuilding: '生成中',
+      defaultPresentationTitle: '演示文稿',
+      statusSlidesCount: '{count} 张幻灯片',
+      successDownloaded: '已下载 {filename} —— {count} 张幻灯片。',
+      errorCouldNotBuild: '无法生成该演示文稿。'
+    },
+    sw: {
+      heroSubtitle: 'Eleza uwasilishaji, kagua na uhariri slaidi, ongeza picha au video zako mwenyewe, kisha upakue .pptx halisi.',
+      connectionHeading: 'Muunganisho',
+      providerLabel: 'Mtoa huduma wa AI',
+      apiKeyLabelOpenai: 'Ufunguo wako wa API wa OpenAI',
+      apiKeyLabelAnthropic: 'Ufunguo wako wa API wa Anthropic',
+      apiKeyHint: 'Hutumika tu kuwasiliana na mtoa huduma aliye hapo juu moja kwa moja kutoka kwenye kivinjari chako. Haihifadhiwi kamwe, haitumwi popote pengine, na hufutwa ukipakia upya ukurasa.',
+      freeNoticeText: '✓ Bure kutumia — tovuti hii inajumuisha ufunguo unaoshirikiwa na uwezo mdogo wa kila siku. Ikiwa itaacha kufanya kazi, huenda imefikia kikomo hicho cha kila siku; jaribu tena kesho, au badilisha kwenda OpenAI/Anthropic hapo juu kwa ufunguo wako mwenyewe.',
+      modelLabel: 'Kielelezo cha maandishi',
+      presentationHeading: 'Uwasilishaji',
+      briefLabel: 'Eleza uwasilishaji unaohitaji',
+      briefPlaceholder: 'mfano: Uwasilishaji wa biashara ya mabomba: utangulizi, tatizo, huduma zetu, kwa nini sisi, bei, mawasiliano',
+      slideCountLabel: 'Idadi ya slaidi',
+      slideCountPlaceholder: 'Acha AI iamue (4–10)',
+      slideCountHint: 'Haihesabu slaidi ya kichwa. Acha wazi ili AI ichague idadi inayofaa.',
+      themeLabel: 'Mandhari ya rangi',
+      themeNavy: 'Bluu ya Jeshi na Amber',
+      themeSlate: 'Kijivu na Teal',
+      themeForest: 'Msitu na Dhahabu',
+      themePlum: 'Zambarau na Waridi',
+      photosLabel: 'Picha (hiari, moja kwa kila slaidi)',
+      addPhotosLabel: '+ Ongeza picha',
+      photosHint: 'Zimepakiwa kwa mpangilio — picha ya 1 huenda kwenye slaidi 1, ya 2 kwenye slaidi 2, na kadhalika, mara tu unapopanga. Bado unaweza kubadilisha au kuongeza vyombo vya habari kwa kila slaidi baadaye.',
+      planBtnLabel: '✨ Panga slaidi kwa AI',
+      planningHint: 'Kupanga huandika upya orodha nzima ya slaidi hapa chini. Ukishapanga, unaweza kuhariri vichwa na alama, kuongeza au kuondoa slaidi kwa mkono, na kuambatanisha picha au video yako mwenyewe kwa slaidi yoyote.',
+      previewTitle: 'SLIDE FORGE — SLAIDI',
+      statusNotStarted: 'HAIJAANZA',
+      slidesEmptyStrong: 'Hakuna slaidi bado.',
+      slidesEmptyText: 'Eleza uwasilishaji wako upande wa kushoto na ubofye "Panga slaidi kwa AI" — au bofya "+ Ongeza slaidi" hapa chini kuanza kutoka mwanzo.',
+      addSlideBtnLabel: '+ Ongeza slaidi',
+      buildBtnLabel: '⬇ Tengeneza na upakue .pptx',
+      mediaHint: 'Picha na video unazoambatanisha zinabaki kwenye kivinjari chako na zinapachikwa moja kwa moja kwenye faili la .pptx — hakuna kinachopakiwa popote. Kwa upatanifu bora na PowerPoint, tumia klipu za video za .mp4; klipu za .webm (mfano kutoka Record Forge au Clip Forge) mara nyingi hucheza katika Google Slides lakini si mara zote katika Microsoft PowerPoint. Video kubwa hutengeneza faili kubwa — punguza klipu kwanza katika <a href="clip-forge.html" style="color:var(--line-cyan);">Clip Forge</a> ikiwa inahitajika.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a> — bure kutumia, hakuna akaunti inayohitajika. Hakuna unachoandika au kuambatanisha hapa kinachohifadhiwa popote. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      errorRequestFailedFreeLimit: 'Ombi limeshindwa na hali {status} — kikomo cha bure cha kila siku kinaweza kuwa kimefikiwa.',
+      errorRequestFailed: 'Ombi limeshindwa na hali {status}',
+      errorEmptyResponse: 'Kielelezo kimerejesha jibu tupu.',
+      positionRight: 'Kulia kwa maandishi',
+      positionBottom: 'Chini ya maandishi',
+      positionFull: 'Slaidi nzima',
+      defaultSlideTitle: 'Slaidi mpya',
+      defaultBulletPoint: 'Jambo la kwanza',
+      moveUpTitle: 'Panda juu',
+      moveDownTitle: 'Shuka chini',
+      removeTitle: 'Ondoa',
+      regenerateTitle: 'Tengeneza upya slaidi hii kwa AI',
+      removeSlideTitle: 'Ondoa slaidi',
+      removeMediaTitle: 'Ondoa vyombo vya habari',
+      slideTitlePlaceholder: 'Kichwa cha slaidi',
+      bulletsPlaceholder: 'Jambo moja kwa kila mstari',
+      notesPlaceholder: 'Maelezo ya mzungumzaji (hiari) — hayaonyeshwi kwenye slaidi, tu katika muonekano wa mtoa hotuba',
+      addMediaToSlideLabel: '+ Ongeza picha au video kwenye slaidi hii',
+      errorVideoTooBig: 'Video hiyo inazidi 30MB — .pptx itakayotengenezwa itakuwa kubwa sana. Ipunguze kwanza (mfano katika Clip Forge) na ujaribu tena.',
+      errorNoApiKey: 'Ongeza ufunguo wako wa API kwanza.',
+      errorNoBrief: 'Eleza uwasilishaji unaohitaji.',
+      planningLabel: 'Inapanga…',
+      statusPlanning: 'INAPANGA',
+      slidePlannedOne: 'Slaidi 1 imepangwa',
+      slidesPlannedMany: 'Slaidi {count} zimepangwa',
+      successPlanned: 'Slaidi {count} zimepangwa{paired}. Zihariri hapa chini, ongeza picha au video, kisha utengeneze faili.',
+      pairedOne: ', imeoanishwa na picha 1',
+      pairedMany: ', zimeoanishwa na picha {n}',
+      errorCouldNotPlan: 'Imeshindwa kupanga uwasilishaji.',
+      successRegenerated: 'Imetengeneza upya "{title}".',
+      errorCouldNotRegenerate: 'Imeshindwa kutengeneza upya slaidi hiyo.',
+      errorNoSlides: 'Panga au ongeza slaidi moja angalau kwanza.',
+      errorPptxLibFailed: 'Maktaba ya PowerPoint imeshindwa kupakia — angalia muunganisho wako wa intaneti na upakie upya ukurasa.',
+      buildingLabel: 'Inatengeneza…',
+      statusBuilding: 'INATENGENEZA',
+      defaultPresentationTitle: 'Uwasilishaji',
+      statusSlidesCount: 'Slaidi {count}',
+      successDownloaded: 'Imepakua {filename} — slaidi {count}.',
+      errorCouldNotBuild: 'Imeshindwa kutengeneza uwasilishaji.'
+    }
+  });
+
+  applyProvider();
   renderSlidesList();
 })();
 </script>
