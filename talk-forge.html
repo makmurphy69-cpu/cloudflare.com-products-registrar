@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -194,53 +195,54 @@
   </svg>
   <div>
     <h1>Talk Forge</h1>
-    <p>Upload a photo, write a script, and watch it talk — mouths move and eyes blink in sync with real speech.</p>
+    <p data-i18n="heroSubtitle">Upload a photo, write a script, and watch it talk — mouths move and eyes blink in sync with real speech.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main>
   <section class="panel">
 
-    <div class="section-title">Photos / scenes</div>
+    <div class="section-title" data-i18n="photosSceneHeading">Photos / scenes</div>
     <div class="field">
-      <label class="upload-btn" for="photoInput">+ Add a photo (new scene)</label>
+      <label class="upload-btn" for="photoInput" data-i18n="addPhotoLabel">+ Add a photo (new scene)</label>
       <input type="file" id="photoInput" accept="image/*" style="display:none;">
-      <p class="hint" id="photoHint">Each photo becomes its own scene. Add more than one to cut between people or locations mid-conversation — a script line picks which scene is on screen while it plays.</p>
+      <p class="hint" id="photoHint" data-i18n="photoHintDefault">Each photo becomes its own scene. Add more than one to cut between people or locations mid-conversation — a script line picks which scene is on screen while it plays.</p>
     </div>
     <div id="sceneStrip" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
 
-    <div class="section-title" id="facesTitle">Faces</div>
+    <div class="section-title" id="facesTitle" data-i18n="facesHeadingDefault">Faces</div>
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="autoDetectBtn" disabled>🔍 Auto-detect faces</button>
-      <button type="button" class="draft-btn secondary" id="manualAddBtn" disabled>+ Place manually</button>
+      <button type="button" class="draft-btn secondary" id="autoDetectBtn" data-i18n="autoDetectBtnLabel" disabled>🔍 Auto-detect faces</button>
+      <button type="button" class="draft-btn secondary" id="manualAddBtn" data-i18n="placeManuallyLabel" disabled>+ Place manually</button>
     </div>
-    <p class="hint">Auto-detect uses a small face-recognition model loaded from a CDN (nothing about your photo is ever uploaded anywhere). If it misses someone, place that face manually — click their left eye, right eye, then mouth.</p>
+    <p class="hint" data-i18n="autoDetectHint">Auto-detect uses a small face-recognition model loaded from a CDN (nothing about your photo is ever uploaded anywhere). If it misses someone, place that face manually — click their left eye, right eye, then mouth.</p>
     <div id="facesList" style="margin-top:10px;"></div>
-    <p class="faces-empty" id="facesEmpty">No faces yet.</p>
+    <p class="faces-empty" id="facesEmpty" data-i18n="facesEmptyDefault">No faces yet.</p>
 
-    <div class="section-title">Script</div>
+    <div class="section-title" data-i18n="scriptHeading">Script</div>
     <div id="linesList"></div>
-    <button type="button" class="draft-btn secondary" id="addLineBtn">+ Add line</button>
+    <button type="button" class="draft-btn secondary" id="addLineBtn" data-i18n="addLineBtnLabel">+ Add line</button>
 
-    <div class="section-title">Voice</div>
+    <div class="section-title" data-i18n="voiceHeading">Voice</div>
     <div class="field">
-      <label for="voiceSelect">Voice</label>
+      <label for="voiceSelect" data-i18n="voiceLabel">Voice</label>
       <select id="voiceSelect"></select>
     </div>
     <div class="row-2">
       <div class="field">
-        <label>Rate <span id="rateVal">1.0</span></label>
+        <label><span data-i18n="rateLabel">Rate</span> <span id="rateVal">1.0</span></label>
         <input type="range" id="rateSlider" min="0.6" max="1.6" step="0.05" value="1">
       </div>
       <div class="field">
-        <label>Pitch <span id="pitchVal">1.0</span></label>
+        <label><span data-i18n="pitchLabel">Pitch</span> <span id="pitchVal">1.0</span></label>
         <input type="range" id="pitchSlider" min="0.5" max="1.8" step="0.05" value="1">
       </div>
     </div>
 
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="previewBtn" disabled>▶ Preview (no recording)</button>
-      <button type="button" class="draft-btn secondary" id="stopPreviewBtn" disabled>■ Stop</button>
+      <button type="button" class="draft-btn secondary" id="previewBtn" data-i18n="previewBtnLabel" disabled>▶ Preview (no recording)</button>
+      <button type="button" class="draft-btn secondary" id="stopPreviewBtn" data-i18n="stopBtnLabel" disabled>■ Stop</button>
     </div>
     <div class="error-box" id="errorBox"></div>
     <div class="status-box" id="statusBox"></div>
@@ -248,14 +250,14 @@
 
   <section class="table">
     <div class="title-block">
-      <span>TALK FORGE — PREVIEW</span>
-      <span id="titleBlockRight">NOT STARTED</span>
+      <span data-i18n="previewTitle">TALK FORGE — PREVIEW</span>
+      <span id="titleBlockRight" data-i18n="statusNotStarted">NOT STARTED</span>
     </div>
 
     <div class="stage-wrap" id="stageWrap">
       <div class="sheet-empty" id="stageEmpty">
-        <strong>No photo yet.</strong>
-        Upload a photo on the left to get started.
+        <strong data-i18n="stageEmptyStrong">No photo yet.</strong>
+        <span data-i18n="stageEmptyText">Upload a photo on the left to get started.</span>
       </div>
       <div class="manual-hint" id="manualHint"></div>
       <canvas id="stageCanvas" style="display:none;"></canvas>
@@ -263,18 +265,18 @@
     </div>
 
     <div class="table-actions">
-      <button type="button" id="recordBtn" disabled>🔴 Record video</button>
-      <button type="button" id="downloadBtn" disabled class="primary">⬇ Download video (.webm)</button>
+      <button type="button" id="recordBtn" data-i18n="recordVideoLabel" disabled>🔴 Record video</button>
+      <button type="button" id="downloadBtn" data-i18n="downloadVideoLabel" disabled class="primary">⬇ Download video (.webm)</button>
     </div>
     <div class="table-actions">
-      <button type="button" id="recordAudioBtn" disabled>🎙️ Record audio only</button>
-      <button type="button" id="downloadAudioBtn" disabled>⬇ Download audio (.webm)</button>
+      <button type="button" id="recordAudioBtn" data-i18n="recordAudioLabel" disabled>🎙️ Record audio only</button>
+      <button type="button" id="downloadAudioBtn" data-i18n="downloadAudioLabel" disabled>⬇ Download audio (.webm)</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">This is a simple, stylized talking effect (mouth stretch + blinking), not photorealistic lip-sync or full-body movement — that would need a paid cloud video-AI model, which this free tool intentionally doesn't use. Recording asks you to share "this tab" with audio, so it can capture the generated speech into the video — it never sees or sends your photo anywhere.</p>
+    <p class="hint" data-i18n="recordingDisclaimerHint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">This is a simple, stylized talking effect (mouth stretch + blinking), not photorealistic lip-sync or full-body movement — that would need a paid cloud video-AI model, which this free tool intentionally doesn't use. Recording asks you to share "this tab" with audio, so it can capture the generated speech into the video — it never sees or sends your photo anywhere.</p>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Your photo and script stay in your browser — only the face-detection model's code is fetched from a CDN, never your image. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. Your photo and script stay in your browser — only the face-detection model's code is fetched from a CDN, never your image. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -379,14 +381,15 @@
     if (!scene) return;
     stageCanvas.width = scene.canvasWidth;
     stageCanvas.height = scene.canvasHeight;
-    photoHint.textContent = scenes.length + ' scene' + (scenes.length === 1 ? '' : 's') + ' — editing "' + scene.name + '" (' + scene.img.width + '×' + scene.img.height + ')';
-    facesTitle.textContent = 'Faces — ' + sceneLabel(scene.id);
+    const scenesCountText = scenes.length === 1 ? I18N.t('sceneCountOne') : I18N.t('sceneCountMany').replace('{count}', scenes.length);
+    photoHint.textContent = I18N.t('photoHintEditing').replace('{scenesCount}', scenesCountText).replace('{name}', scene.name).replace('{w}', scene.img.width).replace('{h}', scene.img.height);
+    facesTitle.textContent = I18N.t('facesHeadingScene').replace('{scene}', sceneLabel(scene.id));
     drawFrame();
   }
 
   function sceneLabel(id) {
     const idx = scenes.findIndex(s => s.id === id);
-    return idx === -1 ? 'Scene' : 'Scene ' + (idx + 1);
+    return idx === -1 ? I18N.t('sceneWord') : I18N.t('sceneNumbered').replace('{n}', idx + 1);
   }
 
   function renderSceneStrip() {
@@ -400,7 +403,7 @@
       const label = document.createElement('span');
       label.textContent = sceneLabel(scene.id);
       const removeBtn = document.createElement('button');
-      removeBtn.type = 'button'; removeBtn.textContent = '✕'; removeBtn.title = 'Remove scene';
+      removeBtn.type = 'button'; removeBtn.textContent = '✕'; removeBtn.title = I18N.t('removeSceneTitle');
       removeBtn.addEventListener('click', (e) => { e.stopPropagation(); removeScene(scene.id); });
       tab.appendChild(thumb); tab.appendChild(label); tab.appendChild(removeBtn);
       tab.addEventListener('click', () => { setActiveScene(scene.id); renderSceneStrip(); renderFacesList(); });
@@ -424,8 +427,8 @@
       stageCanvas.style.display = 'none';
       autoDetectBtn.disabled = true;
       manualAddBtn.disabled = true;
-      photoHint.textContent = 'One photo, one or more people. A front-facing, well-lit photo detects best.';
-      facesTitle.textContent = 'Faces';
+      photoHint.textContent = I18N.t('photoHintNoScenes');
+      facesTitle.textContent = I18N.t('facesHeadingDefault');
     }
     renderSceneStrip();
     renderFacesList();
@@ -442,7 +445,7 @@
   const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
   async function ensureModelsLoaded() {
     if (modelsLoaded) return;
-    if (typeof faceapi === 'undefined') throw new Error('The face-detection library failed to load — check your internet connection and reload the page.');
+    if (typeof faceapi === 'undefined') throw new Error(I18N.t('errorFaceLibFailed'));
     await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
     await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
     modelsLoaded = true;
@@ -459,13 +462,13 @@
     const scene = activeScene();
     if (!scene) return;
     autoDetectBtn.disabled = true;
-    autoDetectBtn.textContent = 'Loading model…';
+    autoDetectBtn.textContent = I18N.t('loadingModelLabel');
     try {
       await ensureModelsLoaded();
-      autoDetectBtn.textContent = 'Detecting…';
+      autoDetectBtn.textContent = I18N.t('detectingLabel');
       const detections = await faceapi.detectAllFaces(scene.img, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
       if (!detections.length) {
-        showError('No faces found automatically. Try "Place manually" instead.');
+        showError(I18N.t('errorNoFacesFound'));
       } else {
         detections.forEach(det => {
           const mouthPts = det.landmarks.getMouth();
@@ -477,13 +480,13 @@
             rightEye: boxFromPoints(rightEyePts, 4, 4)
           });
         });
-        showStatus('Found ' + detections.length + ' face' + (detections.length === 1 ? '' : 's') + '.');
+        showStatus(detections.length === 1 ? I18N.t('foundFacesOne') : I18N.t('foundFacesMany').replace('{count}', detections.length));
       }
     } catch (err) {
-      showError(err.message || 'Could not detect faces.');
+      showError(err.message || I18N.t('errorCouldNotDetect'));
     } finally {
       autoDetectBtn.disabled = false;
-      autoDetectBtn.textContent = '🔍 Auto-detect faces';
+      autoDetectBtn.textContent = I18N.t('autoDetectBtnLabel');
     }
   });
 
@@ -492,7 +495,7 @@
     if (!scene) return;
     const id = ++faceIdCounter;
     scene.faces.push({
-      id, label: 'Face ' + scene.faces.length,
+      id, label: I18N.t('faceNumbered').replace('{n}', scene.faces.length),
       mouth: boxesInImageSpace.mouth, leftEye: boxesInImageSpace.leftEye, rightEye: boxesInImageSpace.rightEye,
       nextBlinkAt: performance.now() + 1500 + Math.random() * 3000, blinkUntil: 0
     });
@@ -508,7 +511,7 @@
     clearError();
     adjustMode = null;
     manualMode = { step: 0, points: [] };
-    manualHint.textContent = 'Click the LEFT eye (their left, your right)';
+    manualHint.textContent = I18N.t('manualHintLeftEye');
     manualHint.classList.add('show');
   });
   stageCanvas.addEventListener('click', function (e) {
@@ -520,9 +523,9 @@
     manualMode.points.push({ x: cx / scale, y: cy / scale }); // store in image-space coords
     manualMode.step++;
     if (manualMode.step === 1) {
-      manualHint.textContent = 'Click the RIGHT eye';
+      manualHint.textContent = I18N.t('manualHintRightEye');
     } else if (manualMode.step === 2) {
-      manualHint.textContent = 'Click the mouth';
+      manualHint.textContent = I18N.t('manualHintMouth');
     } else {
       const [leftEyePt, rightEyePt, mouthPt] = manualMode.points;
       const eyeDist = Math.hypot(rightEyePt.x - leftEyePt.x, rightEyePt.y - leftEyePt.y);
@@ -543,7 +546,7 @@
     const scene = activeScene();
     const faces = scene ? scene.faces : [];
     facesEmpty.style.display = faces.length ? 'none' : 'block';
-    facesEmpty.textContent = scene ? 'No faces yet.' : 'Add a photo above first.';
+    facesEmpty.textContent = scene ? I18N.t('facesEmptyDefault') : I18N.t('facesEmptyNoPhoto');
     faces.forEach((face, i) => {
       const row = document.createElement('div');
       row.className = 'face-item';
@@ -555,8 +558,8 @@
       nameInput.addEventListener('input', () => { face.label = nameInput.value; renderLinesList(); });
       const adjustBtn = document.createElement('button');
       const isAdjustingThis = adjustMode && adjustMode.faceId === face.id;
-      adjustBtn.type = 'button'; adjustBtn.textContent = isAdjustingThis ? '✓ Done' : '✥';
-      adjustBtn.title = 'Drag to nudge or resize this face\'s eye/mouth boxes';
+      adjustBtn.type = 'button'; adjustBtn.textContent = isAdjustingThis ? I18N.t('doneLabel') : '✥';
+      adjustBtn.title = I18N.t('adjustBtnTitle');
       adjustBtn.addEventListener('click', () => {
         if (isAdjustingThis) {
           adjustMode = null;
@@ -564,19 +567,19 @@
         } else {
           manualMode = null;
           adjustMode = { sceneId: scene.id, faceId: face.id };
-          manualHint.textContent = 'Drag inside a box to move it, drag its bottom-right corner to resize. Click "✓ Done" in the list when finished.';
+          manualHint.textContent = I18N.t('adjustDragHint');
           manualHint.classList.add('show');
         }
         renderFacesList();
       });
       const redoBtn = document.createElement('button');
-      redoBtn.type = 'button'; redoBtn.textContent = '↺'; redoBtn.title = 'Re-place manually from scratch';
+      redoBtn.type = 'button'; redoBtn.textContent = '↺'; redoBtn.title = I18N.t('redoBtnTitle');
       redoBtn.addEventListener('click', () => {
         scene.faces = scene.faces.filter(f => f.id !== face.id);
         adjustMode = null;
         renderFacesList(); renderLinesList(); drawFrame();
         manualMode = { step: 0, points: [] };
-        manualHint.textContent = 'Click the LEFT eye (their left, your right)';
+        manualHint.textContent = I18N.t('manualHintLeftEye');
         manualHint.classList.add('show');
       });
       const removeBtn = document.createElement('button');
@@ -683,7 +686,7 @@
       sceneSelect.style.width = '90px';
       if (!scenes.length) {
         const opt = document.createElement('option');
-        opt.value = ''; opt.textContent = 'No photo';
+        opt.value = ''; opt.textContent = I18N.t('noPhotoOption');
         sceneSelect.appendChild(opt);
         sceneSelect.disabled = true;
       } else {
@@ -707,7 +710,7 @@
           faceSelect.appendChild(opt);
         });
         const narratorOpt = document.createElement('option');
-        narratorOpt.value = 'narrator'; narratorOpt.textContent = 'Off-screen narrator';
+        narratorOpt.value = 'narrator'; narratorOpt.textContent = I18N.t('narratorOption');
         if (line.faceId === 'narrator') narratorOpt.selected = true;
         faceSelect.appendChild(narratorOpt);
       }
@@ -728,7 +731,7 @@
 
       const textArea = document.createElement('textarea');
       textArea.value = line.text;
-      textArea.placeholder = 'What they say…';
+      textArea.placeholder = I18N.t('lineTextPlaceholder');
       textArea.addEventListener('input', () => { line.text = textArea.value; refreshActionButtons(); });
 
       row.appendChild(head); row.appendChild(textArea);
@@ -840,7 +843,7 @@
   }
 
   function speakLines(playLines, onDone, onLineStart) {
-    if (!window.speechSynthesis) { showError('Your browser does not support speech synthesis.'); onDone(); return; }
+    if (!window.speechSynthesis) { showError(I18N.t('errorNoSpeechSynthesis')); onDone(); return; }
     speechSynthesis.cancel();
     const voices = speechSynthesis.getVoices();
     const chosenVoice = voices[parseInt(voiceSelect.value, 10)] || null;
@@ -886,19 +889,24 @@
     speakNext();
   }
 
+  function facesReadyText() {
+    const n = totalFaceCount();
+    return n === 1 ? I18N.t('facesReadyOne') : I18N.t('facesReadyMany').replace('{count}', n);
+  }
+
   previewBtn.addEventListener('click', function () {
     clearError();
     const playLines = lines.filter(l => l.text.trim());
-    if (!playLines.length) { showError('Add at least one script line with text.'); return; }
+    if (!playLines.length) { showError(I18N.t('errorNoLineText')); return; }
     previewBtn.disabled = true;
     stopPreviewBtn.disabled = false;
-    titleBlockRight.textContent = 'PREVIEWING';
+    titleBlockRight.textContent = I18N.t('statusPreviewing');
     speakLines(playLines, function () {
       playbackSceneId = null;
       drawFrame();
       previewBtn.disabled = false;
       stopPreviewBtn.disabled = true;
-      titleBlockRight.textContent = totalFaceCount() + ' face' + (totalFaceCount() === 1 ? '' : 's') + ' ready';
+      titleBlockRight.textContent = facesReadyText();
     });
   });
   stopPreviewBtn.addEventListener('click', function () {
@@ -907,7 +915,7 @@
     drawFrame();
     previewBtn.disabled = false;
     stopPreviewBtn.disabled = true;
-    titleBlockRight.textContent = totalFaceCount() + ' face' + (totalFaceCount() === 1 ? '' : 's') + ' ready';
+    titleBlockRight.textContent = facesReadyText();
   });
 
   // ================= recording =================
@@ -921,26 +929,26 @@
   recordBtn.addEventListener('click', async function () {
     clearError();
     const playLines = lines.filter(l => l.text.trim());
-    if (!playLines.length) { showError('Add at least one script line with text.'); return; }
+    if (!playLines.length) { showError(I18N.t('errorNoLineText')); return; }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-      showError('Recording needs a desktop browser (Chrome, Edge, or Firefox).');
+      showError(I18N.t('errorNeedsDesktopBrowser'));
       return;
     }
     const mimeType = pickMimeType();
-    if (!mimeType) { showError('No supported recording format found in this browser.'); return; }
+    if (!mimeType) { showError(I18N.t('errorNoRecordingFormat')); return; }
 
     let displayStream;
     try {
-      showStatus('Choose "This Tab" and check "Share tab audio" in the picker — that lets us capture the generated speech.');
+      showStatus(I18N.t('shareTabAudioHintVideo'));
       displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
     } catch (err) {
-      showError('Screen sharing was not started: ' + (err.message || err.name));
+      showError(I18N.t('errorScreenSharingNotStarted').replace('{message}', err.message || err.name));
       return;
     }
 
     const audioTracks = displayStream.getAudioTracks();
     if (!audioTracks.length) {
-      showError('No tab audio was shared — make sure to check "Share tab audio" in the picker and try again.');
+      showError(I18N.t('errorNoTabAudio'));
       displayStream.getTracks().forEach(t => t.stop());
       return;
     }
@@ -954,7 +962,7 @@
     recordBtn.disabled = true;
     previewBtn.disabled = true;
     downloadBtn.disabled = true;
-    titleBlockRight.textContent = 'RECORDING';
+    titleBlockRight.textContent = I18N.t('statusRecording');
 
     recorder.onstop = function () {
       recordedBlob = new Blob(chunks, { type: 'video/webm' });
@@ -965,10 +973,10 @@
       downloadBtn.disabled = false;
       recordBtn.disabled = false;
       previewBtn.disabled = false;
-      titleBlockRight.textContent = 'RECORDING SAVED';
+      titleBlockRight.textContent = I18N.t('statusRecordingSaved');
       displayStream.getTracks().forEach(t => t.stop());
       clearError();
-      showStatus('Recording complete — ' + playLines.length + ' line' + (playLines.length === 1 ? '' : 's') + '.');
+      showStatus(playLines.length === 1 ? I18N.t('recordingCompleteOne') : I18N.t('recordingCompleteMany').replace('{count}', playLines.length));
     };
 
     recorder.start(1000);
@@ -1000,26 +1008,26 @@
   recordAudioBtn.addEventListener('click', async function () {
     clearError();
     const playLines = lines.filter(l => l.text.trim());
-    if (!playLines.length) { showError('Add at least one script line with text.'); return; }
+    if (!playLines.length) { showError(I18N.t('errorNoLineText')); return; }
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-      showError('Recording needs a desktop browser (Chrome, Edge, or Firefox).');
+      showError(I18N.t('errorNeedsDesktopBrowser'));
       return;
     }
     const mimeType = pickAudioMimeType();
-    if (!mimeType) { showError('No supported audio recording format found in this browser.'); return; }
+    if (!mimeType) { showError(I18N.t('errorNoAudioFormat')); return; }
 
     let displayStream;
     try {
-      showStatus('Choose "This Tab" and check "Share tab audio" — video isn\'t needed here, only the audio is kept.');
+      showStatus(I18N.t('shareTabAudioHintAudio'));
       displayStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
     } catch (err) {
-      showError('Screen sharing was not started: ' + (err.message || err.name));
+      showError(I18N.t('errorScreenSharingNotStarted').replace('{message}', err.message || err.name));
       return;
     }
 
     const audioTracks = displayStream.getAudioTracks();
     if (!audioTracks.length) {
-      showError('No tab audio was shared — make sure to check "Share tab audio" in the picker and try again.');
+      showError(I18N.t('errorNoTabAudio'));
       displayStream.getTracks().forEach(t => t.stop());
       return;
     }
@@ -1033,7 +1041,7 @@
     recordBtn.disabled = true;
     previewBtn.disabled = true;
     downloadAudioBtn.disabled = true;
-    titleBlockRight.textContent = 'RECORDING AUDIO';
+    titleBlockRight.textContent = I18N.t('statusRecordingAudio');
 
     recorder.onstop = function () {
       recordedAudioBlob = new Blob(chunks, { type: 'audio/webm' });
@@ -1041,10 +1049,10 @@
       recordAudioBtn.disabled = false;
       recordBtn.disabled = false;
       previewBtn.disabled = false;
-      titleBlockRight.textContent = 'AUDIO SAVED';
+      titleBlockRight.textContent = I18N.t('statusAudioSaved');
       displayStream.getTracks().forEach(t => t.stop());
       clearError();
-      showStatus('Audio recorded — ' + playLines.length + ' line' + (playLines.length === 1 ? '' : 's') + '.');
+      showStatus(playLines.length === 1 ? I18N.t('audioRecordedOne') : I18N.t('audioRecordedMany').replace('{count}', playLines.length));
     };
 
     recorder.start(500);
@@ -1066,7 +1074,396 @@
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   });
 
+  I18N.init({
+    en: {
+      heroSubtitle: 'Upload a photo, write a script, and watch it talk — mouths move and eyes blink in sync with real speech.',
+      photosSceneHeading: 'Photos / scenes',
+      addPhotoLabel: '+ Add a photo (new scene)',
+      photoHintDefault: 'Each photo becomes its own scene. Add more than one to cut between people or locations mid-conversation — a script line picks which scene is on screen while it plays.',
+      photoHintNoScenes: 'One photo, one or more people. A front-facing, well-lit photo detects best.',
+      photoHintEditing: '{scenesCount} — editing "{name}" ({w}×{h})',
+      sceneCountOne: '1 scene',
+      sceneCountMany: '{count} scenes',
+      facesHeadingDefault: 'Faces',
+      facesHeadingScene: 'Faces — {scene}',
+      sceneWord: 'Scene',
+      sceneNumbered: 'Scene {n}',
+      autoDetectBtnLabel: '🔍 Auto-detect faces',
+      placeManuallyLabel: '+ Place manually',
+      autoDetectHint: "Auto-detect uses a small face-recognition model loaded from a CDN (nothing about your photo is ever uploaded anywhere). If it misses someone, place that face manually — click their left eye, right eye, then mouth.",
+      facesEmptyDefault: 'No faces yet.',
+      facesEmptyNoPhoto: 'Add a photo above first.',
+      scriptHeading: 'Script',
+      addLineBtnLabel: '+ Add line',
+      voiceHeading: 'Voice',
+      voiceLabel: 'Voice',
+      rateLabel: 'Rate',
+      pitchLabel: 'Pitch',
+      previewBtnLabel: '▶ Preview (no recording)',
+      stopBtnLabel: '■ Stop',
+      previewTitle: 'TALK FORGE — PREVIEW',
+      statusNotStarted: 'NOT STARTED',
+      stageEmptyStrong: 'No photo yet.',
+      stageEmptyText: 'Upload a photo on the left to get started.',
+      recordVideoLabel: '🔴 Record video',
+      downloadVideoLabel: '⬇ Download video (.webm)',
+      recordAudioLabel: '🎙️ Record audio only',
+      downloadAudioLabel: '⬇ Download audio (.webm)',
+      recordingDisclaimerHint: 'This is a simple, stylized talking effect (mouth stretch + blinking), not photorealistic lip-sync or full-body movement — that would need a paid cloud video-AI model, which this free tool intentionally doesn\'t use. Recording asks you to share "this tab" with audio, so it can capture the generated speech into the video — it never sees or sends your photo anywhere.',
+      footerText: "Part of <a href=\"index.html\">MigaBuilder</a>. Your photo and script stay in your browser — only the face-detection model's code is fetched from a CDN, never your image. <a href=\"feedback.html\">Found a bug or have an idea? Send feedback →</a>",
+      removeSceneTitle: 'Remove scene',
+      loadingModelLabel: 'Loading model…',
+      detectingLabel: 'Detecting…',
+      errorNoFacesFound: 'No faces found automatically. Try "Place manually" instead.',
+      foundFacesOne: 'Found 1 face.',
+      foundFacesMany: 'Found {count} faces.',
+      errorCouldNotDetect: 'Could not detect faces.',
+      errorFaceLibFailed: 'The face-detection library failed to load — check your internet connection and reload the page.',
+      faceNumbered: 'Face {n}',
+      manualHintLeftEye: 'Click the LEFT eye (their left, your right)',
+      manualHintRightEye: 'Click the RIGHT eye',
+      manualHintMouth: 'Click the mouth',
+      doneLabel: '✓ Done',
+      adjustBtnTitle: "Drag to nudge or resize this face's eye/mouth boxes",
+      adjustDragHint: 'Drag inside a box to move it, drag its bottom-right corner to resize. Click "✓ Done" in the list when finished.',
+      redoBtnTitle: 'Re-place manually from scratch',
+      noPhotoOption: 'No photo',
+      narratorOption: 'Off-screen narrator',
+      lineTextPlaceholder: 'What they say…',
+      errorNoSpeechSynthesis: 'Your browser does not support speech synthesis.',
+      errorNoLineText: 'Add at least one script line with text.',
+      statusPreviewing: 'PREVIEWING',
+      facesReadyOne: '1 face ready',
+      facesReadyMany: '{count} faces ready',
+      errorNeedsDesktopBrowser: 'Recording needs a desktop browser (Chrome, Edge, or Firefox).',
+      errorNoRecordingFormat: 'No supported recording format found in this browser.',
+      shareTabAudioHintVideo: 'Choose "This Tab" and check "Share tab audio" in the picker — that lets us capture the generated speech.',
+      errorScreenSharingNotStarted: 'Screen sharing was not started: {message}',
+      errorNoTabAudio: 'No tab audio was shared — make sure to check "Share tab audio" in the picker and try again.',
+      statusRecording: 'RECORDING',
+      statusRecordingSaved: 'RECORDING SAVED',
+      recordingCompleteOne: 'Recording complete — 1 line.',
+      recordingCompleteMany: 'Recording complete — {count} lines.',
+      errorNoAudioFormat: 'No supported audio recording format found in this browser.',
+      shareTabAudioHintAudio: 'Choose "This Tab" and check "Share tab audio" — video isn\'t needed here, only the audio is kept.',
+      statusRecordingAudio: 'RECORDING AUDIO',
+      statusAudioSaved: 'AUDIO SAVED',
+      audioRecordedOne: 'Audio recorded — 1 line.',
+      audioRecordedMany: 'Audio recorded — {count} lines.'
+    },
+    es: {
+      heroSubtitle: 'Sube una foto, escribe un guion, y míralo hablar — las bocas se mueven y los ojos parpadean en sincronía con voz real.',
+      photosSceneHeading: 'Fotos / escenas',
+      addPhotoLabel: '+ Añadir una foto (nueva escena)',
+      photoHintDefault: 'Cada foto se convierte en su propia escena. Añade más de una para cortar entre personas o lugares a mitad de conversación — una línea del guion elige qué escena está en pantalla mientras se reproduce.',
+      photoHintNoScenes: 'Una foto, una o más personas. Una foto de frente y bien iluminada se detecta mejor.',
+      photoHintEditing: '{scenesCount} — editando "{name}" ({w}×{h})',
+      sceneCountOne: '1 escena',
+      sceneCountMany: '{count} escenas',
+      facesHeadingDefault: 'Caras',
+      facesHeadingScene: 'Caras — {scene}',
+      sceneWord: 'Escena',
+      sceneNumbered: 'Escena {n}',
+      autoDetectBtnLabel: '🔍 Detectar caras automáticamente',
+      placeManuallyLabel: '+ Colocar manualmente',
+      autoDetectHint: 'La detección automática usa un pequeño modelo de reconocimiento facial cargado desde un CDN (nada de tu foto se sube nunca a ningún lugar). Si se le pasa a alguien, coloca esa cara manualmente — haz clic en su ojo izquierdo, ojo derecho, luego boca.',
+      facesEmptyDefault: 'Aún no hay caras.',
+      facesEmptyNoPhoto: 'Añade una foto arriba primero.',
+      scriptHeading: 'Guion',
+      addLineBtnLabel: '+ Añadir línea',
+      voiceHeading: 'Voz',
+      voiceLabel: 'Voz',
+      rateLabel: 'Velocidad',
+      pitchLabel: 'Tono',
+      previewBtnLabel: '▶ Vista previa (sin grabar)',
+      stopBtnLabel: '■ Detener',
+      previewTitle: 'TALK FORGE — VISTA PREVIA',
+      statusNotStarted: 'SIN INICIAR',
+      stageEmptyStrong: 'Aún no hay foto.',
+      stageEmptyText: 'Sube una foto a la izquierda para empezar.',
+      recordVideoLabel: '🔴 Grabar video',
+      downloadVideoLabel: '⬇ Descargar video (.webm)',
+      recordAudioLabel: '🎙️ Grabar solo audio',
+      downloadAudioLabel: '⬇ Descargar audio (.webm)',
+      recordingDisclaimerHint: 'Este es un efecto de habla simple y estilizado (estiramiento de boca + parpadeo), no sincronización labial fotorrealista ni movimiento de cuerpo completo — eso necesitaría un modelo de video-IA en la nube de pago, que esta herramienta gratuita intencionalmente no usa. La grabación te pide compartir "esta pestaña" con audio, para poder capturar la voz generada en el video — nunca ve ni envía tu foto a ningún lugar.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Tu foto y guion permanecen en tu navegador — solo el código del modelo de detección facial se obtiene de un CDN, nunca tu imagen. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      removeSceneTitle: 'Eliminar escena',
+      loadingModelLabel: 'Cargando modelo…',
+      detectingLabel: 'Detectando…',
+      errorNoFacesFound: 'No se encontraron caras automáticamente. Prueba "Colocar manualmente" en su lugar.',
+      foundFacesOne: 'Se encontró 1 cara.',
+      foundFacesMany: 'Se encontraron {count} caras.',
+      errorCouldNotDetect: 'No se pudieron detectar caras.',
+      errorFaceLibFailed: 'La librería de detección facial no se cargó — revisa tu conexión a internet y recarga la página.',
+      faceNumbered: 'Cara {n}',
+      manualHintLeftEye: 'Haz clic en el ojo IZQUIERDO (el suyo izquierdo, tu derecho)',
+      manualHintRightEye: 'Haz clic en el ojo DERECHO',
+      manualHintMouth: 'Haz clic en la boca',
+      doneLabel: '✓ Hecho',
+      adjustBtnTitle: 'Arrastra para ajustar o redimensionar los recuadros de ojos/boca de esta cara',
+      adjustDragHint: 'Arrastra dentro de un recuadro para moverlo, arrastra su esquina inferior derecha para redimensionar. Haz clic en "✓ Hecho" en la lista cuando termines.',
+      redoBtnTitle: 'Volver a colocar manualmente desde cero',
+      noPhotoOption: 'Sin foto',
+      narratorOption: 'Narrador fuera de pantalla',
+      lineTextPlaceholder: 'Qué dicen…',
+      errorNoSpeechSynthesis: 'Tu navegador no admite síntesis de voz.',
+      errorNoLineText: 'Añade al menos una línea de guion con texto.',
+      statusPreviewing: 'PREVISUALIZANDO',
+      facesReadyOne: '1 cara lista',
+      facesReadyMany: '{count} caras listas',
+      errorNeedsDesktopBrowser: 'La grabación requiere un navegador de escritorio (Chrome, Edge o Firefox).',
+      errorNoRecordingFormat: 'No se encontró un formato de grabación compatible en este navegador.',
+      shareTabAudioHintVideo: 'Elige "Esta pestaña" y marca "Compartir audio de la pestaña" en el selector — eso nos permite capturar la voz generada.',
+      errorScreenSharingNotStarted: 'No se inició la compartición de pantalla: {message}',
+      errorNoTabAudio: 'No se compartió audio de la pestaña — asegúrate de marcar "Compartir audio de la pestaña" en el selector e inténtalo de nuevo.',
+      statusRecording: 'GRABANDO',
+      statusRecordingSaved: 'GRABACIÓN GUARDADA',
+      recordingCompleteOne: 'Grabación completa — 1 línea.',
+      recordingCompleteMany: 'Grabación completa — {count} líneas.',
+      errorNoAudioFormat: 'No se encontró un formato de audio compatible en este navegador.',
+      shareTabAudioHintAudio: 'Elige "Esta pestaña" y marca "Compartir audio de la pestaña" — el video no es necesario aquí, solo se conserva el audio.',
+      statusRecordingAudio: 'GRABANDO AUDIO',
+      statusAudioSaved: 'AUDIO GUARDADO',
+      audioRecordedOne: 'Audio grabado — 1 línea.',
+      audioRecordedMany: 'Audio grabado — {count} líneas.'
+    },
+    ar: {
+      heroSubtitle: 'ارفع صورة، اكتب نصًا، وشاهدها تتحدث — الأفواه تتحرك والعيون ترمش بتزامن مع كلام حقيقي.',
+      photosSceneHeading: 'الصور / المشاهد',
+      addPhotoLabel: '+ إضافة صورة (مشهد جديد)',
+      photoHintDefault: 'تصبح كل صورة مشهدًا خاصًا بها. أضف أكثر من واحدة للتنقل بين الأشخاص أو الأماكن في منتصف المحادثة — يختار سطر النص أي مشهد يظهر على الشاشة أثناء تشغيله.',
+      photoHintNoScenes: 'صورة واحدة، شخص واحد أو أكثر. الصورة الأمامية جيدة الإضاءة تُكتشف بشكل أفضل.',
+      photoHintEditing: '{scenesCount} — تحرير "{name}" ({w}×{h})',
+      sceneCountOne: 'مشهد واحد',
+      sceneCountMany: '{count} مشاهد',
+      facesHeadingDefault: 'الوجوه',
+      facesHeadingScene: 'الوجوه — {scene}',
+      sceneWord: 'مشهد',
+      sceneNumbered: 'مشهد {n}',
+      autoDetectBtnLabel: '🔍 اكتشاف الوجوه تلقائيًا',
+      placeManuallyLabel: '+ وضع يدوي',
+      autoDetectHint: 'يستخدم الاكتشاف التلقائي نموذجًا صغيرًا للتعرف على الوجوه محملًا من CDN (لا شيء من صورتك يُرفع إلى أي مكان أبدًا). إذا فاته شخص ما، ضع ذلك الوجه يدويًا — انقر على عينه اليسرى، ثم اليمنى، ثم الفم.',
+      facesEmptyDefault: 'لا توجد وجوه بعد.',
+      facesEmptyNoPhoto: 'أضف صورة أعلاه أولاً.',
+      scriptHeading: 'النص',
+      addLineBtnLabel: '+ إضافة سطر',
+      voiceHeading: 'الصوت',
+      voiceLabel: 'الصوت',
+      rateLabel: 'السرعة',
+      pitchLabel: 'طبقة الصوت',
+      previewBtnLabel: '▶ معاينة (بدون تسجيل)',
+      stopBtnLabel: '■ إيقاف',
+      previewTitle: 'TALK FORGE — معاينة',
+      statusNotStarted: 'لم يبدأ',
+      stageEmptyStrong: 'لا توجد صورة بعد.',
+      stageEmptyText: 'ارفع صورة على اليسار للبدء.',
+      recordVideoLabel: '🔴 تسجيل فيديو',
+      downloadVideoLabel: '⬇ تنزيل الفيديو (.webm)',
+      recordAudioLabel: '🎙️ تسجيل الصوت فقط',
+      downloadAudioLabel: '⬇ تنزيل الصوت (.webm)',
+      recordingDisclaimerHint: 'هذا تأثير كلام بسيط ومُصمم (تمدد الفم + الرمش)، وليس مزامنة شفاه واقعية أو حركة كاملة للجسم — سيحتاج ذلك إلى نموذج ذكاء اصطناعي مدفوع للفيديو السحابي، وهو ما لا تستخدمه هذه الأداة المجانية عن قصد. يطلب منك التسجيل مشاركة "هذا التبويب" مع الصوت، حتى يتمكن من التقاط الكلام المُنشأ في الفيديو — لا يرى أو يرسل صورتك إلى أي مكان أبدًا.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. تبقى صورتك ونصك في متصفحك — يُجلب فقط كود نموذج اكتشاف الوجوه من CDN، وليس صورتك أبدًا. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      removeSceneTitle: 'إزالة المشهد',
+      loadingModelLabel: 'جارٍ تحميل النموذج…',
+      detectingLabel: 'جارٍ الاكتشاف…',
+      errorNoFacesFound: 'لم يتم العثور على وجوه تلقائيًا. جرّب "وضع يدوي" بدلاً من ذلك.',
+      foundFacesOne: 'تم العثور على وجه واحد.',
+      foundFacesMany: 'تم العثور على {count} وجوه.',
+      errorCouldNotDetect: 'تعذر اكتشاف الوجوه.',
+      errorFaceLibFailed: 'فشل تحميل مكتبة اكتشاف الوجوه — تحقق من اتصالك بالإنترنت وأعد تحميل الصفحة.',
+      faceNumbered: 'وجه {n}',
+      manualHintLeftEye: 'انقر على العين اليسرى (يسارهم، يمينك)',
+      manualHintRightEye: 'انقر على العين اليمنى',
+      manualHintMouth: 'انقر على الفم',
+      doneLabel: '✓ تم',
+      adjustBtnTitle: 'اسحب لتحريك أو تغيير حجم مربعات العين/الفم لهذا الوجه',
+      adjustDragHint: 'اسحب داخل مربع لتحريكه، اسحب زاويته السفلية اليمنى لتغيير حجمه. انقر على "✓ تم" في القائمة عند الانتهاء.',
+      redoBtnTitle: 'إعادة الوضع يدويًا من الصفر',
+      noPhotoOption: 'لا توجد صورة',
+      narratorOption: 'راوٍ خارج الشاشة',
+      lineTextPlaceholder: 'ماذا يقولون…',
+      errorNoSpeechSynthesis: 'متصفحك لا يدعم تحويل النص إلى كلام.',
+      errorNoLineText: 'أضف سطرًا واحدًا على الأقل من النص يحتوي على كلام.',
+      statusPreviewing: 'جارٍ المعاينة',
+      facesReadyOne: 'وجه واحد جاهز',
+      facesReadyMany: '{count} وجوه جاهزة',
+      errorNeedsDesktopBrowser: 'يتطلب التسجيل متصفح سطح مكتب (Chrome أو Edge أو Firefox).',
+      errorNoRecordingFormat: 'لم يتم العثور على تنسيق تسجيل مدعوم في هذا المتصفح.',
+      shareTabAudioHintVideo: 'اختر "هذا التبويب" وفعّل "مشاركة صوت التبويب" في المحدد — يتيح لنا ذلك التقاط الكلام المُنشأ.',
+      errorScreenSharingNotStarted: 'لم تبدأ مشاركة الشاشة: {message}',
+      errorNoTabAudio: 'لم تتم مشاركة صوت التبويب — تأكد من تفعيل "مشاركة صوت التبويب" في المحدد وحاول مرة أخرى.',
+      statusRecording: 'جارٍ التسجيل',
+      statusRecordingSaved: 'تم حفظ التسجيل',
+      recordingCompleteOne: 'اكتمل التسجيل — سطر واحد.',
+      recordingCompleteMany: 'اكتمل التسجيل — {count} أسطر.',
+      errorNoAudioFormat: 'لم يتم العثور على تنسيق صوت مدعوم في هذا المتصفح.',
+      shareTabAudioHintAudio: 'اختر "هذا التبويب" وفعّل "مشاركة صوت التبويب" — الفيديو غير مطلوب هنا، يُحتفظ بالصوت فقط.',
+      statusRecordingAudio: 'جارٍ تسجيل الصوت',
+      statusAudioSaved: 'تم حفظ الصوت',
+      audioRecordedOne: 'تم تسجيل الصوت — سطر واحد.',
+      audioRecordedMany: 'تم تسجيل الصوت — {count} أسطر.'
+    },
+    zh: {
+      heroSubtitle: '上传一张照片，编写一段脚本，看它开口说话——嘴巴移动，眼睛眨动，与真实语音同步。',
+      photosSceneHeading: '照片 / 场景',
+      addPhotoLabel: '+ 添加照片（新场景）',
+      photoHintDefault: '每张照片都会成为独立的场景。添加多张照片可以在对话中途在不同的人或地点之间切换——脚本行会选择播放时屏幕上显示哪个场景。',
+      photoHintNoScenes: '一张照片，一个或多个人。正面、光线良好的照片检测效果最佳。',
+      photoHintEditing: '{scenesCount} — 正在编辑"{name}"（{w}×{h}）',
+      sceneCountOne: '1 个场景',
+      sceneCountMany: '{count} 个场景',
+      facesHeadingDefault: '面孔',
+      facesHeadingScene: '面孔 — {scene}',
+      sceneWord: '场景',
+      sceneNumbered: '场景 {n}',
+      autoDetectBtnLabel: '🔍 自动检测面孔',
+      placeManuallyLabel: '+ 手动放置',
+      autoDetectHint: '自动检测使用从 CDN 加载的小型人脸识别模型（你照片的任何内容都绝不会上传到任何地方）。如果它漏掉了某人，请手动放置该面孔——依次点击对方的左眼、右眼，然后是嘴巴。',
+      facesEmptyDefault: '还没有面孔。',
+      facesEmptyNoPhoto: '请先在上方添加照片。',
+      scriptHeading: '脚本',
+      addLineBtnLabel: '+ 添加台词',
+      voiceHeading: '语音',
+      voiceLabel: '语音',
+      rateLabel: '语速',
+      pitchLabel: '音调',
+      previewBtnLabel: '▶ 预览（不录制）',
+      stopBtnLabel: '■ 停止',
+      previewTitle: 'TALK FORGE — 预览',
+      statusNotStarted: '尚未开始',
+      stageEmptyStrong: '还没有照片。',
+      stageEmptyText: '在左侧上传照片以开始。',
+      recordVideoLabel: '🔴 录制视频',
+      downloadVideoLabel: '⬇ 下载视频（.webm）',
+      recordAudioLabel: '🎙️ 仅录制音频',
+      downloadAudioLabel: '⬇ 下载音频（.webm）',
+      recordingDisclaimerHint: '这是一种简单的风格化说话效果（嘴部伸展+眨眼），不是逼真的唇形同步或全身动作——那需要付费的云端视频 AI 模型，而这个免费工具刻意不使用它。录制时会要求你共享带音频的"此标签页"，以便将生成的语音捕获到视频中——它绝不会查看或发送你的照片到任何地方。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。你的照片和脚本保留在浏览器中——只有人脸检测模型的代码是从 CDN 获取的，绝不会获取你的图像。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      removeSceneTitle: '移除场景',
+      loadingModelLabel: '正在加载模型…',
+      detectingLabel: '检测中…',
+      errorNoFacesFound: '未能自动找到面孔。请尝试改用"手动放置"。',
+      foundFacesOne: '找到 1 张面孔。',
+      foundFacesMany: '找到 {count} 张面孔。',
+      errorCouldNotDetect: '无法检测面孔。',
+      errorFaceLibFailed: '人脸检测库加载失败——请检查你的网络连接并重新加载页面。',
+      faceNumbered: '面孔 {n}',
+      manualHintLeftEye: '点击左眼（对方的左眼，你的右侧）',
+      manualHintRightEye: '点击右眼',
+      manualHintMouth: '点击嘴巴',
+      doneLabel: '✓ 完成',
+      adjustBtnTitle: '拖动以微调或调整此面孔的眼睛/嘴巴框大小',
+      adjustDragHint: '在框内拖动可移动它，拖动其右下角可调整大小。完成后点击列表中的"✓ 完成"。',
+      redoBtnTitle: '从头开始重新手动放置',
+      noPhotoOption: '无照片',
+      narratorOption: '画外音旁白',
+      lineTextPlaceholder: '他们说的话…',
+      errorNoSpeechSynthesis: '你的浏览器不支持语音合成。',
+      errorNoLineText: '请至少添加一行带文字的脚本。',
+      statusPreviewing: '预览中',
+      facesReadyOne: '1 张面孔已就绪',
+      facesReadyMany: '{count} 张面孔已就绪',
+      errorNeedsDesktopBrowser: '录制需要桌面浏览器（Chrome、Edge 或 Firefox）。',
+      errorNoRecordingFormat: '此浏览器未找到支持的录制格式。',
+      shareTabAudioHintVideo: '在选择器中选择"此标签页"并勾选"共享标签页音频"——这样我们才能捕获生成的语音。',
+      errorScreenSharingNotStarted: '屏幕共享未启动：{message}',
+      errorNoTabAudio: '未共享标签页音频——请确保在选择器中勾选"共享标签页音频"后重试。',
+      statusRecording: '录制中',
+      statusRecordingSaved: '录制已保存',
+      recordingCompleteOne: '录制完成——1 行。',
+      recordingCompleteMany: '录制完成——{count} 行。',
+      errorNoAudioFormat: '此浏览器未找到支持的音频录制格式。',
+      shareTabAudioHintAudio: '选择"此标签页"并勾选"共享标签页音频"——这里不需要视频，只保留音频。',
+      statusRecordingAudio: '正在录制音频',
+      statusAudioSaved: '音频已保存',
+      audioRecordedOne: '音频已录制——1 行。',
+      audioRecordedMany: '音频已录制——{count} 行。'
+    },
+    sw: {
+      heroSubtitle: 'Pakia picha, andika hati, na uione ikizungumza — midomo husogea na macho hupepesa kwa mpangilio na sauti halisi.',
+      photosSceneHeading: 'Picha / matukio',
+      addPhotoLabel: '+ Ongeza picha (tukio jipya)',
+      photoHintDefault: 'Kila picha inakuwa tukio lake mwenyewe. Ongeza zaidi ya moja ili kubadili kati ya watu au maeneo katikati ya mazungumzo — mstari wa hati huchagua tukio gani liko kwenye skrini wakati unachezwa.',
+      photoHintNoScenes: 'Picha moja, mtu mmoja au zaidi. Picha inayoelekea mbele, yenye mwanga mzuri hugundulika vizuri zaidi.',
+      photoHintEditing: '{scenesCount} — inahariri "{name}" ({w}×{h})',
+      sceneCountOne: 'Tukio 1',
+      sceneCountMany: 'Matukio {count}',
+      facesHeadingDefault: 'Nyuso',
+      facesHeadingScene: 'Nyuso — {scene}',
+      sceneWord: 'Tukio',
+      sceneNumbered: 'Tukio {n}',
+      autoDetectBtnLabel: '🔍 Gundua nyuso kiotomatiki',
+      placeManuallyLabel: '+ Weka kwa mkono',
+      autoDetectHint: 'Ugunduzi wa kiotomatiki hutumia kielelezo kidogo cha kutambua nyuso kilichopakiwa kutoka CDN (hakuna chochote kuhusu picha yako kinachopakiwa popote kamwe). Ikiwa itamkosa mtu, weka uso huo kwa mkono — bofya jicho lake la kushoto, la kulia, kisha mdomo.',
+      facesEmptyDefault: 'Hakuna nyuso bado.',
+      facesEmptyNoPhoto: 'Ongeza picha hapo juu kwanza.',
+      scriptHeading: 'Hati',
+      addLineBtnLabel: '+ Ongeza mstari',
+      voiceHeading: 'Sauti',
+      voiceLabel: 'Sauti',
+      rateLabel: 'Kasi',
+      pitchLabel: 'Mtindo wa sauti',
+      previewBtnLabel: '▶ Onyesho la awali (bila kurekodi)',
+      stopBtnLabel: '■ Simamisha',
+      previewTitle: 'TALK FORGE — MUONEKANO',
+      statusNotStarted: 'HAIJAANZA',
+      stageEmptyStrong: 'Hakuna picha bado.',
+      stageEmptyText: 'Pakia picha upande wa kushoto kuanza.',
+      recordVideoLabel: '🔴 Rekodi video',
+      downloadVideoLabel: '⬇ Pakua video (.webm)',
+      recordAudioLabel: '🎙️ Rekodi sauti tu',
+      downloadAudioLabel: '⬇ Pakua sauti (.webm)',
+      recordingDisclaimerHint: 'Huu ni mfano rahisi, wa kimtindo wa kuzungumza (kunyoosha mdomo + kupepesa), si mazungumzo halisi ya midomo au mwendo wa mwili mzima — hilo lingehitaji kielelezo cha AI cha video cha wingu kinacholipiwa, ambacho chombo hiki cha bure hakikitumii kwa makusudi. Kurekodi kunakuomba kushiriki "kichupo hiki" na sauti, ili kiweze kunasa hotuba iliyotengenezwa kwenye video — kamwe hakioni au kutuma picha yako popote.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Picha yako na hati vinabaki kwenye kivinjari chako — ni msimbo wa kielelezo cha kutambua nyuso tu unaopatikana kutoka CDN, si picha yako kamwe. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      removeSceneTitle: 'Ondoa tukio',
+      loadingModelLabel: 'Inapakia kielelezo…',
+      detectingLabel: 'Inagundua…',
+      errorNoFacesFound: 'Hakuna nyuso zilizopatikana kiotomatiki. Jaribu "Weka kwa mkono" badala yake.',
+      foundFacesOne: 'Uso 1 umepatikana.',
+      foundFacesMany: 'Nyuso {count} zimepatikana.',
+      errorCouldNotDetect: 'Imeshindwa kugundua nyuso.',
+      errorFaceLibFailed: 'Maktaba ya kutambua nyuso imeshindwa kupakia — angalia muunganisho wako wa intaneti na upakie upya ukurasa.',
+      faceNumbered: 'Uso {n}',
+      manualHintLeftEye: 'Bofya jicho la KUSHOTO (lao la kushoto, lako la kulia)',
+      manualHintRightEye: 'Bofya jicho la KULIA',
+      manualHintMouth: 'Bofya mdomo',
+      doneLabel: '✓ Imekamilika',
+      adjustBtnTitle: 'Buruta ili kusogeza au kubadilisha ukubwa wa masanduku ya jicho/mdomo ya uso huu',
+      adjustDragHint: 'Buruta ndani ya sanduku kulisogeza, buruta kona yake ya chini kulia kubadilisha ukubwa. Bofya "✓ Imekamilika" kwenye orodha ukimaliza.',
+      redoBtnTitle: 'Weka tena kwa mkono kutoka mwanzo',
+      noPhotoOption: 'Hakuna picha',
+      narratorOption: 'Msimulizi wa nje ya skrini',
+      lineTextPlaceholder: 'Wanachosema…',
+      errorNoSpeechSynthesis: 'Kivinjari chako hakitumii usanisi wa hotuba.',
+      errorNoLineText: 'Ongeza angalau mstari mmoja wa hati wenye maandishi.',
+      statusPreviewing: 'INAONYESHA AWALI',
+      facesReadyOne: 'Uso 1 tayari',
+      facesReadyMany: 'Nyuso {count} tayari',
+      errorNeedsDesktopBrowser: 'Kurekodi kunahitaji kivinjari cha eneo-kazi (Chrome, Edge, au Firefox).',
+      errorNoRecordingFormat: 'Hakuna muundo wa kurekodi unaotumika uliopatikana kwenye kivinjari hiki.',
+      shareTabAudioHintVideo: 'Chagua "Kichupo Hiki" na uchague "Shiriki sauti ya kichupo" kwenye kichaguzi — hiyo inaturuhusu kunasa hotuba iliyotengenezwa.',
+      errorScreenSharingNotStarted: 'Kushiriki skrini hakukuanzishwa: {message}',
+      errorNoTabAudio: 'Hakuna sauti ya kichupo iliyoshirikiwa — hakikisha umechagua "Shiriki sauti ya kichupo" kwenye kichaguzi na ujaribu tena.',
+      statusRecording: 'INAREKODI',
+      statusRecordingSaved: 'REKODI IMEHIFADHIWA',
+      recordingCompleteOne: 'Kurekodi kumekamilika — mstari 1.',
+      recordingCompleteMany: 'Kurekodi kumekamilika — mistari {count}.',
+      errorNoAudioFormat: 'Hakuna muundo wa sauti unaotumika uliopatikana kwenye kivinjari hiki.',
+      shareTabAudioHintAudio: 'Chagua "Kichupo Hiki" na uchague "Shiriki sauti ya kichupo" — video haihitajiki hapa, sauti tu ndiyo inayohifadhiwa.',
+      statusRecordingAudio: 'INAREKODI SAUTI',
+      statusAudioSaved: 'SAUTI IMEHIFADHIWA',
+      audioRecordedOne: 'Sauti imerekodiwa — mstari 1.',
+      audioRecordedMany: 'Sauti imerekodiwa — mistari {count}.'
+    }
+  });
+
   addLine();
+  I18N.onChange(function () {
+    renderSceneStrip();
+    renderFacesList();
+    renderLinesList();
+    if (activeSceneId != null) setActiveScene(activeSceneId);
+  });
 })();
 </script>
 </body>
