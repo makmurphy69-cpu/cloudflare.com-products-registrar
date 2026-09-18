@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -210,159 +211,160 @@
   </svg>
   <div>
     <h1>Clip Forge</h1>
-    <p>Upload a video, trim it, mix in music, crop it for any platform, add captions (with translation), stamp a watermark — then export or send it straight to YouTube.</p>
+    <p data-i18n="heroSubtitle">Upload a video, trim it, mix in music, crop it for any platform, add captions (with translation), stamp a watermark — then export or send it straight to YouTube.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main>
   <section class="panel">
 
-    <div class="section-title">Your video</div>
+    <div class="section-title" data-i18n="videoHeading">Your video</div>
     <div class="field">
-      <label class="upload-btn" for="videoInput">+ Upload a video</label>
+      <label class="upload-btn" for="videoInput" data-i18n="videoUploadLabel">+ Upload a video</label>
       <input type="file" id="videoInput" accept="video/*" style="display:none;">
-      <p class="hint" id="videoInfoHint">No video loaded yet.</p>
-      <p class="hint">Need to make a screen recording first? Use <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>, then upload the download here.</p>
+      <p class="hint" id="videoInfoHint" data-i18n="videoInfoDefault">No video loaded yet.</p>
+      <p class="hint" data-i18n-html="recordForgeHintHtml">Need to make a screen recording first? Use <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>, then upload the download here.</p>
     </div>
 
-    <div class="section-title">Trim</div>
+    <div class="section-title" data-i18n="trimHeading">Trim</div>
     <div class="field">
       <div class="row-2">
         <div>
-          <label for="trimStartInput">Start (s)</label>
+          <label for="trimStartInput" data-i18n="trimStartLabel">Start (s)</label>
           <input type="number" id="trimStartInput" value="0" min="0" step="0.1">
-          <button type="button" class="draft-btn secondary" id="setStartBtn" style="margin-top:6px;">Use current position</button>
+          <button type="button" class="draft-btn secondary" id="setStartBtn" style="margin-top:6px;" data-i18n="useCurrentPositionLabel">Use current position</button>
         </div>
         <div>
-          <label for="trimEndInput">End (s)</label>
+          <label for="trimEndInput" data-i18n="trimEndLabel">End (s)</label>
           <input type="number" id="trimEndInput" value="0" min="0" step="0.1">
-          <button type="button" class="draft-btn secondary" id="setEndBtn" style="margin-top:6px;">Use current position</button>
+          <button type="button" class="draft-btn secondary" id="setEndBtn" style="margin-top:6px;" data-i18n="useCurrentPositionLabel">Use current position</button>
         </div>
       </div>
-      <p class="hint">Play the video on the right and pause where you want each point, then click "Use current position".</p>
+      <p class="hint" data-i18n="trimPlayHint">Play the video on the right and pause where you want each point, then click "Use current position".</p>
     </div>
 
-    <div class="section-title">Speed &amp; audio</div>
+    <div class="section-title" data-i18n="speedAudioHeading">Speed &amp; audio</div>
     <div class="field">
-      <label for="speedSelect">Playback speed</label>
+      <label for="speedSelect" data-i18n="playbackSpeedLabel">Playback speed</label>
       <select id="speedSelect">
-        <option value="0.5">0.5× (slow motion)</option>
+        <option value="0.5" data-i18n="speed05">0.5× (slow motion)</option>
         <option value="0.75">0.75×</option>
-        <option value="1" selected>1× (normal)</option>
+        <option value="1" selected data-i18n="speed1">1× (normal)</option>
         <option value="1.25">1.25×</option>
         <option value="1.5">1.5×</option>
-        <option value="2">2× (fast)</option>
+        <option value="2" data-i18n="speed2">2× (fast)</option>
       </select>
     </div>
     <div class="field">
-      <label for="volumeInput">Volume</label>
+      <label for="volumeInput" data-i18n="volumeLabel">Volume</label>
       <input type="range" id="volumeInput" min="0" max="1" step="0.05" value="1">
     </div>
     <div class="field">
-      <label class="check-row"><input type="checkbox" id="muteCheckbox"><span>Mute audio entirely</span></label>
+      <label class="check-row"><input type="checkbox" id="muteCheckbox"><span data-i18n="muteAudioLabel">Mute audio entirely</span></label>
     </div>
     <div class="field">
-      <label class="upload-btn" for="musicInput">+ Add music or narration (optional)</label>
+      <label class="upload-btn" for="musicInput" data-i18n="musicUploadLabel">+ Add music or narration (optional)</label>
       <input type="file" id="musicInput" accept="audio/*" style="display:none;">
       <p class="hint" id="musicHint"></p>
     </div>
     <div class="field" id="musicOptions" style="display:none;">
-      <label for="musicVolume">Music volume</label>
+      <label for="musicVolume" data-i18n="musicVolumeLabel">Music volume</label>
       <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.8">
-      <label class="check-row" style="margin-top:8px;"><input type="checkbox" id="musicLoopCheckbox" checked><span>Loop if shorter than the clip</span></label>
-      <button type="button" class="draft-btn secondary" id="removeMusicBtn" style="margin-top:8px;">✕ Remove music</button>
+      <label class="check-row" style="margin-top:8px;"><input type="checkbox" id="musicLoopCheckbox" checked><span data-i18n="musicLoopLabel">Loop if shorter than the clip</span></label>
+      <button type="button" class="draft-btn secondary" id="removeMusicBtn" style="margin-top:8px;" data-i18n="removeMusicLabel">✕ Remove music</button>
     </div>
 
-    <div class="section-title">Output format</div>
+    <div class="section-title" data-i18n="outputFormatHeading">Output format</div>
     <div class="field">
-      <label for="aspectSelect">Aspect ratio</label>
+      <label for="aspectSelect" data-i18n="aspectLabel">Aspect ratio</label>
       <select id="aspectSelect">
-        <option value="original" selected>Original (no cropping)</option>
-        <option value="16:9">16:9 — widescreen (YouTube)</option>
-        <option value="9:16">9:16 — vertical (Shorts / Reels / TikTok)</option>
-        <option value="1:1">1:1 — square (Instagram feed)</option>
-        <option value="4:5">4:5 — portrait (Instagram feed)</option>
+        <option value="original" selected data-i18n="aspectOriginal">Original (no cropping)</option>
+        <option value="16:9" data-i18n="aspect16x9">16:9 — widescreen (YouTube)</option>
+        <option value="9:16" data-i18n="aspect9x16">9:16 — vertical (Shorts / Reels / TikTok)</option>
+        <option value="1:1" data-i18n="aspect1x1">1:1 — square (Instagram feed)</option>
+        <option value="4:5" data-i18n="aspect4x5">4:5 — portrait (Instagram feed)</option>
       </select>
-      <p class="hint">Cropping is centered on the frame.</p>
+      <p class="hint" data-i18n="aspectHint">Cropping is centered on the frame.</p>
     </div>
 
-    <div class="section-title">Watermark / logo (optional)</div>
+    <div class="section-title" data-i18n="watermarkHeading">Watermark / logo (optional)</div>
     <div class="field">
-      <label class="upload-btn" for="watermarkInput">+ Upload an image</label>
+      <label class="upload-btn" for="watermarkInput" data-i18n="uploadImageLabel">+ Upload an image</label>
       <input type="file" id="watermarkInput" accept="image/*" style="display:none;">
       <p class="hint" id="watermarkHint"></p>
     </div>
     <div class="field" id="watermarkOptions" style="display:none;">
-      <label for="watermarkPosition">Position</label>
+      <label for="watermarkPosition" data-i18n="positionLabel">Position</label>
       <select id="watermarkPosition">
-        <option value="top-left">Top left</option>
-        <option value="top-right" selected>Top right</option>
-        <option value="bottom-left">Bottom left</option>
-        <option value="bottom-right">Bottom right</option>
-        <option value="center">Center</option>
+        <option value="top-left" data-i18n="posTopLeft">Top left</option>
+        <option value="top-right" selected data-i18n="posTopRight">Top right</option>
+        <option value="bottom-left" data-i18n="posBottomLeft">Bottom left</option>
+        <option value="bottom-right" data-i18n="posBottomRight">Bottom right</option>
+        <option value="center" data-i18n="posCenter">Center</option>
       </select>
       <div class="row-2" style="margin-top:8px;">
-        <div><label for="watermarkSize">Size (%)</label><input type="number" id="watermarkSize" value="15" min="3" max="60" step="1"></div>
-        <div><label for="watermarkOpacity">Opacity</label><input type="range" id="watermarkOpacity" min="0.1" max="1" step="0.05" value="0.9"></div>
+        <div><label for="watermarkSize" data-i18n="sizePercentLabel">Size (%)</label><input type="number" id="watermarkSize" value="15" min="3" max="60" step="1"></div>
+        <div><label for="watermarkOpacity" data-i18n="opacityLabel">Opacity</label><input type="range" id="watermarkOpacity" min="0.1" max="1" step="0.05" value="0.9"></div>
       </div>
-      <button type="button" class="draft-btn secondary" id="removeWatermarkBtn" style="margin-top:8px;">✕ Remove watermark</button>
+      <button type="button" class="draft-btn secondary" id="removeWatermarkBtn" style="margin-top:8px;" data-i18n="removeWatermarkLabel">✕ Remove watermark</button>
     </div>
 
-    <div class="section-title">Translation (optional, for captions below)</div>
+    <div class="section-title" data-i18n="translationHeading">Translation (optional, for captions below)</div>
     <div class="field">
-      <label for="provider">AI provider</label>
+      <label for="provider" data-i18n="providerLabel">AI provider</label>
       <select id="provider">
-        <option value="gemini" selected>Gemini — free, no key needed</option>
-        <option value="openai">OpenAI</option>
-        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="gemini" selected data-i18n="providerGemini">Gemini — free, no key needed</option>
+        <option value="openai" data-i18n="providerOpenai">OpenAI</option>
+        <option value="anthropic" data-i18n="providerAnthropic">Anthropic (Claude)</option>
       </select>
     </div>
     <div class="field" id="apiKeyField" style="display:none;">
-      <label for="apiKey" id="apiKeyLabel">Your API key</label>
+      <label for="apiKey" id="apiKeyLabel" data-i18n="apiKeyLabelDefault">Your API key</label>
       <div class="key-row">
         <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
-        <button type="button" class="toggle-key" id="toggleKey">Show</button>
+        <button type="button" class="toggle-key" id="toggleKey" data-i18n="show">Show</button>
       </div>
-      <p class="hint">Used only to call the provider directly from your browser. Never stored, never sent anywhere else.</p>
+      <p class="hint" data-i18n="apiKeyHint">Used only to call the provider directly from your browser. Never stored, never sent anywhere else.</p>
     </div>
     <div class="field" id="freeNoticeField">
-      <p class="hint" style="margin-top:0;">✓ Free to use — shares a limited daily capacity. Switch to OpenAI/Anthropic above with your own key if it stops working.</p>
+      <p class="hint" style="margin-top:0;" data-i18n="freeNoticeText">✓ Free to use — shares a limited daily capacity. Switch to OpenAI/Anthropic above with your own key if it stops working.</p>
     </div>
 
-    <div class="section-title">Text overlays &amp; captions (optional)</div>
+    <div class="section-title" data-i18n="captionsHeading">Text overlays &amp; captions (optional)</div>
     <div class="field">
-      <label for="captionTextInput">Text</label>
-      <input type="text" id="captionTextInput" placeholder="e.g. Welcome to our workshop">
+      <label for="captionTextInput" data-i18n="captionTextLabel">Text</label>
+      <input type="text" id="captionTextInput" placeholder="e.g. Welcome to our workshop" data-i18n-placeholder="captionTextPlaceholder">
       <div class="row-2" style="margin-top:8px;">
-        <div><label for="captionStartInput">Starts at (s)</label><input type="number" id="captionStartInput" value="0" min="0" step="0.5"></div>
-        <div><label for="captionDurationInput">Duration (s)</label><input type="number" id="captionDurationInput" value="3" min="0.5" step="0.5"></div>
+        <div><label for="captionStartInput" data-i18n="captionStartLabel">Starts at (s)</label><input type="number" id="captionStartInput" value="0" min="0" step="0.5"></div>
+        <div><label for="captionDurationInput" data-i18n="captionDurationLabel">Duration (s)</label><input type="number" id="captionDurationInput" value="3" min="0.5" step="0.5"></div>
       </div>
-      <label for="captionPositionInput" style="margin-top:8px;">Position</label>
+      <label for="captionPositionInput" style="margin-top:8px;" data-i18n="captionPositionLabel">Position</label>
       <select id="captionPositionInput">
-        <option value="bottom" selected>Bottom</option>
-        <option value="middle">Middle</option>
-        <option value="top">Top</option>
+        <option value="bottom" selected data-i18n="positionBottom">Bottom</option>
+        <option value="middle" data-i18n="positionMiddle">Middle</option>
+        <option value="top" data-i18n="positionTop">Top</option>
       </select>
-      <p class="hint">Timing is measured in the final exported video (after trimming and speed changes).</p>
-      <button type="button" class="draft-btn secondary" id="addCaptionBtn" style="margin-top:8px;">+ Add text overlay</button>
+      <p class="hint" data-i18n="captionTimingHint">Timing is measured in the final exported video (after trimming and speed changes).</p>
+      <button type="button" class="draft-btn secondary" id="addCaptionBtn" style="margin-top:8px;" data-i18n="addCaptionBtnLabel">+ Add text overlay</button>
     </div>
     <div id="captionsList"></div>
-    <p class="frames-empty" id="captionsEmpty">No text overlays added.</p>
+    <p class="frames-empty" id="captionsEmpty" data-i18n="captionsEmptyText">No text overlays added.</p>
 
-    <button type="button" class="draft-btn" id="renderBtn" style="margin-top:6px;">🎬 Render video</button>
+    <button type="button" class="draft-btn" id="renderBtn" style="margin-top:6px;" data-i18n="renderBtnLabel">🎬 Render video</button>
     <div class="error-box" id="errorBox"></div>
   </section>
 
   <section class="table">
     <div class="title-block">
-      <span>CLIP FORGE — PREVIEW</span>
-      <span id="titleBlockRight">NOT STARTED</span>
+      <span data-i18n="previewTitle">CLIP FORGE — PREVIEW</span>
+      <span id="titleBlockRight" data-i18n="statusNotStarted">NOT STARTED</span>
     </div>
 
     <div class="stage-wrap" id="stageWrap">
       <div class="sheet-empty" id="stageEmpty">
-        <strong>No video loaded yet.</strong>
-        Upload a video on the left to preview, trim, and edit it.
+        <strong data-i18n="stageEmptyStrong">No video loaded yet.</strong>
+        <span data-i18n="stageEmptyText">Upload a video on the left to preview, trim, and edit it.</span>
       </div>
       <video id="sourceVideo" controls style="display:none;"></video>
       <canvas id="stageCanvas" style="display:none;"></canvas>
@@ -371,72 +373,72 @@
     </div>
 
     <div class="progress-wrap" id="progressWrap">
-      <div class="progress-label"><span id="progressLabel">Rendering…</span><span id="progressPct">0%</span></div>
+      <div class="progress-label"><span id="progressLabel" data-i18n="progressRendering">Rendering…</span><span id="progressPct">0%</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     </div>
 
     <div class="table-actions">
-      <button type="button" id="cancelRenderBtn" style="display:none;">✕ Cancel render</button>
-      <button type="button" id="downloadVideoBtn" disabled class="primary">⬇ Download video (.webm)</button>
+      <button type="button" id="cancelRenderBtn" style="display:none;" data-i18n="cancelRenderLabel">✕ Cancel render</button>
+      <button type="button" id="downloadVideoBtn" disabled class="primary" data-i18n="downloadVideoLabel">⬇ Download video (.webm)</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Rendering happens in real time in your browser (a 20-second clip takes about 20 seconds, divided by your chosen speed) — nothing is uploaded. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited. Got several clips to stitch together, or slides to combine with one? Try <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.</p>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;" data-i18n-html="renderDisclaimerHtml">Rendering happens in real time in your browser (a 20-second clip takes about 20 seconds, divided by your chosen speed) — nothing is uploaded. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari's support is limited. Got several clips to stitch together, or slides to combine with one? Try <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.</p>
 
     <div class="yt-panel">
-      <h2>Upload straight to YouTube</h2>
+      <h2 data-i18n="ytHeading">Upload straight to YouTube</h2>
       <div class="yt-field">
-        <label for="ytClientId">Your Google OAuth Client ID</label>
+        <label for="ytClientId" data-i18n="ytClientIdLabel">Your Google OAuth Client ID</label>
         <input type="text" id="ytClientId" placeholder="xxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com">
-        <p class="yt-hint">This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Clip Forge only sends it to Google, never anywhere else.</p>
+        <p class="yt-hint" data-i18n="ytClientIdHint">This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Clip Forge only sends it to Google, never anywhere else.</p>
       </div>
-      <button type="button" class="draft-btn secondary" id="connectYtBtn">Connect Google account</button>
-      <div class="status-box" id="ytConnectedBox">✓ Connected to your Google account.</div>
+      <button type="button" class="draft-btn secondary" id="connectYtBtn" data-i18n="connectGoogleLabel">Connect Google account</button>
+      <div class="status-box" id="ytConnectedBox" data-i18n="ytConnectedText">✓ Connected to your Google account.</div>
 
       <div id="ytUploadFields" style="display:none; margin-top:14px;">
-        <div class="yt-field"><label for="ytTitle">Video title</label><input type="text" id="ytTitle" placeholder="My edited clip"></div>
-        <div class="yt-field"><label for="ytDesc">Description</label><textarea id="ytDesc" placeholder="Made with Clip Forge."></textarea></div>
-        <div class="yt-field"><label for="ytTags">Tags (comma separated)</label><input type="text" id="ytTags" placeholder="tutorial, how-to, clip"></div>
+        <div class="yt-field"><label for="ytTitle" data-i18n="ytTitleLabel">Video title</label><input type="text" id="ytTitle" placeholder="My edited clip" data-i18n-placeholder="ytTitlePlaceholder"></div>
+        <div class="yt-field"><label for="ytDesc" data-i18n="ytDescLabel">Description</label><textarea id="ytDesc" placeholder="Made with Clip Forge." data-i18n-placeholder="ytDescPlaceholder"></textarea></div>
+        <div class="yt-field"><label for="ytTags" data-i18n="ytTagsLabel">Tags (comma separated)</label><input type="text" id="ytTags" placeholder="tutorial, how-to, clip" data-i18n-placeholder="ytTagsPlaceholder"></div>
         <div class="row-2" style="margin-bottom:12px;">
           <div class="yt-field" style="margin-bottom:0;">
-            <label for="ytPrivacy">Privacy</label>
+            <label for="ytPrivacy" data-i18n="ytPrivacyLabel">Privacy</label>
             <select id="ytPrivacy">
-              <option value="private" selected>Private</option>
-              <option value="unlisted">Unlisted</option>
-              <option value="public">Public</option>
+              <option value="private" selected data-i18n="privacyPrivate">Private</option>
+              <option value="unlisted" data-i18n="privacyUnlisted">Unlisted</option>
+              <option value="public" data-i18n="privacyPublic">Public</option>
             </select>
           </div>
           <div class="yt-field" style="margin-bottom:0;">
-            <label for="ytCategory">Category</label>
+            <label for="ytCategory" data-i18n="ytCategoryLabel">Category</label>
             <select id="ytCategory">
-              <option value="27" selected>Education</option>
-              <option value="26">Howto &amp; Style</option>
-              <option value="28">Science &amp; Technology</option>
-              <option value="22">People &amp; Blogs</option>
-              <option value="24">Entertainment</option>
+              <option value="27" selected data-i18n="categoryEducation">Education</option>
+              <option value="26" data-i18n="categoryHowto">Howto &amp; Style</option>
+              <option value="28" data-i18n="categoryScience">Science &amp; Technology</option>
+              <option value="22" data-i18n="categoryPeople">People &amp; Blogs</option>
+              <option value="24" data-i18n="categoryEntertainment">Entertainment</option>
             </select>
           </div>
         </div>
-        <button type="button" class="draft-btn" id="uploadYtBtn" disabled>Upload to YouTube</button>
-        <p class="yt-hint">Render your video first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.</p>
+        <button type="button" class="draft-btn" id="uploadYtBtn" disabled data-i18n="uploadToYoutubeLabel">Upload to YouTube</button>
+        <p class="yt-hint" data-i18n="ytUploadHint">Render your video first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.</p>
       </div>
       <div class="status-box" id="ytResultBox"></div>
       <div class="error-box" id="ytErrorBox"></div>
 
       <details class="yt-setup" style="margin-top:16px;">
-        <summary>One-time setup: get a Google OAuth Client ID (click to expand)</summary>
-        <ol>
+        <summary data-i18n="ytSetupSummary">One-time setup: get a Google OAuth Client ID (click to expand)</summary>
+        <ol data-i18n-html="ytSetupStepsHtml">
           <li>Go to the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, create (or pick) a project, and enable the <strong>YouTube Data API v3</strong>.</li>
           <li>Under <strong>APIs &amp; Services → OAuth consent screen</strong>, set it up as "External", add the <code>youtube.upload</code> scope, and add your own Google account under "Test users" (this avoids needing Google's full app-verification review, since only you will use it).</li>
           <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an <strong>OAuth client ID</strong> of type "Web application". Add the exact URL this page is running at (e.g. <code>https://your-username.github.io</code>) under "Authorized JavaScript origins".</li>
           <li>Copy the generated Client ID (it ends in <code>.apps.googleusercontent.com</code>) into the field above.</li>
           <li>Click "Connect Google account" and approve access — Google will warn that the app is unverified, which is expected for a personal project; click through as the test user you added.</li>
         </ol>
-        <p class="yt-hint" style="margin-top:10px;">If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.</p>
+        <p class="yt-hint" style="margin-top:10px;" data-i18n="ytSetupFallbackHtml">If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.</p>
       </details>
     </div>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Your video, music, watermark, and captions stay in your browser except for the text you choose to translate (sent only to the AI provider you selected above) and the rendered video if you choose to upload it to YouTube (sent straight from your browser to your own Google account). <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. Your video, music, watermark, and captions stay in your browser except for the text you choose to translate (sent only to the AI provider you selected above) and the rendered video if you choose to upload it to YouTube (sent straight from your browser to your own Google account). <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -572,7 +574,7 @@
     downloadVideoBtn.disabled = true;
     renderedVideoBlob = null;
     refreshUploadEnabled();
-    videoInfoHint.textContent = 'Loading "' + file.name + '"…';
+    videoInfoHint.textContent = I18N.t('videoLoadingPrefix') + ' "' + file.name + '"…';
 
     sourceVideo.onloadedmetadata = function () {
       videoDuration = sourceVideo.duration;
@@ -594,7 +596,7 @@
       const img = new Image();
       img.onload = function () {
         watermarkImg = img;
-        watermarkHint.textContent = 'Added: ' + file.name;
+        watermarkHint.textContent = I18N.t('addedPrefix') + ' ' + file.name;
         watermarkOptions.style.display = 'block';
       };
       img.src = reader.result;
@@ -615,7 +617,7 @@
     if (musicObjectUrl) URL.revokeObjectURL(musicObjectUrl);
     musicObjectUrl = URL.createObjectURL(file);
     musicAudioEl.src = musicObjectUrl;
-    musicHint.textContent = 'Added: ' + file.name;
+    musicHint.textContent = I18N.t('addedPrefix') + ' ' + file.name;
     musicOptions.style.display = 'block';
   });
   removeMusicBtn.addEventListener('click', function () {
@@ -631,7 +633,7 @@
   toggleKeyBtn.addEventListener('click', function () {
     const isPassword = apiKeyInput.type === 'password';
     apiKeyInput.type = isPassword ? 'text' : 'password';
-    toggleKeyBtn.textContent = isPassword ? 'Hide' : 'Show';
+    toggleKeyBtn.textContent = isPassword ? I18N.t('hide') : I18N.t('show');
   });
 
   function applyProvider() {
@@ -642,7 +644,7 @@
     } else {
       apiKeyField.style.display = 'block';
       freeNoticeField.style.display = 'none';
-      apiKeyLabel.textContent = provider === 'openai' ? 'Your OpenAI API key' : 'Your Anthropic API key';
+      apiKeyLabel.textContent = provider === 'openai' ? I18N.t('apiKeyLabelOpenai') : I18N.t('apiKeyLabelAnthropic');
       apiKeyInput.placeholder = provider === 'openai' ? 'sk-...' : 'sk-ant-...';
     }
   }
@@ -716,7 +718,7 @@
   addCaptionBtn.addEventListener('click', function () {
     clearError();
     const text = captionTextInput.value.trim();
-    if (!text) { showError('Type some text first.'); return; }
+    if (!text) { showError(I18N.t('errorAddTextFirst')); return; }
     captions.push({
       id: ++captionIdCounter,
       text,
@@ -744,21 +746,21 @@
         '<span class="caption-text">"' + cap.text.replace(/</g, '&lt;') + '"</span>' +
         (cap.translatedText ? '<span class="caption-translated">' + cap.translatedLang + ': "' + cap.translatedText.replace(/</g, '&lt;') + '"</span>' : '') +
         '<div class="caption-controls">' +
-          '<label>From: <input type="number" class="cap-start" data-id="' + cap.id + '" value="' + cap.start + '" min="0" step="0.5" style="width:52px;">s</label>' +
-          '<label>For: <input type="number" class="cap-duration" data-id="' + cap.id + '" value="' + cap.duration + '" min="0.5" step="0.5" style="width:52px;">s</label>' +
-          '<label>At: <select class="cap-position" data-id="' + cap.id + '">' +
-            '<option value="bottom"' + (cap.position === 'bottom' ? ' selected' : '') + '>Bottom</option>' +
-            '<option value="middle"' + (cap.position === 'middle' ? ' selected' : '') + '>Middle</option>' +
-            '<option value="top"' + (cap.position === 'top' ? ' selected' : '') + '>Top</option>' +
+          '<label>' + I18N.t('capFromLabel') + ' <input type="number" class="cap-start" data-id="' + cap.id + '" value="' + cap.start + '" min="0" step="0.5" style="width:52px;">s</label>' +
+          '<label>' + I18N.t('capForLabel') + ' <input type="number" class="cap-duration" data-id="' + cap.id + '" value="' + cap.duration + '" min="0.5" step="0.5" style="width:52px;">s</label>' +
+          '<label>' + I18N.t('capAtLabel') + ' <select class="cap-position" data-id="' + cap.id + '">' +
+            '<option value="bottom"' + (cap.position === 'bottom' ? ' selected' : '') + '>' + I18N.t('positionBottom') + '</option>' +
+            '<option value="middle"' + (cap.position === 'middle' ? ' selected' : '') + '>' + I18N.t('positionMiddle') + '</option>' +
+            '<option value="top"' + (cap.position === 'top' ? ' selected' : '') + '>' + I18N.t('positionTop') + '</option>' +
           '</select></label>' +
         '</div>' +
         '<div class="caption-translate-row">' +
           '<select class="cap-lang" data-id="' + cap.id + '">' + languageOptionsHtml() + '</select>' +
-          '<button type="button" class="cap-translate-btn" data-id="' + cap.id + '">Translate</button>' +
+          '<button type="button" class="cap-translate-btn" data-id="' + cap.id + '">' + I18N.t('translateLabel') + '</button>' +
         '</div>' +
         '<div class="row-buttons">' +
-          (cap.translatedText ? '<button type="button" class="cap-remove-translation" data-id="' + cap.id + '">Remove translation</button>' : '') +
-          '<button type="button" class="cap-remove" data-id="' + cap.id + '">✕ Remove</button>' +
+          (cap.translatedText ? '<button type="button" class="cap-remove-translation" data-id="' + cap.id + '">' + I18N.t('removeTranslationLabel') + '</button>' : '') +
+          '<button type="button" class="cap-remove" data-id="' + cap.id + '">✕ ' + I18N.t('removeLabel') + '</button>' +
         '</div>';
       captionsListEl.appendChild(row);
     });
@@ -790,7 +792,7 @@
       if (!cap) return;
       const original = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Translating…';
+      btn.textContent = I18N.t('translatingLabel');
       try {
         const translated = await callChat(
           'You are a professional translator. Translate the given text into ' + lang + '. Respond with ONLY the translated text — no quotes, no explanation, no original text, preserving tone and meaning.',
@@ -800,7 +802,7 @@
         cap.translatedLang = lang;
         renderCaptionsList();
       } catch (err) {
-        showError('Could not translate: ' + err.message);
+        showError(I18N.t('errorCouldNotTranslate') + ' ' + err.message);
         btn.disabled = false;
         btn.textContent = original;
       }
@@ -891,17 +893,17 @@
 
   renderBtn.addEventListener('click', async function () {
     clearError();
-    if (!videoObjectUrl) { showError('Upload a video first.'); return; }
+    if (!videoObjectUrl) { showError(I18N.t('errorUploadVideoFirst')); return; }
     if (!window.MediaRecorder || !stageCanvas.captureStream) {
-      showError('Your browser does not support recording canvas to video. Try the latest Chrome, Edge, or Firefox.');
+      showError(I18N.t('errorNoRecordingSupport'));
       return;
     }
     const trimStart = Math.max(0, parseFloat(trimStartInput.value) || 0);
     const trimEnd = Math.min(videoDuration, parseFloat(trimEndInput.value) || videoDuration);
-    if (trimEnd <= trimStart) { showError('The end point must be after the start point.'); return; }
+    if (trimEnd <= trimStart) { showError(I18N.t('errorEndAfterStart')); return; }
     const speed = parseFloat(speedSelect.value) || 1;
     const mimeType = pickMimeType();
-    if (!mimeType) { showError('No supported video format found in this browser.'); return; }
+    if (!mimeType) { showError(I18N.t('errorNoVideoFormat')); return; }
 
     sourceVideo.pause();
     const sourceW = sourceVideo.videoWidth, sourceH = sourceVideo.videoHeight;
@@ -961,8 +963,8 @@
     renderBtn.disabled = true;
     cancelRenderBtn.style.display = 'inline-block';
     progressWrap.classList.add('show');
-    progressLabel.textContent = 'Rendering…';
-    titleBlockRight.textContent = 'RENDERING';
+    progressLabel.textContent = I18N.t('progressRendering');
+    titleBlockRight.textContent = I18N.t('statusRendering');
 
     let cancelled = false;
     let rafId = null;
@@ -981,7 +983,7 @@
     recorder.onstop = function () {
       if (rafId) cancelAnimationFrame(rafId);
       sourceVideo.pause();
-      if (cancelled) { finish(); titleBlockRight.textContent = 'CANCELLED'; return; }
+      if (cancelled) { finish(); titleBlockRight.textContent = I18N.t('statusCancelled'); return; }
       renderedVideoBlob = new Blob(chunks, { type: 'video/webm' });
       const url = URL.createObjectURL(renderedVideoBlob);
       resultVideo.src = url;
@@ -989,7 +991,7 @@
       stageCanvas.style.display = 'none';
       sourceVideo.style.display = 'none';
       downloadVideoBtn.disabled = false;
-      titleBlockRight.textContent = 'RENDER COMPLETE';
+      titleBlockRight.textContent = I18N.t('statusRenderComplete');
       finish();
       refreshUploadEnabled();
     };
@@ -1018,7 +1020,7 @@
       if (hasMusic) { try { await musicAudioEl.play(); } catch (e) {} }
       startLoop();
     } catch (err) {
-      showError('Could not start rendering: ' + err.message);
+      showError(I18N.t('errorCouldNotStartRendering') + ' ' + err.message);
       finish();
       return;
     }
@@ -1055,7 +1057,7 @@
       client_id: clientId,
       scope: 'https://www.googleapis.com/auth/youtube.upload',
       callback: function (resp) {
-        if (resp.error) { showYtError('Google sign-in failed: ' + resp.error); return; }
+        if (resp.error) { showYtError(I18N.t('ytErrorSignInFailed').replace('{error}', resp.error)); return; }
         accessToken = resp.access_token;
         clearYtError();
         ytConnectedBox.classList.add('show');
@@ -1069,21 +1071,21 @@
 
   connectYtBtn.addEventListener('click', function () {
     clearYtError();
-    if (!ytClientId.value.trim()) { showYtError('Paste your Google OAuth Client ID first — see the setup steps below.'); return; }
+    if (!ytClientId.value.trim()) { showYtError(I18N.t('ytErrorNoClientId')); return; }
     const client = ensureTokenClient();
-    if (!client) { showYtError("Google's sign-in library hasn't finished loading yet — wait a second and try again."); return; }
+    if (!client) { showYtError(I18N.t('ytErrorLibraryNotLoaded')); return; }
     client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
   });
 
   uploadYtBtn.addEventListener('click', async function () {
     clearYtError();
     ytResultBox.classList.remove('show');
-    if (!renderedVideoBlob) { showYtError('Render your video first.'); return; }
-    if (!accessToken) { showYtError('Connect your Google account first.'); return; }
+    if (!renderedVideoBlob) { showYtError(I18N.t('ytErrorRecordFirst')); return; }
+    if (!accessToken) { showYtError(I18N.t('ytErrorConnectFirst')); return; }
 
     const metadata = {
       snippet: {
-        title: ytTitle.value.trim() || 'Clip Forge upload',
+        title: ytTitle.value.trim() || I18N.t('ytDefaultTitle'),
         description: ytDesc.value.trim(),
         tags: ytTags.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
         categoryId: ytCategory.value
@@ -1092,9 +1094,9 @@
     };
 
     uploadYtBtn.disabled = true;
-    uploadYtBtn.textContent = 'Starting upload…';
+    uploadYtBtn.textContent = I18N.t('startingUploadLabel');
     progressWrap.classList.add('show');
-    progressLabel.textContent = 'Uploading to YouTube…';
+    progressLabel.textContent = I18N.t('uploadingLabel');
     progressFill.style.width = '0%';
     progressPct.textContent = '0%';
 
@@ -1111,12 +1113,12 @@
       });
       if (!initResp.ok) {
         const errBody = await initResp.json().catch(function () { return null; });
-        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : ('Request failed with status ' + initResp.status);
+        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : I18N.t('ytErrorRequestFailed').replace('{status}', initResp.status);
         throw new Error(msg);
       }
       const uploadUrl = initResp.headers.get('Location');
       if (!uploadUrl) {
-        throw new Error('Google did not return an upload session URL — your browser or an extension may be blocking it. Try downloading the video and uploading it manually at studio.youtube.com instead.');
+        throw new Error(I18N.t('ytErrorNoUploadUrl'));
       }
 
       await new Promise(function (resolve, reject) {
@@ -1133,24 +1135,699 @@
         xhr.onload = function () {
           if (xhr.status >= 200 && xhr.status < 300) {
             try { resolve(JSON.parse(xhr.responseText)); }
-            catch (e) { reject(new Error('Upload finished but the response could not be read.')); }
+            catch (e) { reject(new Error(I18N.t('ytErrorResponseUnreadable'))); }
           } else {
-            reject(new Error('Upload failed with status ' + xhr.status + ': ' + xhr.responseText));
+            reject(new Error(I18N.t('ytErrorUploadFailedStatus').replace('{status}', xhr.status).replace('{text}', xhr.responseText)));
           }
         };
-        xhr.onerror = function () { reject(new Error('A network error interrupted the upload — this can happen if a browser extension blocks requests to Google.')); };
+        xhr.onerror = function () { reject(new Error(I18N.t('ytErrorNetwork'))); };
         xhr.send(renderedVideoBlob);
       }).then(function (data) {
-        ytResultBox.innerHTML = '✓ Uploaded! <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">Watch it on YouTube</a> (' + (ytPrivacy.value === 'private' ? 'private — only you can see it' : ytPrivacy.value) + ').';
+        const privacyNote = ytPrivacy.value === 'private' ? I18N.t('ytPrivacyNotePrivate') : ytPrivacy.value;
+        ytResultBox.innerHTML = '✓ ' + I18N.t('ytSuccessUploadedPrefix') + ' <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">' + I18N.t('ytWatchLinkLabel') + '</a> (' + privacyNote + ').';
         ytResultBox.classList.add('show');
       });
     } catch (err) {
-      showYtError(err.message || 'Upload failed.');
+      showYtError(err.message || I18N.t('ytErrorGeneric'));
     } finally {
       uploadYtBtn.disabled = false;
-      uploadYtBtn.textContent = 'Upload to YouTube';
+      uploadYtBtn.textContent = I18N.t('uploadToYoutubeLabel');
       progressWrap.classList.remove('show');
       refreshUploadEnabled();
+    }
+  });
+
+  I18N.onChange(function () {
+    applyProvider();
+    toggleKeyBtn.textContent = apiKeyInput.type === 'password' ? I18N.t('show') : I18N.t('hide');
+    renderCaptionsList();
+  });
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'Upload a video, trim it, mix in music, crop it for any platform, add captions (with translation), stamp a watermark — then export or send it straight to YouTube.',
+      videoHeading: 'Your video',
+      videoUploadLabel: '+ Upload a video',
+      videoInfoDefault: 'No video loaded yet.',
+      recordForgeHintHtml: 'Need to make a screen recording first? Use <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>, then upload the download here.',
+      trimHeading: 'Trim',
+      trimStartLabel: 'Start (s)',
+      useCurrentPositionLabel: 'Use current position',
+      trimEndLabel: 'End (s)',
+      trimPlayHint: 'Play the video on the right and pause where you want each point, then click "Use current position".',
+      speedAudioHeading: 'Speed & audio',
+      playbackSpeedLabel: 'Playback speed',
+      speed05: '0.5× (slow motion)',
+      speed1: '1× (normal)',
+      speed2: '2× (fast)',
+      volumeLabel: 'Volume',
+      muteAudioLabel: 'Mute audio entirely',
+      musicUploadLabel: '+ Add music or narration (optional)',
+      musicVolumeLabel: 'Music volume',
+      musicLoopLabel: 'Loop if shorter than the clip',
+      removeMusicLabel: '✕ Remove music',
+      outputFormatHeading: 'Output format',
+      aspectLabel: 'Aspect ratio',
+      aspectOriginal: 'Original (no cropping)',
+      aspect16x9: '16:9 — widescreen (YouTube)',
+      aspect9x16: '9:16 — vertical (Shorts / Reels / TikTok)',
+      aspect1x1: '1:1 — square (Instagram feed)',
+      aspect4x5: '4:5 — portrait (Instagram feed)',
+      aspectHint: 'Cropping is centered on the frame.',
+      watermarkHeading: 'Watermark / logo (optional)',
+      uploadImageLabel: '+ Upload an image',
+      positionLabel: 'Position',
+      posTopLeft: 'Top left',
+      posTopRight: 'Top right',
+      posBottomLeft: 'Bottom left',
+      posBottomRight: 'Bottom right',
+      posCenter: 'Center',
+      sizePercentLabel: 'Size (%)',
+      opacityLabel: 'Opacity',
+      removeWatermarkLabel: '✕ Remove watermark',
+      translationHeading: 'Translation (optional, for captions below)',
+      providerLabel: 'AI provider',
+      apiKeyLabelDefault: 'Your API key',
+      apiKeyHint: 'Used only to call the provider directly from your browser. Never stored, never sent anywhere else.',
+      freeNoticeText: '✓ Free to use — shares a limited daily capacity. Switch to OpenAI/Anthropic above with your own key if it stops working.',
+      captionsHeading: 'Text overlays & captions (optional)',
+      captionTextLabel: 'Text',
+      captionTextPlaceholder: 'e.g. Welcome to our workshop',
+      captionStartLabel: 'Starts at (s)',
+      captionDurationLabel: 'Duration (s)',
+      captionPositionLabel: 'Position',
+      positionBottom: 'Bottom',
+      positionMiddle: 'Middle',
+      positionTop: 'Top',
+      captionTimingHint: 'Timing is measured in the final exported video (after trimming and speed changes).',
+      addCaptionBtnLabel: '+ Add text overlay',
+      captionsEmptyText: 'No text overlays added.',
+      renderBtnLabel: '🎬 Render video',
+      previewTitle: 'CLIP FORGE — PREVIEW',
+      statusNotStarted: 'NOT STARTED',
+      stageEmptyStrong: 'No video loaded yet.',
+      stageEmptyText: 'Upload a video on the left to preview, trim, and edit it.',
+      progressRendering: 'Rendering…',
+      cancelRenderLabel: '✕ Cancel render',
+      downloadVideoLabel: '⬇ Download video (.webm)',
+      renderDisclaimerHtml: 'Rendering happens in real time in your browser (a 20-second clip takes about 20 seconds, divided by your chosen speed) — nothing is uploaded. Most desktop browsers (Chrome, Edge, Firefox) support this; Safari\'s support is limited. Got several clips to stitch together, or slides to combine with one? Try <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.',
+      ytHeading: 'Upload straight to YouTube',
+      ytClientIdLabel: 'Your Google OAuth Client ID',
+      ytClientIdHint: 'This is a public identifier for your own Google Cloud project, not a secret — see the setup steps below. Clip Forge only sends it to Google, never anywhere else.',
+      connectGoogleLabel: 'Connect Google account',
+      ytConnectedText: '✓ Connected to your Google account.',
+      ytTitleLabel: 'Video title',
+      ytTitlePlaceholder: 'My edited clip',
+      ytDescLabel: 'Description',
+      ytDescPlaceholder: 'Made with Clip Forge.',
+      ytTagsLabel: 'Tags (comma separated)',
+      ytTagsPlaceholder: 'tutorial, how-to, clip',
+      ytPrivacyLabel: 'Privacy',
+      privacyPrivate: 'Private',
+      privacyUnlisted: 'Unlisted',
+      privacyPublic: 'Public',
+      ytCategoryLabel: 'Category',
+      categoryEducation: 'Education',
+      categoryHowto: 'Howto & Style',
+      categoryScience: 'Science & Technology',
+      categoryPeople: 'People & Blogs',
+      categoryEntertainment: 'Entertainment',
+      uploadToYoutubeLabel: 'Upload to YouTube',
+      ytUploadHint: 'Render your video first, then upload it here. Uploads go directly from your browser to Google using your own account — this tool never sees or stores the video or your login.',
+      ytSetupSummary: 'One-time setup: get a Google OAuth Client ID (click to expand)',
+      ytSetupStepsHtml: '<li>Go to the <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, create (or pick) a project, and enable the <strong>YouTube Data API v3</strong>.</li><li>Under <strong>APIs &amp; Services → OAuth consent screen</strong>, set it up as "External", add the <code>youtube.upload</code> scope, and add your own Google account under "Test users" (this avoids needing Google\'s full app-verification review, since only you will use it).</li><li>Under <strong>APIs &amp; Services → Credentials</strong>, create an <strong>OAuth client ID</strong> of type "Web application". Add the exact URL this page is running at (e.g. <code>https://your-username.github.io</code>) under "Authorized JavaScript origins".</li><li>Copy the generated Client ID (it ends in <code>.apps.googleusercontent.com</code>) into the field above.</li><li>Click "Connect Google account" and approve access — Google will warn that the app is unverified, which is expected for a personal project; click through as the test user you added.</li>',
+      ytSetupFallbackHtml: 'If any step here fails or your browser blocks the upload, you can always fall back to downloading the video file above and uploading it manually at <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. Your video, music, watermark, and captions stay in your browser except for the text you choose to translate (sent only to the AI provider you selected above) and the rendered video if you choose to upload it to YouTube (sent straight from your browser to your own Google account). <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      videoLoadingPrefix: 'Loading',
+      addedPrefix: 'Added:',
+      apiKeyLabelOpenai: 'Your OpenAI API key',
+      apiKeyLabelAnthropic: 'Your Anthropic API key',
+      errorAddTextFirst: 'Type some text first.',
+      capFromLabel: 'From:',
+      capForLabel: 'For:',
+      capAtLabel: 'At:',
+      translateLabel: 'Translate',
+      removeTranslationLabel: 'Remove translation',
+      removeLabel: 'Remove',
+      translatingLabel: 'Translating…',
+      errorCouldNotTranslate: 'Could not translate:',
+      errorUploadVideoFirst: 'Upload a video first.',
+      errorNoRecordingSupport: 'Your browser does not support recording canvas to video. Try the latest Chrome, Edge, or Firefox.',
+      errorEndAfterStart: 'The end point must be after the start point.',
+      errorNoVideoFormat: 'No supported video format found in this browser.',
+      statusRendering: 'RENDERING',
+      statusCancelled: 'CANCELLED',
+      statusRenderComplete: 'RENDER COMPLETE',
+      errorCouldNotStartRendering: 'Could not start rendering:',
+      ytErrorSignInFailed: 'Google sign-in failed: {error}',
+      ytErrorNoClientId: 'Paste your Google OAuth Client ID first — see the setup steps below.',
+      ytErrorLibraryNotLoaded: "Google's sign-in library hasn't finished loading yet — wait a second and try again.",
+      ytErrorRecordFirst: 'Render your video first.',
+      ytErrorConnectFirst: 'Connect your Google account first.',
+      ytDefaultTitle: 'Clip Forge upload',
+      startingUploadLabel: 'Starting upload…',
+      uploadingLabel: 'Uploading to YouTube…',
+      ytErrorRequestFailed: 'Request failed with status {status}',
+      ytErrorNoUploadUrl: 'Google did not return an upload session URL — your browser or an extension may be blocking it. Try downloading the video and uploading it manually at studio.youtube.com instead.',
+      ytErrorResponseUnreadable: 'Upload finished but the response could not be read.',
+      ytErrorUploadFailedStatus: 'Upload failed with status {status}: {text}',
+      ytErrorNetwork: 'A network error interrupted the upload — this can happen if a browser extension blocks requests to Google.',
+      ytErrorGeneric: 'Upload failed.',
+      ytSuccessUploadedPrefix: 'Uploaded!',
+      ytWatchLinkLabel: 'Watch it on YouTube',
+      ytPrivacyNotePrivate: 'private — only you can see it'
+    },
+    es: {
+      heroSubtitle: 'Sube un video, recórtalo, mezcla música, recórtalo para cualquier plataforma, agrega subtítulos (con traducción), coloca una marca de agua — luego expórtalo o envíalo directamente a YouTube.',
+      videoHeading: 'Tu video',
+      videoUploadLabel: '+ Subir un video',
+      videoInfoDefault: 'Ningún video cargado todavía.',
+      recordForgeHintHtml: '¿Necesitas hacer una grabación de pantalla primero? Usa <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>, luego sube la descarga aquí.',
+      trimHeading: 'Recortar',
+      trimStartLabel: 'Inicio (s)',
+      useCurrentPositionLabel: 'Usar posición actual',
+      trimEndLabel: 'Fin (s)',
+      trimPlayHint: 'Reproduce el video a la derecha y pausa donde quieras cada punto, luego haz clic en "Usar posición actual".',
+      speedAudioHeading: 'Velocidad y audio',
+      playbackSpeedLabel: 'Velocidad de reproducción',
+      speed05: '0.5× (cámara lenta)',
+      speed1: '1× (normal)',
+      speed2: '2× (rápido)',
+      volumeLabel: 'Volumen',
+      muteAudioLabel: 'Silenciar audio por completo',
+      musicUploadLabel: '+ Agregar música o narración (opcional)',
+      musicVolumeLabel: 'Volumen de la música',
+      musicLoopLabel: 'Repetir si es más corta que el clip',
+      removeMusicLabel: '✕ Quitar música',
+      outputFormatHeading: 'Formato de salida',
+      aspectLabel: 'Relación de aspecto',
+      aspectOriginal: 'Original (sin recorte)',
+      aspect16x9: '16:9 — panorámico (YouTube)',
+      aspect9x16: '9:16 — vertical (Shorts / Reels / TikTok)',
+      aspect1x1: '1:1 — cuadrado (feed de Instagram)',
+      aspect4x5: '4:5 — retrato (feed de Instagram)',
+      aspectHint: 'El recorte se centra en el cuadro.',
+      watermarkHeading: 'Marca de agua / logo (opcional)',
+      uploadImageLabel: '+ Subir una imagen',
+      positionLabel: 'Posición',
+      posTopLeft: 'Arriba a la izquierda',
+      posTopRight: 'Arriba a la derecha',
+      posBottomLeft: 'Abajo a la izquierda',
+      posBottomRight: 'Abajo a la derecha',
+      posCenter: 'Centro',
+      sizePercentLabel: 'Tamaño (%)',
+      opacityLabel: 'Opacidad',
+      removeWatermarkLabel: '✕ Quitar marca de agua',
+      translationHeading: 'Traducción (opcional, para los subtítulos de abajo)',
+      providerLabel: 'Proveedor de IA',
+      apiKeyLabelDefault: 'Tu clave de API',
+      apiKeyHint: 'Se usa solo para llamar al proveedor directamente desde tu navegador. Nunca se almacena, nunca se envía a ningún otro lugar.',
+      freeNoticeText: '✓ Gratis de usar — comparte una capacidad diaria limitada. Cambia a OpenAI/Anthropic arriba con tu propia clave si deja de funcionar.',
+      captionsHeading: 'Superposiciones de texto y subtítulos (opcional)',
+      captionTextLabel: 'Texto',
+      captionTextPlaceholder: 'p. ej. Bienvenido a nuestro taller',
+      captionStartLabel: 'Comienza en (s)',
+      captionDurationLabel: 'Duración (s)',
+      captionPositionLabel: 'Posición',
+      positionBottom: 'Abajo',
+      positionMiddle: 'Medio',
+      positionTop: 'Arriba',
+      captionTimingHint: 'El tiempo se mide en el video final exportado (después de recortes y cambios de velocidad).',
+      addCaptionBtnLabel: '+ Agregar superposición de texto',
+      captionsEmptyText: 'No se agregaron superposiciones de texto.',
+      renderBtnLabel: '🎬 Renderizar video',
+      previewTitle: 'CLIP FORGE — VISTA PREVIA',
+      statusNotStarted: 'SIN INICIAR',
+      stageEmptyStrong: 'Ningún video cargado todavía.',
+      stageEmptyText: 'Sube un video a la izquierda para previsualizarlo, recortarlo y editarlo.',
+      progressRendering: 'Renderizando…',
+      cancelRenderLabel: '✕ Cancelar renderizado',
+      downloadVideoLabel: '⬇ Descargar video (.webm)',
+      renderDisclaimerHtml: 'El renderizado ocurre en tiempo real en tu navegador (un clip de 20 segundos tarda unos 20 segundos, dividido por la velocidad elegida) — no se sube nada. La mayoría de los navegadores de escritorio (Chrome, Edge, Firefox) lo admiten; el soporte de Safari es limitado. ¿Tienes varios clips para unir, o diapositivas para combinar con uno? Prueba <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.',
+      ytHeading: 'Subir directamente a YouTube',
+      ytClientIdLabel: 'Tu ID de cliente OAuth de Google',
+      ytClientIdHint: 'Este es un identificador público de tu propio proyecto de Google Cloud, no un secreto — consulta los pasos de configuración abajo. Clip Forge solo lo envía a Google, nunca a ningún otro lugar.',
+      connectGoogleLabel: 'Conectar cuenta de Google',
+      ytConnectedText: '✓ Conectado a tu cuenta de Google.',
+      ytTitleLabel: 'Título del video',
+      ytTitlePlaceholder: 'Mi clip editado',
+      ytDescLabel: 'Descripción',
+      ytDescPlaceholder: 'Hecho con Clip Forge.',
+      ytTagsLabel: 'Etiquetas (separadas por comas)',
+      ytTagsPlaceholder: 'tutorial, cómo hacer, clip',
+      ytPrivacyLabel: 'Privacidad',
+      privacyPrivate: 'Privado',
+      privacyUnlisted: 'Oculto',
+      privacyPublic: 'Público',
+      ytCategoryLabel: 'Categoría',
+      categoryEducation: 'Educación',
+      categoryHowto: 'Cómo hacer y estilo',
+      categoryScience: 'Ciencia y tecnología',
+      categoryPeople: 'Personas y blogs',
+      categoryEntertainment: 'Entretenimiento',
+      uploadToYoutubeLabel: 'Subir a YouTube',
+      ytUploadHint: 'Renderiza tu video primero, luego súbelo aquí. Las subidas van directamente desde tu navegador a Google usando tu propia cuenta — esta herramienta nunca ve ni almacena el video o tu inicio de sesión.',
+      ytSetupSummary: 'Configuración única: obtén un ID de cliente OAuth de Google (clic para expandir)',
+      ytSetupStepsHtml: '<li>Ve a la <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Consola de Google Cloud</a>, crea (o elige) un proyecto, y activa la <strong>API de datos de YouTube v3</strong>.</li><li>En <strong>APIs y servicios → Pantalla de consentimiento de OAuth</strong>, configúralo como "Externo", añade el alcance <code>youtube.upload</code>, y añade tu propia cuenta de Google en "Usuarios de prueba" (esto evita necesitar la revisión completa de verificación de Google, ya que solo tú lo usarás).</li><li>En <strong>APIs y servicios → Credenciales</strong>, crea un <strong>ID de cliente OAuth</strong> de tipo "Aplicación web". Añade la URL exacta donde se ejecuta esta página (p. ej. <code>https://tu-usuario.github.io</code>) en "Orígenes de JavaScript autorizados".</li><li>Copia el ID de cliente generado (termina en <code>.apps.googleusercontent.com</code>) en el campo de arriba.</li><li>Haz clic en "Conectar cuenta de Google" y aprueba el acceso — Google advertirá que la app no está verificada, lo cual es esperado para un proyecto personal; continúa como el usuario de prueba que añadiste.</li>',
+      ytSetupFallbackHtml: 'Si algún paso falla aquí o tu navegador bloquea la subida, siempre puedes recurrir a descargar el archivo de video arriba y subirlo manualmente en <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Tu video, música, marca de agua y subtítulos permanecen en tu navegador excepto el texto que elijas traducir (enviado solo al proveedor de IA que seleccionaste arriba) y el video renderizado si eliges subirlo a YouTube (enviado directamente desde tu navegador a tu propia cuenta de Google). <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      videoLoadingPrefix: 'Cargando',
+      addedPrefix: 'Agregado:',
+      apiKeyLabelOpenai: 'Tu clave de API de OpenAI',
+      apiKeyLabelAnthropic: 'Tu clave de API de Anthropic',
+      errorAddTextFirst: 'Escribe algo de texto primero.',
+      capFromLabel: 'Desde:',
+      capForLabel: 'Por:',
+      capAtLabel: 'En:',
+      translateLabel: 'Traducir',
+      removeTranslationLabel: 'Quitar traducción',
+      removeLabel: 'Eliminar',
+      translatingLabel: 'Traduciendo…',
+      errorCouldNotTranslate: 'No se pudo traducir:',
+      errorUploadVideoFirst: 'Sube un video primero.',
+      errorNoRecordingSupport: 'Tu navegador no admite grabar el lienzo como video. Prueba la última versión de Chrome, Edge o Firefox.',
+      errorEndAfterStart: 'El punto final debe estar después del punto inicial.',
+      errorNoVideoFormat: 'No se encontró un formato de video compatible en este navegador.',
+      statusRendering: 'RENDERIZANDO',
+      statusCancelled: 'CANCELADO',
+      statusRenderComplete: 'RENDERIZADO COMPLETO',
+      errorCouldNotStartRendering: 'No se pudo iniciar el renderizado:',
+      ytErrorSignInFailed: 'Falló el inicio de sesión de Google: {error}',
+      ytErrorNoClientId: 'Pega primero tu ID de cliente OAuth de Google — consulta los pasos de configuración abajo.',
+      ytErrorLibraryNotLoaded: 'La librería de inicio de sesión de Google no ha terminado de cargar — espera un segundo e inténtalo de nuevo.',
+      ytErrorRecordFirst: 'Renderiza tu video primero.',
+      ytErrorConnectFirst: 'Conecta tu cuenta de Google primero.',
+      ytDefaultTitle: 'Subida de Clip Forge',
+      startingUploadLabel: 'Iniciando subida…',
+      uploadingLabel: 'Subiendo a YouTube…',
+      ytErrorRequestFailed: 'La solicitud falló con estado {status}',
+      ytErrorNoUploadUrl: 'Google no devolvió una URL de sesión de subida — tu navegador o una extensión puede estar bloqueándola. Intenta descargar el video y subirlo manualmente en studio.youtube.com en su lugar.',
+      ytErrorResponseUnreadable: 'La subida terminó pero no se pudo leer la respuesta.',
+      ytErrorUploadFailedStatus: 'La subida falló con estado {status}: {text}',
+      ytErrorNetwork: 'Un error de red interrumpió la subida — esto puede ocurrir si una extensión del navegador bloquea las solicitudes a Google.',
+      ytErrorGeneric: 'La subida falló.',
+      ytSuccessUploadedPrefix: '¡Subido!',
+      ytWatchLinkLabel: 'Míralo en YouTube',
+      ytPrivacyNotePrivate: 'privado — solo tú puedes verlo'
+    },
+    ar: {
+      heroSubtitle: 'ارفع فيديو، قصّه، امزج فيه موسيقى، اقصصه لأي منصة، أضف ترجمات (مع الترجمة)، ضع علامة مائية — ثم صدّره أو أرسله مباشرة إلى YouTube.',
+      videoHeading: 'فيديوك',
+      videoUploadLabel: '+ رفع فيديو',
+      videoInfoDefault: 'لم يُحمَّل أي فيديو بعد.',
+      recordForgeHintHtml: 'تحتاج إلى عمل تسجيل شاشة أولاً؟ استخدم <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>، ثم ارفع التنزيل هنا.',
+      trimHeading: 'القص',
+      trimStartLabel: 'البداية (ث)',
+      useCurrentPositionLabel: 'استخدام الموضع الحالي',
+      trimEndLabel: 'النهاية (ث)',
+      trimPlayHint: 'شغّل الفيديو على اليمين وأوقفه مؤقتًا حيث تريد كل نقطة، ثم انقر على "استخدام الموضع الحالي".',
+      speedAudioHeading: 'السرعة والصوت',
+      playbackSpeedLabel: 'سرعة التشغيل',
+      speed05: '0.5× (حركة بطيئة)',
+      speed1: '1× (عادي)',
+      speed2: '2× (سريع)',
+      volumeLabel: 'مستوى الصوت',
+      muteAudioLabel: 'كتم الصوت بالكامل',
+      musicUploadLabel: '+ إضافة موسيقى أو سرد (اختياري)',
+      musicVolumeLabel: 'مستوى صوت الموسيقى',
+      musicLoopLabel: 'التكرار إذا كانت أقصر من المقطع',
+      removeMusicLabel: '✕ إزالة الموسيقى',
+      outputFormatHeading: 'تنسيق الإخراج',
+      aspectLabel: 'نسبة العرض إلى الارتفاع',
+      aspectOriginal: 'الأصلي (بدون قص)',
+      aspect16x9: '16:9 — عريض (YouTube)',
+      aspect9x16: '9:16 — عمودي (Shorts / Reels / TikTok)',
+      aspect1x1: '1:1 — مربع (خلاصة Instagram)',
+      aspect4x5: '4:5 — عمودي (خلاصة Instagram)',
+      aspectHint: 'يتم توسيط القص على الإطار.',
+      watermarkHeading: 'علامة مائية / شعار (اختياري)',
+      uploadImageLabel: '+ رفع صورة',
+      positionLabel: 'الموضع',
+      posTopLeft: 'أعلى اليسار',
+      posTopRight: 'أعلى اليمين',
+      posBottomLeft: 'أسفل اليسار',
+      posBottomRight: 'أسفل اليمين',
+      posCenter: 'المنتصف',
+      sizePercentLabel: 'الحجم (%)',
+      opacityLabel: 'الشفافية',
+      removeWatermarkLabel: '✕ إزالة العلامة المائية',
+      translationHeading: 'الترجمة (اختياري، للترجمات أدناه)',
+      providerLabel: 'مزوّد الذكاء الاصطناعي',
+      apiKeyLabelDefault: 'مفتاح API الخاص بك',
+      apiKeyHint: 'يُستخدم فقط لاستدعاء المزوّد مباشرة من متصفحك. لا يُخزَّن أبدًا، ولا يُرسل إلى أي مكان آخر.',
+      freeNoticeText: '✓ مجاني للاستخدام — يشارك سعة يومية محدودة. انتقل إلى OpenAI/Anthropic أعلاه بمفتاحك الخاص إذا توقف عن العمل.',
+      captionsHeading: 'تراكبات النص والترجمات (اختياري)',
+      captionTextLabel: 'النص',
+      captionTextPlaceholder: 'مثال: مرحبًا بكم في ورشتنا',
+      captionStartLabel: 'يبدأ عند (ث)',
+      captionDurationLabel: 'المدة (ث)',
+      captionPositionLabel: 'الموضع',
+      positionBottom: 'أسفل',
+      positionMiddle: 'وسط',
+      positionTop: 'أعلى',
+      captionTimingHint: 'يُقاس التوقيت في الفيديو النهائي المُصدَّر (بعد القص وتغييرات السرعة).',
+      addCaptionBtnLabel: '+ إضافة تراكب نصي',
+      captionsEmptyText: 'لم تتم إضافة أي تراكبات نصية.',
+      renderBtnLabel: '🎬 عرض الفيديو',
+      previewTitle: 'CLIP FORGE — معاينة',
+      statusNotStarted: 'لم يبدأ',
+      stageEmptyStrong: 'لم يُحمَّل أي فيديو بعد.',
+      stageEmptyText: 'ارفع فيديو على اليسار لمعاينته وقصه وتحريره.',
+      progressRendering: 'جارٍ العرض…',
+      cancelRenderLabel: '✕ إلغاء العرض',
+      downloadVideoLabel: '⬇ تنزيل الفيديو (.webm)',
+      renderDisclaimerHtml: 'يحدث العرض في الوقت الفعلي في متصفحك (يستغرق مقطع مدته 20 ثانية حوالي 20 ثانية، مقسومة على السرعة التي اخترتها) — لا يُرفع شيء. تدعم معظم متصفحات سطح المكتب (Chrome وEdge وFirefox) ذلك؛ دعم Safari محدود. لديك عدة مقاطع لدمجها معًا، أو شرائح لدمجها مع مقطع؟ جرّب <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.',
+      ytHeading: 'الرفع مباشرة إلى YouTube',
+      ytClientIdLabel: 'معرّف عميل OAuth من Google الخاص بك',
+      ytClientIdHint: 'هذا معرّف عام لمشروع Google Cloud الخاص بك، وليس سرًا — راجع خطوات الإعداد أدناه. يرسله Clip Forge فقط إلى Google، ولا يرسله إلى أي مكان آخر أبدًا.',
+      connectGoogleLabel: 'ربط حساب Google',
+      ytConnectedText: '✓ تم الربط بحساب Google الخاص بك.',
+      ytTitleLabel: 'عنوان الفيديو',
+      ytTitlePlaceholder: 'مقطعي المُحرَّر',
+      ytDescLabel: 'الوصف',
+      ytDescPlaceholder: 'تم إنشاؤه باستخدام Clip Forge.',
+      ytTagsLabel: 'الوسوم (مفصولة بفواصل)',
+      ytTagsPlaceholder: 'شرح، كيفية، مقطع',
+      ytPrivacyLabel: 'الخصوصية',
+      privacyPrivate: 'خاص',
+      privacyUnlisted: 'غير مدرج',
+      privacyPublic: 'عام',
+      ytCategoryLabel: 'الفئة',
+      categoryEducation: 'تعليم',
+      categoryHowto: 'كيفية وأسلوب',
+      categoryScience: 'علوم وتكنولوجيا',
+      categoryPeople: 'أشخاص ومدونات',
+      categoryEntertainment: 'ترفيه',
+      uploadToYoutubeLabel: 'الرفع إلى YouTube',
+      ytUploadHint: 'اعرض فيديوك أولاً، ثم ارفعه هنا. تتم عمليات الرفع مباشرة من متصفحك إلى Google باستخدام حسابك الخاص — هذه الأداة لا ترى أو تخزن الفيديو أو بيانات تسجيل دخولك أبدًا.',
+      ytSetupSummary: 'إعداد لمرة واحدة: احصل على معرّف عميل OAuth من Google (انقر للتوسيع)',
+      ytSetupStepsHtml: '<li>اذهب إلى <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">وحدة تحكم Google Cloud</a>، أنشئ (أو اختر) مشروعًا، وفعّل <strong>YouTube Data API v3</strong>.</li><li>ضمن <strong>واجهات برمجة التطبيقات والخدمات ← شاشة موافقة OAuth</strong>، قم بإعدادها كـ"خارجي"، وأضف نطاق <code>youtube.upload</code>، وأضف حساب Google الخاص بك ضمن "مستخدمو الاختبار" (يتجنب هذا الحاجة إلى مراجعة التحقق الكاملة من Google، لأنك أنت فقط من سيستخدمه).</li><li>ضمن <strong>واجهات برمجة التطبيقات والخدمات ← بيانات الاعتماد</strong>، أنشئ <strong>معرّف عميل OAuth</strong> من نوع "تطبيق ويب". أضف الرابط الدقيق الذي تعمل عليه هذه الصفحة (مثل <code>https://your-username.github.io</code>) ضمن "أصول JavaScript المعتمدة".</li><li>انسخ معرّف العميل الذي تم إنشاؤه (ينتهي بـ <code>.apps.googleusercontent.com</code>) في الحقل أعلاه.</li><li>انقر على "ربط حساب Google" ووافق على الوصول — سيحذر Google من أن التطبيق غير موثّق، وهذا متوقع لمشروع شخصي؛ تابع كمستخدم الاختبار الذي أضفته.</li>',
+      ytSetupFallbackHtml: 'إذا فشلت أي خطوة هنا أو حظر متصفحك الرفع، يمكنك دائمًا اللجوء إلى تنزيل ملف الفيديو أعلاه ورفعه يدويًا على <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. يبقى فيديوك والموسيقى والعلامة المائية والترجمات في متصفحك باستثناء النص الذي تختار ترجمته (يُرسل فقط إلى مزوّد الذكاء الاصطناعي الذي اخترته أعلاه) والفيديو المعروض إذا اخترت رفعه إلى YouTube (يُرسل مباشرة من متصفحك إلى حساب Google الخاص بك). <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      videoLoadingPrefix: 'جارٍ التحميل',
+      addedPrefix: 'تمت الإضافة:',
+      apiKeyLabelOpenai: 'مفتاح API الخاص بك من OpenAI',
+      apiKeyLabelAnthropic: 'مفتاح API الخاص بك من Anthropic',
+      errorAddTextFirst: 'اكتب بعض النص أولاً.',
+      capFromLabel: 'من:',
+      capForLabel: 'لمدة:',
+      capAtLabel: 'عند:',
+      translateLabel: 'ترجمة',
+      removeTranslationLabel: 'إزالة الترجمة',
+      removeLabel: 'إزالة',
+      translatingLabel: 'جارٍ الترجمة…',
+      errorCouldNotTranslate: 'تعذّرت الترجمة:',
+      errorUploadVideoFirst: 'ارفع فيديو أولاً.',
+      errorNoRecordingSupport: 'متصفحك لا يدعم تسجيل اللوحة القماشية كفيديو. جرّب أحدث إصدار من Chrome أو Edge أو Firefox.',
+      errorEndAfterStart: 'يجب أن تكون نقطة النهاية بعد نقطة البداية.',
+      errorNoVideoFormat: 'لم يتم العثور على تنسيق فيديو مدعوم في هذا المتصفح.',
+      statusRendering: 'جارٍ العرض',
+      statusCancelled: 'أُلغي',
+      statusRenderComplete: 'اكتمل العرض',
+      errorCouldNotStartRendering: 'تعذّر بدء العرض:',
+      ytErrorSignInFailed: 'فشل تسجيل الدخول إلى Google: {error}',
+      ytErrorNoClientId: 'الصق معرّف عميل OAuth من Google أولاً — راجع خطوات الإعداد أدناه.',
+      ytErrorLibraryNotLoaded: 'لم تنتهِ مكتبة تسجيل الدخول من Google من التحميل بعد — انتظر لحظة وحاول مرة أخرى.',
+      ytErrorRecordFirst: 'اعرض فيديوك أولاً.',
+      ytErrorConnectFirst: 'اربط حساب Google الخاص بك أولاً.',
+      ytDefaultTitle: 'رفعة من Clip Forge',
+      startingUploadLabel: 'جارٍ بدء الرفع…',
+      uploadingLabel: 'جارٍ الرفع إلى YouTube…',
+      ytErrorRequestFailed: 'فشل الطلب بالحالة {status}',
+      ytErrorNoUploadUrl: 'لم يُرجع Google رابط جلسة رفع — قد يكون متصفحك أو أحد الإضافات يحظره. حاول تنزيل الفيديو ورفعه يدويًا على studio.youtube.com بدلاً من ذلك.',
+      ytErrorResponseUnreadable: 'انتهى الرفع لكن تعذرت قراءة الاستجابة.',
+      ytErrorUploadFailedStatus: 'فشل الرفع بالحالة {status}: {text}',
+      ytErrorNetwork: 'قاطع خطأ في الشبكة عملية الرفع — يمكن أن يحدث هذا إذا حظرت إضافة متصفح الطلبات إلى Google.',
+      ytErrorGeneric: 'فشل الرفع.',
+      ytSuccessUploadedPrefix: 'تم الرفع!',
+      ytWatchLinkLabel: 'شاهده على YouTube',
+      ytPrivacyNotePrivate: 'خاص — أنت فقط من يمكنه رؤيته'
+    },
+    zh: {
+      heroSubtitle: '上传视频、剪辑它、混入音乐、为任意平台裁剪、添加字幕（带翻译）、加上水印——然后导出或直接发送到 YouTube。',
+      videoHeading: '你的视频',
+      videoUploadLabel: '+ 上传视频',
+      videoInfoDefault: '尚未加载视频。',
+      recordForgeHintHtml: '需要先录制屏幕吗？使用 <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>，然后在此处上传下载的文件。',
+      trimHeading: '剪辑',
+      trimStartLabel: '开始（秒）',
+      useCurrentPositionLabel: '使用当前位置',
+      trimEndLabel: '结束（秒）',
+      trimPlayHint: '在右侧播放视频，在你想要的每个点暂停，然后点击"使用当前位置"。',
+      speedAudioHeading: '速度与音频',
+      playbackSpeedLabel: '播放速度',
+      speed05: '0.5×（慢动作）',
+      speed1: '1×（正常）',
+      speed2: '2×（快速）',
+      volumeLabel: '音量',
+      muteAudioLabel: '完全静音',
+      musicUploadLabel: '+ 添加音乐或旁白（可选）',
+      musicVolumeLabel: '音乐音量',
+      musicLoopLabel: '如果比片段短则循环播放',
+      removeMusicLabel: '✕ 移除音乐',
+      outputFormatHeading: '输出格式',
+      aspectLabel: '宽高比',
+      aspectOriginal: '原始（不裁剪）',
+      aspect16x9: '16:9——宽屏（YouTube）',
+      aspect9x16: '9:16——竖屏（Shorts / Reels / TikTok）',
+      aspect1x1: '1:1——正方形（Instagram 动态）',
+      aspect4x5: '4:5——竖版（Instagram 动态）',
+      aspectHint: '裁剪以画面为中心。',
+      watermarkHeading: '水印/标志（可选）',
+      uploadImageLabel: '+ 上传图片',
+      positionLabel: '位置',
+      posTopLeft: '左上',
+      posTopRight: '右上',
+      posBottomLeft: '左下',
+      posBottomRight: '右下',
+      posCenter: '居中',
+      sizePercentLabel: '大小（%）',
+      opacityLabel: '不透明度',
+      removeWatermarkLabel: '✕ 移除水印',
+      translationHeading: '翻译（可选，用于下方字幕）',
+      providerLabel: 'AI 提供方',
+      apiKeyLabelDefault: '你的 API 密钥',
+      apiKeyHint: '仅用于从你的浏览器直接调用该提供方。绝不存储，绝不发送到其他任何地方。',
+      freeNoticeText: '✓ 免费使用——共享有限的每日额度。如果它停止工作，请在上方切换到 OpenAI/Anthropic 并使用你自己的密钥。',
+      captionsHeading: '文字叠加与字幕（可选）',
+      captionTextLabel: '文字',
+      captionTextPlaceholder: '例如：欢迎参加我们的工作坊',
+      captionStartLabel: '开始时间（秒）',
+      captionDurationLabel: '持续时间（秒）',
+      captionPositionLabel: '位置',
+      positionBottom: '底部',
+      positionMiddle: '居中',
+      positionTop: '顶部',
+      captionTimingHint: '时间是在最终导出的视频中测量的（剪辑和速度更改之后）。',
+      addCaptionBtnLabel: '+ 添加文字叠加',
+      captionsEmptyText: '尚未添加文字叠加。',
+      renderBtnLabel: '🎬 渲染视频',
+      previewTitle: 'CLIP FORGE — 预览',
+      statusNotStarted: '尚未开始',
+      stageEmptyStrong: '尚未加载视频。',
+      stageEmptyText: '在左侧上传视频以预览、剪辑和编辑它。',
+      progressRendering: '渲染中…',
+      cancelRenderLabel: '✕ 取消渲染',
+      downloadVideoLabel: '⬇ 下载视频（.webm）',
+      renderDisclaimerHtml: '渲染会在浏览器中实时进行（一个 20 秒的片段大约需要 20 秒，除以你选择的速度）——不会上传任何内容。大多数桌面浏览器（Chrome、Edge、Firefox）都支持此功能；Safari 的支持有限。有多个片段要拼接，或者想把幻灯片和一个片段合并？试试 <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>。',
+      ytHeading: '直接上传到 YouTube',
+      ytClientIdLabel: '你的 Google OAuth 客户端 ID',
+      ytClientIdHint: '这是你自己 Google Cloud 项目的公开标识符，不是秘密——请参阅下方的设置步骤。Clip Forge 只会将其发送给 Google，绝不发送到其他任何地方。',
+      connectGoogleLabel: '连接 Google 账户',
+      ytConnectedText: '✓ 已连接到你的 Google 账户。',
+      ytTitleLabel: '视频标题',
+      ytTitlePlaceholder: '我编辑的片段',
+      ytDescLabel: '描述',
+      ytDescPlaceholder: '使用 Clip Forge 制作。',
+      ytTagsLabel: '标签（用逗号分隔）',
+      ytTagsPlaceholder: '教程, 操作指南, 片段',
+      ytPrivacyLabel: '隐私设置',
+      privacyPrivate: '私享',
+      privacyUnlisted: '不公开列出',
+      privacyPublic: '公开',
+      ytCategoryLabel: '类别',
+      categoryEducation: '教育',
+      categoryHowto: '操作指南与风格',
+      categoryScience: '科学与技术',
+      categoryPeople: '人物与博客',
+      categoryEntertainment: '娱乐',
+      uploadToYoutubeLabel: '上传到 YouTube',
+      ytUploadHint: '先渲染你的视频，然后在此处上传。上传会使用你自己的账户直接从浏览器发送到 Google——此工具绝不会查看或存储视频或你的登录信息。',
+      ytSetupSummary: '一次性设置：获取 Google OAuth 客户端 ID（点击展开）',
+      ytSetupStepsHtml: '<li>前往 <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud 控制台</a>，创建（或选择）一个项目，并启用 <strong>YouTube Data API v3</strong>。</li><li>在<strong>API 和服务 → OAuth 同意屏幕</strong>下，将其设置为"外部"，添加 <code>youtube.upload</code> 权限范围，并在"测试用户"下添加你自己的 Google 账户（这样可以避免需要 Google 的完整应用验证审核，因为只有你会使用它）。</li><li>在<strong>API 和服务 → 凭据</strong>下，创建一个类型为"Web 应用"的 <strong>OAuth 客户端 ID</strong>。在"已获授权的 JavaScript 来源"下添加此页面运行的确切网址（例如 <code>https://your-username.github.io</code>）。</li><li>将生成的客户端 ID（以 <code>.apps.googleusercontent.com</code> 结尾）复制到上方的字段中。</li><li>点击"连接 Google 账户"并批准访问——Google 会警告该应用未经验证，这对于个人项目来说是正常的；以你添加的测试用户身份继续操作。</li>',
+      ytSetupFallbackHtml: '如果这里的任何步骤失败，或者你的浏览器阻止了上传，你始终可以退而求其次，下载上方的视频文件并在 <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a> 手动上传。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。你的视频、音乐、水印和字幕都保留在浏览器中，除了你选择翻译的文字（仅发送给你在上方选择的 AI 提供方）以及如果你选择上传到 YouTube 的渲染视频（直接从你的浏览器发送到你自己的 Google 账户）。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      videoLoadingPrefix: '正在加载',
+      addedPrefix: '已添加：',
+      apiKeyLabelOpenai: '你的 OpenAI API 密钥',
+      apiKeyLabelAnthropic: '你的 Anthropic API 密钥',
+      errorAddTextFirst: '请先输入一些文字。',
+      capFromLabel: '起始：',
+      capForLabel: '持续：',
+      capAtLabel: '位置：',
+      translateLabel: '翻译',
+      removeTranslationLabel: '移除翻译',
+      removeLabel: '移除',
+      translatingLabel: '翻译中…',
+      errorCouldNotTranslate: '无法翻译：',
+      errorUploadVideoFirst: '请先上传视频。',
+      errorNoRecordingSupport: '你的浏览器不支持将画布录制为视频。请尝试最新版的 Chrome、Edge 或 Firefox。',
+      errorEndAfterStart: '结束点必须在开始点之后。',
+      errorNoVideoFormat: '在此浏览器中未找到受支持的视频格式。',
+      statusRendering: '渲染中',
+      statusCancelled: '已取消',
+      statusRenderComplete: '渲染完成',
+      errorCouldNotStartRendering: '无法开始渲染：',
+      ytErrorSignInFailed: 'Google 登录失败：{error}',
+      ytErrorNoClientId: '请先粘贴你的 Google OAuth 客户端 ID——请参阅下方的设置步骤。',
+      ytErrorLibraryNotLoaded: 'Google 登录库尚未加载完成——请稍等片刻再试。',
+      ytErrorRecordFirst: '请先渲染你的视频。',
+      ytErrorConnectFirst: '请先连接你的 Google 账户。',
+      ytDefaultTitle: 'Clip Forge 上传',
+      startingUploadLabel: '正在开始上传…',
+      uploadingLabel: '正在上传到 YouTube…',
+      ytErrorRequestFailed: '请求失败，状态码 {status}',
+      ytErrorNoUploadUrl: 'Google 没有返回上传会话网址——你的浏览器或某个扩展程序可能正在阻止它。请改为下载视频并在 studio.youtube.com 手动上传。',
+      ytErrorResponseUnreadable: '上传已完成，但无法读取响应。',
+      ytErrorUploadFailedStatus: '上传失败，状态码 {status}：{text}',
+      ytErrorNetwork: '网络错误中断了上传——如果浏览器扩展程序阻止了对 Google 的请求，可能会发生这种情况。',
+      ytErrorGeneric: '上传失败。',
+      ytSuccessUploadedPrefix: '已上传！',
+      ytWatchLinkLabel: '在 YouTube 上观看',
+      ytPrivacyNotePrivate: '私享——只有你能看到'
+    },
+    sw: {
+      heroSubtitle: 'Pakia video, ikate, changanya muziki, ikate kwa jukwaa lolote, ongeza manukuu (yenye tafsiri), weka alama ya maji — kisha hamisha au itume moja kwa moja kwenye YouTube.',
+      videoHeading: 'Video yako',
+      videoUploadLabel: '+ Pakia video',
+      videoInfoDefault: 'Hakuna video iliyopakiwa bado.',
+      recordForgeHintHtml: 'Unahitaji kufanya rekodi ya skrini kwanza? Tumia <a href="record-forge.html" style="color:var(--navy);text-decoration:underline;">Record Forge</a>, kisha pakia upakuaji hapa.',
+      trimHeading: 'Kata',
+      trimStartLabel: 'Mwanzo (s)',
+      useCurrentPositionLabel: 'Tumia nafasi ya sasa',
+      trimEndLabel: 'Mwisho (s)',
+      trimPlayHint: 'Cheza video upande wa kulia na usitishe pale unapotaka kila hatua, kisha bofya "Tumia nafasi ya sasa".',
+      speedAudioHeading: 'Kasi na sauti',
+      playbackSpeedLabel: 'Kasi ya kucheza',
+      speed05: '0.5× (mwendo wa polepole)',
+      speed1: '1× (kawaida)',
+      speed2: '2× (haraka)',
+      volumeLabel: 'Sauti',
+      muteAudioLabel: 'Zima sauti kabisa',
+      musicUploadLabel: '+ Ongeza muziki au usimulizi (hiari)',
+      musicVolumeLabel: 'Sauti ya muziki',
+      musicLoopLabel: 'Rudia ikiwa ni fupi kuliko klipu',
+      removeMusicLabel: '✕ Ondoa muziki',
+      outputFormatHeading: 'Muundo wa matokeo',
+      aspectLabel: 'Uwiano wa vipimo',
+      aspectOriginal: 'Asili (bila kukata)',
+      aspect16x9: '16:9 — pana (YouTube)',
+      aspect9x16: '9:16 — wima (Shorts / Reels / TikTok)',
+      aspect1x1: '1:1 — mraba (mtiririko wa Instagram)',
+      aspect4x5: '4:5 — wima (mtiririko wa Instagram)',
+      aspectHint: 'Kukata kunalenga katikati ya fremu.',
+      watermarkHeading: 'Alama ya maji / nembo (hiari)',
+      uploadImageLabel: '+ Pakia picha',
+      positionLabel: 'Nafasi',
+      posTopLeft: 'Juu kushoto',
+      posTopRight: 'Juu kulia',
+      posBottomLeft: 'Chini kushoto',
+      posBottomRight: 'Chini kulia',
+      posCenter: 'Katikati',
+      sizePercentLabel: 'Ukubwa (%)',
+      opacityLabel: 'Uwazi',
+      removeWatermarkLabel: '✕ Ondoa alama ya maji',
+      translationHeading: 'Tafsiri (hiari, kwa manukuu hapa chini)',
+      providerLabel: 'Mtoa huduma wa AI',
+      apiKeyLabelDefault: 'Ufunguo wako wa API',
+      apiKeyHint: 'Hutumika tu kuita mtoa huduma moja kwa moja kutoka kwenye kivinjari chako. Haihifadhiwi kamwe, haitumwi mahali pengine popote.',
+      freeNoticeText: '✓ Bure kutumia — inashiriki uwezo mdogo wa kila siku. Badilisha kwenda OpenAI/Anthropic hapo juu ukitumia ufunguo wako mwenyewe ikiwa itaacha kufanya kazi.',
+      captionsHeading: 'Maandishi ya juu na manukuu (hiari)',
+      captionTextLabel: 'Maandishi',
+      captionTextPlaceholder: 'mfano: Karibu kwenye warsha yetu',
+      captionStartLabel: 'Huanza saa (s)',
+      captionDurationLabel: 'Muda (s)',
+      captionPositionLabel: 'Nafasi',
+      positionBottom: 'Chini',
+      positionMiddle: 'Katikati',
+      positionTop: 'Juu',
+      captionTimingHint: 'Muda hupimwa katika video ya mwisho iliyohamishwa (baada ya kukata na mabadiliko ya kasi).',
+      addCaptionBtnLabel: '+ Ongeza maandishi ya juu',
+      captionsEmptyText: 'Hakuna maandishi ya juu yaliyoongezwa.',
+      renderBtnLabel: '🎬 Toa video',
+      previewTitle: 'CLIP FORGE — MUONEKANO',
+      statusNotStarted: 'HAIJAANZA',
+      stageEmptyStrong: 'Hakuna video iliyopakiwa bado.',
+      stageEmptyText: 'Pakia video upande wa kushoto ili kuihakiki, kuikata, na kuihariri.',
+      progressRendering: 'Inatoa…',
+      cancelRenderLabel: '✕ Ghairi utoaji',
+      downloadVideoLabel: '⬇ Pakua video (.webm)',
+      renderDisclaimerHtml: 'Utoaji hufanyika kwa wakati halisi kwenye kivinjari chako (klipu ya sekunde 20 huchukua sekunde 20 hivi, ikigawanywa na kasi uliyochagua) — hakuna kinachopakiwa. Vivinjari vingi vya kompyuta (Chrome, Edge, Firefox) vinaunga mkono hili; msaada wa Safari ni mdogo. Una klipu kadhaa za kuunganisha, au slaidi za kuchanganya na moja? Jaribu <a href="merge-forge.html" style="color:var(--line-cyan);">Merge Forge</a>.',
+      ytHeading: 'Pakia moja kwa moja kwenye YouTube',
+      ytClientIdLabel: 'Kitambulisho chako cha Mteja wa Google OAuth',
+      ytClientIdHint: 'Hiki ni kitambulisho cha umma cha mradi wako mwenyewe wa Google Cloud, si siri — angalia hatua za usanidi hapa chini. Clip Forge hukituma tu kwa Google, kamwe si mahali pengine popote.',
+      connectGoogleLabel: 'Unganisha akaunti ya Google',
+      ytConnectedText: '✓ Umeunganishwa na akaunti yako ya Google.',
+      ytTitleLabel: 'Kichwa cha video',
+      ytTitlePlaceholder: 'Klipu yangu iliyohaririwa',
+      ytDescLabel: 'Maelezo',
+      ytDescPlaceholder: 'Imetengenezwa na Clip Forge.',
+      ytTagsLabel: 'Lebo (zilizotenganishwa na koma)',
+      ytTagsPlaceholder: 'mafunzo, jinsi ya, klipu',
+      ytPrivacyLabel: 'Faragha',
+      privacyPrivate: 'Faragha',
+      privacyUnlisted: 'Isiyoorodheshwa',
+      privacyPublic: 'Ya umma',
+      ytCategoryLabel: 'Jamii',
+      categoryEducation: 'Elimu',
+      categoryHowto: 'Jinsi ya kufanya na mtindo',
+      categoryScience: 'Sayansi na Teknolojia',
+      categoryPeople: 'Watu na Blogu',
+      categoryEntertainment: 'Burudani',
+      uploadToYoutubeLabel: 'Pakia kwenye YouTube',
+      ytUploadHint: 'Toa video yako kwanza, kisha uipakie hapa. Upakiaji huenda moja kwa moja kutoka kwenye kivinjari chako hadi Google ukitumia akaunti yako mwenyewe — chombo hiki hakioni au kuhifadhi video au kuingia kwako kamwe.',
+      ytSetupSummary: 'Usanidi wa mara moja: pata Kitambulisho cha Mteja wa Google OAuth (bofya kupanua)',
+      ytSetupStepsHtml: '<li>Nenda kwenye <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener">Google Cloud Console</a>, unda (au chagua) mradi, na uwezeshe <strong>YouTube Data API v3</strong>.</li><li>Chini ya <strong>APIs & Services → OAuth consent screen</strong>, isanidi kama "External", ongeza wigo wa <code>youtube.upload</code>, na uongeze akaunti yako mwenyewe ya Google chini ya "Test users" (hii inaepuka kuhitaji ukaguzi kamili wa uthibitishaji wa programu wa Google, kwa kuwa wewe tu ndiye utakayeitumia).</li><li>Chini ya <strong>APIs & Services → Credentials</strong>, unda <strong>Kitambulisho cha Mteja wa OAuth</strong> cha aina "Programu ya wavuti". Ongeza URL hasa inayoendesha ukurasa huu (mfano <code>https://your-username.github.io</code>) chini ya "Authorized JavaScript origins".</li><li>Nakili Kitambulisho cha Mteja kilichotengenezwa (kinaishia na <code>.apps.googleusercontent.com</code>) kwenye sehemu iliyo hapo juu.</li><li>Bofya "Unganisha akaunti ya Google" na ukubali ufikiaji — Google itaonya kwamba programu haijathibitishwa, ambayo ni jambo la kawaida kwa mradi wa kibinafsi; endelea kama mtumiaji wa jaribio uliyemwongeza.</li>',
+      ytSetupFallbackHtml: 'Ikiwa hatua yoyote hapa itashindwa au kivinjari chako kikizuia upakiaji, unaweza kila wakati kurudi kwenye kupakua faili la video hapo juu na kulipakia kwa mkono kwenye <a href="https://studio.youtube.com" target="_blank" rel="noopener">studio.youtube.com</a>.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Video yako, muziki, alama ya maji, na manukuu hubaki kwenye kivinjari chako isipokuwa maandishi unayochagua kutafsiri (hutumwa tu kwa mtoa huduma wa AI uliyemchagua hapo juu) na video iliyotolewa ikiwa utachagua kuipakia kwenye YouTube (hutumwa moja kwa moja kutoka kwenye kivinjari chako hadi akaunti yako mwenyewe ya Google). <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      videoLoadingPrefix: 'Inapakia',
+      addedPrefix: 'Imeongezwa:',
+      apiKeyLabelOpenai: 'Ufunguo wako wa API wa OpenAI',
+      apiKeyLabelAnthropic: 'Ufunguo wako wa API wa Anthropic',
+      errorAddTextFirst: 'Andika maandishi kwanza.',
+      capFromLabel: 'Kutoka:',
+      capForLabel: 'Kwa:',
+      capAtLabel: 'Saa:',
+      translateLabel: 'Tafsiri',
+      removeTranslationLabel: 'Ondoa tafsiri',
+      removeLabel: 'Ondoa',
+      translatingLabel: 'Inatafsiri…',
+      errorCouldNotTranslate: 'Imeshindwa kutafsiri:',
+      errorUploadVideoFirst: 'Pakia video kwanza.',
+      errorNoRecordingSupport: 'Kivinjari chako hakiungi mkono kurekodi turubai kuwa video. Jaribu toleo jipya la Chrome, Edge, au Firefox.',
+      errorEndAfterStart: 'Sehemu ya mwisho lazima iwe baada ya sehemu ya mwanzo.',
+      errorNoVideoFormat: 'Hakuna muundo wa video unaotumika uliopatikana katika kivinjari hiki.',
+      statusRendering: 'INATOA',
+      statusCancelled: 'IMEGHAIRIWA',
+      statusRenderComplete: 'UTOAJI UMEKAMILIKA',
+      errorCouldNotStartRendering: 'Imeshindwa kuanzisha utoaji:',
+      ytErrorSignInFailed: 'Kuingia kwa Google kumeshindwa: {error}',
+      ytErrorNoClientId: 'Bandika kwanza Kitambulisho chako cha Mteja wa Google OAuth — angalia hatua za usanidi hapa chini.',
+      ytErrorLibraryNotLoaded: 'Maktaba ya kuingia ya Google haijamaliza kupakia — subiri sekunde na ujaribu tena.',
+      ytErrorRecordFirst: 'Toa video yako kwanza.',
+      ytErrorConnectFirst: 'Unganisha akaunti yako ya Google kwanza.',
+      ytDefaultTitle: 'Upakiaji wa Clip Forge',
+      startingUploadLabel: 'Inaanza kupakia…',
+      uploadingLabel: 'Inapakia kwenye YouTube…',
+      ytErrorRequestFailed: 'Ombi limeshindwa na hali {status}',
+      ytErrorNoUploadUrl: 'Google haikurudisha URL ya kipindi cha kupakia — kivinjari chako au kiendelezi kinaweza kuwa kinakizuia. Jaribu kupakua video na kuipakia kwa mkono kwenye studio.youtube.com badala yake.',
+      ytErrorResponseUnreadable: 'Upakiaji umekamilika lakini jibu halikuweza kusomwa.',
+      ytErrorUploadFailedStatus: 'Upakiaji umeshindwa na hali {status}: {text}',
+      ytErrorNetwork: 'Hitilafu ya mtandao imekatiza upakiaji — hii inaweza kutokea ikiwa kiendelezi cha kivinjari kinazuia maombi kwenda Google.',
+      ytErrorGeneric: 'Upakiaji umeshindwa.',
+      ytSuccessUploadedPrefix: 'Imepakiwa!',
+      ytWatchLinkLabel: 'Iangalie kwenye YouTube',
+      ytPrivacyNotePrivate: 'faragha — wewe tu ndiye unaweza kuiona'
     }
   });
 })();
