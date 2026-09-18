@@ -34,6 +34,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="i18n.js"></script>
 <script src="media-utils.js"></script>
+<script src="youtube-upload.js"></script>
 
 <style>
   :root {
@@ -500,19 +501,6 @@
   const cancelRenderBtn = document.getElementById('cancelRenderBtn');
   const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 
-  const ytClientId = document.getElementById('ytClientId');
-  const connectYtBtn = document.getElementById('connectYtBtn');
-  const ytConnectedBox = document.getElementById('ytConnectedBox');
-  const ytUploadFields = document.getElementById('ytUploadFields');
-  const ytTitle = document.getElementById('ytTitle');
-  const ytDesc = document.getElementById('ytDesc');
-  const ytTags = document.getElementById('ytTags');
-  const ytPrivacy = document.getElementById('ytPrivacy');
-  const ytCategory = document.getElementById('ytCategory');
-  const uploadYtBtn = document.getElementById('uploadYtBtn');
-  const ytResultBox = document.getElementById('ytResultBox');
-  const ytErrorBox = document.getElementById('ytErrorBox');
-
   const ctx = stageCanvas.getContext('2d');
 
   // ---------- state ----------
@@ -527,8 +515,6 @@
   let mediaElementSourceNode = null; // an element can only ever be wrapped once, so this is created lazily and reused
   let musicAudioSourceNode = null; // same one-time-wrap rule as mediaElementSourceNode above
   let musicObjectUrl = null;
-  let accessToken = null;
-  let tokenClient = null;
 
   const ASPECT_RATIOS = { original: null, '16:9': 16 / 9, '9:16': 9 / 16, '1:1': 1, '4:5': 4 / 5 };
 
@@ -560,7 +546,6 @@
 
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
-  function refreshUploadEnabled() { uploadYtBtn.disabled = !(renderedVideoBlob && accessToken); }
 
   // ---------- video upload ----------
   videoInput.addEventListener('change', function (e) {
@@ -1039,118 +1024,9 @@
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   });
 
-  // ---------- YouTube upload (same flow as Record Forge / Video Forge) ----------
-  function showYtError(msg) { ytErrorBox.textContent = msg; ytErrorBox.classList.add('show'); }
-  function clearYtError() { ytErrorBox.textContent = ''; ytErrorBox.classList.remove('show'); }
-
-  function ensureTokenClient() {
-    if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
-    const clientId = ytClientId.value.trim();
-    if (!clientId) return null;
-    if (tokenClient && tokenClient.__clientId === clientId) return tokenClient;
-    tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: clientId,
-      scope: 'https://www.googleapis.com/auth/youtube.upload',
-      callback: function (resp) {
-        if (resp.error) { showYtError(I18N.t('ytErrorSignInFailed').replace('{error}', resp.error)); return; }
-        accessToken = resp.access_token;
-        clearYtError();
-        ytConnectedBox.classList.add('show');
-        ytUploadFields.style.display = 'block';
-        refreshUploadEnabled();
-      }
-    });
-    tokenClient.__clientId = clientId;
-    return tokenClient;
-  }
-
-  connectYtBtn.addEventListener('click', function () {
-    clearYtError();
-    if (!ytClientId.value.trim()) { showYtError(I18N.t('ytErrorNoClientId')); return; }
-    const client = ensureTokenClient();
-    if (!client) { showYtError(I18N.t('ytErrorLibraryNotLoaded')); return; }
-    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
-  });
-
-  uploadYtBtn.addEventListener('click', async function () {
-    clearYtError();
-    ytResultBox.classList.remove('show');
-    if (!renderedVideoBlob) { showYtError(I18N.t('ytErrorRecordFirst')); return; }
-    if (!accessToken) { showYtError(I18N.t('ytErrorConnectFirst')); return; }
-
-    const metadata = {
-      snippet: {
-        title: ytTitle.value.trim() || I18N.t('ytDefaultTitle'),
-        description: ytDesc.value.trim(),
-        tags: ytTags.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean),
-        categoryId: ytCategory.value
-      },
-      status: { privacyStatus: ytPrivacy.value }
-    };
-
-    uploadYtBtn.disabled = true;
-    uploadYtBtn.textContent = I18N.t('startingUploadLabel');
-    progressWrap.classList.add('show');
-    progressLabel.textContent = I18N.t('uploadingLabel');
-    progressFill.style.width = '0%';
-    progressPct.textContent = '0%';
-
-    try {
-      const initResp = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-Upload-Content-Type': renderedVideoBlob.type || 'video/webm',
-          'X-Upload-Content-Length': String(renderedVideoBlob.size)
-        },
-        body: JSON.stringify(metadata)
-      });
-      if (!initResp.ok) {
-        const errBody = await initResp.json().catch(function () { return null; });
-        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : I18N.t('ytErrorRequestFailed').replace('{status}', initResp.status);
-        throw new Error(msg);
-      }
-      const uploadUrl = initResp.headers.get('Location');
-      if (!uploadUrl) {
-        throw new Error(I18N.t('ytErrorNoUploadUrl'));
-      }
-
-      await new Promise(function (resolve, reject) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', uploadUrl);
-        xhr.setRequestHeader('Content-Type', renderedVideoBlob.type || 'video/webm');
-        xhr.upload.onprogress = function (e) {
-          if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 100);
-            progressFill.style.width = pct + '%';
-            progressPct.textContent = pct + '%';
-          }
-        };
-        xhr.onload = function () {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try { resolve(JSON.parse(xhr.responseText)); }
-            catch (e) { reject(new Error(I18N.t('ytErrorResponseUnreadable'))); }
-          } else {
-            reject(new Error(I18N.t('ytErrorUploadFailedStatus').replace('{status}', xhr.status).replace('{text}', xhr.responseText)));
-          }
-        };
-        xhr.onerror = function () { reject(new Error(I18N.t('ytErrorNetwork'))); };
-        xhr.send(renderedVideoBlob);
-      }).then(function (data) {
-        const privacyNote = ytPrivacy.value === 'private' ? I18N.t('ytPrivacyNotePrivate') : ytPrivacy.value;
-        ytResultBox.innerHTML = '✓ ' + I18N.t('ytSuccessUploadedPrefix') + ' <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">' + I18N.t('ytWatchLinkLabel') + '</a> (' + privacyNote + ').';
-        ytResultBox.classList.add('show');
-      });
-    } catch (err) {
-      showYtError(err.message || I18N.t('ytErrorGeneric'));
-    } finally {
-      uploadYtBtn.disabled = false;
-      uploadYtBtn.textContent = I18N.t('uploadToYoutubeLabel');
-      progressWrap.classList.remove('show');
-      refreshUploadEnabled();
-    }
-  });
+  // ---------- YouTube upload (shared module; same flow as Record Forge / Video Forge) ----------
+  const ytUpload = YouTubeUpload.init({ getBlob: function () { return renderedVideoBlob; }, noBlobErrorKey: 'ytErrorRecordFirst' });
+  function refreshUploadEnabled() { ytUpload.refreshUploadEnabled(); }
 
   I18N.onChange(function () {
     applyProvider();
