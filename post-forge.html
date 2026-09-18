@@ -31,6 +31,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -156,96 +157,97 @@
   </svg>
   <div>
     <h1>Post Forge</h1>
-    <p>Write one announcement, post it to Discord, Bluesky, and Mastodon at once.</p>
+    <p data-i18n="heroSubtitle">Write one announcement, post it to Discord, Bluesky, and Mastodon at once.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main>
   <section class="panel">
-    <div class="section-title">Your accounts</div>
-    <p class="hint" style="margin-top:0;">Saved only in this browser (localStorage) — never sent anywhere except directly to each platform when you post. X/Twitter isn't included: posting there needs a paid API tier and server-side request signing, unlike these three.</p>
+    <div class="section-title" data-i18n="accountsHeading">Your accounts</div>
+    <p class="hint" data-i18n="accountsHint" style="margin-top:0;">Saved only in this browser (localStorage) — never sent anywhere except directly to each platform when you post. X/Twitter isn't included: posting there needs a paid API tier and server-side request signing, unlike these three.</p>
 
     <div class="platform-card">
       <div class="platform-card-head"><span class="ic">💬</span><span class="name">Discord</span><span class="conn-dot" id="discordDot"></span></div>
       <div class="field">
-        <label for="discordWebhook">Webhook URL</label>
+        <label for="discordWebhook" data-i18n="webhookUrlLabel">Webhook URL</label>
         <input type="password" id="discordWebhook" placeholder="https://discord.com/api/webhooks/...">
-        <p class="hint">Server Settings → Integrations → Webhooks → New Webhook → Copy URL.</p>
+        <p class="hint" data-i18n="webhookHint">Server Settings → Integrations → Webhooks → New Webhook → Copy URL.</p>
       </div>
-      <button type="button" class="draft-btn secondary" data-test="discord">Test connection</button>
+      <button type="button" class="draft-btn secondary" data-test="discord" data-i18n="testConnectionLabel">Test connection</button>
       <div class="platform-status" id="discordStatus"></div>
     </div>
 
     <div class="platform-card">
       <div class="platform-card-head"><span class="ic">🦋</span><span class="name">Bluesky</span><span class="conn-dot" id="blueskyDot"></span></div>
       <div class="field">
-        <label for="blueskyHandle">Handle</label>
+        <label for="blueskyHandle" data-i18n="blueskyHandleLabel">Handle</label>
         <input type="text" id="blueskyHandle" placeholder="yourname.bsky.social">
       </div>
       <div class="field">
-        <label for="blueskyPassword">App password</label>
+        <label for="blueskyPassword" data-i18n="appPasswordLabel">App password</label>
         <input type="password" id="blueskyPassword" placeholder="xxxx-xxxx-xxxx-xxxx">
-        <p class="hint">Settings → App Passwords → Add app password. Not your main login password.</p>
+        <p class="hint" data-i18n="appPasswordHint">Settings → App Passwords → Add app password. Not your main login password.</p>
       </div>
-      <button type="button" class="draft-btn secondary" data-test="bluesky">Test connection</button>
+      <button type="button" class="draft-btn secondary" data-test="bluesky" data-i18n="testConnectionLabel">Test connection</button>
       <div class="platform-status" id="blueskyStatus"></div>
     </div>
 
     <div class="platform-card">
       <div class="platform-card-head"><span class="ic">🐘</span><span class="name">Mastodon</span><span class="conn-dot" id="mastodonDot"></span></div>
       <div class="field">
-        <label for="mastodonInstance">Instance</label>
+        <label for="mastodonInstance" data-i18n="instanceLabel">Instance</label>
         <input type="text" id="mastodonInstance" placeholder="mastodon.social">
       </div>
       <div class="field">
-        <label for="mastodonToken">Access token</label>
+        <label for="mastodonToken" data-i18n="accessTokenLabel">Access token</label>
         <input type="password" id="mastodonToken" placeholder="paste your token">
-        <p class="hint">Preferences → Development → New Application → check "write:statuses" → save, then copy "Your access token".</p>
+        <p class="hint" data-i18n="accessTokenHint">Preferences → Development → New Application → check "write:statuses" → save, then copy "Your access token".</p>
       </div>
-      <button type="button" class="draft-btn secondary" data-test="mastodon">Test connection</button>
+      <button type="button" class="draft-btn secondary" data-test="mastodon" data-i18n="testConnectionLabel">Test connection</button>
       <div class="platform-status" id="mastodonStatus"></div>
     </div>
 
-    <button type="button" class="draft-btn" id="saveBtn" style="margin-top:8px;">💾 Save accounts</button>
+    <button type="button" class="draft-btn" id="saveBtn" data-i18n="saveBtnLabel" style="margin-top:8px;">💾 Save accounts</button>
   </section>
 
   <section class="table">
     <div class="title-block">
-      <span>POST FORGE — COMPOSE</span>
-      <span id="titleBlockRight">READY</span>
+      <span data-i18n="composeTitle">POST FORGE — COMPOSE</span>
+      <span id="titleBlockRight" data-i18n="statusReady">READY</span>
     </div>
 
     <div class="compose-card">
       <div class="field">
-        <label for="postText">Announcement</label>
-        <textarea id="postText" placeholder="New tool just launched: Paint Forge — a free layered image editor, right in your browser."></textarea>
+        <label for="postText" data-i18n="announcementLabel">Announcement</label>
+        <textarea id="postText" data-i18n-placeholder="announcementPlaceholder" placeholder="New tool just launched: Paint Forge — a free layered image editor, right in your browser."></textarea>
         <div class="char-count" id="charCount">0 characters</div>
       </div>
       <div class="field">
-        <label for="postLink">Link (optional)</label>
+        <label for="postLink" data-i18n="linkLabel">Link (optional)</label>
         <input type="text" id="postLink" placeholder="https://migabuilder.com/paint-forge.html">
       </div>
       <div class="field">
-        <label for="postImage">Attach an image (optional)</label>
+        <label for="postImage" data-i18n="imageLabel">Attach an image (optional)</label>
         <input type="file" id="postImage" accept="image/*">
         <div id="imagePreviewWrap" style="display:none;margin-top:8px;">
           <img id="imagePreview" style="max-width:160px;max-height:110px;border-radius:4px;display:block;">
-          <button type="button" id="removeImageBtn" style="margin-top:4px;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:11.5px;">Remove image</button>
+          <button type="button" id="removeImageBtn" data-i18n="removeImageLabel" style="margin-top:4px;background:none;border:none;color:var(--error);text-decoration:underline;cursor:pointer;padding:0;font-size:11.5px;">Remove image</button>
         </div>
       </div>
       <div class="target-list" id="targetList"></div>
       <div class="error-box" id="errorBox"></div>
-      <button type="button" class="draft-btn" id="postBtn" style="margin-top:14px;">🚀 Post now</button>
+      <button type="button" class="draft-btn" id="postBtn" data-i18n="postBtnLabel" style="margin-top:14px;">🚀 Post now</button>
       <div class="results-list" id="resultsList"></div>
     </div>
 
-    <div class="section-title" style="color: rgba(237,234,224,0.5);">Recent posts</div>
+    <div class="section-title" data-i18n="recentPostsHeading" style="color: rgba(237,234,224,0.5);">Recent posts</div>
     <div class="history-list" id="historyList"></div>
-    <p class="hint" style="color: rgba(237,234,224,0.55);" id="historyEmpty">Nothing posted yet.</p>
+    <p class="hint" style="color: rgba(237,234,224,0.55);" id="historyEmpty" data-i18n="historyEmptyText">Nothing posted yet.</p>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Your credentials and post history stay in this browser only. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. Your credentials and post history stay in this browser only. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -289,8 +291,6 @@
     mastodonInstance.value = a.mastodonInstance || '';
     mastodonToken.value = a.mastodonToken || '';
   }
-  fillFromStorage();
-
   saveBtn.addEventListener('click', function () {
     const a = {
       discordWebhook: discordWebhook.value.trim(),
@@ -301,8 +301,8 @@
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(a));
     renderTargetList();
-    saveBtn.textContent = '✓ Saved';
-    setTimeout(() => { saveBtn.textContent = '💾 Save accounts'; }, 1500);
+    saveBtn.textContent = I18N.t('savedLabel');
+    setTimeout(() => { saveBtn.textContent = I18N.t('saveBtnLabel'); }, 1500);
   });
 
   function setDot(id, state) {
@@ -318,12 +318,12 @@
   // ---------- platform calls ----------
   async function testDiscord() {
     const url = discordWebhook.value.trim();
-    if (!url) throw new Error('Add a webhook URL first.');
+    if (!url) throw new Error(I18N.t('errorNoWebhook'));
     const res = await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content: '✅ Post Forge is connected to this channel.' })
     });
-    if (!res.ok && res.status !== 204) throw new Error('Webhook responded with status ' + res.status);
+    if (!res.ok && res.status !== 204) throw new Error(I18N.t('errorWebhookStatus').replace('{status}', res.status));
   }
   async function postDiscord(message, imageFile) {
     const url = discordWebhook.value.trim();
@@ -341,20 +341,20 @@
     }
     if (!res.ok && res.status !== 204) {
       const body = await res.text().catch(() => '');
-      throw new Error('Discord responded with status ' + res.status + (body ? ': ' + body.slice(0, 150) : ''));
+      throw new Error(I18N.t('errorDiscordStatus').replace('{status}', res.status) + (body ? ': ' + body.slice(0, 150) : ''));
     }
   }
 
   async function blueskySession() {
     const identifier = blueskyHandle.value.trim();
     const password = blueskyPassword.value.trim();
-    if (!identifier || !password) throw new Error('Add your handle and app password first.');
+    if (!identifier || !password) throw new Error(I18N.t('errorNoBlueskyCreds'));
     const res = await fetch('https://bsky.social/xrpc/com.atproto.server.createSession', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, password })
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.message) || 'Could not sign in to Bluesky.');
+    if (!res.ok) throw new Error((data && data.message) || I18N.t('errorBlueskySignIn'));
     return data;
   }
   async function testBluesky() { await blueskySession(); }
@@ -366,7 +366,7 @@
       body: imageFile
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.message) || 'Bluesky image upload failed.');
+    if (!res.ok) throw new Error((data && data.message) || I18N.t('errorBlueskyUpload'));
     return data.blob;
   }
 
@@ -383,22 +383,22 @@
       body: JSON.stringify({ repo: session.did, collection: 'app.bsky.feed.post', record: record })
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.message) || 'Bluesky post failed.');
+    if (!res.ok) throw new Error((data && data.message) || I18N.t('errorBlueskyPost'));
   }
 
   function mastodonBase() {
     const instance = mastodonInstance.value.trim().replace(/^https?:\/\//, '').replace(/\/$/, '');
-    if (!instance) throw new Error('Add your Mastodon instance first.');
+    if (!instance) throw new Error(I18N.t('errorNoMastodonInstance'));
     return 'https://' + instance;
   }
   async function testMastodon() {
     const token = mastodonToken.value.trim();
-    if (!token) throw new Error('Add your access token first.');
+    if (!token) throw new Error(I18N.t('errorNoMastodonToken'));
     const res = await fetch(mastodonBase() + '/api/v1/accounts/verify_credentials', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.error) || 'Could not verify Mastodon credentials.');
+    if (!res.ok) throw new Error((data && data.error) || I18N.t('errorMastodonVerify'));
   }
   async function uploadMastodonMedia(token, imageFile) {
     const form = new FormData();
@@ -409,7 +409,7 @@
       body: form
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.error) || 'Mastodon image upload failed.');
+    if (!res.ok) throw new Error((data && data.error) || I18N.t('errorMastodonUpload'));
     return data.id;
   }
 
@@ -423,7 +423,7 @@
       body: JSON.stringify(body)
     });
     const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error((data && data.error) || 'Mastodon post failed.');
+    if (!res.ok) throw new Error((data && data.error) || I18N.t('errorMastodonPost'));
   }
 
   const PLATFORMS = {
@@ -453,11 +453,11 @@
       const dotId = key + 'Dot', statusId = key + 'Status';
       btn.disabled = true;
       const original = btn.textContent;
-      btn.textContent = 'Testing…';
+      btn.textContent = I18N.t('testingLabel');
       try {
         await PLATFORMS[key].test();
         setDot(dotId, 'ok');
-        setStatus(statusId, '✓ Connected', true);
+        setStatus(statusId, I18N.t('connectedLabel'), true);
       } catch (err) {
         setDot(dotId, 'bad');
         setStatus(statusId, err.message, false);
@@ -491,7 +491,6 @@
     charCount.innerHTML = parts.join('  ·  ');
     charCount.classList.toggle('warn', relevant.some(key => len > PLATFORMS[key].limit));
   }
-  updateCharCount();
 
   function renderTargetList() {
     targetList.innerHTML = '';
@@ -502,13 +501,12 @@
       chip.style.opacity = configured ? '1' : '0.4';
       chip.innerHTML =
         '<input type="checkbox" data-target="' + key + '"' + (configured ? ' checked' : ' disabled') + '>' +
-        PLATFORMS[key].label + (configured ? '' : ' (not connected)');
+        PLATFORMS[key].label + (configured ? '' : ' ' + I18N.t('notConnectedSuffix'));
       targetList.appendChild(chip);
     });
     targetList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.addEventListener('change', updateCharCount));
     updateCharCount();
   }
-  renderTargetList();
 
   // ---------- history ----------
   function loadHistory() {
@@ -525,25 +523,24 @@
       historyList.appendChild(row);
     });
   }
-  renderHistory();
 
   // ---------- post ----------
   postBtn.addEventListener('click', async function () {
     clearError();
     resultsList.innerHTML = '';
     const message = fullMessage();
-    if (!postText.value.trim()) { showError('Write something to post first.'); return; }
+    if (!postText.value.trim()) { showError(I18N.t('errorNoText')); return; }
     const selected = selectedTargets();
-    if (!selected.length) { showError('Connect and check at least one platform first.'); return; }
+    if (!selected.length) { showError(I18N.t('errorNoPlatform')); return; }
 
     postBtn.disabled = true;
-    postBtn.textContent = 'Posting…';
+    postBtn.textContent = I18N.t('postingLabel');
     const succeeded = [];
     for (const key of selected) {
       const row = document.createElement('div');
       row.className = 'result-row';
       if (message.length > PLATFORMS[key].limit) {
-        row.innerHTML = '<span class="ic">⚠️</span><span>' + PLATFORMS[key].label + ' — skipped, ' + message.length + ' characters exceeds its ' + PLATFORMS[key].limit + ' limit</span>';
+        row.innerHTML = '<span class="ic">⚠️</span><span>' + PLATFORMS[key].label + ' — ' + I18N.t('resultSkipped').replace('{len}', message.length).replace('{limit}', PLATFORMS[key].limit) + '</span>';
         resultsList.appendChild(row);
         continue;
       }
@@ -551,7 +548,7 @@
       resultsList.appendChild(row);
       try {
         await PLATFORMS[key].post(message, attachedImage);
-        row.innerHTML = '<span class="ic">✅</span><span>' + PLATFORMS[key].label + ' — posted' + (attachedImage ? ' with image' : '') + '</span>';
+        row.innerHTML = '<span class="ic">✅</span><span>' + PLATFORMS[key].label + ' — ' + (attachedImage ? I18N.t('resultPostedWithImage') : I18N.t('resultPosted')) + '</span>';
         succeeded.push(key);
       } catch (err) {
         row.innerHTML = '<span class="ic">❌</span><span>' + PLATFORMS[key].label + ' — ' + err.message + '</span>';
@@ -564,8 +561,256 @@
       renderHistory();
     }
     postBtn.disabled = false;
-    postBtn.textContent = '🚀 Post now';
+    postBtn.textContent = I18N.t('postBtnLabel');
   });
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'Write one announcement, post it to Discord, Bluesky, and Mastodon at once.',
+      accountsHeading: 'Your accounts',
+      accountsHint: "Saved only in this browser (localStorage) — never sent anywhere except directly to each platform when you post. X/Twitter isn't included: posting there needs a paid API tier and server-side request signing, unlike these three.",
+      webhookUrlLabel: 'Webhook URL',
+      webhookHint: 'Server Settings → Integrations → Webhooks → New Webhook → Copy URL.',
+      testConnectionLabel: 'Test connection',
+      blueskyHandleLabel: 'Handle',
+      appPasswordLabel: 'App password',
+      appPasswordHint: 'Settings → App Passwords → Add app password. Not your main login password.',
+      instanceLabel: 'Instance',
+      accessTokenLabel: 'Access token',
+      accessTokenHint: 'Preferences → Development → New Application → check "write:statuses" → save, then copy "Your access token".',
+      saveBtnLabel: '💾 Save accounts',
+      savedLabel: '✓ Saved',
+      composeTitle: 'POST FORGE — COMPOSE',
+      statusReady: 'READY',
+      announcementLabel: 'Announcement',
+      announcementPlaceholder: 'New tool just launched: Paint Forge — a free layered image editor, right in your browser.',
+      linkLabel: 'Link (optional)',
+      imageLabel: 'Attach an image (optional)',
+      removeImageLabel: 'Remove image',
+      postBtnLabel: '🚀 Post now',
+      postingLabel: 'Posting…',
+      recentPostsHeading: 'Recent posts',
+      historyEmptyText: 'Nothing posted yet.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. Your credentials and post history stay in this browser only. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      testingLabel: 'Testing…',
+      connectedLabel: '✓ Connected',
+      notConnectedSuffix: '(not connected)',
+      errorNoWebhook: 'Add a webhook URL first.',
+      errorWebhookStatus: 'Webhook responded with status {status}',
+      errorDiscordStatus: 'Discord responded with status {status}',
+      errorNoBlueskyCreds: 'Add your handle and app password first.',
+      errorBlueskySignIn: 'Could not sign in to Bluesky.',
+      errorBlueskyUpload: 'Bluesky image upload failed.',
+      errorBlueskyPost: 'Bluesky post failed.',
+      errorNoMastodonInstance: 'Add your Mastodon instance first.',
+      errorNoMastodonToken: 'Add your access token first.',
+      errorMastodonVerify: 'Could not verify Mastodon credentials.',
+      errorMastodonUpload: 'Mastodon image upload failed.',
+      errorMastodonPost: 'Mastodon post failed.',
+      errorNoText: 'Write something to post first.',
+      errorNoPlatform: 'Connect and check at least one platform first.',
+      resultSkipped: 'skipped, {len} characters exceeds its {limit} limit',
+      resultPosted: 'posted',
+      resultPostedWithImage: 'posted with image'
+    },
+    es: {
+      heroSubtitle: 'Escribe un anuncio y publícalo en Discord, Bluesky y Mastodon a la vez.',
+      accountsHeading: 'Tus cuentas',
+      accountsHint: 'Se guarda solo en este navegador (localStorage) — nunca se envía a ningún lugar excepto directamente a cada plataforma cuando publicas. X/Twitter no está incluido: publicar ahí requiere un nivel de API de pago y firma de solicitudes del lado del servidor, a diferencia de estas tres.',
+      webhookUrlLabel: 'URL del webhook',
+      webhookHint: 'Configuración del servidor → Integraciones → Webhooks → Nuevo Webhook → Copiar URL.',
+      testConnectionLabel: 'Probar conexión',
+      blueskyHandleLabel: 'Identificador',
+      appPasswordLabel: 'Contraseña de aplicación',
+      appPasswordHint: 'Configuración → Contraseñas de aplicación → Añadir contraseña de aplicación. No es tu contraseña principal.',
+      instanceLabel: 'Instancia',
+      accessTokenLabel: 'Token de acceso',
+      accessTokenHint: 'Preferencias → Desarrollo → Nueva aplicación → marca "write:statuses" → guarda, luego copia "Tu token de acceso".',
+      saveBtnLabel: '💾 Guardar cuentas',
+      savedLabel: '✓ Guardado',
+      composeTitle: 'POST FORGE — REDACTAR',
+      statusReady: 'LISTO',
+      announcementLabel: 'Anuncio',
+      announcementPlaceholder: 'Se acaba de lanzar una nueva herramienta: Paint Forge — un editor de imágenes por capas gratuito, directamente en tu navegador.',
+      linkLabel: 'Enlace (opcional)',
+      imageLabel: 'Adjuntar una imagen (opcional)',
+      removeImageLabel: 'Quitar imagen',
+      postBtnLabel: '🚀 Publicar ahora',
+      postingLabel: 'Publicando…',
+      recentPostsHeading: 'Publicaciones recientes',
+      historyEmptyText: 'Aún no se ha publicado nada.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Tus credenciales e historial de publicaciones permanecen solo en este navegador. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      testingLabel: 'Probando…',
+      connectedLabel: '✓ Conectado',
+      notConnectedSuffix: '(no conectado)',
+      errorNoWebhook: 'Añade primero una URL de webhook.',
+      errorWebhookStatus: 'El webhook respondió con estado {status}',
+      errorDiscordStatus: 'Discord respondió con estado {status}',
+      errorNoBlueskyCreds: 'Añade primero tu identificador y contraseña de aplicación.',
+      errorBlueskySignIn: 'No se pudo iniciar sesión en Bluesky.',
+      errorBlueskyUpload: 'Falló la subida de la imagen a Bluesky.',
+      errorBlueskyPost: 'Falló la publicación en Bluesky.',
+      errorNoMastodonInstance: 'Añade primero tu instancia de Mastodon.',
+      errorNoMastodonToken: 'Añade primero tu token de acceso.',
+      errorMastodonVerify: 'No se pudieron verificar las credenciales de Mastodon.',
+      errorMastodonUpload: 'Falló la subida de la imagen a Mastodon.',
+      errorMastodonPost: 'Falló la publicación en Mastodon.',
+      errorNoText: 'Escribe algo para publicar primero.',
+      errorNoPlatform: 'Conecta y marca al menos una plataforma primero.',
+      resultSkipped: 'omitido, {len} caracteres supera su límite de {limit}',
+      resultPosted: 'publicado',
+      resultPostedWithImage: 'publicado con imagen'
+    },
+    ar: {
+      heroSubtitle: 'اكتب إعلانًا واحدًا وانشره على Discord وBluesky وMastodon في آن واحد.',
+      accountsHeading: 'حساباتك',
+      accountsHint: 'يُحفظ فقط في هذا المتصفح (localStorage) — لا يُرسل إلى أي مكان سوى مباشرة إلى كل منصة عند النشر. X/Twitter غير مشمول: النشر هناك يتطلب مستوى API مدفوعًا وتوقيع الطلبات من جانب الخادم، بخلاف هذه المنصات الثلاث.',
+      webhookUrlLabel: 'رابط الـ Webhook',
+      webhookHint: 'إعدادات الخادم ← التكاملات ← Webhooks ← Webhook جديد ← انسخ الرابط.',
+      testConnectionLabel: 'اختبار الاتصال',
+      blueskyHandleLabel: 'المعرّف',
+      appPasswordLabel: 'كلمة مرور التطبيق',
+      appPasswordHint: 'الإعدادات ← كلمات مرور التطبيقات ← إضافة كلمة مرور تطبيق. ليست كلمة مرور تسجيل الدخول الرئيسية.',
+      instanceLabel: 'الخادم (Instance)',
+      accessTokenLabel: 'رمز الوصول',
+      accessTokenHint: 'التفضيلات ← التطوير ← تطبيق جديد ← فعّل "write:statuses" ← احفظ، ثم انسخ "رمز الوصول الخاص بك".',
+      saveBtnLabel: '💾 حفظ الحسابات',
+      savedLabel: '✓ تم الحفظ',
+      composeTitle: 'POST FORGE — الإنشاء',
+      statusReady: 'جاهز',
+      announcementLabel: 'الإعلان',
+      announcementPlaceholder: 'تم إطلاق أداة جديدة للتو: Paint Forge — محرر صور بطبقات مجاني، مباشرة في متصفحك.',
+      linkLabel: 'الرابط (اختياري)',
+      imageLabel: 'إرفاق صورة (اختياري)',
+      removeImageLabel: 'إزالة الصورة',
+      postBtnLabel: '🚀 انشر الآن',
+      postingLabel: 'جارٍ النشر…',
+      recentPostsHeading: 'المنشورات الأخيرة',
+      historyEmptyText: 'لم يُنشر شيء بعد.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. تبقى بيانات اعتمادك وسجل منشوراتك في هذا المتصفح فقط. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      testingLabel: 'جارٍ الاختبار…',
+      connectedLabel: '✓ متصل',
+      notConnectedSuffix: '(غير متصل)',
+      errorNoWebhook: 'أضف رابط webhook أولاً.',
+      errorWebhookStatus: 'استجاب الـ webhook بالحالة {status}',
+      errorDiscordStatus: 'استجاب Discord بالحالة {status}',
+      errorNoBlueskyCreds: 'أضف معرّفك وكلمة مرور التطبيق أولاً.',
+      errorBlueskySignIn: 'تعذر تسجيل الدخول إلى Bluesky.',
+      errorBlueskyUpload: 'فشل رفع الصورة إلى Bluesky.',
+      errorBlueskyPost: 'فشل النشر على Bluesky.',
+      errorNoMastodonInstance: 'أضف خادم Mastodon الخاص بك أولاً.',
+      errorNoMastodonToken: 'أضف رمز الوصول الخاص بك أولاً.',
+      errorMastodonVerify: 'تعذر التحقق من بيانات اعتماد Mastodon.',
+      errorMastodonUpload: 'فشل رفع الصورة إلى Mastodon.',
+      errorMastodonPost: 'فشل النشر على Mastodon.',
+      errorNoText: 'اكتب شيئًا لنشره أولاً.',
+      errorNoPlatform: 'اتصل وحدد منصة واحدة على الأقل أولاً.',
+      resultSkipped: 'تم التخطي، {len} حرفًا يتجاوز حده البالغ {limit}',
+      resultPosted: 'تم النشر',
+      resultPostedWithImage: 'تم النشر مع صورة'
+    },
+    zh: {
+      heroSubtitle: '写一条公告，同时发布到 Discord、Bluesky 和 Mastodon。',
+      accountsHeading: '你的账户',
+      accountsHint: '仅保存在此浏览器（localStorage）中——发布时只会直接发送到各个平台，绝不发送到其他任何地方。不包含 X/Twitter：与这三个平台不同，在那里发布需要付费的 API 套餐和服务器端请求签名。',
+      webhookUrlLabel: 'Webhook 网址',
+      webhookHint: '服务器设置 → 整合 → Webhooks → 新建 Webhook → 复制网址。',
+      testConnectionLabel: '测试连接',
+      blueskyHandleLabel: '账号',
+      appPasswordLabel: '应用专用密码',
+      appPasswordHint: '设置 → 应用专用密码 → 添加应用专用密码。不是你的主登录密码。',
+      instanceLabel: '实例',
+      accessTokenLabel: '访问令牌',
+      accessTokenHint: '偏好设置 → 开发 → 新建应用 → 勾选"write:statuses" → 保存，然后复制"你的访问令牌"。',
+      saveBtnLabel: '💾 保存账户',
+      savedLabel: '✓ 已保存',
+      composeTitle: 'POST FORGE — 撰写',
+      statusReady: '就绪',
+      announcementLabel: '公告内容',
+      announcementPlaceholder: '新工具刚刚上线：Paint Forge——一款免费的分层图像编辑器，直接在你的浏览器中使用。',
+      linkLabel: '链接（可选）',
+      imageLabel: '附加图片（可选）',
+      removeImageLabel: '移除图片',
+      postBtnLabel: '🚀 立即发布',
+      postingLabel: '发布中…',
+      recentPostsHeading: '最近的发布',
+      historyEmptyText: '还没有发布过任何内容。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。你的凭据和发布记录仅保存在此浏览器中。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      testingLabel: '测试中…',
+      connectedLabel: '✓ 已连接',
+      notConnectedSuffix: '（未连接）',
+      errorNoWebhook: '请先添加 webhook 网址。',
+      errorWebhookStatus: 'Webhook 返回状态 {status}',
+      errorDiscordStatus: 'Discord 返回状态 {status}',
+      errorNoBlueskyCreds: '请先添加你的账号和应用专用密码。',
+      errorBlueskySignIn: '无法登录 Bluesky。',
+      errorBlueskyUpload: 'Bluesky 图片上传失败。',
+      errorBlueskyPost: 'Bluesky 发布失败。',
+      errorNoMastodonInstance: '请先添加你的 Mastodon 实例。',
+      errorNoMastodonToken: '请先添加你的访问令牌。',
+      errorMastodonVerify: '无法验证 Mastodon 凭据。',
+      errorMastodonUpload: 'Mastodon 图片上传失败。',
+      errorMastodonPost: 'Mastodon 发布失败。',
+      errorNoText: '请先写点内容再发布。',
+      errorNoPlatform: '请先连接并勾选至少一个平台。',
+      resultSkipped: '已跳过，{len} 个字符超过了其 {limit} 的限制',
+      resultPosted: '已发布',
+      resultPostedWithImage: '已发布（含图片）'
+    },
+    sw: {
+      heroSubtitle: 'Andika tangazo moja, ulichapishe kwenye Discord, Bluesky, na Mastodon kwa wakati mmoja.',
+      accountsHeading: 'Akaunti zako',
+      accountsHint: 'Huhifadhiwa tu kwenye kivinjari hiki (localStorage) — hakitumwi popote isipokuwa moja kwa moja kwa kila jukwaa unapochapisha. X/Twitter haijajumuishwa: kuchapisha huko kunahitaji kiwango cha API kinacholipiwa na usainiaji wa maombi upande wa seva, tofauti na haya matatu.',
+      webhookUrlLabel: 'URL ya Webhook',
+      webhookHint: 'Mipangilio ya Seva → Uunganishaji → Webhooks → Webhook Mpya → Nakili URL.',
+      testConnectionLabel: 'Jaribu muunganisho',
+      blueskyHandleLabel: 'Kitambulisho',
+      appPasswordLabel: 'Nenosiri la programu',
+      appPasswordHint: 'Mipangilio → Manenosiri ya Programu → Ongeza nenosiri la programu. Si nenosiri lako kuu la kuingia.',
+      instanceLabel: 'Kipengele (Instance)',
+      accessTokenLabel: 'Ishara ya ufikiaji',
+      accessTokenHint: 'Mapendeleo → Maendeleo → Programu Mpya → chagua "write:statuses" → hifadhi, kisha nakili "Ishara yako ya ufikiaji".',
+      saveBtnLabel: '💾 Hifadhi akaunti',
+      savedLabel: '✓ Imehifadhiwa',
+      composeTitle: 'POST FORGE — ANDIKA',
+      statusReady: 'TAYARI',
+      announcementLabel: 'Tangazo',
+      announcementPlaceholder: 'Chombo kipya kimezinduliwa: Paint Forge — kihariri cha picha chenye tabaka bila malipo, moja kwa moja kwenye kivinjari chako.',
+      linkLabel: 'Kiungo (hiari)',
+      imageLabel: 'Ambatanisha picha (hiari)',
+      removeImageLabel: 'Ondoa picha',
+      postBtnLabel: '🚀 Chapisha sasa',
+      postingLabel: 'Inachapisha…',
+      recentPostsHeading: 'Machapisho ya hivi karibuni',
+      historyEmptyText: 'Hakuna kilichochapishwa bado.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Vitambulisho vyako na historia ya machapisho vinabaki kwenye kivinjari hiki tu. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      testingLabel: 'Inajaribu…',
+      connectedLabel: '✓ Imeunganishwa',
+      notConnectedSuffix: '(haijaunganishwa)',
+      errorNoWebhook: 'Ongeza URL ya webhook kwanza.',
+      errorWebhookStatus: 'Webhook imejibu na hali {status}',
+      errorDiscordStatus: 'Discord imejibu na hali {status}',
+      errorNoBlueskyCreds: 'Ongeza kitambulisho chako na nenosiri la programu kwanza.',
+      errorBlueskySignIn: 'Imeshindwa kuingia Bluesky.',
+      errorBlueskyUpload: 'Imeshindwa kupakia picha kwenye Bluesky.',
+      errorBlueskyPost: 'Imeshindwa kuchapisha kwenye Bluesky.',
+      errorNoMastodonInstance: 'Ongeza kipengele chako cha Mastodon kwanza.',
+      errorNoMastodonToken: 'Ongeza ishara yako ya ufikiaji kwanza.',
+      errorMastodonVerify: 'Imeshindwa kuthibitisha vitambulisho vya Mastodon.',
+      errorMastodonUpload: 'Imeshindwa kupakia picha kwenye Mastodon.',
+      errorMastodonPost: 'Imeshindwa kuchapisha kwenye Mastodon.',
+      errorNoText: 'Andika kitu cha kuchapisha kwanza.',
+      errorNoPlatform: 'Unganisha na uchague jukwaa moja angalau kwanza.',
+      resultSkipped: 'imerukwa, herufi {len} zinazidi kikomo chake cha {limit}',
+      resultPosted: 'imechapishwa',
+      resultPostedWithImage: 'imechapishwa na picha'
+    }
+  });
+
+  fillFromStorage();
+  renderTargetList();
+  renderHistory();
+  I18N.onChange(renderTargetList);
 })();
 </script>
 </body>
