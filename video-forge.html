@@ -34,6 +34,7 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="i18n.js"></script>
 <script src="media-utils.js"></script>
+<script src="youtube-upload.js"></script>
 
 <style>
   :root {
@@ -506,19 +507,6 @@
   const cancelRenderBtn = document.getElementById('cancelRenderBtn');
   const downloadVideoBtn = document.getElementById('downloadVideoBtn');
 
-  const ytClientId = document.getElementById('ytClientId');
-  const connectYtBtn = document.getElementById('connectYtBtn');
-  const ytConnectedBox = document.getElementById('ytConnectedBox');
-  const ytUploadFields = document.getElementById('ytUploadFields');
-  const ytTitle = document.getElementById('ytTitle');
-  const ytDesc = document.getElementById('ytDesc');
-  const ytTags = document.getElementById('ytTags');
-  const ytPrivacy = document.getElementById('ytPrivacy');
-  const ytCategory = document.getElementById('ytCategory');
-  const uploadYtBtn = document.getElementById('uploadYtBtn');
-  const ytResultBox = document.getElementById('ytResultBox');
-  const ytErrorBox = document.getElementById('ytErrorBox');
-
   const draftBanner = document.getElementById('draftBanner');
   const draftBannerText = document.getElementById('draftBannerText');
   const resumeDraftBtn = document.getElementById('resumeDraftBtn');
@@ -543,8 +531,6 @@
   let previewAudioCtx = null;
   let renderState = null; // active render session
   let renderedVideoBlob = null;
-  let accessToken = null;
-  let tokenClient = null;
 
   const KENBURNS_PATTERNS = [
     { zFrom: 1.00, zTo: 1.18, xFrom: -0.05, yFrom: -0.03, xTo: 0.05, yTo: 0.03 },
@@ -1196,7 +1182,7 @@
     stageCanvas.style.display = 'block';
     downloadVideoBtn.disabled = true;
     renderedVideoBlob = null;
-    uploadYtBtn.disabled = true;
+    refreshUploadEnabled();
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const dest = audioCtx.createMediaStreamDestination();
@@ -1240,7 +1226,7 @@
       resultVideo.style.display = 'block';
       stageCanvas.style.display = 'none';
       downloadVideoBtn.disabled = false;
-      uploadYtBtn.disabled = !accessToken;
+      refreshUploadEnabled();
       titleBlockRight.textContent = I18N.t('statusRenderComplete');
       finish();
     };
@@ -1284,118 +1270,9 @@
   });
 
   // ---------- YouTube upload ----------
-  function showYtError(msg) { ytErrorBox.textContent = msg; ytErrorBox.classList.add('show'); }
-  function clearYtError() { ytErrorBox.textContent = ''; ytErrorBox.classList.remove('show'); }
-
-  function ensureTokenClient() {
-    if (!window.google || !google.accounts || !google.accounts.oauth2) return null;
-    const clientId = ytClientId.value.trim();
-    if (!clientId) return null;
-    if (tokenClient && tokenClient.__clientId === clientId) return tokenClient;
-    tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: clientId,
-      scope: 'https://www.googleapis.com/auth/youtube.upload',
-      callback: function (resp) {
-        if (resp.error) { showYtError(I18N.t('ytErrorSignInFailed').replace('{error}', resp.error)); return; }
-        accessToken = resp.access_token;
-        clearYtError();
-        ytConnectedBox.classList.add('show');
-        ytUploadFields.style.display = 'block';
-        uploadYtBtn.disabled = !renderedVideoBlob;
-      }
-    });
-    tokenClient.__clientId = clientId;
-    return tokenClient;
-  }
-
-  connectYtBtn.addEventListener('click', function () {
-    clearYtError();
-    if (!ytClientId.value.trim()) { showYtError(I18N.t('ytErrorNoClientId')); return; }
-    const client = ensureTokenClient();
-    if (!client) { showYtError(I18N.t('ytErrorLibraryNotLoaded')); return; }
-    client.requestAccessToken({ prompt: accessToken ? '' : 'consent' });
-  });
-
-  uploadYtBtn.addEventListener('click', async function () {
-    clearYtError();
-    ytResultBox.classList.remove('show');
-    if (!renderedVideoBlob) { showYtError(I18N.t('ytErrorRenderFirst')); return; }
-    if (!accessToken) { showYtError(I18N.t('ytErrorConnectFirst')); return; }
-
-    const metadata = {
-      snippet: {
-        title: ytTitle.value.trim() || I18N.t('ytDefaultTitle'),
-        description: ytDesc.value.trim(),
-        tags: ytTags.value.split(',').map(s => s.trim()).filter(Boolean),
-        categoryId: ytCategory.value
-      },
-      status: { privacyStatus: ytPrivacy.value }
-    };
-
-    uploadYtBtn.disabled = true;
-    uploadYtBtn.textContent = I18N.t('startingUploadLabel');
-    progressWrap.classList.add('show');
-    progressLabel.textContent = I18N.t('uploadingLabel');
-    progressFill.style.width = '0%';
-    progressPct.textContent = '0%';
-
-    try {
-      const initResp = await fetch('https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-Upload-Content-Type': renderedVideoBlob.type || 'video/webm',
-          'X-Upload-Content-Length': String(renderedVideoBlob.size)
-        },
-        body: JSON.stringify(metadata)
-      });
-      if (!initResp.ok) {
-        const errBody = await initResp.json().catch(() => null);
-        const msg = errBody && errBody.error && errBody.error.message ? errBody.error.message : I18N.t('ytErrorRequestFailed').replace('{status}', initResp.status);
-        throw new Error(msg);
-      }
-      const uploadUrl = initResp.headers.get('Location');
-      if (!uploadUrl) {
-        throw new Error(I18N.t('ytErrorNoUploadUrl'));
-      }
-
-      await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', uploadUrl);
-        xhr.setRequestHeader('Content-Type', renderedVideoBlob.type || 'video/webm');
-        xhr.upload.onprogress = function (e) {
-          if (e.lengthComputable) {
-            const pct = Math.round((e.loaded / e.total) * 100);
-            progressFill.style.width = pct + '%';
-            progressPct.textContent = pct + '%';
-          }
-        };
-        xhr.onload = function () {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              const data = JSON.parse(xhr.responseText);
-              resolve(data);
-            } catch (e) { reject(new Error(I18N.t('ytErrorResponseUnreadable'))); }
-          } else {
-            reject(new Error(I18N.t('ytErrorUploadFailedStatus').replace('{status}', xhr.status).replace('{text}', xhr.responseText)));
-          }
-        };
-        xhr.onerror = function () { reject(new Error(I18N.t('ytErrorNetwork'))); };
-        xhr.send(renderedVideoBlob);
-      }).then(data => {
-        const privacyNote = ytPrivacy.value === 'private' ? I18N.t('ytPrivacyNotePrivate') : ytPrivacy.value;
-        ytResultBox.innerHTML = '✓ ' + I18N.t('ytSuccessUploadedPrefix') + ' <a href="https://youtu.be/' + data.id + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">' + I18N.t('ytWatchLinkLabel') + '</a> (' + privacyNote + ').';
-        ytResultBox.classList.add('show');
-      });
-    } catch (err) {
-      showYtError(err.message || I18N.t('ytErrorGeneric'));
-    } finally {
-      uploadYtBtn.disabled = false;
-      uploadYtBtn.textContent = I18N.t('uploadToYoutubeLabel');
-      progressWrap.classList.remove('show');
-    }
-  });
+  // ---------- YouTube upload (shared module; same flow as Clip Forge / Record Forge) ----------
+  const ytUpload = YouTubeUpload.init({ getBlob: function () { return renderedVideoBlob; }, noBlobErrorKey: 'ytErrorRenderFirst' });
+  function refreshUploadEnabled() { ytUpload.refreshUploadEnabled(); }
 
   // ---------- draft autosave / resume (localStorage) ----------
   const DRAFT_KEY = 'videoForgeDraft_v1';
