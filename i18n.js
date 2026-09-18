@@ -48,7 +48,8 @@
       hide: 'Hide',
       providerGemini: 'Gemini — free, no key needed',
       providerOpenai: 'OpenAI',
-      providerAnthropic: 'Anthropic (Claude)'
+      providerAnthropic: 'Anthropic (Claude)',
+      moreLanguagesLabel: '🌐 More languages (Google Translate)'
     },
     es: {
       feedbackLink: '¿Encontraste un error o tienes una idea? Envía tu opinión →',
@@ -57,7 +58,8 @@
       hide: 'Ocultar',
       providerGemini: 'Gemini — gratis, sin clave necesaria',
       providerOpenai: 'OpenAI',
-      providerAnthropic: 'Anthropic (Claude)'
+      providerAnthropic: 'Anthropic (Claude)',
+      moreLanguagesLabel: '🌐 Más idiomas (Google Translate)'
     },
     ar: {
       feedbackLink: 'وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←',
@@ -66,7 +68,8 @@
       hide: 'إخفاء',
       providerGemini: 'Gemini — مجاني، بدون مفتاح',
       providerOpenai: 'OpenAI',
-      providerAnthropic: 'Anthropic (Claude)'
+      providerAnthropic: 'Anthropic (Claude)',
+      moreLanguagesLabel: '🌐 لغات أخرى (ترجمة Google)'
     },
     zh: {
       feedbackLink: '发现了错误或有新想法？发送反馈 →',
@@ -75,7 +78,8 @@
       hide: '隐藏',
       providerGemini: 'Gemini — 免费，无需密钥',
       providerOpenai: 'OpenAI',
-      providerAnthropic: 'Anthropic (Claude)'
+      providerAnthropic: 'Anthropic (Claude)',
+      moreLanguagesLabel: '🌐 更多语言（Google 翻译）'
     },
     sw: {
       feedbackLink: 'Umepata hitilafu au una wazo? Tuma maoni →',
@@ -84,7 +88,8 @@
       hide: 'Ficha',
       providerGemini: 'Gemini — bure, hauhitaji ufunguo',
       providerOpenai: 'OpenAI',
-      providerAnthropic: 'Anthropic (Claude)'
+      providerAnthropic: 'Anthropic (Claude)',
+      moreLanguagesLabel: '🌐 Lugha zaidi (Google Translate)'
     }
   };
 
@@ -146,9 +151,22 @@
       '  font-family: inherit; font-size: 13px; padding: 6px 10px; border-radius: 3px;',
       '  border: 1px solid rgba(111, 209, 224, 0.4); background: rgba(8, 24, 38, 0.6); color: #EDEAE0; cursor: pointer;',
       '}',
-      '.lang-switcher select:focus-visible { outline: 2px solid #6FD1E0; outline-offset: 2px; }'
+      '.lang-switcher select:focus-visible { outline: 2px solid #6FD1E0; outline-offset: 2px; }',
+      '.lang-switcher { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }',
+      '.lang-switcher .lang-more-link {',
+      '  font-family: inherit; font-size: 12px; color: #6FD1E0; text-decoration: underline; white-space: nowrap;',
+      '}',
+      '.lang-switcher .lang-more-link:hover { color: #EDEAE0; }'
     ].join('\n');
     document.head.appendChild(style);
+  }
+
+  // A page's own manually-translated languages are LANGUAGES above. For anything else,
+  // link out to Google Translate rather than embedding its live-translate script, which
+  // would fight these pages' own JS re-rendering text after the initial translation pass.
+  function googleTranslateUrl() {
+    var pageUrl = window.location.href.split('#')[0];
+    return 'https://translate.google.com/translate?sl=auto&tl=auto&u=' + encodeURIComponent(pageUrl);
   }
 
   function buildSwitcher() {
@@ -167,6 +185,15 @@
     select.value = currentLang;
     select.addEventListener('change', function () { setLang(select.value); });
     host.appendChild(select);
+
+    var moreLink = document.createElement('a');
+    moreLink.className = 'lang-more-link';
+    moreLink.href = googleTranslateUrl();
+    moreLink.target = '_blank';
+    moreLink.rel = 'noopener';
+    moreLink.setAttribute('data-i18n', 'moreLanguagesLabel');
+    moreLink.textContent = 'More languages (Google Translate)';
+    host.appendChild(moreLink);
   }
 
   function detectInitialLang() {
