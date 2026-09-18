@@ -119,6 +119,12 @@
   }
   .error-box.show { display: block; }
 
+  .status-box {
+    margin-top: 0; margin-bottom: 12px; padding: 12px 14px; background: rgba(78,158,115,0.14); border: 1px solid rgba(78,158,115,0.4);
+    border-radius: var(--radius); font-size: 13px; color: #244731; display: none; line-height: 1.5;
+  }
+  .status-box.show { display: block; }
+
   .result-card { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: 22px; display: none; }
   .result-card.show { display: block; }
   .result-card audio { width: 100%; margin-bottom: 16px; }
@@ -302,6 +308,15 @@
 
 <main class="tracker-main" id="trackerModeWrap" style="display:none;">
   <section class="tracker-panel">
+
+    <div class="status-box" id="draftBanner">
+      <span id="draftBannerText"></span>
+      <div class="btn-row" style="margin-top:8px;">
+        <button type="button" class="draft-btn secondary" id="resumeDraftBtn" style="flex:1;" data-i18n="resumeDraftLabel">↺ Resume draft</button>
+        <button type="button" class="draft-btn secondary" id="discardDraftBtn" style="flex:1;" data-i18n="discardLabel">✕ Discard</button>
+      </div>
+    </div>
+    <p class="hint" id="autosaveHint" style="margin:0 0 16px;"><span data-i18n="autosaveHintText">Your progress autosaves to this browser as you work, so a refresh won't lose it.</span> <span id="autosaveStatus"></span> <a href="#" id="clearDraftLink" style="color:var(--navy);text-decoration:underline;" data-i18n="clearDraftLinkText">Clear saved draft</a></p>
 
     <div class="section-title" data-i18n="projectHeading">Project</div>
     <div class="btn-row">
@@ -657,6 +672,12 @@
   const songEmptyEl = document.getElementById('songEmpty');
   const trackerErrorBox = document.getElementById('trackerErrorBox');
   const trackerSuccessBox = document.getElementById('trackerSuccessBox');
+  const draftBanner = document.getElementById('draftBanner');
+  const draftBannerText = document.getElementById('draftBannerText');
+  const resumeDraftBtn = document.getElementById('resumeDraftBtn');
+  const discardDraftBtn = document.getElementById('discardDraftBtn');
+  const autosaveStatus = document.getElementById('autosaveStatus');
+  const clearDraftLink = document.getElementById('clearDraftLink');
   const stepGridEl = document.getElementById('stepGrid');
   const activePatternLabel = document.getElementById('activePatternLabel');
   const trackerStatus = document.getElementById('trackerStatus');
@@ -744,12 +765,14 @@
     undoStack.push(JSON.stringify(serializeState()));
     if (undoStack.length > MAX_UNDO) undoStack.shift();
     updateUndoBtn();
+    scheduleAutosave();
   }
   function undo() {
     if (!undoStack.length) return;
     const snap = JSON.parse(undoStack.pop());
     applyState(snap);
     updateUndoBtn();
+    scheduleAutosave();
   }
   undoBtn.addEventListener('click', undo);
   document.addEventListener('keydown', (e) => {
@@ -840,6 +863,72 @@
       showTrackerError(I18N.t('errorCouldNotLoadProject') + ' ' + err.message);
     }
     loadProjectInput.value = '';
+  });
+
+  // ---------- tracker draft autosave / resume (localStorage) ----------
+  const DRAFT_KEY = 'musicForgeTrackerDraft_v1';
+  let autosaveTimer = null;
+  let suppressAutosave = false; // true while a draft is being loaded, so loading it doesn't immediately re-save it
+
+  function scheduleAutosave() {
+    if (suppressAutosave) return;
+    if (autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(saveDraft, 900);
+  }
+
+  function saveDraft() {
+    try {
+      const state = { version: 1, savedAt: Date.now(), project: serializeProject() };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
+      autosaveStatus.textContent = I18N.t('savedJustNowText');
+    } catch (err) {
+      autosaveStatus.textContent = I18N.t('autosaveFailedText');
+    }
+  }
+
+  function clearDraft() {
+    localStorage.removeItem(DRAFT_KEY);
+    autosaveStatus.textContent = '';
+  }
+
+  function checkForSavedDraft() {
+    let raw;
+    try { raw = localStorage.getItem(DRAFT_KEY); } catch (e) { return; }
+    if (!raw) return;
+    let state;
+    try { state = JSON.parse(raw); } catch (e) { clearDraft(); return; }
+    if (!state.project) { clearDraft(); return; }
+    const trackCount = (state.project.tracks || []).length;
+    const patternCount = (state.project.patterns || []).length;
+    const when = new Date(state.savedAt || Date.now());
+    draftBannerText.textContent = I18N.t('draftBannerPrefix') + ' ' + when.toLocaleString() + ' (' + trackCount + ' ' + I18N.t('tracksWord') + ', ' + patternCount + ' ' + I18N.t('patternsWord') + ').';
+    draftBanner.classList.add('show');
+    resumeDraftBtn.onclick = async function () {
+      clearTrackerError();
+      resumeDraftBtn.disabled = true;
+      resumeDraftBtn.textContent = I18N.t('loadingLabel');
+      suppressAutosave = true;
+      try {
+        await loadProject(state.project);
+        draftBanner.classList.remove('show');
+      } catch (err) {
+        showTrackerError(I18N.t('errorCouldNotLoadDraft') + ' ' + err.message);
+      } finally {
+        suppressAutosave = false;
+        resumeDraftBtn.disabled = false;
+        resumeDraftBtn.textContent = I18N.t('resumeDraftLabel');
+      }
+    };
+    discardDraftBtn.onclick = function () {
+      clearDraft();
+      draftBanner.classList.remove('show');
+    };
+  }
+
+  clearDraftLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!window.confirm(I18N.t('clearDraftConfirm'))) return;
+    clearDraft();
   });
 
   // ---------- note stepper widget ----------
@@ -1462,7 +1551,17 @@
       projectLoadedPrefix: 'Project loaded:',
       tracksWord: 'tracks',
       patternsWord: 'patterns',
-      errorCouldNotLoadProject: 'Could not load that project file:'
+      errorCouldNotLoadProject: 'Could not load that project file:',
+      resumeDraftLabel: '↺ Resume draft',
+      discardLabel: '✕ Discard',
+      autosaveHintText: "Your progress autosaves to this browser as you work, so a refresh won't lose it.",
+      clearDraftLinkText: 'Clear saved draft',
+      savedJustNowText: 'Saved just now.',
+      autosaveFailedText: "Couldn't autosave (your project may be too large for browser storage) — remember to save it as a file when you're done.",
+      draftBannerPrefix: 'You have an unsaved draft from',
+      loadingLabel: 'Loading…',
+      errorCouldNotLoadDraft: 'Could not load the saved draft:',
+      clearDraftConfirm: 'Clear the autosaved draft? This only removes the saved copy in this browser — anything currently on screen is untouched.'
     },
     es: {
       heroSubtitle: 'Elige un ambiente para una pista instantánea, o cambia al modo Tracker y construye tu propio ritmo.',
@@ -1554,7 +1653,17 @@
       projectLoadedPrefix: 'Proyecto cargado:',
       tracksWord: 'pistas',
       patternsWord: 'patrones',
-      errorCouldNotLoadProject: 'No se pudo cargar ese archivo de proyecto:'
+      errorCouldNotLoadProject: 'No se pudo cargar ese archivo de proyecto:',
+      resumeDraftLabel: '↺ Reanudar borrador',
+      discardLabel: '✕ Descartar',
+      autosaveHintText: 'Tu progreso se autoguarda en este navegador mientras trabajas, así que una actualización no lo perderá.',
+      clearDraftLinkText: 'Borrar borrador guardado',
+      savedJustNowText: 'Guardado justo ahora.',
+      autosaveFailedText: 'No se pudo autoguardar (tu proyecto puede ser demasiado grande para el almacenamiento del navegador) — recuerda guardarlo como archivo cuando termines.',
+      draftBannerPrefix: 'Tienes un borrador sin guardar desde el',
+      loadingLabel: 'Cargando…',
+      errorCouldNotLoadDraft: 'No se pudo cargar el borrador guardado:',
+      clearDraftConfirm: 'Borrar el borrador autoguardado? Esto solo elimina la copia guardada en este navegador — todo lo que está actualmente en pantalla no se ve afectado.'
     },
     ar: {
       heroSubtitle: 'اختر مزاجًا للحصول على مقطوعة فورية، أو انتقل إلى وضع Tracker وابنِ إيقاعك الخاص.',
@@ -1646,7 +1755,17 @@
       projectLoadedPrefix: 'تم تحميل المشروع:',
       tracksWord: 'مسارات',
       patternsWord: 'أنماط',
-      errorCouldNotLoadProject: 'تعذّر تحميل ملف المشروع ذلك:'
+      errorCouldNotLoadProject: 'تعذّر تحميل ملف المشروع ذلك:',
+      resumeDraftLabel: '↺ استئناف المسودة',
+      discardLabel: '✕ تجاهل',
+      autosaveHintText: 'يُحفظ تقدمك تلقائيًا في هذا المتصفح أثناء عملك، لذا لن يؤدي التحديث إلى فقدانه.',
+      clearDraftLinkText: 'مسح المسودة المحفوظة',
+      savedJustNowText: 'تم الحفظ للتو.',
+      autosaveFailedText: 'تعذّر الحفظ التلقائي (قد يكون مشروعك كبيرًا جدًا على تخزين المتصفح) — تذكّر حفظه كملف عند الانتهاء.',
+      draftBannerPrefix: 'لديك مسودة غير محفوظة منذ',
+      loadingLabel: 'جارٍ التحميل…',
+      errorCouldNotLoadDraft: 'تعذّر تحميل المسودة المحفوظة:',
+      clearDraftConfirm: 'مسح المسودة المحفوظة تلقائيًا؟ هذا يزيل فقط النسخة المحفوظة في هذا المتصفح — أي شيء معروض حاليًا على الشاشة لن يتأثر.'
     },
     zh: {
       heroSubtitle: '选择一种情绪立即生成曲目，或切换到 Tracker 模式自己制作节拍。',
@@ -1738,7 +1857,17 @@
       projectLoadedPrefix: '项目已加载：',
       tracksWord: '条音轨',
       patternsWord: '个图案',
-      errorCouldNotLoadProject: '无法加载该项目文件：'
+      errorCouldNotLoadProject: '无法加载该项目文件：',
+      resumeDraftLabel: '↺ 恢复草稿',
+      discardLabel: '✕ 丢弃',
+      autosaveHintText: '你的进度会在你操作时自动保存到此浏览器，因此刷新不会丢失它。',
+      clearDraftLinkText: '清除已保存的草稿',
+      savedJustNowText: '刚刚已保存。',
+      autosaveFailedText: '无法自动保存（你的项目可能对于浏览器存储来说太大了）——完成后记得保存为文件。',
+      draftBannerPrefix: '你有一份未保存的草稿，来自',
+      loadingLabel: '加载中…',
+      errorCouldNotLoadDraft: '无法加载已保存的草稿：',
+      clearDraftConfirm: '清除自动保存的草稿？这只会移除此浏览器中保存的副本——当前屏幕上的任何内容不受影响。'
     },
     sw: {
       heroSubtitle: 'Chagua hali ya moyo kwa wimbo wa papo hapo, au badilisha kwenda hali ya Tracker na utengeneze mdundo wako mwenyewe.',
@@ -1830,11 +1959,22 @@
       projectLoadedPrefix: 'Mradi umepakiwa:',
       tracksWord: 'nyimbo',
       patternsWord: 'mifumo',
-      errorCouldNotLoadProject: 'Imeshindwa kupakia faili hilo la mradi:'
+      errorCouldNotLoadProject: 'Imeshindwa kupakia faili hilo la mradi:',
+      resumeDraftLabel: '↺ Endelea na rasimu',
+      discardLabel: '✕ Ondoa',
+      autosaveHintText: 'Maendeleo yako yanahifadhiwa kiotomatiki kwenye kivinjari hiki unapofanya kazi, hivyo kuonyesha upya hakutayapoteza.',
+      clearDraftLinkText: 'Futa rasimu iliyohifadhiwa',
+      savedJustNowText: 'Imehifadhiwa sasa hivi.',
+      autosaveFailedText: 'Imeshindwa kuhifadhi kiotomatiki (mradi wako unaweza kuwa mkubwa mno kwa hifadhi ya kivinjari) — kumbuka kuuhifadhi kama faili ukimaliza.',
+      draftBannerPrefix: 'Una rasimu isiyohifadhiwa kutoka',
+      loadingLabel: 'Inapakia…',
+      errorCouldNotLoadDraft: 'Imeshindwa kupakia rasimu iliyohifadhiwa:',
+      clearDraftConfirm: 'Futa rasimu iliyohifadhiwa kiotomatiki? Hii inaondoa tu nakala iliyohifadhiwa kwenye kivinjari hiki — chochote kilicho kwenye skrini kwa sasa hakiathiriwi.'
     }
   });
 
   renderAll();
+  checkForSavedDraft();
 })();
 </script>
 </body>
