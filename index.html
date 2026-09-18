@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="i18n.js"></script>
 
 <!--
   OPTIONAL: to track how many people use MigaBuilder itself (not the sites it
@@ -535,46 +536,47 @@
   </svg>
   <div>
     <h1>MigaBuilder</h1>
-    <p>Describe a business. Get a real, multi-page website — drafted live in your browser.</p>
+    <p data-i18n="heroSubtitle">Describe a business. Get a real, multi-page website — drafted live in your browser.</p>
     <p style="display:flex;flex-wrap:wrap;gap:4px 14px;">
-      <a href="slide-forge.html" style="color: var(--line-cyan);">📊 PowerPoint generator</a>
-      <a href="file-forge.html" style="color: var(--line-cyan);">🖼️ Image converter</a>
-      <a href="paint-forge.html" style="color: var(--line-cyan);">🖌️ Layered image editor</a>
-      <a href="qr-forge.html" style="color: var(--line-cyan);">▦ QR code generator</a>
-      <a href="logo-forge.html" style="color: var(--line-cyan);">🎨 Logo &amp; favicon maker</a>
-      <a href="game-forge.html" style="color: var(--line-cyan);">🥷 AI game generator</a>
-      <a href="video-forge.html" style="color: var(--line-cyan);">🎬 Drawing-to-video generator</a>
-      <a href="talk-forge.html" style="color: var(--line-cyan);">🗣️ Make a photo talk</a>
-      <a href="bot-forge.html" style="color: var(--line-cyan);">🤖 Website chat/FAQ widget</a>
-      <a href="app-forge.html" style="color: var(--line-cyan);">📱 App generator</a>
-      <a href="post-forge.html" style="color: var(--line-cyan);">📣 Post to Discord/Bluesky/Mastodon</a>
-      <a href="screen-forge.html" style="color: var(--line-cyan);">🤝 Screen share / remote help</a>
-      <a href="record-forge.html" style="color: var(--line-cyan);">⏺️ Screen recorder with voice narration</a>
-      <a href="music-forge.html" style="color: var(--line-cyan);">🎵 Music generator</a>
-      <a href="clip-forge.html" style="color: var(--line-cyan);">✂️ Video trimmer, captions &amp; translation</a>
-      <a href="merge-forge.html" style="color: var(--line-cyan);">🧩 Merge images, clips &amp; music into one video</a>
-      <a href="invoice-forge.html" style="color: var(--line-cyan);">🧾 Quote &amp; invoice generator</a>
-      <a href="contract-forge.html" style="color: var(--line-cyan);">📜 Contract generator</a>
-      <a href="code-forge.html" style="color: var(--line-cyan);">🧑‍💻 Learn Python &amp; JavaScript</a>
-      <a href="feedback.html" style="color: var(--line-cyan);">💬 Feedback &amp; suggestions</a>
+      <a href="slide-forge.html" style="color: var(--line-cyan);" data-i18n="navSlide">📊 PowerPoint generator</a>
+      <a href="file-forge.html" style="color: var(--line-cyan);" data-i18n="navFile">🖼️ Image converter</a>
+      <a href="paint-forge.html" style="color: var(--line-cyan);" data-i18n="navPaint">🖌️ Layered image editor</a>
+      <a href="qr-forge.html" style="color: var(--line-cyan);" data-i18n="navQr">▦ QR code generator</a>
+      <a href="logo-forge.html" style="color: var(--line-cyan);" data-i18n="navLogo">🎨 Logo &amp; favicon maker</a>
+      <a href="game-forge.html" style="color: var(--line-cyan);" data-i18n="navGame">🥷 AI game generator</a>
+      <a href="video-forge.html" style="color: var(--line-cyan);" data-i18n="navVideo">🎬 Drawing-to-video generator</a>
+      <a href="talk-forge.html" style="color: var(--line-cyan);" data-i18n="navTalk">🗣️ Make a photo talk</a>
+      <a href="bot-forge.html" style="color: var(--line-cyan);" data-i18n="navBot">🤖 Website chat/FAQ widget</a>
+      <a href="app-forge.html" style="color: var(--line-cyan);" data-i18n="navApp">📱 App generator</a>
+      <a href="post-forge.html" style="color: var(--line-cyan);" data-i18n="navPost">📣 Post to Discord/Bluesky/Mastodon</a>
+      <a href="screen-forge.html" style="color: var(--line-cyan);" data-i18n="navScreen">🤝 Screen share / remote help</a>
+      <a href="record-forge.html" style="color: var(--line-cyan);" data-i18n="navRecord">⏺️ Screen recorder with voice narration</a>
+      <a href="music-forge.html" style="color: var(--line-cyan);" data-i18n="navMusic">🎵 Music generator</a>
+      <a href="clip-forge.html" style="color: var(--line-cyan);" data-i18n="navClip">✂️ Video trimmer, captions &amp; translation</a>
+      <a href="merge-forge.html" style="color: var(--line-cyan);" data-i18n="navMerge">🧩 Merge images, clips &amp; music into one video</a>
+      <a href="invoice-forge.html" style="color: var(--line-cyan);" data-i18n="navInvoice">🧾 Quote &amp; invoice generator</a>
+      <a href="contract-forge.html" style="color: var(--line-cyan);" data-i18n="navContract">📜 Contract generator</a>
+      <a href="code-forge.html" style="color: var(--line-cyan);" data-i18n="navCode">🧑‍💻 Learn Python &amp; JavaScript</a>
+      <a href="feedback.html" style="color: var(--line-cyan);" data-i18n="navFeedback">💬 Feedback &amp; suggestions</a>
     </p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <div class="showcase">
   <div class="showcase-header">
-    <h2>Samples — what MigaBuilder can make</h2>
+    <h2 data-i18n="samplesHeading">Samples — what MigaBuilder can make</h2>
   </div>
   <div class="showcase-grid" id="sampleGrid"></div>
 </div>
 
 <div class="showcase">
   <div class="showcase-header">
-    <h2>See what's been built</h2>
-    <a href="#" id="showcaseSubmitLink" style="color: var(--line-cyan);">Submit your site →</a>
+    <h2 data-i18n="builtHeading">See what's been built</h2>
+    <a href="#" id="showcaseSubmitLink" style="color: var(--line-cyan);" data-i18n="submitSiteLink">Submit your site →</a>
   </div>
   <div class="showcase-grid" id="showcaseGrid"></div>
-  <p class="showcase-empty" id="showcaseEmpty" style="display:none;">No customer sites submitted yet — email yours in using the link above, or see SHOWCASE_SITES near the top of the script.</p>
+  <p class="showcase-empty" id="showcaseEmpty" style="display:none;" data-i18n="showcaseEmpty">No customer sites submitted yet — email yours in using the link above, or see SHOWCASE_SITES near the top of the script.</p>
 </div>
 
 <main>
@@ -857,7 +859,7 @@
   </section>
 </main>
 
-<footer>
+<footer data-i18n="footerText">
   MigaBuilder generates real HTML pages per request using your own OpenAI account. Buy buttons link to your own Stripe payment links — no card data ever passes through this tool. Review generated content and links before publishing.
 </footer>
 
@@ -1924,6 +1926,86 @@
   // seed one empty product row to start
   addProductRow();
 })();
+</script>
+
+<script>
+I18N.init({
+  en: {
+    heroSubtitle: 'Describe a business. Get a real, multi-page website — drafted live in your browser.',
+    navSlide: '📊 PowerPoint generator', navFile: '🖼️ Image converter', navPaint: '🖌️ Layered image editor',
+    navQr: '▦ QR code generator', navLogo: '🎨 Logo & favicon maker', navGame: '🥷 AI game generator',
+    navVideo: '🎬 Drawing-to-video generator', navTalk: '🗣️ Make a photo talk', navBot: '🤖 Website chat/FAQ widget',
+    navApp: '📱 App generator', navPost: '📣 Post to Discord/Bluesky/Mastodon', navScreen: '🤝 Screen share / remote help',
+    navRecord: '⏺️ Screen recorder with voice narration', navMusic: '🎵 Music generator',
+    navClip: '✂️ Video trimmer, captions & translation', navMerge: '🧩 Merge images, clips & music into one video',
+    navInvoice: '🧾 Quote & invoice generator', navContract: '📜 Contract generator', navCode: '🧑‍💻 Learn Python & JavaScript',
+    navFeedback: '💬 Feedback & suggestions',
+    samplesHeading: 'Samples — what MigaBuilder can make', builtHeading: "See what's been built",
+    submitSiteLink: 'Submit your site →',
+    showcaseEmpty: 'No customer sites submitted yet — email yours in using the link above, or see SHOWCASE_SITES near the top of the script.',
+    footerText: 'MigaBuilder generates real HTML pages per request using your own OpenAI account. Buy buttons link to your own Stripe payment links — no card data ever passes through this tool. Review generated content and links before publishing.'
+  },
+  es: {
+    heroSubtitle: 'Describe un negocio. Obtén un sitio web real de varias páginas, creado en vivo en tu navegador.',
+    navSlide: '📊 Generador de PowerPoint', navFile: '🖼️ Conversor de imágenes', navPaint: '🖌️ Editor de imágenes por capas',
+    navQr: '▦ Generador de códigos QR', navLogo: '🎨 Creador de logotipos y favicons', navGame: '🥷 Generador de juegos con IA',
+    navVideo: '🎬 Generador de dibujos a video', navTalk: '🗣️ Haz que una foto hable', navBot: '🤖 Widget de chat/FAQ para tu web',
+    navApp: '📱 Generador de aplicaciones', navPost: '📣 Publicar en Discord/Bluesky/Mastodon', navScreen: '🤝 Compartir pantalla / ayuda remota',
+    navRecord: '⏺️ Grabador de pantalla con narración de voz', navMusic: '🎵 Generador de música',
+    navClip: '✂️ Recortador de video, subtítulos y traducción', navMerge: '🧩 Combina imágenes, clips y música en un solo video',
+    navInvoice: '🧾 Generador de cotizaciones y facturas', navContract: '📜 Generador de contratos', navCode: '🧑‍💻 Aprende Python y JavaScript',
+    navFeedback: '💬 Comentarios y sugerencias',
+    samplesHeading: 'Ejemplos — lo que MigaBuilder puede crear', builtHeading: 'Mira lo que se ha creado',
+    submitSiteLink: 'Envía tu sitio →',
+    showcaseEmpty: 'Aún no se han enviado sitios de clientes — envía el tuyo usando el enlace de arriba, o consulta SHOWCASE_SITES cerca del inicio del script.',
+    footerText: 'MigaBuilder genera páginas HTML reales para cada solicitud usando tu propia cuenta de OpenAI. Los botones de compra enlazan a tus propios enlaces de pago de Stripe — ningún dato de tarjeta pasa nunca por esta herramienta. Revisa el contenido y los enlaces generados antes de publicar.'
+  },
+  ar: {
+    heroSubtitle: 'صِف نشاطك التجاري. احصل على موقع ويب حقيقي متعدد الصفحات — يُنشأ مباشرة في متصفحك.',
+    navSlide: '📊 مولد عروض PowerPoint', navFile: '🖼️ محول الصور', navPaint: '🖌️ محرر صور بطبقات',
+    navQr: '▦ مولد رمز QR', navLogo: '🎨 صانع الشعارات وأيقونات المفضلة', navGame: '🥷 مولد ألعاب بالذكاء الاصطناعي',
+    navVideo: '🎬 تحويل الرسومات إلى فيديو', navTalk: '🗣️ اجعل الصورة تتحدث', navBot: '🤖 أداة دردشة/أسئلة شائعة للموقع',
+    navApp: '📱 مولد التطبيقات', navPost: '📣 النشر على Discord/Bluesky/Mastodon', navScreen: '🤝 مشاركة الشاشة / مساعدة عن بُعد',
+    navRecord: '⏺️ تسجيل الشاشة مع تعليق صوتي', navMusic: '🎵 مولد الموسيقى',
+    navClip: '✂️ قص الفيديو والترجمة والتعليقات', navMerge: '🧩 دمج الصور والمقاطع والموسيقى في فيديو واحد',
+    navInvoice: '🧾 مولد عروض الأسعار والفواتير', navContract: '📜 مولد العقود', navCode: '🧑‍💻 تعلم Python وJavaScript',
+    navFeedback: '💬 الملاحظات والاقتراحات',
+    samplesHeading: 'نماذج — ما يمكن لـ MigaBuilder إنشاءه', builtHeading: 'شاهد ما تم إنشاؤه',
+    submitSiteLink: 'أرسل موقعك ←',
+    showcaseEmpty: 'لم يتم إرسال أي مواقع عملاء بعد — أرسل موقعك عبر الرابط أعلاه، أو راجع SHOWCASE_SITES بالقرب من أعلى الكود.',
+    footerText: 'ينشئ MigaBuilder صفحات HTML حقيقية لكل طلب باستخدام حساب OpenAI الخاص بك. تؤدي أزرار الشراء إلى روابط الدفع الخاصة بك على Stripe — لا تمر أي بيانات بطاقة عبر هذه الأداة أبدًا. راجع المحتوى والروابط التي تم إنشاؤها قبل النشر.'
+  },
+  zh: {
+    heroSubtitle: '描述你的业务，即可在浏览器中实时生成一个真实的多页网站。',
+    navSlide: '📊 PowerPoint 生成器', navFile: '🖼️ 图片转换器', navPaint: '🖌️ 分层图像编辑器',
+    navQr: '▦ 二维码生成器', navLogo: '🎨 徽标与网站图标制作工具', navGame: '🥷 AI 游戏生成器',
+    navVideo: '🎬 手绘转视频生成器', navTalk: '🗣️ 让照片开口说话', navBot: '🤖 网站聊天/常见问题小部件',
+    navApp: '📱 应用生成器', navPost: '📣 发布到 Discord/Bluesky/Mastodon', navScreen: '🤝 屏幕共享 / 远程协助',
+    navRecord: '⏺️ 带语音讲解的屏幕录制', navMusic: '🎵 音乐生成器',
+    navClip: '✂️ 视频剪辑、字幕与翻译', navMerge: '🧩 将图片、视频片段与音乐合并为一个视频',
+    navInvoice: '🧾 报价单与发票生成器', navContract: '📜 合同生成器', navCode: '🧑‍💻 学习 Python 与 JavaScript',
+    navFeedback: '💬 反馈与建议',
+    samplesHeading: '示例——MigaBuilder 能做什么', builtHeading: '看看大家做了什么',
+    submitSiteLink: '提交你的网站 →',
+    showcaseEmpty: '目前还没有客户提交网站——请使用上方链接提交你的网站，或查看脚本顶部附近的 SHOWCASE_SITES。',
+    footerText: 'MigaBuilder 使用你自己的 OpenAI 账户为每个请求生成真实的 HTML 页面。购买按钮链接到你自己的 Stripe 支付链接——任何卡片数据都不会经过此工具。发布前请检查生成的内容和链接。'
+  },
+  sw: {
+    heroSubtitle: 'Eleza biashara yako. Pata tovuti halisi yenye kurasa nyingi — inayotengenezwa moja kwa moja kwenye kivinjari chako.',
+    navSlide: '📊 Kitengenezea PowerPoint', navFile: '🖼️ Kibadilishaji picha', navPaint: '🖌️ Kihariri picha chenye tabaka',
+    navQr: '▦ Kitengenezea msimbo wa QR', navLogo: '🎨 Kitengenezea nembo na favicon', navGame: '🥷 Kitengenezea michezo kwa AI',
+    navVideo: '🎬 Kigeuzi cha michoro kuwa video', navTalk: '🗣️ Fanya picha izungumze', navBot: '🤖 Kifaa cha mazungumzo/maswali ya tovuti',
+    navApp: '📱 Kitengenezea programu', navPost: '📣 Chapisha kwenye Discord/Bluesky/Mastodon', navScreen: '🤝 Kushiriki skrini / msaada wa mbali',
+    navRecord: '⏺️ Kinasa skrini chenye maelezo ya sauti', navMusic: '🎵 Kitengenezea muziki',
+    navClip: '✂️ Kipunguzaji video, manukuu na tafsiri', navMerge: '🧩 Unganisha picha, video na muziki kuwa video moja',
+    navInvoice: '🧾 Kitengenezea nukuu na ankara', navContract: '📜 Kitengenezea mikataba', navCode: '🧑‍💻 Jifunze Python na JavaScript',
+    navFeedback: '💬 Maoni na mapendekezo',
+    samplesHeading: 'Mifano — MigaBuilder inaweza kutengeneza nini', builtHeading: 'Angalia kilichotengenezwa',
+    submitSiteLink: 'Wasilisha tovuti yako →',
+    showcaseEmpty: 'Hakuna tovuti za wateja zilizowasilishwa bado — tuma yako kwa kutumia kiungo hapo juu, au angalia SHOWCASE_SITES karibu na sehemu ya juu ya script.',
+    footerText: 'MigaBuilder hutengeneza kurasa halisi za HTML kwa kila ombi kwa kutumia akaunti yako ya OpenAI. Vitufe vya ununuzi vinaunganishwa na viungo vyako vya malipo vya Stripe — hakuna data ya kadi inayopita kwenye zana hii. Kagua maudhui na viungo vilivyotengenezwa kabla ya kuchapisha.'
+  }
+});
 </script>
 
 </body>
