@@ -29,6 +29,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 <style>
   :root {
     --navy: #0E2A47;
@@ -139,28 +140,29 @@
   </svg>
   <div>
     <h1>Feedback &amp; Suggestions</h1>
-    <p>Report a bug, suggest a feature, or see what others have already asked for.</p>
+    <p data-i18n="heroSubtitle">Report a bug, suggest a feature, or see what others have already asked for.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <div class="solo-wrap">
   <div class="panel">
-    <h2>Send feedback</h2>
-    <p class="sub">Posts publicly as a GitHub issue on this project, so anyone can follow or comment on it — no account needed to submit.</p>
+    <h2 data-i18n="sendFeedbackHeading">Send feedback</h2>
+    <p class="sub" data-i18n="sendFeedbackSub">Posts publicly as a GitHub issue on this project, so anyone can follow or comment on it — no account needed to submit.</p>
 
     <div class="field">
-      <label>What kind of feedback is this?</label>
+      <label data-i18n="feedbackTypeLabel">What kind of feedback is this?</label>
       <div class="radio-group">
-        <label class="radio-option"><input type="radio" name="fbType" value="suggestion" checked> 💡 Suggestion</label>
-        <label class="radio-option"><input type="radio" name="fbType" value="bug"> 🐛 Bug report</label>
-        <label class="radio-option"><input type="radio" name="fbType" value="other"> 💬 Other</label>
+        <label class="radio-option"><input type="radio" name="fbType" value="suggestion" checked> <span data-i18n="typeSuggestion">💡 Suggestion</span></label>
+        <label class="radio-option"><input type="radio" name="fbType" value="bug"> <span data-i18n="typeBug">🐛 Bug report</span></label>
+        <label class="radio-option"><input type="radio" name="fbType" value="other"> <span data-i18n="typeOther">💬 Other</span></label>
       </div>
     </div>
 
     <div class="field">
-      <label for="fbTool">Which tool is this about?</label>
+      <label for="fbTool" data-i18n="toolLabel">Which tool is this about?</label>
       <select id="fbTool">
-        <option>General / the whole site</option>
+        <option data-i18n="toolGeneral">General / the whole site</option>
         <option>Video Forge</option>
         <option>Clip Forge</option>
         <option>Music Forge</option>
@@ -179,23 +181,23 @@
         <option>Bot Forge</option>
         <option>App Forge</option>
         <option>Post Forge</option>
-        <option>Website builder (homepage)</option>
+        <option data-i18n="toolWebsiteBuilder">Website builder (homepage)</option>
       </select>
     </div>
 
     <div class="field">
-      <label for="fbTitle">Short summary</label>
-      <input type="text" id="fbTitle" maxlength="150" placeholder="e.g. Add a way to reorder sound clips">
+      <label for="fbTitle" data-i18n="titleLabel">Short summary</label>
+      <input type="text" id="fbTitle" maxlength="150" data-i18n-placeholder="titlePlaceholder" placeholder="e.g. Add a way to reorder sound clips">
     </div>
 
     <div class="field">
-      <label for="fbDescription">Details</label>
-      <textarea id="fbDescription" maxlength="4000" placeholder="What happened, or what you'd like to see? The more specific, the easier it is to act on."></textarea>
+      <label for="fbDescription" data-i18n="descLabel">Details</label>
+      <textarea id="fbDescription" maxlength="4000" data-i18n-placeholder="descPlaceholder" placeholder="What happened, or what you'd like to see? The more specific, the easier it is to act on."></textarea>
     </div>
 
     <div class="field">
-      <label for="fbContact">Your name or email (optional)</label>
-      <input type="text" id="fbContact" maxlength="200" placeholder="So we can follow up — leave blank to stay anonymous">
+      <label for="fbContact" data-i18n="contactLabel">Your name or email (optional)</label>
+      <input type="text" id="fbContact" maxlength="200" data-i18n-placeholder="contactPlaceholder" placeholder="So we can follow up — leave blank to stay anonymous">
     </div>
 
     <!-- honeypot: real visitors never see or fill this in -->
@@ -204,24 +206,24 @@
       <input type="text" id="fbWebsite" name="website" tabindex="-1" autocomplete="off">
     </div>
 
-    <button type="button" class="draft-btn" id="submitBtn">Send feedback</button>
+    <button type="button" class="draft-btn" id="submitBtn" data-i18n="submitBtnLabel">Send feedback</button>
     <div class="error-box" id="errorBox"></div>
     <div class="status-box" id="statusBox"></div>
   </div>
 
   <div class="panel" style="background: var(--navy-deep, #081826); color: var(--paper);">
     <div class="panel-header">
-      <h2>What others have suggested</h2>
-      <button type="button" class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+      <h2 data-i18n="suggestionsHeading">What others have suggested</h2>
+      <button type="button" class="refresh-btn" id="refreshBtn" data-i18n="refreshBtnLabel">↻ Refresh</button>
     </div>
-    <p class="sub" style="color: rgba(237,234,224,0.6);">The most recent public feedback — click any item to read or join the discussion on GitHub.</p>
+    <p class="sub" data-i18n="feedSub" style="color: rgba(237,234,224,0.6);">The most recent public feedback — click any item to read or join the discussion on GitHub.</p>
     <div class="feed-list" id="feedList"></div>
-    <p class="feed-loading" id="feedLoading">Loading…</p>
-    <p class="feed-empty" id="feedEmpty" style="display:none;">No feedback yet — be the first!</p>
+    <p class="feed-loading" id="feedLoading" data-i18n="feedLoadingText">Loading…</p>
+    <p class="feed-empty" id="feedEmpty" data-i18n="feedEmptyText" style="display:none;">No feedback yet — be the first!</p>
   </div>
 </div>
 
-<footer>
+<footer data-i18n-html="footerText">
   Part of <a href="index.html">MigaBuilder</a>. Feedback is posted as a public GitHub issue — please don't include
   passwords, API keys, or other sensitive information. This needs a one-time setup by the site owner — see
   <code>cloudflare-worker/README.md</code>.
@@ -255,17 +257,17 @@
   submitBtn.addEventListener('click', async function () {
     clearMessages();
     if (!apiConfigured()) {
-      showError('Feedback needs a one-time setup by the site owner before it can be submitted — see cloudflare-worker/README.md.');
+      showError(I18N.t('errorNotConfigured'));
       return;
     }
     const type = (document.querySelector('input[name="fbType"]:checked') || {}).value || 'other';
     const title = fbTitle.value.trim();
     const description = fbDescription.value.trim();
-    if (!title) { showError('Add a short summary first.'); return; }
-    if (!description) { showError('Add a few details first.'); return; }
+    if (!title) { showError(I18N.t('errorNoTitle')); return; }
+    if (!description) { showError(I18N.t('errorNoDescription')); return; }
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending…';
+    submitBtn.textContent = I18N.t('sendingLabel');
     try {
       const res = await fetch(FEEDBACK_API_URL, {
         method: 'POST',
@@ -278,17 +280,17 @@
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || ('Request failed with status ' + res.status));
-      statusBox.innerHTML = '✓ Thanks! Your feedback is posted — <a href="' + data.url + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">view it here</a>.';
+      statusBox.innerHTML = '✓ ' + I18N.t('statusSuccessPrefix') + ' — <a href="' + data.url + '" target="_blank" rel="noopener" style="color:#244731;text-decoration:underline;">' + I18N.t('statusSuccessLink') + '</a>.';
       statusBox.classList.add('show');
       fbTitle.value = '';
       fbDescription.value = '';
       fbContact.value = '';
       loadFeed();
     } catch (err) {
-      showError(err.message || 'Could not send feedback right now.');
+      showError(err.message || I18N.t('errorGenericSend'));
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Send feedback';
+      submitBtn.textContent = I18N.t('submitBtnLabel');
     }
   });
 
@@ -298,16 +300,16 @@
     return 'feedback';
   }
   function labelBadgeText(labels) {
-    if (labels.includes('bug')) return 'Bug';
-    if (labels.includes('enhancement')) return 'Suggestion';
-    return 'Feedback';
+    if (labels.includes('bug')) return I18N.t('badgeBug');
+    if (labels.includes('enhancement')) return I18N.t('badgeSuggestion');
+    return I18N.t('badgeFeedback');
   }
 
   async function loadFeed() {
     if (!apiConfigured()) {
       feedLoading.style.display = 'none';
       feedEmpty.style.display = 'block';
-      feedEmpty.textContent = 'Feedback list needs a one-time setup by the site owner.';
+      feedEmpty.textContent = I18N.t('feedNotConfigured');
       return;
     }
     feedList.innerHTML = '';
@@ -326,24 +328,230 @@
         const item = document.createElement('div');
         item.className = 'feed-item';
         const badgeClass = labelBadgeClass(issue.labels || []);
-        const closedBadge = issue.state === 'closed' ? '<span class="badge closed">Resolved</span>' : '';
+        const closedBadge = issue.state === 'closed' ? '<span class="badge closed">' + I18N.t('badgeResolved') + '</span>' : '';
+        const commentsText = issue.comments === 1 ? I18N.t('commentsOne') : I18N.t('commentsMany').replace('{n}', issue.comments);
         item.innerHTML =
           '<a class="title" href="' + issue.url + '" target="_blank" rel="noopener">' + issue.title.replace(/</g, '&lt;') + '</a>' +
           '<div class="feed-meta">' +
             '<span class="badge ' + badgeClass + '">' + labelBadgeText(issue.labels || []) + '</span>' +
             closedBadge +
-            '<span>' + issue.comments + (issue.comments === 1 ? ' comment' : ' comments') + '</span>' +
+            '<span>' + commentsText + '</span>' +
           '</div>';
         feedList.appendChild(item);
       });
     } catch (err) {
       feedLoading.style.display = 'none';
       feedEmpty.style.display = 'block';
-      feedEmpty.textContent = 'Could not load feedback right now.';
+      feedEmpty.textContent = I18N.t('feedLoadError');
     }
   }
   refreshBtn.addEventListener('click', loadFeed);
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'Report a bug, suggest a feature, or see what others have already asked for.',
+      sendFeedbackHeading: 'Send feedback',
+      sendFeedbackSub: 'Posts publicly as a GitHub issue on this project, so anyone can follow or comment on it — no account needed to submit.',
+      feedbackTypeLabel: 'What kind of feedback is this?',
+      typeSuggestion: '💡 Suggestion',
+      typeBug: '🐛 Bug report',
+      typeOther: '💬 Other',
+      toolLabel: 'Which tool is this about?',
+      toolGeneral: 'General / the whole site',
+      toolWebsiteBuilder: 'Website builder (homepage)',
+      titleLabel: 'Short summary',
+      titlePlaceholder: 'e.g. Add a way to reorder sound clips',
+      descLabel: 'Details',
+      descPlaceholder: "What happened, or what you'd like to see? The more specific, the easier it is to act on.",
+      contactLabel: 'Your name or email (optional)',
+      contactPlaceholder: 'So we can follow up — leave blank to stay anonymous',
+      submitBtnLabel: 'Send feedback',
+      sendingLabel: 'Sending…',
+      errorNotConfigured: 'Feedback needs a one-time setup by the site owner before it can be submitted — see cloudflare-worker/README.md.',
+      errorNoTitle: 'Add a short summary first.',
+      errorNoDescription: 'Add a few details first.',
+      statusSuccessPrefix: 'Thanks! Your feedback is posted',
+      statusSuccessLink: 'view it here',
+      errorGenericSend: 'Could not send feedback right now.',
+      suggestionsHeading: 'What others have suggested',
+      refreshBtnLabel: '↻ Refresh',
+      feedSub: 'The most recent public feedback — click any item to read or join the discussion on GitHub.',
+      feedLoadingText: 'Loading…',
+      feedEmptyText: 'No feedback yet — be the first!',
+      feedNotConfigured: 'Feedback list needs a one-time setup by the site owner.',
+      feedLoadError: 'Could not load feedback right now.',
+      badgeBug: 'Bug',
+      badgeSuggestion: 'Suggestion',
+      badgeFeedback: 'Feedback',
+      badgeResolved: 'Resolved',
+      commentsOne: '1 comment',
+      commentsMany: '{n} comments',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. Feedback is posted as a public GitHub issue — please don\'t include passwords, API keys, or other sensitive information. This needs a one-time setup by the site owner — see <code>cloudflare-worker/README.md</code>.'
+    },
+    es: {
+      heroSubtitle: 'Reporta un error, sugiere una función o mira lo que otros ya han pedido.',
+      sendFeedbackHeading: 'Enviar comentarios',
+      sendFeedbackSub: 'Se publica públicamente como un issue de GitHub en este proyecto, para que cualquiera pueda seguirlo o comentarlo — no se necesita cuenta para enviarlo.',
+      feedbackTypeLabel: '¿Qué tipo de comentario es este?',
+      typeSuggestion: '💡 Sugerencia',
+      typeBug: '🐛 Reporte de error',
+      typeOther: '💬 Otro',
+      toolLabel: '¿Sobre qué herramienta es esto?',
+      toolGeneral: 'General / todo el sitio',
+      toolWebsiteBuilder: 'Creador de sitios web (página principal)',
+      titleLabel: 'Resumen breve',
+      titlePlaceholder: 'p. ej. Añadir una forma de reordenar los clips de sonido',
+      descLabel: 'Detalles',
+      descPlaceholder: '¿Qué pasó, o qué te gustaría ver? Cuanto más específico, más fácil es actuar sobre ello.',
+      contactLabel: 'Tu nombre o correo electrónico (opcional)',
+      contactPlaceholder: 'Para poder responderte — déjalo en blanco para permanecer anónimo',
+      submitBtnLabel: 'Enviar comentarios',
+      sendingLabel: 'Enviando…',
+      errorNotConfigured: 'Los comentarios necesitan una configuración inicial por parte del propietario del sitio antes de poder enviarse — consulta cloudflare-worker/README.md.',
+      errorNoTitle: 'Añade primero un resumen breve.',
+      errorNoDescription: 'Añade primero algunos detalles.',
+      statusSuccessPrefix: '¡Gracias! Tu comentario ha sido publicado',
+      statusSuccessLink: 'míralo aquí',
+      errorGenericSend: 'No se pudo enviar el comentario en este momento.',
+      suggestionsHeading: 'Lo que otros han sugerido',
+      refreshBtnLabel: '↻ Actualizar',
+      feedSub: 'Los comentarios públicos más recientes — haz clic en cualquier elemento para leer o unirte a la discusión en GitHub.',
+      feedLoadingText: 'Cargando…',
+      feedEmptyText: '¡Aún no hay comentarios — sé el primero!',
+      feedNotConfigured: 'La lista de comentarios necesita una configuración inicial por parte del propietario del sitio.',
+      feedLoadError: 'No se pudieron cargar los comentarios en este momento.',
+      badgeBug: 'Error',
+      badgeSuggestion: 'Sugerencia',
+      badgeFeedback: 'Comentario',
+      badgeResolved: 'Resuelto',
+      commentsOne: '1 comentario',
+      commentsMany: '{n} comentarios',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Los comentarios se publican como un issue público de GitHub — por favor no incluyas contraseñas, claves API u otra información sensible. Esto necesita una configuración inicial por parte del propietario del sitio — consulta <code>cloudflare-worker/README.md</code>.'
+    },
+    ar: {
+      heroSubtitle: 'أبلغ عن خطأ، اقترح ميزة، أو اطّلع على ما طلبه الآخرون بالفعل.',
+      sendFeedbackHeading: 'إرسال ملاحظات',
+      sendFeedbackSub: 'يُنشر علنًا كـ issue على GitHub لهذا المشروع، حتى يتمكن أي شخص من متابعته أو التعليق عليه — لا حاجة لحساب للإرسال.',
+      feedbackTypeLabel: 'ما نوع هذه الملاحظات؟',
+      typeSuggestion: '💡 اقتراح',
+      typeBug: '🐛 تقرير خطأ',
+      typeOther: '💬 أخرى',
+      toolLabel: 'عن أي أداة يدور هذا؟',
+      toolGeneral: 'عام / الموقع بأكمله',
+      toolWebsiteBuilder: 'منشئ المواقع (الصفحة الرئيسية)',
+      titleLabel: 'ملخص قصير',
+      titlePlaceholder: 'مثال: إضافة طريقة لإعادة ترتيب مقاطع الصوت',
+      descLabel: 'التفاصيل',
+      descPlaceholder: 'ماذا حدث، أو ماذا تود أن ترى؟ كلما كان أكثر تحديدًا، كان من الأسهل التصرف بناءً عليه.',
+      contactLabel: 'اسمك أو بريدك الإلكتروني (اختياري)',
+      contactPlaceholder: 'حتى نتمكن من المتابعة — اتركه فارغًا للبقاء مجهولاً',
+      submitBtnLabel: 'إرسال الملاحظات',
+      sendingLabel: 'جارٍ الإرسال…',
+      errorNotConfigured: 'تحتاج الملاحظات إلى إعداد لمرة واحدة من قِبل مالك الموقع قبل أن يمكن إرسالها — راجع cloudflare-worker/README.md.',
+      errorNoTitle: 'أضف ملخصًا قصيرًا أولاً.',
+      errorNoDescription: 'أضف بعض التفاصيل أولاً.',
+      statusSuccessPrefix: 'شكرًا! تم نشر ملاحظاتك',
+      statusSuccessLink: 'شاهدها هنا',
+      errorGenericSend: 'تعذر إرسال الملاحظات في الوقت الحالي.',
+      suggestionsHeading: 'ما اقترحه الآخرون',
+      refreshBtnLabel: '↻ تحديث',
+      feedSub: 'أحدث الملاحظات العامة — انقر على أي عنصر لقراءة أو الانضمام إلى النقاش على GitHub.',
+      feedLoadingText: 'جارٍ التحميل…',
+      feedEmptyText: 'لا توجد ملاحظات بعد — كن أول من يضيف واحدة!',
+      feedNotConfigured: 'تحتاج قائمة الملاحظات إلى إعداد لمرة واحدة من قِبل مالك الموقع.',
+      feedLoadError: 'تعذر تحميل الملاحظات في الوقت الحالي.',
+      badgeBug: 'خطأ',
+      badgeSuggestion: 'اقتراح',
+      badgeFeedback: 'ملاحظة',
+      badgeResolved: 'تم الحل',
+      commentsOne: 'تعليق واحد',
+      commentsMany: '{n} تعليقات',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. تُنشر الملاحظات كـ issue عام على GitHub — يرجى عدم تضمين كلمات مرور أو مفاتيح API أو أي معلومات حساسة أخرى. يحتاج هذا إلى إعداد لمرة واحدة من قِبل مالك الموقع — راجع <code>cloudflare-worker/README.md</code>.'
+    },
+    zh: {
+      heroSubtitle: '报告一个错误，提出一个功能建议，或者看看其他人已经提出了什么要求。',
+      sendFeedbackHeading: '发送反馈',
+      sendFeedbackSub: '会作为该项目的公开 GitHub issue 发布，任何人都可以关注或评论——提交无需账号。',
+      feedbackTypeLabel: '这是哪种类型的反馈？',
+      typeSuggestion: '💡 建议',
+      typeBug: '🐛 错误报告',
+      typeOther: '💬 其他',
+      toolLabel: '这是关于哪个工具的？',
+      toolGeneral: '总体 / 整个网站',
+      toolWebsiteBuilder: '网站建设工具（主页）',
+      titleLabel: '简短摘要',
+      titlePlaceholder: '例如：添加一种重新排列声音片段的方式',
+      descLabel: '详情',
+      descPlaceholder: '发生了什么，或者你希望看到什么？描述越具体，就越容易处理。',
+      contactLabel: '你的姓名或电子邮箱（可选）',
+      contactPlaceholder: '以便我们跟进——留空以保持匿名',
+      submitBtnLabel: '发送反馈',
+      sendingLabel: '发送中…',
+      errorNotConfigured: '反馈功能需要网站所有者先完成一次性设置才能提交——请参阅 cloudflare-worker/README.md。',
+      errorNoTitle: '请先添加简短摘要。',
+      errorNoDescription: '请先添加一些详情。',
+      statusSuccessPrefix: '谢谢！你的反馈已发布',
+      statusSuccessLink: '在此查看',
+      errorGenericSend: '暂时无法发送反馈。',
+      suggestionsHeading: '其他人的建议',
+      refreshBtnLabel: '↻ 刷新',
+      feedSub: '最新的公开反馈——点击任意项目以在 GitHub 上阅读或参与讨论。',
+      feedLoadingText: '加载中…',
+      feedEmptyText: '还没有反馈——成为第一个吧！',
+      feedNotConfigured: '反馈列表需要网站所有者先完成一次性设置。',
+      feedLoadError: '暂时无法加载反馈。',
+      badgeBug: '错误',
+      badgeSuggestion: '建议',
+      badgeFeedback: '反馈',
+      badgeResolved: '已解决',
+      commentsOne: '1 条评论',
+      commentsMany: '{n} 条评论',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。反馈会作为公开的 GitHub issue 发布——请不要包含密码、API 密钥或其他敏感信息。这需要网站所有者先完成一次性设置——请参阅 <code>cloudflare-worker/README.md</code>。'
+    },
+    sw: {
+      heroSubtitle: 'Ripoti hitilafu, pendekeza kipengele, au uone yale ambayo wengine tayari wameyaomba.',
+      sendFeedbackHeading: 'Tuma maoni',
+      sendFeedbackSub: 'Hutumwa hadharani kama suala la GitHub kwenye mradi huu, ili yeyote aweze kufuatilia au kutoa maoni — hakuna akaunti inayohitajika kutuma.',
+      feedbackTypeLabel: 'Haya ni maoni ya aina gani?',
+      typeSuggestion: '💡 Pendekezo',
+      typeBug: '🐛 Ripoti ya hitilafu',
+      typeOther: '💬 Nyingine',
+      toolLabel: 'Hii inahusu chombo gani?',
+      toolGeneral: 'Jumla / tovuti nzima',
+      toolWebsiteBuilder: 'Kijenzi cha tovuti (ukurasa wa nyumbani)',
+      titleLabel: 'Muhtasari mfupi',
+      titlePlaceholder: 'mfano: Ongeza njia ya kupanga upya vipande vya sauti',
+      descLabel: 'Maelezo',
+      descPlaceholder: 'Nini kilitokea, au ungependa kuona nini? Kadiri unavyokuwa maalum, ndivyo inavyokuwa rahisi kuchukua hatua.',
+      contactLabel: 'Jina lako au barua pepe (hiari)',
+      contactPlaceholder: 'Ili tuweze kufuatilia — acha wazi ili kubaki bila jina',
+      submitBtnLabel: 'Tuma maoni',
+      sendingLabel: 'Inatuma…',
+      errorNotConfigured: 'Maoni yanahitaji usanidi wa mara moja na mmiliki wa tovuti kabla ya kutumwa — angalia cloudflare-worker/README.md.',
+      errorNoTitle: 'Ongeza muhtasari mfupi kwanza.',
+      errorNoDescription: 'Ongeza maelezo kadhaa kwanza.',
+      statusSuccessPrefix: 'Asante! Maoni yako yamechapishwa',
+      statusSuccessLink: 'yaangalie hapa',
+      errorGenericSend: 'Imeshindwa kutuma maoni kwa sasa.',
+      suggestionsHeading: 'Yale ambayo wengine wamependekeza',
+      refreshBtnLabel: '↻ Onyesha upya',
+      feedSub: 'Maoni ya hivi punde ya umma — bofya kipengele chochote kusoma au kujiunga na majadiliano kwenye GitHub.',
+      feedLoadingText: 'Inapakia…',
+      feedEmptyText: 'Hakuna maoni bado — kuwa wa kwanza!',
+      feedNotConfigured: 'Orodha ya maoni inahitaji usanidi wa mara moja na mmiliki wa tovuti.',
+      feedLoadError: 'Imeshindwa kupakia maoni kwa sasa.',
+      badgeBug: 'Hitilafu',
+      badgeSuggestion: 'Pendekezo',
+      badgeFeedback: 'Maoni',
+      badgeResolved: 'Imetatuliwa',
+      commentsOne: 'Maoni 1',
+      commentsMany: 'Maoni {n}',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Maoni huchapishwa kama suala la umma la GitHub — tafadhali usijumuishe manenosiri, funguo za API, au taarifa nyingine nyeti. Hii inahitaji usanidi wa mara moja na mmiliki wa tovuti — angalia <code>cloudflare-worker/README.md</code>.'
+    }
+  });
+
   loadFeed();
+  I18N.onChange(loadFeed);
 })();
 </script>
 </body>
