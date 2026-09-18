@@ -31,6 +31,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -178,36 +179,37 @@
   </svg>
   <div>
     <h1>Paint Forge</h1>
-    <p>A layered image editor — brushes, shapes, text, fill, selection, filters, and undo/redo.</p>
+    <p data-i18n="heroSubtitle">A layered image editor — brushes, shapes, text, fill, selection, filters, and undo/redo.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <main class="paint-main">
   <section class="panel">
-    <div class="section-title">Tools</div>
+    <div class="section-title" data-i18n="toolsHeading">Tools</div>
     <div class="tool-grid" id="toolGrid"></div>
 
-    <div class="section-title">Options</div>
+    <div class="section-title" data-i18n="optionsHeading">Options</div>
     <div id="toolOptions"></div>
 
-    <div class="section-title">Color</div>
+    <div class="section-title" data-i18n="colorHeading">Color</div>
     <div class="field">
       <input type="color" id="colorPicker" value="#0E2A47">
       <div class="swatch-grid" id="swatchGrid"></div>
     </div>
 
-    <div class="section-title">Canvas</div>
+    <div class="section-title" data-i18n="canvasHeading">Canvas</div>
     <div class="btn-row" style="margin-bottom:8px;">
-      <button type="button" class="draft-btn secondary" id="newCanvasBtn">New</button>
-      <button type="button" class="draft-btn secondary" id="resizeCanvasBtn">Resize</button>
+      <button type="button" class="draft-btn secondary" id="newCanvasBtn" data-i18n="newLabel">New</button>
+      <button type="button" class="draft-btn secondary" id="resizeCanvasBtn" data-i18n="resizeLabel">Resize</button>
     </div>
-    <label class="upload-btn" for="importImageInput">+ Import image as layer</label>
+    <label class="upload-btn" for="importImageInput" data-i18n="importImageLabel">+ Import image as layer</label>
     <input type="file" id="importImageInput" accept="image/*" style="display:none;">
 
-    <div class="section-title">History</div>
+    <div class="section-title" data-i18n="historyHeading">History</div>
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="undoBtn" disabled>↺ Undo</button>
-      <button type="button" class="draft-btn secondary" id="redoBtn" disabled>↻ Redo</button>
+      <button type="button" class="draft-btn secondary" id="undoBtn" disabled data-i18n="undoLabel">↺ Undo</button>
+      <button type="button" class="draft-btn secondary" id="redoBtn" disabled data-i18n="redoLabel">↻ Redo</button>
     </div>
 
     <div class="error-box" id="errorBox"></div>
@@ -215,7 +217,7 @@
 
   <section class="canvas-table">
     <div class="canvas-toolbar">
-      <span>PAINT FORGE — CANVAS</span>
+      <span data-i18n="canvasToolbarLabel">PAINT FORGE — CANVAS</span>
       <span id="canvasSizeLabel">900 × 600</span>
       <span style="flex:1;"></span>
       <button type="button" id="zoomOutBtn">−</button>
@@ -226,60 +228,60 @@
       <canvas id="viewCanvas" width="900" height="600"></canvas>
     </div>
     <div class="btn-row" style="margin-top:12px;">
-      <button type="button" class="draft-btn secondary" id="exportPngBtn">⬇ Export PNG</button>
-      <button type="button" class="draft-btn secondary" id="exportJpgBtn">⬇ Export JPG</button>
+      <button type="button" class="draft-btn secondary" id="exportPngBtn" data-i18n="exportPngLabel">⬇ Export PNG</button>
+      <button type="button" class="draft-btn secondary" id="exportJpgBtn" data-i18n="exportJpgLabel">⬇ Export JPG</button>
     </div>
   </section>
 
   <section class="panel">
-    <div class="section-title">Layers</div>
+    <div class="section-title" data-i18n="layersHeading">Layers</div>
     <div id="layersList"></div>
-    <button type="button" class="draft-btn secondary" id="addLayerBtn" style="margin-top:6px;">+ Add layer</button>
+    <button type="button" class="draft-btn secondary" id="addLayerBtn" style="margin-top:6px;" data-i18n="addLayerLabel">+ Add layer</button>
     <div class="layer-actions-row">
-      <button type="button" class="draft-btn secondary" id="dupLayerBtn">⧉ Duplicate</button>
-      <button type="button" class="draft-btn secondary" id="mergeDownBtn">⬇ Merge down</button>
-      <button type="button" class="draft-btn secondary" id="deleteLayerBtn">✕ Delete</button>
+      <button type="button" class="draft-btn secondary" id="dupLayerBtn" data-i18n="duplicateLabel">⧉ Duplicate</button>
+      <button type="button" class="draft-btn secondary" id="mergeDownBtn" data-i18n="mergeDownLabel">⬇ Merge down</button>
+      <button type="button" class="draft-btn secondary" id="deleteLayerBtn" data-i18n="deleteLabel">✕ Delete</button>
     </div>
 
-    <div class="section-title">Transform (active layer)</div>
+    <div class="section-title" data-i18n="transformHeading">Transform (active layer)</div>
     <div class="btn-row" style="margin-bottom:6px;">
-      <button type="button" class="draft-btn secondary" id="flipHBtn">⇋ Flip H</button>
-      <button type="button" class="draft-btn secondary" id="flipVBtn">⇵ Flip V</button>
+      <button type="button" class="draft-btn secondary" id="flipHBtn" data-i18n="flipHLabel">⇋ Flip H</button>
+      <button type="button" class="draft-btn secondary" id="flipVBtn" data-i18n="flipVLabel">⇵ Flip V</button>
     </div>
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="rotateCcwBtn">↺ Rotate CCW</button>
-      <button type="button" class="draft-btn secondary" id="rotateCwBtn">↻ Rotate CW</button>
+      <button type="button" class="draft-btn secondary" id="rotateCcwBtn" data-i18n="rotateCcwLabel">↺ Rotate CCW</button>
+      <button type="button" class="draft-btn secondary" id="rotateCwBtn" data-i18n="rotateCwLabel">↻ Rotate CW</button>
     </div>
-    <p class="field hint">Affects the active layer's pixels in place — content that no longer fits the frame is cropped.</p>
+    <p class="field hint" data-i18n="transformHint">Affects the active layer's pixels in place — content that no longer fits the frame is cropped.</p>
 
-    <div class="section-title">Adjustments (active layer)</div>
+    <div class="section-title" data-i18n="adjustmentsHeading">Adjustments (active layer)</div>
     <div class="field">
-      <label>Brightness <span id="brightnessVal">0</span></label>
+      <label><span data-i18n="brightnessLabel">Brightness</span> <span id="brightnessVal">0</span></label>
       <input type="range" id="brightnessSlider" min="-100" max="100" value="0">
     </div>
     <div class="field">
-      <label>Contrast <span id="contrastVal">0</span></label>
+      <label><span data-i18n="contrastLabel">Contrast</span> <span id="contrastVal">0</span></label>
       <input type="range" id="contrastSlider" min="-100" max="100" value="0">
     </div>
     <div class="field">
-      <label>Saturation <span id="saturationVal">0</span></label>
+      <label><span data-i18n="saturationLabel">Saturation</span> <span id="saturationVal">0</span></label>
       <input type="range" id="saturationSlider" min="-100" max="100" value="0">
     </div>
     <div class="field">
-      <label>Blur <span id="blurVal">0px</span></label>
+      <label><span data-i18n="blurLabel">Blur</span> <span id="blurVal">0px</span></label>
       <input type="range" id="blurSlider" min="0" max="10" value="0">
     </div>
-    <label class="check-row"><input type="checkbox" id="grayscaleCheck"> Grayscale</label>
-    <label class="check-row"><input type="checkbox" id="invertCheck"> Invert</label>
+    <label class="check-row"><input type="checkbox" id="grayscaleCheck"> <span data-i18n="grayscaleLabel">Grayscale</span></label>
+    <label class="check-row"><input type="checkbox" id="invertCheck"> <span data-i18n="invertLabel">Invert</span></label>
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="resetFilterBtn">Reset</button>
-      <button type="button" class="draft-btn" id="applyFilterBtn">Apply</button>
+      <button type="button" class="draft-btn secondary" id="resetFilterBtn" data-i18n="resetLabel">Reset</button>
+      <button type="button" class="draft-btn" id="applyFilterBtn" data-i18n="applyLabel">Apply</button>
     </div>
-    <p class="field hint">Preview updates live on the active layer; "Apply" bakes it in permanently.</p>
+    <p class="field hint" data-i18n="filterPreviewHint">Preview updates live on the active layer; "Apply" bakes it in permanently.</p>
   </section>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Everything you draw and import stays in your browser — nothing is uploaded anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
+<footer data-i18n-html="footerText">Part of <a href="index.html">MigaBuilder</a>. Everything you draw and import stays in your browser — nothing is uploaded anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
 
 <script>
 (function () {
@@ -319,7 +321,7 @@
   function makeLayer(name) {
     const canvas = document.createElement('canvas');
     canvas.width = canvasWidth; canvas.height = canvasHeight;
-    return { id: ++layerIdCounter, name: name || ('Layer ' + (layers.length + 1)), canvas, ctx: canvas.getContext('2d'), visible: true, opacity: 1 };
+    return { id: ++layerIdCounter, name: name || (I18N.t('layerPrefix') + ' ' + (layers.length + 1)), canvas, ctx: canvas.getContext('2d'), visible: true, opacity: 1 };
   }
 
   function initCanvas(w, h, bg) {
@@ -467,27 +469,31 @@
 
   // ================= tools =================
   const TOOLS = [
-    { id: 'brush', label: 'Brush', icon: '🖌' },
-    { id: 'eraser', label: 'Eraser', icon: '🧹' },
-    { id: 'line', label: 'Line', icon: '📏' },
-    { id: 'rect', label: 'Rectangle', icon: '▭' },
-    { id: 'ellipse', label: 'Ellipse', icon: '⬭' },
-    { id: 'fill', label: 'Fill', icon: '🪣' },
-    { id: 'text', label: 'Text', icon: '🔤' },
-    { id: 'eyedropper', label: 'Eyedrop', icon: '💧' },
-    { id: 'select', label: 'Select', icon: '⬚' },
-    { id: 'move', label: 'Move', icon: '✥' }
+    { id: 'brush', labelKey: 'toolBrush', icon: '🖌' },
+    { id: 'eraser', labelKey: 'toolEraser', icon: '🧹' },
+    { id: 'line', labelKey: 'toolLine', icon: '📏' },
+    { id: 'rect', labelKey: 'toolRectangle', icon: '▭' },
+    { id: 'ellipse', labelKey: 'toolEllipse', icon: '⬭' },
+    { id: 'fill', labelKey: 'toolFill', icon: '🪣' },
+    { id: 'text', labelKey: 'toolText', icon: '🔤' },
+    { id: 'eyedropper', labelKey: 'toolEyedrop', icon: '💧' },
+    { id: 'select', labelKey: 'toolSelect', icon: '⬚' },
+    { id: 'move', labelKey: 'toolMove', icon: '✥' }
   ];
   const toolGrid = document.getElementById('toolGrid');
-  TOOLS.forEach(t => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'tool-btn' + (t.id === currentTool ? ' active' : '');
-    btn.dataset.tool = t.id;
-    btn.innerHTML = '<span class="ic">' + t.icon + '</span>' + t.label;
-    btn.addEventListener('click', () => { currentTool = t.id; renderToolButtons(); renderToolOptions(); });
-    toolGrid.appendChild(btn);
-  });
+  function renderToolGrid() {
+    toolGrid.innerHTML = '';
+    TOOLS.forEach(t => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tool-btn' + (t.id === currentTool ? ' active' : '');
+      btn.dataset.tool = t.id;
+      btn.innerHTML = '<span class="ic">' + t.icon + '</span>' + I18N.t(t.labelKey);
+      btn.addEventListener('click', () => { currentTool = t.id; renderToolButtons(); renderToolOptions(); });
+      toolGrid.appendChild(btn);
+    });
+  }
+  renderToolGrid();
   function renderToolButtons() {
     toolGrid.querySelectorAll('.tool-btn').forEach(b => b.classList.toggle('active', b.dataset.tool === currentTool));
   }
@@ -507,28 +513,30 @@
       toolOptionsEl.appendChild(wrap);
     }
     if (currentTool === 'brush') {
-      sliderField('Size: ' + brushSize + 'px', 1, 100, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
-      sliderField('Opacity: ' + Math.round(brushOpacity * 100) + '%', 0.05, 1, 0.05, brushOpacity, v => { brushOpacity = v; renderToolOptions(); });
-      sliderField('Hardness: ' + Math.round(brushHardness * 100) + '%', 0, 1, 0.05, brushHardness, v => { brushHardness = v; renderToolOptions(); });
+      sliderField(I18N.t('sizeLabel') + ' ' + brushSize + 'px', 1, 100, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
+      sliderField(I18N.t('opacityLabel') + ' ' + Math.round(brushOpacity * 100) + '%', 0.05, 1, 0.05, brushOpacity, v => { brushOpacity = v; renderToolOptions(); });
+      sliderField(I18N.t('hardnessLabel') + ' ' + Math.round(brushHardness * 100) + '%', 0, 1, 0.05, brushHardness, v => { brushHardness = v; renderToolOptions(); });
     } else if (currentTool === 'eraser') {
-      sliderField('Size: ' + brushSize + 'px', 1, 150, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
+      sliderField(I18N.t('sizeLabel') + ' ' + brushSize + 'px', 1, 150, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
     } else if (currentTool === 'line') {
-      sliderField('Thickness: ' + brushSize + 'px', 1, 60, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
+      sliderField(I18N.t('thicknessLabel') + ' ' + brushSize + 'px', 1, 60, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
     } else if (currentTool === 'rect' || currentTool === 'ellipse') {
-      sliderField('Stroke width: ' + brushSize + 'px', 1, 60, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
+      sliderField(I18N.t('strokeWidthLabel') + ' ' + brushSize + 'px', 1, 60, 1, brushSize, v => { brushSize = v; renderToolOptions(); });
       const label = document.createElement('label');
       label.className = 'check-row';
       const cb = document.createElement('input');
       cb.type = 'checkbox'; cb.checked = shapeFilled;
       cb.addEventListener('change', () => { shapeFilled = cb.checked; });
-      label.appendChild(cb); label.appendChild(document.createTextNode(' Filled'));
+      label.appendChild(cb); label.appendChild(document.createTextNode(' ' + I18N.t('filledLabel')));
       toolOptionsEl.appendChild(label);
     } else if (currentTool === 'fill') {
-      sliderField('Tolerance: ' + fillTolerance, 0, 128, 1, fillTolerance, v => { fillTolerance = v; renderToolOptions(); });
+      sliderField(I18N.t('toleranceLabel') + ' ' + fillTolerance, 0, 128, 1, fillTolerance, v => { fillTolerance = v; renderToolOptions(); });
     } else if (currentTool === 'text') {
       const sizeWrap = document.createElement('div');
       sizeWrap.className = 'field';
-      sizeWrap.innerHTML = '<label>Font size</label>';
+      const sizeLabelEl = document.createElement('label');
+      sizeLabelEl.textContent = I18N.t('fontSizeLabel');
+      sizeWrap.appendChild(sizeLabelEl);
       const sizeInput = document.createElement('input');
       sizeInput.type = 'number'; sizeInput.min = '8'; sizeInput.max = '200'; sizeInput.value = textFontSize;
       sizeInput.addEventListener('input', () => { textFontSize = parseInt(sizeInput.value, 10) || 36; });
@@ -537,10 +545,12 @@
 
       const fontWrap = document.createElement('div');
       fontWrap.className = 'field';
-      fontWrap.innerHTML = '<label>Font</label>';
+      const fontLabelEl = document.createElement('label');
+      fontLabelEl.textContent = I18N.t('fontLabel');
+      fontWrap.appendChild(fontLabelEl);
       const fontSelect = document.createElement('select');
-      [['IBM Plex Sans, sans-serif', 'Sans-serif'], ['Georgia, serif', 'Serif'], ['IBM Plex Mono, monospace', 'Monospace']].forEach(([val, label2]) => {
-        const opt = document.createElement('option'); opt.value = val; opt.textContent = label2;
+      [['IBM Plex Sans, sans-serif', 'fontSansSerif'], ['Georgia, serif', 'fontSerif'], ['IBM Plex Mono, monospace', 'fontMonospace']].forEach(([val, labelKey]) => {
+        const opt = document.createElement('option'); opt.value = val; opt.textContent = I18N.t(labelKey);
         if (val === textFontFamily) opt.selected = true;
         fontSelect.appendChild(opt);
       });
@@ -549,31 +559,31 @@
       toolOptionsEl.appendChild(fontWrap);
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = 'Click the canvas to place text.';
+      hint.textContent = I18N.t('textToolHint');
       toolOptionsEl.appendChild(hint);
     } else if (currentTool === 'eyedropper') {
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = 'Click anywhere on the canvas to pick that color.';
+      hint.textContent = I18N.t('eyedropperHint');
       toolOptionsEl.appendChild(hint);
     } else if (currentTool === 'move') {
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = 'Drag on the canvas to reposition the active layer\'s pixels.';
+      hint.textContent = I18N.t('moveToolHint');
       toolOptionsEl.appendChild(hint);
     } else if (currentTool === 'select') {
       const hint = document.createElement('p');
       hint.className = 'hint';
-      hint.textContent = 'Drag to select a rectangle, then use the actions below.';
+      hint.textContent = I18N.t('selectToolHint');
       toolOptionsEl.appendChild(hint);
       const actions = document.createElement('div');
       actions.className = 'btn-row';
       actions.style.flexWrap = 'wrap';
-      ['Cut', 'Copy', 'Paste', 'Delete', 'Crop to selection'].forEach(label => {
+      [['Cut', 'actionCut'], ['Copy', 'actionCopy'], ['Paste', 'actionPaste'], ['Delete', 'actionDelete'], ['Crop to selection', 'actionCrop']].forEach(([action, labelKey]) => {
         const btn = document.createElement('button');
         btn.type = 'button'; btn.className = 'draft-btn secondary'; btn.style.flex = '1 1 45%'; btn.style.marginTop = '4px';
-        btn.textContent = label;
-        btn.addEventListener('click', () => selectionAction(label));
+        btn.textContent = I18N.t(labelKey);
+        btn.addEventListener('click', () => selectionAction(action));
         actions.appendChild(btn);
       });
       toolOptionsEl.appendChild(actions);
@@ -654,7 +664,7 @@
       return;
     }
     if (currentTool === 'text') {
-      const text = window.prompt('Text to add:', '');
+      const text = window.prompt(I18N.t('textToAddPrompt'), '');
       if (text) {
         pushHistory();
         layer.ctx.fillStyle = currentColor;
@@ -820,7 +830,7 @@
 
   // ================= selection actions =================
   function selectionAction(action) {
-    if (!selection || selection.w < 1 || selection.h < 1) { showError('Drag a selection on the canvas first.'); return; }
+    if (!selection || selection.w < 1 || selection.h < 1) { showError(I18N.t('errorDragSelectionFirst')); return; }
     clearError();
     const layer = activeLayer();
     const sx = Math.round(selection.x), sy = Math.round(selection.y), sw = Math.round(selection.w), sh = Math.round(selection.h);
@@ -836,7 +846,7 @@
       layer.ctx.clearRect(sx, sy, sw, sh);
       renderLayersList(); renderComposite();
     } else if (action === 'Paste') {
-      if (!clipboard) { showError('Nothing copied yet.'); return; }
+      if (!clipboard) { showError(I18N.t('errorNothingCopied')); return; }
       pushHistory();
       layer.ctx.putImageData(clipboard.imageData, sx + 10, sy + 10);
       renderLayersList(); renderComposite();
@@ -888,10 +898,10 @@
       const actions = document.createElement('div');
       actions.className = 'layer-actions';
       const upBtn = document.createElement('button');
-      upBtn.type = 'button'; upBtn.textContent = '▲'; upBtn.title = 'Move up';
+      upBtn.type = 'button'; upBtn.textContent = '▲'; upBtn.title = I18N.t('moveUpTitle');
       upBtn.addEventListener('click', (e) => { e.stopPropagation(); moveLayer(idx, 1); });
       const downBtn = document.createElement('button');
-      downBtn.type = 'button'; downBtn.textContent = '▼'; downBtn.title = 'Move down';
+      downBtn.type = 'button'; downBtn.textContent = '▼'; downBtn.title = I18N.t('moveDownTitle');
       downBtn.addEventListener('click', (e) => { e.stopPropagation(); moveLayer(idx, -1); });
       actions.appendChild(upBtn); actions.appendChild(downBtn);
 
@@ -922,7 +932,7 @@
     const src = activeLayer();
     if (!src) return;
     pushHistory();
-    const copy = makeLayer(src.name + ' copy');
+    const copy = makeLayer(src.name + ' ' + I18N.t('copySuffix'));
     copy.ctx.drawImage(src.canvas, 0, 0);
     copy.opacity = src.opacity;
     layers.splice(activeLayerIndex + 1, 0, copy);
@@ -930,14 +940,14 @@
     renderLayersList(); renderComposite();
   });
   document.getElementById('deleteLayerBtn').addEventListener('click', () => {
-    if (layers.length <= 1) { showError('You need at least one layer.'); return; }
+    if (layers.length <= 1) { showError(I18N.t('errorNeedOneLayer')); return; }
     pushHistory();
     layers.splice(activeLayerIndex, 1);
     activeLayerIndex = Math.max(0, activeLayerIndex - 1);
     renderLayersList(); renderComposite();
   });
   document.getElementById('mergeDownBtn').addEventListener('click', () => {
-    if (activeLayerIndex === 0) { showError('There is no layer below this one.'); return; }
+    if (activeLayerIndex === 0) { showError(I18N.t('errorNoLayerBelow')); return; }
     pushHistory();
     const below = layers[activeLayerIndex - 1];
     const current = layers[activeLayerIndex];
@@ -1041,19 +1051,19 @@
 
   // ================= canvas setup =================
   document.getElementById('newCanvasBtn').addEventListener('click', function () {
-    const wStr = window.prompt('Canvas width (px):', String(canvasWidth));
+    const wStr = window.prompt(I18N.t('canvasWidthPrompt'), String(canvasWidth));
     if (!wStr) return;
-    const hStr = window.prompt('Canvas height (px):', String(canvasHeight));
+    const hStr = window.prompt(I18N.t('canvasHeightPrompt'), String(canvasHeight));
     if (!hStr) return;
     const w = Math.max(16, Math.min(4000, parseInt(wStr, 10) || canvasWidth));
     const h = Math.max(16, Math.min(4000, parseInt(hStr, 10) || canvasHeight));
-    const bg = window.confirm('Click OK for a white background, Cancel for transparent.') ? 'white' : 'transparent';
+    const bg = window.confirm(I18N.t('backgroundConfirmPrompt')) ? 'white' : 'transparent';
     initCanvas(w, h, bg);
   });
   document.getElementById('resizeCanvasBtn').addEventListener('click', function () {
-    const wStr = window.prompt('New width (px):', String(canvasWidth));
+    const wStr = window.prompt(I18N.t('newWidthPrompt'), String(canvasWidth));
     if (!wStr) return;
-    const hStr = window.prompt('New height (px):', String(canvasHeight));
+    const hStr = window.prompt(I18N.t('newHeightPrompt'), String(canvasHeight));
     if (!hStr) return;
     const w = Math.max(16, Math.min(4000, parseInt(wStr, 10) || canvasWidth));
     const h = Math.max(16, Math.min(4000, parseInt(hStr, 10) || canvasHeight));
@@ -1128,6 +1138,430 @@
 
   // ================= init =================
   initCanvas(canvasWidth, canvasHeight, canvasBackground);
+
+  I18N.onChange(function () {
+    renderToolGrid();
+    renderToolOptions();
+    renderLayersList();
+  });
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'A layered image editor — brushes, shapes, text, fill, selection, filters, and undo/redo.',
+      toolsHeading: 'Tools',
+      optionsHeading: 'Options',
+      colorHeading: 'Color',
+      canvasHeading: 'Canvas',
+      newLabel: 'New',
+      resizeLabel: 'Resize',
+      importImageLabel: '+ Import image as layer',
+      historyHeading: 'History',
+      undoLabel: '↺ Undo',
+      redoLabel: '↻ Redo',
+      canvasToolbarLabel: 'PAINT FORGE — CANVAS',
+      exportPngLabel: '⬇ Export PNG',
+      exportJpgLabel: '⬇ Export JPG',
+      layersHeading: 'Layers',
+      addLayerLabel: '+ Add layer',
+      duplicateLabel: '⧉ Duplicate',
+      mergeDownLabel: '⬇ Merge down',
+      deleteLabel: '✕ Delete',
+      transformHeading: 'Transform (active layer)',
+      flipHLabel: '⇋ Flip H',
+      flipVLabel: '⇵ Flip V',
+      rotateCcwLabel: '↺ Rotate CCW',
+      rotateCwLabel: '↻ Rotate CW',
+      transformHint: "Affects the active layer's pixels in place — content that no longer fits the frame is cropped.",
+      adjustmentsHeading: 'Adjustments (active layer)',
+      brightnessLabel: 'Brightness',
+      contrastLabel: 'Contrast',
+      saturationLabel: 'Saturation',
+      blurLabel: 'Blur',
+      grayscaleLabel: 'Grayscale',
+      invertLabel: 'Invert',
+      resetLabel: 'Reset',
+      applyLabel: 'Apply',
+      filterPreviewHint: 'Preview updates live on the active layer; "Apply" bakes it in permanently.',
+      footerText: 'Part of <a href="index.html">MigaBuilder</a>. Everything you draw and import stays in your browser — nothing is uploaded anywhere. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      toolBrush: 'Brush',
+      toolEraser: 'Eraser',
+      toolLine: 'Line',
+      toolRectangle: 'Rectangle',
+      toolEllipse: 'Ellipse',
+      toolFill: 'Fill',
+      toolText: 'Text',
+      toolEyedrop: 'Eyedrop',
+      toolSelect: 'Select',
+      toolMove: 'Move',
+      sizeLabel: 'Size:',
+      opacityLabel: 'Opacity:',
+      hardnessLabel: 'Hardness:',
+      thicknessLabel: 'Thickness:',
+      strokeWidthLabel: 'Stroke width:',
+      filledLabel: 'Filled',
+      toleranceLabel: 'Tolerance:',
+      fontSizeLabel: 'Font size',
+      fontLabel: 'Font',
+      fontSansSerif: 'Sans-serif',
+      fontSerif: 'Serif',
+      fontMonospace: 'Monospace',
+      textToolHint: 'Click the canvas to place text.',
+      eyedropperHint: 'Click anywhere on the canvas to pick that color.',
+      moveToolHint: "Drag on the canvas to reposition the active layer's pixels.",
+      selectToolHint: 'Drag to select a rectangle, then use the actions below.',
+      actionCut: 'Cut',
+      actionCopy: 'Copy',
+      actionPaste: 'Paste',
+      actionDelete: 'Delete',
+      actionCrop: 'Crop to selection',
+      layerPrefix: 'Layer',
+      copySuffix: 'copy',
+      moveUpTitle: 'Move up',
+      moveDownTitle: 'Move down',
+      textToAddPrompt: 'Text to add:',
+      errorDragSelectionFirst: 'Drag a selection on the canvas first.',
+      errorNothingCopied: 'Nothing copied yet.',
+      errorNeedOneLayer: 'You need at least one layer.',
+      errorNoLayerBelow: 'There is no layer below this one.',
+      canvasWidthPrompt: 'Canvas width (px):',
+      canvasHeightPrompt: 'Canvas height (px):',
+      backgroundConfirmPrompt: 'Click OK for a white background, Cancel for transparent.',
+      newWidthPrompt: 'New width (px):',
+      newHeightPrompt: 'New height (px):'
+    },
+    es: {
+      heroSubtitle: 'Un editor de imágenes por capas — pinceles, formas, texto, relleno, selección, filtros y deshacer/rehacer.',
+      toolsHeading: 'Herramientas',
+      optionsHeading: 'Opciones',
+      colorHeading: 'Color',
+      canvasHeading: 'Lienzo',
+      newLabel: 'Nuevo',
+      resizeLabel: 'Redimensionar',
+      importImageLabel: '+ Importar imagen como capa',
+      historyHeading: 'Historial',
+      undoLabel: '↺ Deshacer',
+      redoLabel: '↻ Rehacer',
+      canvasToolbarLabel: 'PAINT FORGE — LIENZO',
+      exportPngLabel: '⬇ Exportar PNG',
+      exportJpgLabel: '⬇ Exportar JPG',
+      layersHeading: 'Capas',
+      addLayerLabel: '+ Agregar capa',
+      duplicateLabel: '⧉ Duplicar',
+      mergeDownLabel: '⬇ Combinar hacia abajo',
+      deleteLabel: '✕ Eliminar',
+      transformHeading: 'Transformar (capa activa)',
+      flipHLabel: '⇋ Voltear H',
+      flipVLabel: '⇵ Voltear V',
+      rotateCcwLabel: '↺ Rotar CCW',
+      rotateCwLabel: '↻ Rotar CW',
+      transformHint: 'Afecta los píxeles de la capa activa en el lugar — el contenido que ya no cabe en el marco se recorta.',
+      adjustmentsHeading: 'Ajustes (capa activa)',
+      brightnessLabel: 'Brillo',
+      contrastLabel: 'Contraste',
+      saturationLabel: 'Saturación',
+      blurLabel: 'Desenfoque',
+      grayscaleLabel: 'Escala de grises',
+      invertLabel: 'Invertir',
+      resetLabel: 'Restablecer',
+      applyLabel: 'Aplicar',
+      filterPreviewHint: 'La vista previa se actualiza en vivo en la capa activa; "Aplicar" lo fija permanentemente.',
+      footerText: 'Parte de <a href="index.html">MigaBuilder</a>. Todo lo que dibujas e importas permanece en tu navegador — nada se sube a ningún lado. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      toolBrush: 'Pincel',
+      toolEraser: 'Borrador',
+      toolLine: 'Línea',
+      toolRectangle: 'Rectángulo',
+      toolEllipse: 'Elipse',
+      toolFill: 'Relleno',
+      toolText: 'Texto',
+      toolEyedrop: 'Gotero',
+      toolSelect: 'Seleccionar',
+      toolMove: 'Mover',
+      sizeLabel: 'Tamaño:',
+      opacityLabel: 'Opacidad:',
+      hardnessLabel: 'Dureza:',
+      thicknessLabel: 'Grosor:',
+      strokeWidthLabel: 'Ancho de trazo:',
+      filledLabel: 'Relleno',
+      toleranceLabel: 'Tolerancia:',
+      fontSizeLabel: 'Tamaño de fuente',
+      fontLabel: 'Fuente',
+      fontSansSerif: 'Sans-serif',
+      fontSerif: 'Serif',
+      fontMonospace: 'Monoespaciada',
+      textToolHint: 'Haz clic en el lienzo para colocar texto.',
+      eyedropperHint: 'Haz clic en cualquier parte del lienzo para tomar ese color.',
+      moveToolHint: 'Arrastra en el lienzo para reposicionar los píxeles de la capa activa.',
+      selectToolHint: 'Arrastra para seleccionar un rectángulo, luego usa las acciones de abajo.',
+      actionCut: 'Cortar',
+      actionCopy: 'Copiar',
+      actionPaste: 'Pegar',
+      actionDelete: 'Eliminar',
+      actionCrop: 'Recortar a la selección',
+      layerPrefix: 'Capa',
+      copySuffix: 'copia',
+      moveUpTitle: 'Subir',
+      moveDownTitle: 'Bajar',
+      textToAddPrompt: 'Texto a agregar:',
+      errorDragSelectionFirst: 'Arrastra una selección en el lienzo primero.',
+      errorNothingCopied: 'Nada copiado todavía.',
+      errorNeedOneLayer: 'Necesitas al menos una capa.',
+      errorNoLayerBelow: 'No hay ninguna capa debajo de esta.',
+      canvasWidthPrompt: 'Ancho del lienzo (px):',
+      canvasHeightPrompt: 'Alto del lienzo (px):',
+      backgroundConfirmPrompt: 'Haz clic en Aceptar para un fondo blanco, Cancelar para transparente.',
+      newWidthPrompt: 'Nuevo ancho (px):',
+      newHeightPrompt: 'Nuevo alto (px):'
+    },
+    ar: {
+      heroSubtitle: 'محرر صور متعدد الطبقات — فرش، أشكال، نص، تعبئة، تحديد، مرشحات، وتراجع/إعادة.',
+      toolsHeading: 'الأدوات',
+      optionsHeading: 'الخيارات',
+      colorHeading: 'اللون',
+      canvasHeading: 'اللوحة',
+      newLabel: 'جديد',
+      resizeLabel: 'تغيير الحجم',
+      importImageLabel: '+ استيراد صورة كطبقة',
+      historyHeading: 'السجل',
+      undoLabel: '↺ تراجع',
+      redoLabel: '↻ إعادة',
+      canvasToolbarLabel: 'PAINT FORGE — اللوحة',
+      exportPngLabel: '⬇ تصدير PNG',
+      exportJpgLabel: '⬇ تصدير JPG',
+      layersHeading: 'الطبقات',
+      addLayerLabel: '+ إضافة طبقة',
+      duplicateLabel: '⧉ نسخ مطابق',
+      mergeDownLabel: '⬇ دمج للأسفل',
+      deleteLabel: '✕ حذف',
+      transformHeading: 'التحويل (الطبقة النشطة)',
+      flipHLabel: '⇋ قلب أفقي',
+      flipVLabel: '⇵ قلب رأسي',
+      rotateCcwLabel: '↺ تدوير عكس عقارب الساعة',
+      rotateCwLabel: '↻ تدوير مع عقارب الساعة',
+      transformHint: 'يؤثر على بكسلات الطبقة النشطة في مكانها — يُقص المحتوى الذي لم يعد يناسب الإطار.',
+      adjustmentsHeading: 'التعديلات (الطبقة النشطة)',
+      brightnessLabel: 'السطوع',
+      contrastLabel: 'التباين',
+      saturationLabel: 'التشبع',
+      blurLabel: 'التمويه',
+      grayscaleLabel: 'تدرج رمادي',
+      invertLabel: 'عكس الألوان',
+      resetLabel: 'إعادة تعيين',
+      applyLabel: 'تطبيق',
+      filterPreviewHint: 'تتحدث المعاينة مباشرة على الطبقة النشطة؛ "تطبيق" يثبتها بشكل دائم.',
+      footerText: 'جزء من <a href="index.html">MigaBuilder</a>. كل ما ترسمه وتستورده يبقى في متصفحك — لا يُرفع شيء إلى أي مكان. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      toolBrush: 'فرشاة',
+      toolEraser: 'ممحاة',
+      toolLine: 'خط',
+      toolRectangle: 'مستطيل',
+      toolEllipse: 'قطع ناقص',
+      toolFill: 'تعبئة',
+      toolText: 'نص',
+      toolEyedrop: 'قطارة',
+      toolSelect: 'تحديد',
+      toolMove: 'نقل',
+      sizeLabel: 'الحجم:',
+      opacityLabel: 'العتامة:',
+      hardnessLabel: 'الصلابة:',
+      thicknessLabel: 'السماكة:',
+      strokeWidthLabel: 'عرض الحد:',
+      filledLabel: 'معبأ',
+      toleranceLabel: 'التفاوت:',
+      fontSizeLabel: 'حجم الخط',
+      fontLabel: 'الخط',
+      fontSansSerif: 'بلا زوائد',
+      fontSerif: 'بزوائد',
+      fontMonospace: 'أحادي المسافة',
+      textToolHint: 'انقر على اللوحة لوضع النص.',
+      eyedropperHint: 'انقر في أي مكان على اللوحة لالتقاط ذلك اللون.',
+      moveToolHint: 'اسحب على اللوحة لإعادة وضع بكسلات الطبقة النشطة.',
+      selectToolHint: 'اسحب لتحديد مستطيل، ثم استخدم الإجراءات أدناه.',
+      actionCut: 'قص',
+      actionCopy: 'نسخ',
+      actionPaste: 'لصق',
+      actionDelete: 'حذف',
+      actionCrop: 'قص إلى التحديد',
+      layerPrefix: 'طبقة',
+      copySuffix: 'نسخة',
+      moveUpTitle: 'تحريك لأعلى',
+      moveDownTitle: 'تحريك لأسفل',
+      textToAddPrompt: 'النص المراد إضافته:',
+      errorDragSelectionFirst: 'اسحب تحديدًا على اللوحة أولاً.',
+      errorNothingCopied: 'لم يتم نسخ شيء بعد.',
+      errorNeedOneLayer: 'تحتاج إلى طبقة واحدة على الأقل.',
+      errorNoLayerBelow: 'لا توجد طبقة أسفل هذه.',
+      canvasWidthPrompt: 'عرض اللوحة (بكسل):',
+      canvasHeightPrompt: 'ارتفاع اللوحة (بكسل):',
+      backgroundConfirmPrompt: 'انقر موافق لخلفية بيضاء، إلغاء للشفافة.',
+      newWidthPrompt: 'العرض الجديد (بكسل):',
+      newHeightPrompt: 'الارتفاع الجديد (بكسل):'
+    },
+    zh: {
+      heroSubtitle: '分层图像编辑器——画笔、形状、文字、填充、选区、滤镜和撤销/重做。',
+      toolsHeading: '工具',
+      optionsHeading: '选项',
+      colorHeading: '颜色',
+      canvasHeading: '画布',
+      newLabel: '新建',
+      resizeLabel: '调整大小',
+      importImageLabel: '+ 将图片导入为图层',
+      historyHeading: '历史记录',
+      undoLabel: '↺ 撤销',
+      redoLabel: '↻ 重做',
+      canvasToolbarLabel: 'PAINT FORGE — 画布',
+      exportPngLabel: '⬇ 导出 PNG',
+      exportJpgLabel: '⬇ 导出 JPG',
+      layersHeading: '图层',
+      addLayerLabel: '+ 添加图层',
+      duplicateLabel: '⧉ 复制',
+      mergeDownLabel: '⬇ 向下合并',
+      deleteLabel: '✕ 删除',
+      transformHeading: '变换（活动图层）',
+      flipHLabel: '⇋ 水平翻转',
+      flipVLabel: '⇵ 垂直翻转',
+      rotateCcwLabel: '↺ 逆时针旋转',
+      rotateCwLabel: '↻ 顺时针旋转',
+      transformHint: '就地影响活动图层的像素——不再适合画框的内容会被裁剪。',
+      adjustmentsHeading: '调整（活动图层）',
+      brightnessLabel: '亮度',
+      contrastLabel: '对比度',
+      saturationLabel: '饱和度',
+      blurLabel: '模糊',
+      grayscaleLabel: '灰度',
+      invertLabel: '反色',
+      resetLabel: '重置',
+      applyLabel: '应用',
+      filterPreviewHint: '预览会在活动图层上实时更新；"应用"会永久固定效果。',
+      footerText: '隶属于 <a href="index.html">MigaBuilder</a>。你绘制和导入的所有内容都保留在浏览器中——不会上传到任何地方。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      toolBrush: '画笔',
+      toolEraser: '橡皮擦',
+      toolLine: '直线',
+      toolRectangle: '矩形',
+      toolEllipse: '椭圆',
+      toolFill: '填充',
+      toolText: '文字',
+      toolEyedrop: '取色器',
+      toolSelect: '选择',
+      toolMove: '移动',
+      sizeLabel: '大小：',
+      opacityLabel: '不透明度：',
+      hardnessLabel: '硬度：',
+      thicknessLabel: '粗细：',
+      strokeWidthLabel: '描边宽度：',
+      filledLabel: '填充',
+      toleranceLabel: '容差：',
+      fontSizeLabel: '字号',
+      fontLabel: '字体',
+      fontSansSerif: '无衬线',
+      fontSerif: '衬线',
+      fontMonospace: '等宽',
+      textToolHint: '点击画布放置文字。',
+      eyedropperHint: '点击画布上的任意位置以拾取该颜色。',
+      moveToolHint: '在画布上拖动以重新定位活动图层的像素。',
+      selectToolHint: '拖动以选择一个矩形，然后使用下面的操作。',
+      actionCut: '剪切',
+      actionCopy: '复制',
+      actionPaste: '粘贴',
+      actionDelete: '删除',
+      actionCrop: '裁剪到选区',
+      layerPrefix: '图层',
+      copySuffix: '副本',
+      moveUpTitle: '上移',
+      moveDownTitle: '下移',
+      textToAddPrompt: '要添加的文字：',
+      errorDragSelectionFirst: '请先在画布上拖动出一个选区。',
+      errorNothingCopied: '尚未复制任何内容。',
+      errorNeedOneLayer: '你至少需要一个图层。',
+      errorNoLayerBelow: '此图层下方没有其他图层。',
+      canvasWidthPrompt: '画布宽度（像素）：',
+      canvasHeightPrompt: '画布高度（像素）：',
+      backgroundConfirmPrompt: '点击"确定"使用白色背景，点击"取消"使用透明背景。',
+      newWidthPrompt: '新宽度（像素）：',
+      newHeightPrompt: '新高度（像素）：'
+    },
+    sw: {
+      heroSubtitle: 'Kihariri cha picha chenye tabaka — brashi, maumbo, maandishi, ujazo, uteuzi, vichujio, na tendua/rudia.',
+      toolsHeading: 'Zana',
+      optionsHeading: 'Chaguo',
+      colorHeading: 'Rangi',
+      canvasHeading: 'Turubai',
+      newLabel: 'Mpya',
+      resizeLabel: 'Badilisha ukubwa',
+      importImageLabel: '+ Ingiza picha kama tabaka',
+      historyHeading: 'Historia',
+      undoLabel: '↺ Tendua',
+      redoLabel: '↻ Rudia',
+      canvasToolbarLabel: 'PAINT FORGE — TURUBAI',
+      exportPngLabel: '⬇ Hamisha PNG',
+      exportJpgLabel: '⬇ Hamisha JPG',
+      layersHeading: 'Tabaka',
+      addLayerLabel: '+ Ongeza tabaka',
+      duplicateLabel: '⧉ Nakili',
+      mergeDownLabel: '⬇ Unganisha chini',
+      deleteLabel: '✕ Futa',
+      transformHeading: 'Badilisha (tabaka hai)',
+      flipHLabel: '⇋ Geuza H',
+      flipVLabel: '⇵ Geuza V',
+      rotateCcwLabel: '↺ Zungusha CCW',
+      rotateCwLabel: '↻ Zungusha CW',
+      transformHint: 'Huathiri pikseli za tabaka hai palepale — maudhui yasiyofaa tena fremu hukatwa.',
+      adjustmentsHeading: 'Marekebisho (tabaka hai)',
+      brightnessLabel: 'Mng\'ao',
+      contrastLabel: 'Utofautishaji',
+      saturationLabel: 'Uchangamfu wa rangi',
+      blurLabel: 'Ukungu',
+      grayscaleLabel: 'Kijivu',
+      invertLabel: 'Geuza rangi',
+      resetLabel: 'Weka upya',
+      applyLabel: 'Tumia',
+      filterPreviewHint: 'Muonekano husasishwa moja kwa moja kwenye tabaka hai; "Tumia" huufanya kudumu.',
+      footerText: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Kila kitu unachochora na kuingiza kinabaki kwenye kivinjari chako — hakuna kinachopakiwa popote. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      toolBrush: 'Brashi',
+      toolEraser: 'Kifutio',
+      toolLine: 'Mstari',
+      toolRectangle: 'Mstatili',
+      toolEllipse: 'Duaradufu',
+      toolFill: 'Jaza',
+      toolText: 'Maandishi',
+      toolEyedrop: 'Kichukua rangi',
+      toolSelect: 'Chagua',
+      toolMove: 'Hamisha',
+      sizeLabel: 'Ukubwa:',
+      opacityLabel: 'Uwazi:',
+      hardnessLabel: 'Ugumu:',
+      thicknessLabel: 'Unene:',
+      strokeWidthLabel: 'Upana wa mstari:',
+      filledLabel: 'Imejazwa',
+      toleranceLabel: 'Uvumilivu:',
+      fontSizeLabel: 'Ukubwa wa fonti',
+      fontLabel: 'Fonti',
+      fontSansSerif: 'Bila serif',
+      fontSerif: 'Serif',
+      fontMonospace: 'Nafasi sawa',
+      textToolHint: 'Bofya turubai kuweka maandishi.',
+      eyedropperHint: 'Bofya mahali popote kwenye turubai kuchukua rangi hiyo.',
+      moveToolHint: 'Buruta kwenye turubai kuweka upya pikseli za tabaka hai.',
+      selectToolHint: 'Buruta kuchagua mstatili, kisha tumia vitendo hapa chini.',
+      actionCut: 'Kata',
+      actionCopy: 'Nakili',
+      actionPaste: 'Bandika',
+      actionDelete: 'Futa',
+      actionCrop: 'Kata hadi uteuzi',
+      layerPrefix: 'Tabaka',
+      copySuffix: 'nakala',
+      moveUpTitle: 'Panda juu',
+      moveDownTitle: 'Shuka chini',
+      textToAddPrompt: 'Maandishi ya kuongeza:',
+      errorDragSelectionFirst: 'Buruta uteuzi kwenye turubai kwanza.',
+      errorNothingCopied: 'Hakuna kilichonakiliwa bado.',
+      errorNeedOneLayer: 'Unahitaji angalau tabaka moja.',
+      errorNoLayerBelow: 'Hakuna tabaka chini ya hili.',
+      canvasWidthPrompt: 'Upana wa turubai (px):',
+      canvasHeightPrompt: 'Urefu wa turubai (px):',
+      backgroundConfirmPrompt: 'Bofya Sawa kwa mandhari nyeupe, Ghairi kwa uwazi.',
+      newWidthPrompt: 'Upana mpya (px):',
+      newHeightPrompt: 'Urefu mpya (px):'
+    }
+  });
 })();
 </script>
 </body>
