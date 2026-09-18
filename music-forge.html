@@ -31,6 +31,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="i18n.js"></script>
 
 <style>
   :root {
@@ -244,55 +245,56 @@
   </svg>
   <div>
     <h1>Music Forge</h1>
-    <p>Pick a mood for an instant track, or switch to Tracker mode and build your own beat.</p>
+    <p data-i18n="heroSubtitle">Pick a mood for an instant track, or switch to Tracker mode and build your own beat.</p>
+    <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
 
 <div class="mode-toggle-wrap">
   <div class="mode-toggle">
-    <button type="button" class="mode-btn active" id="presetModeBtn">🎹 Quick presets</button>
-    <button type="button" class="mode-btn" id="trackerModeBtn">🎛️ Tracker (advanced)</button>
+    <button type="button" class="mode-btn active" id="presetModeBtn" data-i18n="presetModeLabel">🎹 Quick presets</button>
+    <button type="button" class="mode-btn" id="trackerModeBtn" data-i18n="trackerModeLabel">🎛️ Tracker (advanced)</button>
   </div>
 </div>
 
 <div class="solo-wrap" id="presetModeWrap">
   <div class="panel">
     <div class="field">
-      <label>Mood</label>
+      <label data-i18n="moodLabel">Mood</label>
       <div class="preset-grid" id="presetGrid"></div>
     </div>
 
     <div class="field">
       <div class="row-2">
         <div>
-          <label for="durationInput">Length (seconds)</label>
+          <label for="durationInput" data-i18n="lengthSecondsLabel">Length (seconds)</label>
           <input type="number" id="durationInput" value="24" min="5" max="180" step="1">
         </div>
         <div>
-          <label for="tempoInput">Tempo (BPM)</label>
+          <label for="tempoInput" data-i18n="tempoBpmLabel">Tempo (BPM)</label>
           <input type="number" id="tempoInput" value="100" min="40" max="200" step="1">
         </div>
       </div>
-      <p class="hint">Tempo defaults to a good fit for the mood you pick — feel free to override it.</p>
+      <p class="hint" data-i18n="tempoHint">Tempo defaults to a good fit for the mood you pick — feel free to override it.</p>
     </div>
 
     <div class="field">
       <label class="hint" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-        <input type="checkbox" id="drumsOverride" style="width:auto;"> Force a simple drum beat on (even for ambient moods)
+        <input type="checkbox" id="drumsOverride" style="width:auto;"> <span data-i18n="forceDrumsLabel">Force a simple drum beat on (even for ambient moods)</span>
       </label>
     </div>
 
-    <button type="button" class="draft-btn" id="generateBtn">🎵 Generate track</button>
+    <button type="button" class="draft-btn" id="generateBtn" data-i18n="generateBtnLabel">🎵 Generate track</button>
     <div class="error-box" id="errorBox"></div>
   </div>
 
   <div class="result-card" id="resultCard">
-    <div class="result-label" id="resultLabel">Your track</div>
+    <div class="result-label" id="resultLabel" data-i18n="resultLabelDefault">Your track</div>
     <div class="result-sub" id="resultSub"></div>
     <audio id="resultAudio" controls></audio>
     <div class="btn-grid">
-      <button type="button" class="draft-btn secondary" id="regenerateBtn">🔁 Regenerate (new variation)</button>
-      <button type="button" class="draft-btn secondary" id="downloadBtn">⬇ Download .wav</button>
+      <button type="button" class="draft-btn secondary" id="regenerateBtn" data-i18n="regenerateBtnLabel">🔁 Regenerate (new variation)</button>
+      <button type="button" class="draft-btn secondary" id="downloadBtn" data-i18n="downloadWavLabel">⬇ Download .wav</button>
     </div>
   </div>
 </div>
@@ -300,50 +302,50 @@
 <main class="tracker-main" id="trackerModeWrap" style="display:none;">
   <section class="tracker-panel">
 
-    <div class="section-title">Project</div>
+    <div class="section-title" data-i18n="projectHeading">Project</div>
     <div class="btn-row">
-      <button type="button" class="draft-btn secondary" id="undoBtn" disabled>↶ Undo</button>
-      <button type="button" class="draft-btn secondary" id="saveProjectBtn">💾 Save project</button>
+      <button type="button" class="draft-btn secondary" id="undoBtn" disabled data-i18n="undoLabel">↶ Undo</button>
+      <button type="button" class="draft-btn secondary" id="saveProjectBtn" data-i18n="saveProjectLabel">💾 Save project</button>
     </div>
-    <label class="upload-btn" for="loadProjectInput" style="display:block;margin-top:8px;">📂 Load project (.json)</label>
+    <label class="upload-btn" for="loadProjectInput" style="display:block;margin-top:8px;" data-i18n="loadProjectLabel">📂 Load project (.json)</label>
     <input type="file" id="loadProjectInput" accept="application/json" style="display:none;">
-    <p class="hint">Save your whole session — tracks, patterns, song order, and uploaded sounds — to one file, or load one back later. Undo steps back through your last ~40 edits (Ctrl+Z also works).</p>
+    <p class="hint" data-i18n="projectHint">Save your whole session — tracks, patterns, song order, and uploaded sounds — to one file, or load one back later. Undo steps back through your last ~40 edits (Ctrl+Z also works).</p>
 
-    <div class="section-title">Tracks</div>
+    <div class="section-title" data-i18n="tracksHeading">Tracks</div>
     <div id="tracksList"></div>
-    <p class="hint">Each track is either a synth instrument or a sound you upload. The note stepper sets the pitch used when you click a new step — right-click an active step to fine-tune just that one.</p>
+    <p class="hint" data-i18n="tracksHint">Each track is either a synth instrument or a sound you upload. The note stepper sets the pitch used when you click a new step — right-click an active step to fine-tune just that one.</p>
 
-    <div class="section-title">Tempo &amp; grid</div>
+    <div class="section-title" data-i18n="tempoGridHeading">Tempo &amp; grid</div>
     <div class="field">
       <div class="row-2">
         <div>
-          <label for="trackerBpm">Tempo (BPM)</label>
+          <label for="trackerBpm" data-i18n="tempoBpmLabel">Tempo (BPM)</label>
           <input type="number" id="trackerBpm" value="120" min="40" max="240" step="1">
         </div>
         <div>
-          <label for="stepsPerPattern">Steps per pattern</label>
+          <label for="stepsPerPattern" data-i18n="stepsPerPatternLabel">Steps per pattern</label>
           <select id="stepsPerPattern">
-            <option value="8">8 (16th, half bar)</option>
-            <option value="16" selected>16 (16th, 1 bar)</option>
-            <option value="32">32 (16th, 2 bars)</option>
+            <option value="8" data-i18n="steps8">8 (16th, half bar)</option>
+            <option value="16" selected data-i18n="steps16">16 (16th, 1 bar)</option>
+            <option value="32" data-i18n="steps32">32 (16th, 2 bars)</option>
           </select>
         </div>
       </div>
     </div>
 
-    <div class="section-title">Patterns</div>
+    <div class="section-title" data-i18n="patternsHeading">Patterns</div>
     <div class="pattern-tabs" id="patternTabs"></div>
     <div class="pattern-actions">
-      <button type="button" class="draft-btn secondary" id="addPatternBtn">+ New</button>
-      <button type="button" class="draft-btn secondary" id="dupPatternBtn">⧉ Duplicate</button>
-      <button type="button" class="draft-btn secondary" id="renamePatternBtn">✎ Rename</button>
-      <button type="button" class="draft-btn secondary" id="deletePatternBtn">✕ Delete</button>
+      <button type="button" class="draft-btn secondary" id="addPatternBtn" data-i18n="newLabel">+ New</button>
+      <button type="button" class="draft-btn secondary" id="dupPatternBtn" data-i18n="duplicateLabel">⧉ Duplicate</button>
+      <button type="button" class="draft-btn secondary" id="renamePatternBtn" data-i18n="renameLabel">✎ Rename</button>
+      <button type="button" class="draft-btn secondary" id="deletePatternBtn" data-i18n="deleteLabel">✕ Delete</button>
     </div>
 
-    <div class="section-title">Song arrangement</div>
-    <button type="button" class="draft-btn secondary" id="addToSongBtn">+ Add current pattern to song</button>
+    <div class="section-title" data-i18n="songArrangementHeading">Song arrangement</div>
+    <button type="button" class="draft-btn secondary" id="addToSongBtn" data-i18n="addToSongLabel">+ Add current pattern to song</button>
     <div class="song-list" id="songList"></div>
-    <p class="song-empty" id="songEmpty">Song is empty — add patterns above to build a playback/export order.</p>
+    <p class="song-empty" id="songEmpty" data-i18n="songEmptyText">Song is empty — add patterns above to build a playback/export order.</p>
 
     <div class="error-box" id="trackerErrorBox"></div>
     <div class="error-box" id="trackerSuccessBox" style="background: rgba(78, 158, 115, 0.14); border-color: rgba(78, 158, 115, 0.4); color: #275238;"></div>
@@ -351,8 +353,8 @@
 
   <section class="tracker-table">
     <div class="title-block">
-      <span>TRACKER — <span id="activePatternLabel">PATTERN 1</span></span>
-      <span id="trackerStatus">STOPPED</span>
+      <span><span data-i18n="trackerLabelPrefix">TRACKER —</span> <span id="activePatternLabel">PATTERN 1</span></span>
+      <span id="trackerStatus" data-i18n="statusStopped">STOPPED</span>
     </div>
 
     <div class="grid-scroll">
@@ -360,35 +362,35 @@
     </div>
 
     <div class="transport-row">
-      <button type="button" id="playSongBtn">▶ Play song</button>
-      <button type="button" id="stopBtn" disabled>■ Stop</button>
-      <button type="button" id="exportWavBtn" class="primary">⬇ Export song as .wav</button>
+      <button type="button" id="playSongBtn" data-i18n="playSongLabel">▶ Play song</button>
+      <button type="button" id="stopBtn" disabled data-i18n="stopLabel">■ Stop</button>
+      <button type="button" id="exportWavBtn" class="primary" data-i18n="exportWavLabel">⬇ Export song as .wav</button>
     </div>
-    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;">Playback uses the song arrangement on the left (or just the current pattern, looped, if the song is empty). Export renders the whole arrangement to a real .wav file.</p>
+    <p class="hint" style="color: rgba(237,234,224,0.55); margin-top: 8px;" data-i18n="playbackHint">Playback uses the song arrangement on the left (or just the current pattern, looped, if the song is empty). Export renders the whole arrangement to a real .wav file.</p>
   </section>
 </main>
 
 <div class="cell-popover" id="cellPopover">
   <div class="field">
-    <label>Note</label>
+    <label data-i18n="noteLabel">Note</label>
     <div class="note-stepper" id="popoverNoteStepper"></div>
   </div>
   <div class="field">
-    <label>Velocity</label>
+    <label data-i18n="velocityLabel">Velocity</label>
     <input type="range" id="popoverVelocity" min="0.1" max="1" step="0.05">
   </div>
   <div class="cell-popover-actions">
-    <button type="button" id="popoverClearBtn">Clear step</button>
-    <button type="button" id="popoverCloseBtn">Done</button>
+    <button type="button" id="popoverClearBtn" data-i18n="clearStepLabel">Clear step</button>
+    <button type="button" id="popoverCloseBtn" data-i18n="doneLabel">Done</button>
   </div>
 </div>
 
-<footer id="presetFooter">
+<footer id="presetFooter" data-i18n-html="presetFooterHtml">
   Part of <a href="index.html">MigaBuilder</a>. Every track is an original algorithmic composition generated on the
   spot from simple music-theory rules — not a sample, loop, or clip of existing music — so it's yours to use however
   you like, with no attribution or licensing needed. Nothing is uploaded; generation happens entirely in your browser.
  <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
-<footer id="trackerFooter" style="display:none;">
+<footer id="trackerFooter" style="display:none;" data-i18n-html="trackerFooterHtml">
   Part of <a href="index.html">MigaBuilder</a>. Sounds you upload and everything you compose stay in your browser —
   nothing is uploaded anywhere. Uploaded sounds are pitch-shifted by playback speed to match each step's note, the
   same way classic trackers played samples. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a></footer>
@@ -486,16 +488,17 @@
   const TRIADS = { maj: [0, 4, 7], min: [0, 3, 7] };
 
   const PRESETS = [
-    { id: 'cheerful', label: '🎉 Cheerful', sub: 'Upbeat & major', mode: 'major', wave: 'triangle', bpm: 120, style: 'arp', stepsPerChord: 4, drums: true },
-    { id: 'calm', label: '🌙 Calm / Ambient', sub: 'Slow pads, no beat', mode: 'major', wave: 'sine', bpm: 66, style: 'pad', drums: false },
-    { id: 'cinematic', label: '🎬 Cinematic', sub: 'Minor, sweeping', mode: 'minor', wave: 'sawtooth', bpm: 76, style: 'pad', drums: false },
-    { id: 'lofi', label: '☕ Lo-fi Chill', sub: 'Laid-back, swung', mode: 'minor', wave: 'triangle', bpm: 84, style: 'arp', stepsPerChord: 6, drums: true, swing: true },
-    { id: 'chiptune', label: '👾 Chiptune', sub: 'Fast, 8-bit style', mode: 'major', wave: 'square', bpm: 150, style: 'arp', stepsPerChord: 8, drums: true },
-    { id: 'piano', label: '🎹 Piano Ballad', sub: 'Soft, minor, sparse', mode: 'minor', wave: 'triangle', bpm: 60, style: 'arp', stepsPerChord: 3, drums: false, soft: true }
+    { id: 'cheerful', labelKey: 'presetCheerfulLabel', subKey: 'presetCheerfulSub', mode: 'major', wave: 'triangle', bpm: 120, style: 'arp', stepsPerChord: 4, drums: true },
+    { id: 'calm', labelKey: 'presetCalmLabel', subKey: 'presetCalmSub', mode: 'major', wave: 'sine', bpm: 66, style: 'pad', drums: false },
+    { id: 'cinematic', labelKey: 'presetCinematicLabel', subKey: 'presetCinematicSub', mode: 'minor', wave: 'sawtooth', bpm: 76, style: 'pad', drums: false },
+    { id: 'lofi', labelKey: 'presetLofiLabel', subKey: 'presetLofiSub', mode: 'minor', wave: 'triangle', bpm: 84, style: 'arp', stepsPerChord: 6, drums: true, swing: true },
+    { id: 'chiptune', labelKey: 'presetChiptuneLabel', subKey: 'presetChiptuneSub', mode: 'major', wave: 'square', bpm: 150, style: 'arp', stepsPerChord: 8, drums: true },
+    { id: 'piano', labelKey: 'presetPianoLabel', subKey: 'presetPianoSub', mode: 'minor', wave: 'triangle', bpm: 60, style: 'arp', stepsPerChord: 3, drums: false, soft: true }
   ];
 
   let activePreset = PRESETS[0];
   let lastBuffer = null;
+  let lastResult = null; // {presetLabelKey, durationSec, bpm}
 
   function renderPresetGrid() {
     presetGrid.innerHTML = '';
@@ -503,7 +506,7 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'preset-btn' + (preset.id === activePreset.id ? ' active' : '');
-      btn.innerHTML = preset.label + '<span class="sub">' + preset.sub + '</span>';
+      btn.innerHTML = I18N.t(preset.labelKey) + '<span class="sub">' + I18N.t(preset.subKey) + '</span>';
       btn.addEventListener('click', () => {
         activePreset = preset;
         tempoInput.value = preset.bpm;
@@ -628,27 +631,28 @@
   async function runGenerate() {
     clearError();
     if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) {
-      showError('Your browser does not support the audio technology this tool needs.');
+      showError(I18N.t('errorNoAudioSupport'));
       return;
     }
     const durationSec = Math.min(180, Math.max(5, parseFloat(durationInput.value) || 24));
     const bpm = Math.min(200, Math.max(40, parseInt(tempoInput.value, 10) || activePreset.bpm));
     generateBtn.disabled = true;
-    generateBtn.textContent = 'Generating…';
+    generateBtn.textContent = I18N.t('generatingLabel');
     try {
       const buffer = await generateMusic(activePreset, durationSec, bpm, drumsOverride.checked);
       lastBuffer = buffer;
       const blob = audioBufferToWav(buffer);
       const url = URL.createObjectURL(blob);
       resultAudio.src = url;
-      resultLabel.textContent = activePreset.label + ' — ' + Math.round(durationSec) + 's at ' + bpm + ' BPM';
-      resultSub.textContent = 'A fresh original variation — click Regenerate for a different take on the same mood.';
+      lastResult = { presetLabelKey: activePreset.labelKey, durationSec: Math.round(durationSec), bpm: bpm };
+      resultLabel.textContent = I18N.t(lastResult.presetLabelKey) + ' — ' + lastResult.durationSec + 's at ' + lastResult.bpm + ' BPM';
+      resultSub.textContent = I18N.t('resultSubText');
       resultCard.classList.add('show');
     } catch (err) {
-      showError('Could not generate a track: ' + err.message);
+      showError(I18N.t('errorCouldNotGenerate') + ' ' + err.message);
     } finally {
       generateBtn.disabled = false;
-      generateBtn.textContent = '🎵 Generate track';
+      generateBtn.textContent = I18N.t('generateBtnLabel');
     }
   }
 
@@ -873,9 +877,9 @@
       const text = await file.text();
       const data = JSON.parse(text);
       await loadProject(data);
-      showTrackerSuccess('Project loaded: ' + (data.tracks || []).length + ' tracks, ' + (data.patterns || []).length + ' patterns.');
+      showTrackerSuccess(I18N.t('projectLoadedPrefix') + ' ' + (data.tracks || []).length + ' ' + I18N.t('tracksWord') + ', ' + (data.patterns || []).length + ' ' + I18N.t('patternsWord') + '.');
     } catch (err) {
-      showTrackerError('Could not load that project file: ' + err.message);
+      showTrackerError(I18N.t('errorCouldNotLoadProject') + ' ' + err.message);
     }
     loadProjectInput.value = '';
   });
@@ -917,10 +921,10 @@
       const typeToggle = document.createElement('div');
       typeToggle.className = 'type-toggle';
       const synthBtn = document.createElement('button');
-      synthBtn.type = 'button'; synthBtn.textContent = 'Synth';
+      synthBtn.type = 'button'; synthBtn.textContent = I18N.t('synthLabel');
       synthBtn.className = track.type === 'synth' ? 'active' : '';
       const sampleBtn = document.createElement('button');
-      sampleBtn.type = 'button'; sampleBtn.textContent = 'Sample';
+      sampleBtn.type = 'button'; sampleBtn.textContent = I18N.t('sampleLabel');
       sampleBtn.className = track.type === 'sample' ? 'active' : '';
       synthBtn.addEventListener('click', () => { pushHistory(); track.type = 'synth'; renderTracksList(); });
       sampleBtn.addEventListener('click', () => { pushHistory(); track.type = 'sample'; renderTracksList(); });
@@ -947,7 +951,7 @@
         uploadWrap.style.width = '100%';
         const label = document.createElement('label');
         label.className = 'upload-btn';
-        label.textContent = track.sampleName ? 'Replace sound' : '+ Upload a sound';
+        label.textContent = track.sampleName ? I18N.t('replaceSoundLabel') : I18N.t('uploadSoundLabel');
         const fileInput = document.createElement('input');
         fileInput.type = 'file'; fileInput.accept = 'audio/*'; fileInput.style.display = 'none';
         fileInput.addEventListener('change', async function (e) {
@@ -964,7 +968,7 @@
             track.sampleDataUrl = await fileToDataUrl(file);
             renderTracksList();
           } catch (err) {
-            showTrackerError('Could not read "' + file.name + '": ' + err.message);
+            showTrackerError(I18N.t('soundReadErrorPrefix') + ' "' + file.name + '": ' + err.message);
           }
         });
         label.appendChild(fileInput);
@@ -979,7 +983,7 @@
 
         if (track.sampleName) {
           const baseLabel = document.createElement('span');
-          baseLabel.textContent = 'Base pitch:';
+          baseLabel.textContent = I18N.t('basePitchLabel');
           const baseStepper = document.createElement('span');
           buildNoteStepper(baseStepper, () => track.baseNote, v => { track.baseNote = v; }, null, pushHistory);
           controls.appendChild(baseLabel);
@@ -988,14 +992,14 @@
       }
 
       const penLabel = document.createElement('span');
-      penLabel.textContent = 'Pen note:';
+      penLabel.textContent = I18N.t('penNoteLabel');
       const penStepper = document.createElement('span');
       buildNoteStepper(penStepper, () => track.penNote, v => { track.penNote = v; }, null, pushHistory);
       controls.appendChild(penLabel);
       controls.appendChild(penStepper);
 
       const volLabel = document.createElement('span');
-      volLabel.textContent = 'Vol:';
+      volLabel.textContent = I18N.t('volLabel');
       const volSlider = document.createElement('input');
       volSlider.type = 'range'; volSlider.min = '0'; volSlider.max = '1'; volSlider.step = '0.05'; volSlider.value = track.volume;
       let volHistoryPushed = false;
@@ -1004,7 +1008,7 @@
       controls.appendChild(volLabel); controls.appendChild(volSlider);
 
       const panLabel = document.createElement('span');
-      panLabel.textContent = 'Pan:';
+      panLabel.textContent = I18N.t('panLabel');
       const panSlider = document.createElement('input');
       panSlider.type = 'range'; panSlider.min = '-1'; panSlider.max = '1'; panSlider.step = '0.1'; panSlider.value = track.pan || 0;
       let panHistoryPushed = false;
@@ -1017,7 +1021,7 @@
       const muteCheckbox = document.createElement('input');
       muteCheckbox.type = 'checkbox'; muteCheckbox.style.width = 'auto'; muteCheckbox.checked = track.muted;
       muteCheckbox.addEventListener('change', () => { pushHistory(); track.muted = muteCheckbox.checked; renderStepGrid(); });
-      muteLabel.appendChild(muteCheckbox); muteLabel.appendChild(document.createTextNode('Mute'));
+      muteLabel.appendChild(muteCheckbox); muteLabel.appendChild(document.createTextNode(I18N.t('muteLabel')));
       controls.appendChild(muteLabel);
 
       row.appendChild(controls);
@@ -1041,8 +1045,7 @@
 
   addPatternBtn.addEventListener('click', () => {
     pushHistory();
-    const p = { id: ++patternIdCounter, name: 'Pattern ' + patterns.length + 1 || 'Pattern', cells: emptyCells() };
-    p.name = 'Pattern ' + (patterns.length + 1);
+    const p = { id: ++patternIdCounter, name: I18N.t('patternPrefix') + ' ' + (patterns.length + 1), cells: emptyCells() };
     patterns.push(p);
     activePatternId = p.id;
     renderPatternTabs(); renderStepGrid();
@@ -1051,7 +1054,7 @@
     const src = activePattern();
     if (!src) return;
     pushHistory();
-    const copy = { id: ++patternIdCounter, name: src.name + ' copy', cells: src.cells.map(row => row.map(c => c ? Object.assign({}, c) : null)) };
+    const copy = { id: ++patternIdCounter, name: src.name + ' ' + I18N.t('copySuffix'), cells: src.cells.map(row => row.map(c => c ? Object.assign({}, c) : null)) };
     patterns.push(copy);
     activePatternId = copy.id;
     renderPatternTabs(); renderStepGrid();
@@ -1059,11 +1062,11 @@
   renamePatternBtn.addEventListener('click', () => {
     const p = activePattern();
     if (!p) return;
-    const name = window.prompt('Pattern name:', p.name);
+    const name = window.prompt(I18N.t('patternNamePrompt'), p.name);
     if (name && name.trim()) { pushHistory(); p.name = name.trim(); renderPatternTabs(); }
   });
   deletePatternBtn.addEventListener('click', () => {
-    if (patterns.length <= 1) { showTrackerError('You need at least one pattern.'); return; }
+    if (patterns.length <= 1) { showTrackerError(I18N.t('errorNeedOnePattern')); return; }
     pushHistory();
     patterns = patterns.filter(p => p.id !== activePatternId);
     songOrder = songOrder.filter(id => id !== activePatternId);
@@ -1090,9 +1093,12 @@
       chip.innerHTML =
         '<span class="chip-index">' + (i + 1) + '.</span>' +
         '<span class="chip-name">' + p.name.replace(/</g, '&lt;') + '</span>' +
-        '<button type="button" data-up title="Move up">▲</button>' +
-        '<button type="button" data-down title="Move down">▼</button>' +
-        '<button type="button" data-remove title="Remove">✕</button>';
+        '<button type="button" data-up>▲</button>' +
+        '<button type="button" data-down>▼</button>' +
+        '<button type="button" data-remove>✕</button>';
+      chip.querySelector('[data-up]').title = I18N.t('moveUpTitle');
+      chip.querySelector('[data-down]').title = I18N.t('moveDownTitle');
+      chip.querySelector('[data-remove]').title = I18N.t('removeTitle');
       chip.querySelector('[data-up]').addEventListener('click', () => { if (i > 0) { pushHistory(); [songOrder[i - 1], songOrder[i]] = [songOrder[i], songOrder[i - 1]]; renderSongList(); } });
       chip.querySelector('[data-down]').addEventListener('click', () => { if (i < songOrder.length - 1) { pushHistory(); [songOrder[i + 1], songOrder[i]] = [songOrder[i], songOrder[i + 1]]; renderSongList(); } });
       chip.querySelector('[data-remove]').addEventListener('click', () => { pushHistory(); songOrder.splice(i, 1); renderSongList(); });
@@ -1131,7 +1137,7 @@
     tracks.forEach((track, trackIdx) => {
       const labelEl = document.createElement('div');
       labelEl.className = 'grid-row-label';
-      labelEl.textContent = track.name + (track.muted ? ' (muted)' : '');
+      labelEl.textContent = track.name + (track.muted ? ' (' + I18N.t('mutedSuffix') + ')' : '');
       labelEl.style.opacity = track.muted ? '0.4' : '1';
       stepGridEl.appendChild(labelEl);
 
@@ -1319,14 +1325,14 @@
     clearTrackerError();
     if (isPlaying) return;
     songSteps = buildSongSteps();
-    if (!songSteps.length) { showTrackerError('Nothing to play — add some steps first.'); return; }
+    if (!songSteps.length) { showTrackerError(I18N.t('errorNothingToPlay')); return; }
     if (!previewCtx) previewCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (previewCtx.state === 'suspended') previewCtx.resume();
     songPos = 0;
     nextStepTime = previewCtx.currentTime + 0.05;
     stepStartTimes = [];
     isPlaying = true;
-    trackerStatus.textContent = 'PLAYING';
+    trackerStatus.textContent = I18N.t('statusPlaying');
     playSongBtn.disabled = true;
     stopBtn.disabled = false;
     schedulerTimer = setInterval(schedulerTick, LOOKAHEAD_MS);
@@ -1338,7 +1344,7 @@
     if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; }
     if (highlightRaf) { cancelAnimationFrame(highlightRaf); highlightRaf = null; }
     document.querySelectorAll('.step-cell.playing').forEach(el => el.classList.remove('playing'));
-    trackerStatus.textContent = 'STOPPED';
+    trackerStatus.textContent = I18N.t('statusStopped');
     playSongBtn.disabled = false;
     stopBtn.disabled = true;
   }
@@ -1349,9 +1355,9 @@
     clearTrackerError();
     trackerSuccessBox.classList.remove('show');
     const songPatterns = flattenedSong();
-    if (!songPatterns.length) { showTrackerError('Nothing to export — add some steps first.'); return; }
+    if (!songPatterns.length) { showTrackerError(I18N.t('errorNothingToExport')); return; }
     if (!(window.OfflineAudioContext || window.webkitOfflineAudioContext)) {
-      showTrackerError('Your browser does not support the audio technology this tool needs.');
+      showTrackerError(I18N.t('errorNoAudioSupport'));
       return;
     }
     const stepDur = stepDurationSec();
@@ -1359,7 +1365,7 @@
     const totalDuration = totalSteps * stepDur + 1.0; // tail for release/sample ring-out
 
     exportWavBtn.disabled = true;
-    exportWavBtn.textContent = 'Rendering…';
+    exportWavBtn.textContent = I18N.t('renderingLabel');
     try {
       const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       const ctx = new AC(2, Math.ceil(44100 * totalDuration), 44100);
@@ -1388,12 +1394,485 @@
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 4000);
-      showTrackerSuccess('Exported ' + Math.round(totalDuration) + 's of audio across ' + songPatterns.length + ' pattern' + (songPatterns.length === 1 ? '' : 's') + '.');
+      const patternKey = songPatterns.length === 1 ? 'exportedPatternOne' : 'exportedPatternsMany';
+      showTrackerSuccess(I18N.t('exportedPrefix').replace('{sec}', Math.round(totalDuration)) + ' ' + songPatterns.length + ' ' + I18N.t(patternKey));
     } catch (err) {
-      showTrackerError('Could not export: ' + err.message);
+      showTrackerError(I18N.t('errorCouldNotExport') + ' ' + err.message);
     } finally {
       exportWavBtn.disabled = false;
-      exportWavBtn.textContent = '⬇ Export song as .wav';
+      exportWavBtn.textContent = I18N.t('exportWavLabel');
+    }
+  });
+
+  I18N.onChange(function () {
+    renderPresetGrid();
+    if (resultCard.classList.contains('show') && lastResult) {
+      resultLabel.textContent = I18N.t(lastResult.presetLabelKey) + ' — ' + lastResult.durationSec + 's at ' + lastResult.bpm + ' BPM';
+      resultSub.textContent = I18N.t('resultSubText');
+    }
+    renderAll();
+  });
+
+  I18N.init({
+    en: {
+      heroSubtitle: 'Pick a mood for an instant track, or switch to Tracker mode and build your own beat.',
+      presetModeLabel: '🎹 Quick presets',
+      trackerModeLabel: '🎛️ Tracker (advanced)',
+      moodLabel: 'Mood',
+      lengthSecondsLabel: 'Length (seconds)',
+      tempoBpmLabel: 'Tempo (BPM)',
+      tempoHint: 'Tempo defaults to a good fit for the mood you pick — feel free to override it.',
+      forceDrumsLabel: 'Force a simple drum beat on (even for ambient moods)',
+      generateBtnLabel: '🎵 Generate track',
+      resultLabelDefault: 'Your track',
+      regenerateBtnLabel: '🔁 Regenerate (new variation)',
+      downloadWavLabel: '⬇ Download .wav',
+      presetCheerfulLabel: '🎉 Cheerful',
+      presetCheerfulSub: 'Upbeat & major',
+      presetCalmLabel: '🌙 Calm / Ambient',
+      presetCalmSub: 'Slow pads, no beat',
+      presetCinematicLabel: '🎬 Cinematic',
+      presetCinematicSub: 'Minor, sweeping',
+      presetLofiLabel: '☕ Lo-fi Chill',
+      presetLofiSub: 'Laid-back, swung',
+      presetChiptuneLabel: '👾 Chiptune',
+      presetChiptuneSub: 'Fast, 8-bit style',
+      presetPianoLabel: '🎹 Piano Ballad',
+      presetPianoSub: 'Soft, minor, sparse',
+      errorNoAudioSupport: 'Your browser does not support the audio technology this tool needs.',
+      generatingLabel: 'Generating…',
+      resultSubText: 'A fresh original variation — click Regenerate for a different take on the same mood.',
+      errorCouldNotGenerate: 'Could not generate a track:',
+      projectHeading: 'Project',
+      undoLabel: '↶ Undo',
+      saveProjectLabel: '💾 Save project',
+      loadProjectLabel: '📂 Load project (.json)',
+      projectHint: 'Save your whole session — tracks, patterns, song order, and uploaded sounds — to one file, or load one back later. Undo steps back through your last ~40 edits (Ctrl+Z also works).',
+      tracksHeading: 'Tracks',
+      tracksHint: 'Each track is either a synth instrument or a sound you upload. The note stepper sets the pitch used when you click a new step — right-click an active step to fine-tune just that one.',
+      tempoGridHeading: 'Tempo & grid',
+      stepsPerPatternLabel: 'Steps per pattern',
+      steps8: '8 (16th, half bar)',
+      steps16: '16 (16th, 1 bar)',
+      steps32: '32 (16th, 2 bars)',
+      patternsHeading: 'Patterns',
+      newLabel: '+ New',
+      duplicateLabel: '⧉ Duplicate',
+      renameLabel: '✎ Rename',
+      deleteLabel: '✕ Delete',
+      songArrangementHeading: 'Song arrangement',
+      addToSongLabel: '+ Add current pattern to song',
+      songEmptyText: 'Song is empty — add patterns above to build a playback/export order.',
+      trackerLabelPrefix: 'TRACKER —',
+      statusStopped: 'STOPPED',
+      playSongLabel: '▶ Play song',
+      stopLabel: '■ Stop',
+      exportWavLabel: '⬇ Export song as .wav',
+      playbackHint: 'Playback uses the song arrangement on the left (or just the current pattern, looped, if the song is empty). Export renders the whole arrangement to a real .wav file.',
+      noteLabel: 'Note',
+      velocityLabel: 'Velocity',
+      clearStepLabel: 'Clear step',
+      doneLabel: 'Done',
+      presetFooterHtml: 'Part of <a href="index.html">MigaBuilder</a>. Every track is an original algorithmic composition generated on the spot from simple music-theory rules — not a sample, loop, or clip of existing music — so it\'s yours to use however you like, with no attribution or licensing needed. Nothing is uploaded; generation happens entirely in your browser. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      trackerFooterHtml: 'Part of <a href="index.html">MigaBuilder</a>. Sounds you upload and everything you compose stay in your browser — nothing is uploaded anywhere. Uploaded sounds are pitch-shifted by playback speed to match each step\'s note, the same way classic trackers played samples. <a href="feedback.html">Found a bug or have an idea? Send feedback →</a>',
+      patternPrefix: 'Pattern',
+      copySuffix: 'copy',
+      patternNamePrompt: 'Pattern name:',
+      errorNeedOnePattern: 'You need at least one pattern.',
+      moveUpTitle: 'Move up',
+      moveDownTitle: 'Move down',
+      removeTitle: 'Remove',
+      synthLabel: 'Synth',
+      sampleLabel: 'Sample',
+      replaceSoundLabel: 'Replace sound',
+      uploadSoundLabel: '+ Upload a sound',
+      soundReadErrorPrefix: 'Could not read',
+      basePitchLabel: 'Base pitch:',
+      penNoteLabel: 'Pen note:',
+      volLabel: 'Vol:',
+      panLabel: 'Pan:',
+      muteLabel: 'Mute',
+      mutedSuffix: 'muted',
+      errorNothingToPlay: 'Nothing to play — add some steps first.',
+      statusPlaying: 'PLAYING',
+      errorNothingToExport: 'Nothing to export — add some steps first.',
+      renderingLabel: 'Rendering…',
+      exportedPrefix: 'Exported {sec}s of audio across',
+      exportedPatternOne: 'pattern.',
+      exportedPatternsMany: 'patterns.',
+      errorCouldNotExport: 'Could not export:',
+      projectLoadedPrefix: 'Project loaded:',
+      tracksWord: 'tracks',
+      patternsWord: 'patterns',
+      errorCouldNotLoadProject: 'Could not load that project file:'
+    },
+    es: {
+      heroSubtitle: 'Elige un ambiente para una pista instantánea, o cambia al modo Tracker y construye tu propio ritmo.',
+      presetModeLabel: '🎹 Preajustes rápidos',
+      trackerModeLabel: '🎛️ Tracker (avanzado)',
+      moodLabel: 'Ambiente',
+      lengthSecondsLabel: 'Duración (segundos)',
+      tempoBpmLabel: 'Tempo (BPM)',
+      tempoHint: 'El tempo se ajusta por defecto al ambiente que elijas — siéntete libre de cambiarlo.',
+      forceDrumsLabel: 'Forzar un ritmo de batería simple (incluso para ambientes ambientales)',
+      generateBtnLabel: '🎵 Generar pista',
+      resultLabelDefault: 'Tu pista',
+      regenerateBtnLabel: '🔁 Regenerar (nueva variación)',
+      downloadWavLabel: '⬇ Descargar .wav',
+      presetCheerfulLabel: '🎉 Alegre',
+      presetCheerfulSub: 'Animado y mayor',
+      presetCalmLabel: '🌙 Calma / Ambiental',
+      presetCalmSub: 'Pads lentos, sin ritmo',
+      presetCinematicLabel: '🎬 Cinematográfico',
+      presetCinematicSub: 'Menor, envolvente',
+      presetLofiLabel: '☕ Lo-fi Relajado',
+      presetLofiSub: 'Relajado, con swing',
+      presetChiptuneLabel: '👾 Chiptune',
+      presetChiptuneSub: 'Rápido, estilo 8-bit',
+      presetPianoLabel: '🎹 Balada de Piano',
+      presetPianoSub: 'Suave, menor, escaso',
+      errorNoAudioSupport: 'Tu navegador no admite la tecnología de audio que esta herramienta necesita.',
+      generatingLabel: 'Generando…',
+      resultSubText: 'Una variación original nueva — haz clic en Regenerar para una versión diferente del mismo ambiente.',
+      errorCouldNotGenerate: 'No se pudo generar una pista:',
+      projectHeading: 'Proyecto',
+      undoLabel: '↶ Deshacer',
+      saveProjectLabel: '💾 Guardar proyecto',
+      loadProjectLabel: '📂 Cargar proyecto (.json)',
+      projectHint: 'Guarda toda tu sesión — pistas, patrones, orden de canción y sonidos subidos — en un archivo, o carga uno más tarde. Deshacer retrocede por tus últimas ~40 ediciones (Ctrl+Z también funciona).',
+      tracksHeading: 'Pistas',
+      tracksHint: 'Cada pista es un instrumento sintetizador o un sonido que subes. El selector de nota establece el tono usado al hacer clic en un paso nuevo — haz clic derecho en un paso activo para ajustar solo ese.',
+      tempoGridHeading: 'Tempo y cuadrícula',
+      stepsPerPatternLabel: 'Pasos por patrón',
+      steps8: '8 (16avo, medio compás)',
+      steps16: '16 (16avo, 1 compás)',
+      steps32: '32 (16avo, 2 compases)',
+      patternsHeading: 'Patrones',
+      newLabel: '+ Nuevo',
+      duplicateLabel: '⧉ Duplicar',
+      renameLabel: '✎ Renombrar',
+      deleteLabel: '✕ Eliminar',
+      songArrangementHeading: 'Arreglo de la canción',
+      addToSongLabel: '+ Agregar patrón actual a la canción',
+      songEmptyText: 'La canción está vacía — agrega patrones arriba para construir un orden de reproducción/exportación.',
+      trackerLabelPrefix: 'TRACKER —',
+      statusStopped: 'DETENIDO',
+      playSongLabel: '▶ Reproducir canción',
+      stopLabel: '■ Detener',
+      exportWavLabel: '⬇ Exportar canción como .wav',
+      playbackHint: 'La reproducción usa el arreglo de la canción a la izquierda (o solo el patrón actual, en bucle, si la canción está vacía). Exportar renderiza todo el arreglo a un archivo .wav real.',
+      noteLabel: 'Nota',
+      velocityLabel: 'Velocidad',
+      clearStepLabel: 'Borrar paso',
+      doneLabel: 'Listo',
+      presetFooterHtml: 'Parte de <a href="index.html">MigaBuilder</a>. Cada pista es una composición algorítmica original generada al instante a partir de reglas simples de teoría musical — no es una muestra, bucle o clip de música existente — así que es tuya para usar como quieras, sin necesidad de atribución ni licencia. Nada se sube; la generación ocurre completamente en tu navegador. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      trackerFooterHtml: 'Parte de <a href="index.html">MigaBuilder</a>. Los sonidos que subes y todo lo que compones permanecen en tu navegador — nada se sube a ningún lado. Los sonidos subidos se transportan en tono según la velocidad de reproducción para coincidir con la nota de cada paso, de la misma forma que los trackers clásicos reproducían muestras. <a href="feedback.html">¿Encontraste un error o tienes una idea? Envía tu opinión →</a>',
+      patternPrefix: 'Patrón',
+      copySuffix: 'copia',
+      patternNamePrompt: 'Nombre del patrón:',
+      errorNeedOnePattern: 'Necesitas al menos un patrón.',
+      moveUpTitle: 'Subir',
+      moveDownTitle: 'Bajar',
+      removeTitle: 'Eliminar',
+      synthLabel: 'Sintetizador',
+      sampleLabel: 'Muestra',
+      replaceSoundLabel: 'Reemplazar sonido',
+      uploadSoundLabel: '+ Subir un sonido',
+      soundReadErrorPrefix: 'No se pudo leer',
+      basePitchLabel: 'Tono base:',
+      penNoteLabel: 'Nota del lápiz:',
+      volLabel: 'Vol:',
+      panLabel: 'Pan:',
+      muteLabel: 'Silenciar',
+      mutedSuffix: 'silenciado',
+      errorNothingToPlay: 'Nada para reproducir — agrega algunos pasos primero.',
+      statusPlaying: 'REPRODUCIENDO',
+      errorNothingToExport: 'Nada para exportar — agrega algunos pasos primero.',
+      renderingLabel: 'Renderizando…',
+      exportedPrefix: 'Exportados {sec}s de audio en',
+      exportedPatternOne: 'patrón.',
+      exportedPatternsMany: 'patrones.',
+      errorCouldNotExport: 'No se pudo exportar:',
+      projectLoadedPrefix: 'Proyecto cargado:',
+      tracksWord: 'pistas',
+      patternsWord: 'patrones',
+      errorCouldNotLoadProject: 'No se pudo cargar ese archivo de proyecto:'
+    },
+    ar: {
+      heroSubtitle: 'اختر مزاجًا للحصول على مقطوعة فورية، أو انتقل إلى وضع Tracker وابنِ إيقاعك الخاص.',
+      presetModeLabel: '🎹 إعدادات سريعة',
+      trackerModeLabel: '🎛️ Tracker (متقدم)',
+      moodLabel: 'المزاج',
+      lengthSecondsLabel: 'المدة (ثوانٍ)',
+      tempoBpmLabel: 'الإيقاع (BPM)',
+      tempoHint: 'يُضبط الإيقاع افتراضيًا ليناسب المزاج الذي تختاره — لا تتردد في تغييره.',
+      forceDrumsLabel: 'فرض إيقاع طبول بسيط (حتى للأمزجة الهادئة)',
+      generateBtnLabel: '🎵 توليد مقطوعة',
+      resultLabelDefault: 'مقطوعتك',
+      regenerateBtnLabel: '🔁 إعادة التوليد (تنويعة جديدة)',
+      downloadWavLabel: '⬇ تنزيل .wav',
+      presetCheerfulLabel: '🎉 مرح',
+      presetCheerfulSub: 'حيوي وبمقام كبير',
+      presetCalmLabel: '🌙 هادئ / أجواء',
+      presetCalmSub: 'وسادات بطيئة، بدون إيقاع',
+      presetCinematicLabel: '🎬 سينمائي',
+      presetCinematicSub: 'مقام صغير، ممتد',
+      presetLofiLabel: '☕ لوفاي هادئ',
+      presetLofiSub: 'مسترخٍ، بإيقاع متمايل',
+      presetChiptuneLabel: '👾 شيبتيون',
+      presetChiptuneSub: 'سريع، بأسلوب 8-بت',
+      presetPianoLabel: '🎹 بالاد بيانو',
+      presetPianoSub: 'ناعم، بمقام صغير، متناثر',
+      errorNoAudioSupport: 'متصفحك لا يدعم تقنية الصوت التي تحتاجها هذه الأداة.',
+      generatingLabel: 'جارٍ التوليد…',
+      resultSubText: 'تنويعة أصلية جديدة — انقر على إعادة التوليد للحصول على نسخة مختلفة من نفس المزاج.',
+      errorCouldNotGenerate: 'تعذّر توليد مقطوعة:',
+      projectHeading: 'المشروع',
+      undoLabel: '↶ تراجع',
+      saveProjectLabel: '💾 حفظ المشروع',
+      loadProjectLabel: '📂 تحميل مشروع (.json)',
+      projectHint: 'احفظ جلستك بالكامل — المسارات والأنماط وترتيب الأغنية والأصوات المرفوعة — في ملف واحد، أو حمّل واحدًا لاحقًا. يتراجع التراجع عبر آخر ~40 تعديلًا (يعمل Ctrl+Z أيضًا).',
+      tracksHeading: 'المسارات',
+      tracksHint: 'كل مسار إما آلة سينث أو صوت ترفعه. يحدد منتقي النغمة درجة الصوت المستخدمة عند النقر على خطوة جديدة — انقر بزر الفأرة الأيمن على خطوة نشطة لضبط تلك الخطوة فقط.',
+      tempoGridHeading: 'الإيقاع والشبكة',
+      stepsPerPatternLabel: 'الخطوات لكل نمط',
+      steps8: '8 (سُدس عشري، نصف قياس)',
+      steps16: '16 (سُدس عشري، قياس واحد)',
+      steps32: '32 (سُدس عشري، قياسان)',
+      patternsHeading: 'الأنماط',
+      newLabel: '+ جديد',
+      duplicateLabel: '⧉ نسخ مطابق',
+      renameLabel: '✎ إعادة تسمية',
+      deleteLabel: '✕ حذف',
+      songArrangementHeading: 'ترتيب الأغنية',
+      addToSongLabel: '+ إضافة النمط الحالي إلى الأغنية',
+      songEmptyText: 'الأغنية فارغة — أضف أنماطًا أعلاه لبناء ترتيب التشغيل/التصدير.',
+      trackerLabelPrefix: 'TRACKER —',
+      statusStopped: 'متوقف',
+      playSongLabel: '▶ تشغيل الأغنية',
+      stopLabel: '■ إيقاف',
+      exportWavLabel: '⬇ تصدير الأغنية كـ .wav',
+      playbackHint: 'يستخدم التشغيل ترتيب الأغنية على اليسار (أو النمط الحالي فقط، بشكل متكرر، إذا كانت الأغنية فارغة). التصدير يعرض الترتيب بأكمله إلى ملف .wav حقيقي.',
+      noteLabel: 'النغمة',
+      velocityLabel: 'السرعة',
+      clearStepLabel: 'مسح الخطوة',
+      doneLabel: 'تم',
+      presetFooterHtml: 'جزء من <a href="index.html">MigaBuilder</a>. كل مقطوعة هي تأليف خوارزمي أصلي يُولَّد فوريًا من قواعد بسيطة لنظرية الموسيقى — وليس عينة أو حلقة أو مقطعًا من موسيقى موجودة — لذا فهي ملكك لاستخدامها كما تشاء، دون الحاجة إلى نسب أو ترخيص. لا يُرفع شيء؛ يحدث التوليد بالكامل في متصفحك. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      trackerFooterHtml: 'جزء من <a href="index.html">MigaBuilder</a>. الأصوات التي ترفعها وكل ما تؤلفه يبقى في متصفحك — لا يُرفع شيء إلى أي مكان. تُغيَّر حدة الأصوات المرفوعة حسب سرعة التشغيل لتطابق نغمة كل خطوة، بنفس الطريقة التي كانت بها أجهزة Tracker الكلاسيكية تشغّل العينات. <a href="feedback.html">وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←</a>',
+      patternPrefix: 'نمط',
+      copySuffix: 'نسخة',
+      patternNamePrompt: 'اسم النمط:',
+      errorNeedOnePattern: 'تحتاج إلى نمط واحد على الأقل.',
+      moveUpTitle: 'تحريك لأعلى',
+      moveDownTitle: 'تحريك لأسفل',
+      removeTitle: 'إزالة',
+      synthLabel: 'سينث',
+      sampleLabel: 'عينة',
+      replaceSoundLabel: 'استبدال الصوت',
+      uploadSoundLabel: '+ رفع صوت',
+      soundReadErrorPrefix: 'تعذّرت قراءة',
+      basePitchLabel: 'درجة الصوت الأساسية:',
+      penNoteLabel: 'نغمة القلم:',
+      volLabel: 'الصوت:',
+      panLabel: 'التوازن:',
+      muteLabel: 'كتم',
+      mutedSuffix: 'مكتوم',
+      errorNothingToPlay: 'لا شيء لتشغيله — أضف بعض الخطوات أولاً.',
+      statusPlaying: 'قيد التشغيل',
+      errorNothingToExport: 'لا شيء لتصديره — أضف بعض الخطوات أولاً.',
+      renderingLabel: 'جارٍ العرض…',
+      exportedPrefix: 'تم تصدير {sec} ثانية من الصوت عبر',
+      exportedPatternOne: 'نمط واحد.',
+      exportedPatternsMany: 'أنماط.',
+      errorCouldNotExport: 'تعذّر التصدير:',
+      projectLoadedPrefix: 'تم تحميل المشروع:',
+      tracksWord: 'مسارات',
+      patternsWord: 'أنماط',
+      errorCouldNotLoadProject: 'تعذّر تحميل ملف المشروع ذلك:'
+    },
+    zh: {
+      heroSubtitle: '选择一种情绪立即生成曲目，或切换到 Tracker 模式自己制作节拍。',
+      presetModeLabel: '🎹 快速预设',
+      trackerModeLabel: '🎛️ Tracker（高级）',
+      moodLabel: '情绪',
+      lengthSecondsLabel: '长度（秒）',
+      tempoBpmLabel: '速度（BPM）',
+      tempoHint: '速度默认适配你选择的情绪——欢迎自行调整。',
+      forceDrumsLabel: '强制开启简单鼓点（即使是氛围情绪）',
+      generateBtnLabel: '🎵 生成曲目',
+      resultLabelDefault: '你的曲目',
+      regenerateBtnLabel: '🔁 重新生成（新变体）',
+      downloadWavLabel: '⬇ 下载 .wav',
+      presetCheerfulLabel: '🎉 欢快',
+      presetCheerfulSub: '欢快、大调',
+      presetCalmLabel: '🌙 平静/氛围',
+      presetCalmSub: '缓慢柔和音垫，无节拍',
+      presetCinematicLabel: '🎬 电影感',
+      presetCinematicSub: '小调，宏大绵延',
+      presetLofiLabel: '☕ Lo-fi 慵懒',
+      presetLofiSub: '慵懒，带摇摆感',
+      presetChiptuneLabel: '👾 芯片音乐',
+      presetChiptuneSub: '快速，8位风格',
+      presetPianoLabel: '🎹 钢琴抒情曲',
+      presetPianoSub: '柔和、小调、稀疏',
+      errorNoAudioSupport: '你的浏览器不支持此工具所需的音频技术。',
+      generatingLabel: '生成中…',
+      resultSubText: '一段全新的原创变体——点击"重新生成"可获得同一情绪的不同演绎。',
+      errorCouldNotGenerate: '无法生成曲目：',
+      projectHeading: '项目',
+      undoLabel: '↶ 撤销',
+      saveProjectLabel: '💾 保存项目',
+      loadProjectLabel: '📂 加载项目（.json）',
+      projectHint: '将整个会话——音轨、图案、歌曲顺序和上传的声音——保存到一个文件，或稍后重新加载。撤销可回退最近约 40 次编辑（Ctrl+Z 也可用）。',
+      tracksHeading: '音轨',
+      tracksHint: '每条音轨要么是合成器乐器，要么是你上传的声音。音符步进器设置点击新步骤时使用的音高——右键点击已激活的步骤可单独微调该步骤。',
+      tempoGridHeading: '速度与网格',
+      stepsPerPatternLabel: '每个图案的步数',
+      steps8: '8（十六分音符，半小节）',
+      steps16: '16（十六分音符，1 小节）',
+      steps32: '32（十六分音符，2 小节）',
+      patternsHeading: '图案',
+      newLabel: '+ 新建',
+      duplicateLabel: '⧉ 复制',
+      renameLabel: '✎ 重命名',
+      deleteLabel: '✕ 删除',
+      songArrangementHeading: '歌曲编排',
+      addToSongLabel: '+ 将当前图案添加到歌曲',
+      songEmptyText: '歌曲为空——在上方添加图案以构建播放/导出顺序。',
+      trackerLabelPrefix: 'TRACKER —',
+      statusStopped: '已停止',
+      playSongLabel: '▶ 播放歌曲',
+      stopLabel: '■ 停止',
+      exportWavLabel: '⬇ 将歌曲导出为 .wav',
+      playbackHint: '播放使用左侧的歌曲编排（如果歌曲为空，则仅循环播放当前图案）。导出会将整个编排渲染为真正的 .wav 文件。',
+      noteLabel: '音符',
+      velocityLabel: '力度',
+      clearStepLabel: '清除步骤',
+      doneLabel: '完成',
+      presetFooterHtml: '隶属于 <a href="index.html">MigaBuilder</a>。每段曲目都是根据简单的乐理规则即时生成的原创算法作品——不是采样、循环或现有音乐的片段——因此你可以随意使用，无需署名或授权。不会上传任何内容；生成完全在你的浏览器中进行。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      trackerFooterHtml: '隶属于 <a href="index.html">MigaBuilder</a>。你上传的声音和你创作的一切都保留在浏览器中——不会上传到任何地方。上传的声音会根据播放速度进行音高变换，以匹配每个步骤的音符，就像经典 Tracker 播放采样的方式一样。<a href="feedback.html">发现了错误或有新想法？发送反馈 →</a>',
+      patternPrefix: '图案',
+      copySuffix: '副本',
+      patternNamePrompt: '图案名称：',
+      errorNeedOnePattern: '你至少需要一个图案。',
+      moveUpTitle: '上移',
+      moveDownTitle: '下移',
+      removeTitle: '移除',
+      synthLabel: '合成器',
+      sampleLabel: '采样',
+      replaceSoundLabel: '替换声音',
+      uploadSoundLabel: '+ 上传声音',
+      soundReadErrorPrefix: '无法读取',
+      basePitchLabel: '基准音高：',
+      penNoteLabel: '画笔音符：',
+      volLabel: '音量：',
+      panLabel: '声像：',
+      muteLabel: '静音',
+      mutedSuffix: '已静音',
+      errorNothingToPlay: '没有可播放的内容——请先添加一些步骤。',
+      statusPlaying: '播放中',
+      errorNothingToExport: '没有可导出的内容——请先添加一些步骤。',
+      renderingLabel: '渲染中…',
+      exportedPrefix: '已导出 {sec} 秒音频，涵盖',
+      exportedPatternOne: '个图案。',
+      exportedPatternsMany: '个图案。',
+      errorCouldNotExport: '无法导出：',
+      projectLoadedPrefix: '项目已加载：',
+      tracksWord: '条音轨',
+      patternsWord: '个图案',
+      errorCouldNotLoadProject: '无法加载该项目文件：'
+    },
+    sw: {
+      heroSubtitle: 'Chagua hali ya moyo kwa wimbo wa papo hapo, au badilisha kwenda hali ya Tracker na utengeneze mdundo wako mwenyewe.',
+      presetModeLabel: '🎹 Mipangilio ya haraka',
+      trackerModeLabel: '🎛️ Tracker (ya kina)',
+      moodLabel: 'Hali ya moyo',
+      lengthSecondsLabel: 'Urefu (sekunde)',
+      tempoBpmLabel: 'Kasi (BPM)',
+      tempoHint: 'Kasi hujiweka kulingana na hali ya moyo unayochagua — jisikie huru kuibadilisha.',
+      forceDrumsLabel: 'Lazimisha mdundo rahisi wa ngoma (hata kwa hali za utulivu)',
+      generateBtnLabel: '🎵 Tengeneza wimbo',
+      resultLabelDefault: 'Wimbo wako',
+      regenerateBtnLabel: '🔁 Tengeneza upya (toleo jipya)',
+      downloadWavLabel: '⬇ Pakua .wav',
+      presetCheerfulLabel: '🎉 Wa furaha',
+      presetCheerfulSub: 'Wenye msisimko na mkubwa',
+      presetCalmLabel: '🌙 Utulivu / Anga',
+      presetCalmSub: 'Pedi za polepole, hakuna mdundo',
+      presetCinematicLabel: '🎬 Wa kisinema',
+      presetCinematicSub: 'Mdogo, unaotanda',
+      presetLofiLabel: '☕ Lo-fi Tulivu',
+      presetLofiSub: 'Mtulivu, wenye mzunguko',
+      presetChiptuneLabel: '👾 Chiptune',
+      presetChiptuneSub: 'Haraka, mtindo wa 8-bit',
+      presetPianoLabel: '🎹 Wimbo wa Piano',
+      presetPianoSub: 'Laini, mdogo, chache',
+      errorNoAudioSupport: 'Kivinjari chako hakiungi mkono teknolojia ya sauti inayohitajika na chombo hiki.',
+      generatingLabel: 'Inatengeneza…',
+      resultSubText: 'Toleo jipya la asili — bofya Tengeneza upya kwa mtazamo tofauti wa hali ile ile ya moyo.',
+      errorCouldNotGenerate: 'Imeshindwa kutengeneza wimbo:',
+      projectHeading: 'Mradi',
+      undoLabel: '↶ Tendua',
+      saveProjectLabel: '💾 Hifadhi mradi',
+      loadProjectLabel: '📂 Pakia mradi (.json)',
+      projectHint: 'Hifadhi kikao chako chote — nyimbo, mifumo, mpangilio wa wimbo, na sauti zilizopakiwa — kwenye faili moja, au pakia moja tena baadaye. Tendua hurudi nyuma kupitia hariri zako za mwisho ~40 (Ctrl+Z pia hufanya kazi).',
+      tracksHeading: 'Nyimbo',
+      tracksHint: 'Kila wimbo ni ala ya sinthesaiza au sauti unayopakia. Kipima nukuu huweka sauti inayotumika unapobofya hatua mpya — bofya kulia kwenye hatua hai kurekebisha hiyo tu.',
+      tempoGridHeading: 'Kasi na gridi',
+      stepsPerPatternLabel: 'Hatua kwa kila mfumo',
+      steps8: '8 (ya 16, nusu ya kipande)',
+      steps16: '16 (ya 16, kipande 1)',
+      steps32: '32 (ya 16, vipande 2)',
+      patternsHeading: 'Mifumo',
+      newLabel: '+ Mpya',
+      duplicateLabel: '⧉ Nakili',
+      renameLabel: '✎ Badilisha jina',
+      deleteLabel: '✕ Futa',
+      songArrangementHeading: 'Mpangilio wa wimbo',
+      addToSongLabel: '+ Ongeza mfumo wa sasa kwenye wimbo',
+      songEmptyText: 'Wimbo ni tupu — ongeza mifumo hapo juu kujenga mpangilio wa kucheza/kuhamisha.',
+      trackerLabelPrefix: 'TRACKER —',
+      statusStopped: 'IMESIMAMA',
+      playSongLabel: '▶ Cheza wimbo',
+      stopLabel: '■ Simamisha',
+      exportWavLabel: '⬇ Hamisha wimbo kama .wav',
+      playbackHint: 'Uchezaji hutumia mpangilio wa wimbo upande wa kushoto (au mfumo wa sasa tu, ukirudiwa, ikiwa wimbo ni tupu). Kuhamisha hutoa mpangilio wote kuwa faili halisi ya .wav.',
+      noteLabel: 'Nukuu',
+      velocityLabel: 'Kasi ya mgusano',
+      clearStepLabel: 'Futa hatua',
+      doneLabel: 'Imekamilika',
+      presetFooterHtml: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Kila wimbo ni utunzi asili wa algoriti unaotengenezwa papo hapo kutoka kwa kanuni rahisi za nadharia ya muziki — si sampuli, mzunguko, au kipande cha muziki uliopo — kwa hivyo ni wako kutumia jinsi unavyotaka, bila kuhitaji kutaja chanzo au leseni. Hakuna kinachopakiwa; utengenezaji hufanyika kabisa kwenye kivinjari chako. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      trackerFooterHtml: 'Sehemu ya <a href="index.html">MigaBuilder</a>. Sauti unazopakia na kila kitu unachotunga hubaki kwenye kivinjari chako — hakuna kinachopakiwa popote. Sauti zilizopakiwa hubadilishwa sauti kulingana na kasi ya kucheza ili kuendana na nukuu ya kila hatua, kwa njia ile ile ambayo trackers za kizamani zilivyocheza sampuli. <a href="feedback.html">Umepata hitilafu au una wazo? Tuma maoni →</a>',
+      patternPrefix: 'Mfumo',
+      copySuffix: 'nakala',
+      patternNamePrompt: 'Jina la mfumo:',
+      errorNeedOnePattern: 'Unahitaji angalau mfumo mmoja.',
+      moveUpTitle: 'Panda juu',
+      moveDownTitle: 'Shuka chini',
+      removeTitle: 'Ondoa',
+      synthLabel: 'Sinthesaiza',
+      sampleLabel: 'Sampuli',
+      replaceSoundLabel: 'Badilisha sauti',
+      uploadSoundLabel: '+ Pakia sauti',
+      soundReadErrorPrefix: 'Imeshindwa kusoma',
+      basePitchLabel: 'Sauti ya msingi:',
+      penNoteLabel: 'Nukuu ya kalamu:',
+      volLabel: 'Sauti:',
+      panLabel: 'Mwelekeo:',
+      muteLabel: 'Nyamazisha',
+      mutedSuffix: 'imenyamazishwa',
+      errorNothingToPlay: 'Hakuna cha kucheza — ongeza hatua kadhaa kwanza.',
+      statusPlaying: 'INACHEZA',
+      errorNothingToExport: 'Hakuna cha kuhamisha — ongeza hatua kadhaa kwanza.',
+      renderingLabel: 'Inatoa…',
+      exportedPrefix: 'Imehamisha sekunde {sec} za sauti katika',
+      exportedPatternOne: 'mfumo mmoja.',
+      exportedPatternsMany: 'mifumo.',
+      errorCouldNotExport: 'Imeshindwa kuhamisha:',
+      projectLoadedPrefix: 'Mradi umepakiwa:',
+      tracksWord: 'nyimbo',
+      patternsWord: 'mifumo',
+      errorCouldNotLoadProject: 'Imeshindwa kupakia faili hilo la mradi:'
     }
   });
 
