@@ -49,7 +49,8 @@
       providerGemini: 'Gemini — free, no key needed',
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
-      moreLanguagesLabel: '🌐 More languages (Google Translate)'
+      moreLanguagesLabel: '🌐 More languages (Google Translate)',
+      languageAriaLabel: 'Language'
     },
     es: {
       feedbackLink: '¿Encontraste un error o tienes una idea? Envía tu opinión →',
@@ -59,7 +60,8 @@
       providerGemini: 'Gemini — gratis, sin clave necesaria',
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
-      moreLanguagesLabel: '🌐 Más idiomas (Google Translate)'
+      moreLanguagesLabel: '🌐 Más idiomas (Google Translate)',
+      languageAriaLabel: 'Idioma'
     },
     ar: {
       feedbackLink: 'وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←',
@@ -69,7 +71,8 @@
       providerGemini: 'Gemini — مجاني، بدون مفتاح',
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
-      moreLanguagesLabel: '🌐 لغات أخرى (ترجمة Google)'
+      moreLanguagesLabel: '🌐 لغات أخرى (ترجمة Google)',
+      languageAriaLabel: 'اللغة'
     },
     zh: {
       feedbackLink: '发现了错误或有新想法？发送反馈 →',
@@ -79,7 +82,8 @@
       providerGemini: 'Gemini — 免费，无需密钥',
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
-      moreLanguagesLabel: '🌐 更多语言（Google 翻译）'
+      moreLanguagesLabel: '🌐 更多语言（Google 翻译）',
+      languageAriaLabel: '语言'
     },
     sw: {
       feedbackLink: 'Umepata hitilafu au una wazo? Tuma maoni →',
@@ -89,7 +93,8 @@
       providerGemini: 'Gemini — bure, hauhitaji ufunguo',
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
-      moreLanguagesLabel: '🌐 Lugha zaidi (Google Translate)'
+      moreLanguagesLabel: '🌐 Lugha zaidi (Google Translate)',
+      languageAriaLabel: 'Lugha'
     }
   };
 
@@ -137,7 +142,10 @@
     applyDirection();
     applyToDom();
     var select = document.getElementById('i18nLangSelect');
-    if (select && select.value !== lang) select.value = lang;
+    if (select) {
+      if (select.value !== lang) select.value = lang;
+      select.setAttribute('aria-label', t('languageAriaLabel'));
+    }
     listeners.forEach(function (fn) { try { fn(lang); } catch (e) {} });
     try { document.dispatchEvent(new CustomEvent('i18n:change', { detail: { lang: lang } })); } catch (e) {}
   }
@@ -175,7 +183,7 @@
     host.classList.add('lang-switcher');
     var select = document.createElement('select');
     select.id = 'i18nLangSelect';
-    select.setAttribute('aria-label', 'Language');
+    select.setAttribute('aria-label', t('languageAriaLabel'));
     LANGUAGES.forEach(function (l) {
       var opt = document.createElement('option');
       opt.value = l.code;
