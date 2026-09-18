@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="i18n.js"></script>
+<script src="media-utils.js"></script>
 
 <style>
   :root {
@@ -885,12 +886,6 @@
   }
 
   // ---------- render ----------
-  function pickMimeType() {
-    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
-    return '';
-  }
-
   renderBtn.addEventListener('click', async function () {
     clearError();
     if (!videoObjectUrl) { showError(I18N.t('errorUploadVideoFirst')); return; }
@@ -902,7 +897,7 @@
     const trimEnd = Math.min(videoDuration, parseFloat(trimEndInput.value) || videoDuration);
     if (trimEnd <= trimStart) { showError(I18N.t('errorEndAfterStart')); return; }
     const speed = parseFloat(speedSelect.value) || 1;
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoVideoFormat')); return; }
 
     sourceVideo.pause();

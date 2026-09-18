@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script src="i18n.js"></script>
+<script src="media-utils.js"></script>
 
 <style>
   :root {
@@ -920,11 +921,6 @@
 
   // ================= recording =================
   let recordedBlob = null;
-  function pickMimeType() {
-    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
-    return '';
-  }
 
   recordBtn.addEventListener('click', async function () {
     clearError();
@@ -934,7 +930,7 @@
       showError(I18N.t('errorNeedsDesktopBrowser'));
       return;
     }
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoRecordingFormat')); return; }
 
     let displayStream;

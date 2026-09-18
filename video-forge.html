@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="i18n.js"></script>
+<script src="media-utils.js"></script>
 
 <style>
   :root {
@@ -865,48 +866,6 @@
     }
   }
 
-  function audioBufferToWav(buffer) {
-    const numChannels = buffer.numberOfChannels;
-    const sampleRate = buffer.sampleRate;
-    const bitDepth = 16;
-    const bytesPerSample = bitDepth / 8;
-    const blockAlign = numChannels * bytesPerSample;
-    const numFrames = buffer.length;
-    const dataSize = numFrames * blockAlign;
-    const arrayBuffer = new ArrayBuffer(44 + dataSize);
-    const view = new DataView(arrayBuffer);
-
-    function writeString(offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
-
-    writeString(0, 'RIFF');
-    view.setUint32(4, 36 + dataSize, true);
-    writeString(8, 'WAVE');
-    writeString(12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, numChannels, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * blockAlign, true);
-    view.setUint16(32, blockAlign, true);
-    view.setUint16(34, bitDepth, true);
-    writeString(36, 'data');
-    view.setUint32(40, dataSize, true);
-
-    const channelData = [];
-    for (let c = 0; c < numChannels; c++) channelData.push(buffer.getChannelData(c));
-
-    let offset = 44;
-    for (let i = 0; i < numFrames; i++) {
-      for (let c = 0; c < numChannels; c++) {
-        let sample = Math.max(-1, Math.min(1, channelData[c][i]));
-        sample = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-        view.setInt16(offset, sample, true);
-        offset += 2;
-      }
-    }
-    return new Blob([arrayBuffer], { type: 'audio/wav' });
-  }
-
   function addSoundClip(name, buffer, type) {
     soundClips.push({ id: ++clipIdCounter, name, buffer, type: type || 'music', start: 0, volume: type === 'narration' ? 1 : 0.5, loop: type === 'music' });
     renderSoundClipsList();
@@ -1008,53 +967,7 @@
   }
 
   // ---------- stock music library (generated on the spot, not pre-recorded files) ----------
-  const STOCK_TRACKS = [
-    { id: 'cheerful', labelKey: 'stockCheerful', notes: [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66], noteDur: 0.35, wave: 'triangle', duration: 16.8, bass: 130.81 },
-    { id: 'calm', labelKey: 'stockCalm', notes: [220.00, 261.63, 329.63, 392.00], noteDur: 2.2, wave: 'sine', duration: 17.6, bass: 110.00 },
-    { id: 'playful', labelKey: 'stockPlayful', notes: [392.00, 440.00, 523.25, 440.00, 392.00, 349.23, 392.00, 293.66], noteDur: 0.22, wave: 'square', duration: 14.08, bass: null },
-    { id: 'cinematic', labelKey: 'stockCinematic', notes: [196.00, 233.08, 293.66, 233.08], noteDur: 2.6, wave: 'sawtooth', duration: 20.8, bass: 98.00 }
-  ];
-
-  async function generateStockTrack(cfg) {
-    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-    const sampleRate = 44100;
-    const offlineCtx = new AC(2, Math.ceil(sampleRate * cfg.duration), sampleRate);
-    let t = 0, i = 0;
-    while (t < cfg.duration) {
-      const freq = cfg.notes[i % cfg.notes.length];
-      const osc = offlineCtx.createOscillator();
-      osc.type = cfg.wave;
-      osc.frequency.value = freq;
-      const gain = offlineCtx.createGain();
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.28, t + Math.min(0.08, cfg.noteDur * 0.2));
-      gain.gain.linearRampToValueAtTime(0, t + cfg.noteDur);
-      osc.connect(gain).connect(offlineCtx.destination);
-      osc.start(t);
-      osc.stop(t + cfg.noteDur);
-      t += cfg.noteDur;
-      i++;
-    }
-    if (cfg.bass) {
-      let bt = 0;
-      const segDur = cfg.noteDur * 2;
-      while (bt < cfg.duration) {
-        const dur = Math.min(segDur, cfg.duration - bt);
-        const osc = offlineCtx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = cfg.bass;
-        const gain = offlineCtx.createGain();
-        gain.gain.setValueAtTime(0, bt);
-        gain.gain.linearRampToValueAtTime(0.18, bt + Math.min(0.1, dur * 0.2));
-        gain.gain.linearRampToValueAtTime(0, bt + dur);
-        osc.connect(gain).connect(offlineCtx.destination);
-        osc.start(bt);
-        osc.stop(bt + dur);
-        bt += dur;
-      }
-    }
-    return offlineCtx.startRendering();
-  }
+  const STOCK_TRACKS = MediaUtils.STOCK_TRACKS;
 
   document.querySelectorAll('#stockTrackRow [data-stock]').forEach(btn => {
     btn.addEventListener('click', async function () {
@@ -1065,7 +978,7 @@
       btn.disabled = true;
       btn.textContent = I18N.t('stockGeneratingLabel');
       try {
-        const buffer = await generateStockTrack(cfg);
+        const buffer = await MediaUtils.generateStockTrack(cfg);
         addSoundClip(I18N.t(cfg.labelKey) + ' (' + I18N.t('generatedSuffix') + ')', buffer, 'music');
       } catch (err) {
         showError(I18N.t('stockGenerateErrorPrefix') + ' ' + err.message);
@@ -1262,11 +1175,6 @@
   }
 
   // ---------- render to video file ----------
-  function pickMimeType() {
-    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
-    return '';
-  }
 
   renderBtn.addEventListener('click', function () {
     clearError();
@@ -1278,7 +1186,7 @@
     stopPreview();
     const timeline = buildTimeline();
     if (!timeline.total) { showError(I18N.t('errorNothingToRender')); return; }
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoVideoFormat')); return; }
 
     const { w, h } = currentSize();
@@ -1530,7 +1438,7 @@
       const state = collectDraftState();
       state.soundClips = await Promise.all(soundClips.map(async (c) => ({
         name: c.name, type: c.type, start: c.start, volume: c.volume, loop: c.loop,
-        audioDataUrl: await blobToDataUrl(audioBufferToWav(c.buffer))
+        audioDataUrl: await blobToDataUrl(MediaUtils.audioBufferToWav(c.buffer))
       })));
       localStorage.setItem(DRAFT_KEY, JSON.stringify(state));
       autosaveStatus.textContent = I18N.t('savedJustNowText');

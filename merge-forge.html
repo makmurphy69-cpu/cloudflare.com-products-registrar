@@ -32,6 +32,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <script src="i18n.js"></script>
+<script src="media-utils.js"></script>
 
 <style>
   :root {
@@ -688,46 +689,7 @@
     }));
   }
 
-  const STOCK_TRACKS = [
-    { id: 'cheerful', labelKey: 'stockCheerful', notes: [261.63, 329.63, 392.00, 329.63, 440.00, 392.00, 329.63, 293.66], noteDur: 0.35, wave: 'triangle', duration: 16.8, bass: 130.81 },
-    { id: 'calm', labelKey: 'stockCalm', notes: [220.00, 261.63, 329.63, 392.00], noteDur: 2.2, wave: 'sine', duration: 17.6, bass: 110.00 },
-    { id: 'playful', labelKey: 'stockPlayful', notes: [392.00, 440.00, 523.25, 440.00, 392.00, 349.23, 392.00, 293.66], noteDur: 0.22, wave: 'square', duration: 14.08, bass: null },
-    { id: 'cinematic', labelKey: 'stockCinematic', notes: [196.00, 233.08, 293.66, 233.08], noteDur: 2.6, wave: 'sawtooth', duration: 20.8, bass: 98.00 }
-  ];
-  async function generateStockTrack(cfg) {
-    const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-    const sampleRate = 44100;
-    const offlineCtx = new AC(2, Math.ceil(sampleRate * cfg.duration), sampleRate);
-    let t = 0, i = 0;
-    while (t < cfg.duration) {
-      const freq = cfg.notes[i % cfg.notes.length];
-      const osc = offlineCtx.createOscillator();
-      osc.type = cfg.wave; osc.frequency.value = freq;
-      const gain = offlineCtx.createGain();
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.28, t + Math.min(0.08, cfg.noteDur * 0.2));
-      gain.gain.linearRampToValueAtTime(0, t + cfg.noteDur);
-      osc.connect(gain).connect(offlineCtx.destination);
-      osc.start(t); osc.stop(t + cfg.noteDur);
-      t += cfg.noteDur; i++;
-    }
-    if (cfg.bass) {
-      let bt = 0; const segDur = cfg.noteDur * 2;
-      while (bt < cfg.duration) {
-        const dur = Math.min(segDur, cfg.duration - bt);
-        const osc = offlineCtx.createOscillator();
-        osc.type = 'sine'; osc.frequency.value = cfg.bass;
-        const gain = offlineCtx.createGain();
-        gain.gain.setValueAtTime(0, bt);
-        gain.gain.linearRampToValueAtTime(0.18, bt + Math.min(0.1, dur * 0.2));
-        gain.gain.linearRampToValueAtTime(0, bt + dur);
-        osc.connect(gain).connect(offlineCtx.destination);
-        osc.start(bt); osc.stop(bt + dur);
-        bt += dur;
-      }
-    }
-    return offlineCtx.startRendering();
-  }
+  const STOCK_TRACKS = MediaUtils.STOCK_TRACKS;
   document.querySelectorAll('#stockTrackRow [data-stock]').forEach(btn => {
     btn.addEventListener('click', async function () {
       clearError();
@@ -735,7 +697,7 @@
       if (!cfg || !(window.OfflineAudioContext || window.webkitOfflineAudioContext)) return;
       const original = btn.textContent;
       btn.disabled = true; btn.textContent = I18N.t('stockGeneratingLabel');
-      try { addSoundClip(I18N.t(cfg.labelKey) + ' (' + I18N.t('generatedSuffix') + ')', await generateStockTrack(cfg), 'music'); }
+      try { addSoundClip(I18N.t(cfg.labelKey) + ' (' + I18N.t('generatedSuffix') + ')', await MediaUtils.generateStockTrack(cfg), 'music'); }
       catch (err) { showError(I18N.t('stockGenerateErrorPrefix') + ' ' + err.message); }
       finally { btn.disabled = false; btn.textContent = original; }
     });
@@ -922,12 +884,6 @@
   });
 
   // ---------- render ----------
-  function pickMimeType() {
-    const candidates = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-    for (const c of candidates) { if (window.MediaRecorder && MediaRecorder.isTypeSupported(c)) return c; }
-    return '';
-  }
-
   function getSourceNode(audioCtx, videoEl) {
     if (!mediaSourceNodes.has(videoEl)) mediaSourceNodes.set(videoEl, audioCtx.createMediaElementSource(videoEl));
     return mediaSourceNodes.get(videoEl);
@@ -943,7 +899,7 @@
     stopPreview();
     const timeline = buildTimeline();
     if (!timeline.total) { showError(I18N.t('errorNothingToRender')); return; }
-    const mimeType = pickMimeType();
+    const mimeType = MediaUtils.pickMimeType();
     if (!mimeType) { showError(I18N.t('errorNoVideoFormat')); return; }
 
     const { w, h } = currentSize();
