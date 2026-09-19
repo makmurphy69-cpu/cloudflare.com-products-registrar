@@ -121,6 +121,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://migabuilder.com/model-forge.html</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://migabuilder.com/examples/sample-pipeline-demo/index.html</loc>
     <lastmod>2026-09-16</lastmod>
     <changefreq>yearly</changefreq>
