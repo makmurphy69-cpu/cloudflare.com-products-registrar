@@ -50,7 +50,8 @@
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
       moreLanguagesLabel: '🌐 More languages (Google Translate)',
-      languageAriaLabel: 'Language'
+      languageAriaLabel: 'Language',
+      viewSourceLink: 'View source on GitHub (MIT licensed) →'
     },
     es: {
       feedbackLink: '¿Encontraste un error o tienes una idea? Envía tu opinión →',
@@ -61,7 +62,8 @@
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
       moreLanguagesLabel: '🌐 Más idiomas (Google Translate)',
-      languageAriaLabel: 'Idioma'
+      languageAriaLabel: 'Idioma',
+      viewSourceLink: 'Ver código fuente en GitHub (licencia MIT) →'
     },
     ar: {
       feedbackLink: 'وجدت خطأ أو لديك فكرة؟ أرسل ملاحظاتك ←',
@@ -72,7 +74,8 @@
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
       moreLanguagesLabel: '🌐 لغات أخرى (ترجمة Google)',
-      languageAriaLabel: 'اللغة'
+      languageAriaLabel: 'اللغة',
+      viewSourceLink: 'عرض الكود المصدري على GitHub (ترخيص MIT) ←'
     },
     zh: {
       feedbackLink: '发现了错误或有新想法？发送反馈 →',
@@ -83,7 +86,8 @@
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
       moreLanguagesLabel: '🌐 更多语言（Google 翻译）',
-      languageAriaLabel: '语言'
+      languageAriaLabel: '语言',
+      viewSourceLink: '在 GitHub 上查看源代码（MIT 许可）→'
     },
     sw: {
       feedbackLink: 'Umepata hitilafu au una wazo? Tuma maoni →',
@@ -94,7 +98,8 @@
       providerOpenai: 'OpenAI',
       providerAnthropic: 'Anthropic (Claude)',
       moreLanguagesLabel: '🌐 Lugha zaidi (Google Translate)',
-      languageAriaLabel: 'Lugha'
+      languageAriaLabel: 'Lugha',
+      viewSourceLink: 'Tazama msimbo chanzo kwenye GitHub (leseni ya MIT) →'
     }
   };
 
