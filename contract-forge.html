@@ -362,8 +362,7 @@
       '<div class="sign">' + bizSigBlock + '<div class="sign-line">' + bizName + ' — ' + I18N.t('docSigLine') + '</div></div>' +
       '<div class="sign">' + otherSigBlock + '<div class="sign-line">' + other + ' — ' + I18N.t('docSigLine') + '</div></div>' +
       '</div>' +
-      '<script src="tutorials.js" defer></script>
-</body></html>';
+      '</body></html>';
 
     return { html: html, filename: type.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + docNumber + '.html' };
   }
@@ -706,5 +705,6 @@
   I18N.onChange(renderPreview);
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body>
 </html>
