@@ -154,6 +154,7 @@
   .clip-row audio { height: 30px; max-width: 150px; }
   .clip-row .remove-clip { background: transparent; border: none; color: var(--error); cursor: pointer; font-size: 16px; line-height: 1; padding: 4px; }
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 
@@ -543,7 +544,8 @@
     }
     scriptLines.push('})();', '<' + '/script>');
     const block = AUDIO_MARK_START + '\n' + audioTags + '\n' + scriptLines.join('\n') + '\n' + AUDIO_MARK_END;
-    if (/<\/body>/i.test(clean)) return clean.replace(/<\/body>/i, block + '\n</body>');
+    if (/<\/body>/i.test(clean)) return clean.replace(/<\/body>/i, block + '\n<script src="tutorials.js" defer></script>
+</body>');
     return clean + '\n' + block;
   }
 
