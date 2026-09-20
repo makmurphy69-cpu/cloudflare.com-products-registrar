@@ -633,8 +633,7 @@
     return snippet + html;
   }
   function injectBeforeBodyClose(html, snippet) {
-    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '<script src="tutorials.js" defer></script>
-</body>');
+    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '</body>');
     return html + snippet;
   }
   function slugify(name) {
@@ -1073,5 +1072,6 @@
   });
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body>
 </html>
