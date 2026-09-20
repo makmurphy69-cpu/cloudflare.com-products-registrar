@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+(function () {
+  try {
+    var url = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
+    var page = location.pathname.split('/').pop() || 'cartoon-forge.html';
+    var body = JSON.stringify({ page: page });
+    if (navigator.sendBeacon) navigator.sendBeacon(url + '/hit', new Blob([body], { type: 'application/json' }));
+    else fetch(url + '/hit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+  } catch (e) {}
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cartoon Forge — free AI cartoon generator</title>
+<meta name="description" content="Describe a story and generate a playable, animated cartoon in your browser. Refine it, download the HTML, or record it as a WebM video.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cartoon Forge — free AI cartoon generator">
+<meta property="og:description" content="Describe a story and turn it into an animated browser cartoon with AI.">
+<meta property="og:url" content="https://migabuilder.com/cartoon-forge.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0E2A47;--deep:#081826;--paper:#EDEAE0;--ink:#16202B;--cyan:#6FD1E0;--cyan-dim:rgba(111,209,224,.28);--amber:#E2A63B;--success:#4E9E73;--error:#D8604A}
+  *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--navy);color:var(--paper);font-family:'IBM Plex Sans',system-ui,sans-serif}body{background-image:linear-gradient(var(--cyan-dim) 1px,transparent 1px),linear-gradient(90deg,var(--cyan-dim) 1px,transparent 1px);background-size:28px 28px}a{color:var(--cyan)}button,input,textarea,select{font:inherit}:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .masthead{display:flex;align-items:center;gap:16px;padding:26px clamp(20px,4vw,48px) 22px;border-bottom:1px dashed var(--cyan-dim)}.logo{width:42px;height:42px;flex:none}.masthead h1{font:700 24px 'Space Grotesk';margin:0}.masthead p{margin:3px 0 0;color:rgba(237,234,224,.64);font-size:14px}
+  main{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:24px;padding:28px clamp(20px,4vw,48px) 56px;align-items:start}.panel{background:var(--paper);color:var(--ink);padding:22px;border-radius:4px;position:sticky;top:18px}.section-title{font:600 12px 'Space Grotesk';text-transform:uppercase;letter-spacing:.08em;color:rgba(22,32,43,.52);margin:22px 0 12px;padding-top:18px;border-top:1px solid rgba(22,32,43,.14)}.section-title:first-child{margin-top:0;padding-top:0;border:0}.field{margin-bottom:16px}.field>label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}.hint{font-size:12px;line-height:1.45;color:rgba(22,32,43,.62);margin:6px 0 0}input,textarea,select{width:100%;padding:10px 11px;border:1px solid rgba(22,32,43,.28);border-radius:3px;background:white;color:var(--ink)}textarea{min-height:112px;resize:vertical;line-height:1.45}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.key-row{display:flex;gap:8px}.key-row input{flex:1}.small-btn{width:auto;padding:8px 12px;background:white;border:1px solid rgba(22,32,43,.28);border-radius:3px;cursor:pointer}.check{display:flex!important;gap:8px;align-items:flex-start;font-weight:400!important}.check input{width:auto;margin-top:3px}
+  .primary{width:100%;padding:13px;border:0;border-radius:3px;background:var(--amber);color:#4A3410;font-weight:700;cursor:pointer}.primary:disabled,.action:disabled{opacity:.45;cursor:not-allowed}.error{display:none;margin-top:12px;padding:11px;background:rgba(216,96,74,.15);border:1px solid rgba(216,96,74,.4);color:#6E2418;font-size:13px}.error.show{display:block}
+  .stage{background:var(--deep);border:1px solid var(--cyan-dim);padding:18px;min-height:650px;display:flex;flex-direction:column}.status{font:500 11px 'IBM Plex Mono';letter-spacing:.08em;color:rgba(111,209,224,.78);padding-bottom:12px;border-bottom:1px solid var(--cyan-dim);margin-bottom:14px}.screen{background:#fff;min-height:480px;display:flex;position:relative;overflow:hidden}.empty{margin:auto;text-align:center;color:rgba(14,42,71,.55);max-width:360px;padding:24px}.empty strong{display:block;font:700 18px 'Space Grotesk';color:rgba(14,42,71,.8);margin-bottom:6px}.screen iframe{width:100%;min-height:520px;border:0}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.action{padding:9px 13px;background:transparent;color:var(--paper);border:1px solid var(--cyan-dim);border-radius:3px;cursor:pointer}.action:hover:not(:disabled){border-color:var(--cyan)}.refine{margin-top:16px}.refine label{color:var(--paper);font-size:13px;font-weight:600}.refine textarea{min-height:62px;margin-top:6px}.source{display:none;width:100%;height:230px;margin-top:12px;background:#07131f;color:#cbe8e9;border:1px solid var(--cyan-dim);font:12px/1.45 'IBM Plex Mono';padding:12px}
+  footer{padding:22px clamp(20px,4vw,48px) 38px;color:rgba(237,234,224,.52);font-size:12px;border-top:1px solid var(--cyan-dim)}
+  @media(max-width:880px){main{grid-template-columns:1fr;padding-inline:16px}.panel{position:static}.stage{padding:10px;min-height:520px}.screen,.screen iframe{min-height:420px}.row{grid-template-columns:1fr}.masthead{padding-inline:18px}}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <svg class="logo" viewBox="0 0 40 40" fill="none"><rect x="1" y="1" width="38" height="38" rx="9" fill="#081826" stroke="#6FD1E0" stroke-width="1.4"/><path d="M10 28V12L20 22L30 12V28" stroke="#EDEAE0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="33" cy="7" r="3" fill="#E2A63B"/></svg>
+  <div><h1>Cartoon Forge</h1><p>Describe a story. Get an animated cartoon you can play, refine, download, and record.</p></div>
+</header>
+<main>
+  <section class="panel">
+    <div class="section-title">Connection</div>
+    <div class="field"><label for="provider">AI provider</label><select id="provider"><option value="gemini">Gemini — free, no key needed</option><option value="openai">OpenAI</option><option value="anthropic">Anthropic (Claude)</option></select></div>
+    <div class="field" id="keyField" style="display:none"><label id="keyLabel" for="apiKey">API key</label><div class="key-row"><input id="apiKey" type="password" autocomplete="off"><button class="small-btn" id="toggleKey" type="button">Show</button></div><p class="hint">Used directly from your browser and never stored.</p></div>
+    <div class="field"><label for="model">Text model</label><select id="model"></select></div>
+    <div class="section-title">The cartoon</div>
+    <div class="row">
+      <div class="field"><label for="style">Visual style</label><select id="style"><option value="colorful 2D Saturday-morning cartoon">Colorful 2D</option><option value="comic-book ink with bold panels">Comic book</option><option value="simple friendly preschool animation">Kids / preschool</option><option value="retro pixel-art animation">Pixel art</option><option value="minimal paper-cutout animation">Paper cutout</option></select></div>
+      <div class="field"><label for="duration">Length</label><select id="duration"><option value="15">15 seconds</option><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="format">Format</label><select id="format"><option value="landscape 16:9">Landscape 16:9</option><option value="portrait 9:16">Portrait 9:16</option><option value="square 1:1">Square 1:1</option></select></div>
+      <div class="field"><label for="audience">Audience</label><select id="audience"><option value="all ages">All ages</option><option value="children ages 5 to 8">Ages 5–8</option><option value="children ages 9 to 12">Ages 9–12</option><option value="teens and adults">Teens/adults</option></select></div>
+    </div>
+    <div class="field"><label class="check"><input id="captions" type="checkbox" checked><span>Show dialogue and captions</span></label><label class="check"><input id="narration" type="checkbox"><span>Use browser voice narration when available</span></label><label class="check"><input id="sound" type="checkbox" checked><span>Add simple procedural sound effects</span></label></div>
+    <div class="field"><label for="brief">Describe the cartoon</label><textarea id="brief" placeholder="Example: A shy little dragon tries to bake a birthday cake, sneezes fire onto it, and accidentally creates the best cake in the kingdom."></textarea><p class="hint">Include characters, setting, important dialogue, and the ending if you have them in mind.</p></div>
+    <button class="primary" id="generateBtn" type="button">Generate cartoon</button><div class="error" id="error"></div>
+  </section>
+  <section class="stage">
+    <div class="status" id="status">CARTOON FORGE — NOTHING GENERATED YET</div>
+    <div class="screen"><div class="empty" id="empty"><strong>Your cartoon will appear here.</strong>Describe the story and click Generate cartoon.</div><iframe id="preview" title="Generated cartoon preview" sandbox="allow-scripts allow-same-origin allow-modals" style="display:none"></iframe></div>
+    <div class="actions"><button class="action" id="replayBtn" disabled>Replay</button><button class="action" id="recordBtn" disabled>Record WebM</button><button class="action" id="downloadBtn" disabled>Download HTML</button><button class="action" id="sourceBtn" disabled>View source</button></div>
+    <div class="refine"><label for="refine">Refine this cartoon</label><textarea id="refine" placeholder="Example: Make the dragon blue, slow down the final scene, and add a bigger celebration."></textarea><button class="primary" id="refineBtn" disabled style="margin-top:8px">Apply change</button></div>
+    <textarea class="source" id="source" readonly></textarea>
+  </section>
+</main>
+<footer>Part of <a href="index.html">MigaBuilder</a>. Cartoons are generated as self-contained HTML using Canvas, CSS and JavaScript. Recording uses your browser's built-in WebM recorder and works best in Chrome or Edge. <a href="feedback.html">Send feedback →</a></footer>
+<script>
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id), provider=$('provider'), keyField=$('keyField'), keyLabel=$('keyLabel'), apiKey=$('apiKey'), model=$('model'), generateBtn=$('generateBtn'), refineBtn=$('refineBtn'), preview=$('preview'), empty=$('empty'), status=$('status'), error=$('error'), source=$('source'), recordBtn=$('recordBtn');
+  const MODELS={gemini:[['gemini-3.5-flash-lite','Gemini 3.5 Flash-Lite (free tier)'],['gemini-3.5-flash','Gemini 3.5 Flash (free tier, better quality)']],openai:[['gpt-4o-mini','gpt-4o-mini (fast, cheap)'],['gpt-4o','gpt-4o (higher quality)'],['gpt-4.1','gpt-4.1']],anthropic:[['claude-3-5-haiku-latest','Claude Haiku'],['claude-sonnet-4-20250514','Claude Sonnet']]};
+  const PROXY='https://migabuilder-gemini.makmurphy69.workers.dev'; let currentHtml='';
+  function applyProvider(){const p=provider.value;keyField.style.display=p==='gemini'?'none':'block';keyLabel.textContent=p==='openai'?'Your OpenAI API key':'Your Anthropic API key';apiKey.placeholder=p==='openai'?'sk-...':'sk-ant-...';model.innerHTML='';MODELS[p].forEach((m,i)=>{const o=document.createElement('option');o.value=m[0];o.textContent=m[1];if(i===1)o.selected=true;model.appendChild(o)})}
+  provider.addEventListener('change',applyProvider);applyProvider();
+  $('toggleKey').onclick=()=>{apiKey.type=apiKey.type==='password'?'text':'password';$('toggleKey').textContent=apiKey.type==='password'?'Show':'Hide'};
+  function fail(message){error.textContent=message;error.classList.add('show')}function clearError(){error.classList.remove('show')}
+  function stripFence(v){v=(v||'').trim();const m=v.match(/^```(?:html)?\s*([\s\S]*?)\s*```$/i);return m?m[1]:v}
+  async function callAI(systemPrompt,userPrompt){const p=provider.value,k=apiKey.value.trim(),m=model.value;if(p!=='gemini'&&!k)throw new Error('Add your API key first.');let response;
+    if(p==='gemini'){response=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,systemPrompt:systemPrompt,userPrompt:userPrompt})});const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.error?.message||data?.error||'The free Gemini request failed. Its daily limit may have been reached.');const text=data?.candidates?.[0]?.content?.parts?.[0]?.text;if(!text)throw new Error('Gemini returned an empty response.');return stripFence(text)}
+    if(p==='anthropic'){response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:m,max_tokens:10000,system:systemPrompt,messages:[{role:'user',content:userPrompt}]})});const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.error?.message||'Anthropic request failed.');const text=data?.content?.find(x=>x.type==='text')?.text;if(!text)throw new Error('Claude returned an empty response.');return stripFence(text)}
+    response=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+k},body:JSON.stringify({model:m,temperature:.8,messages:[{role:'system',content:systemPrompt},{role:'user',content:userPrompt}]})});const data=await response.json().catch(()=>null);if(!response.ok)throw new Error(data?.error?.message||'OpenAI request failed.');const text=data?.choices?.[0]?.message?.content;if(!text)throw new Error('OpenAI returned an empty response.');return stripFence(text)
+  }
+  function systemPrompt(){return [
+    'You are a senior browser animator and children\'s media developer. Write ONE complete self-contained HTML document that turns the supplied story into a polished animated cartoon.',
+    'Use exactly one visible HTML canvas and requestAnimationFrame. All art must be drawn with Canvas 2D shapes, gradients, text and emoji. Do not use external images, libraries, fonts, audio files, fetch, eval, or network calls.',
+    'Make a real timeline with multiple distinct scenes, camera movement, character motion, expressive faces/body language, transitions, foreground/background depth, and a clear beginning, middle and ending.',
+    'Animation must be time-based and automatically start after the user presses a large Start button. Show play/pause, replay, previous scene, next scene, progress and mute controls outside the canvas.',
+    'Expose window.cartoonController={play,pause,replay,getDuration,getCanvas,getAudioStream}. replay() must restart at time zero and play; getDuration() returns total seconds; getCanvas() returns the visible canvas. getAudioStream() returns a MediaStream containing procedural Web Audio output, or null when sound is disabled. To make this work, connect sound nodes to both audioContext.destination and a MediaStreamAudioDestinationNode.',
+    'Make canvas resolution appropriate to the requested format but responsive with CSS. Keep important text inside safe margins. Provide touch-friendly controls.',
+    'Dialogue/captions must be timed and readable. If narration is requested, use speechSynthesis only after the Start button and never repeatedly speak the same line.',
+    'If sound is requested, use short Web Audio oscillator/gain effects only after user interaction and include a mute control.',
+    'The cartoon must run without errors when loaded from iframe.srcdoc or downloaded locally. Include a friendly replay state at the end.',
+    'Output ONLY the full HTML document beginning with <!DOCTYPE html>. No markdown fences or explanation.'
+  ].join('\n')}
+  function requestText(){return ['STORY: '+$('brief').value.trim(),'STYLE: '+$('style').value,'AUDIENCE: '+$('audience').value,'FORMAT: '+$('format').value,'TARGET DURATION: '+$('duration').value+' seconds','CAPTIONS: '+($('captions').checked?'yes':'no'),'VOICE NARRATION: '+($('narration').checked?'yes, browser speechSynthesis':'no'),'PROCEDURAL SOUND: '+($('sound').checked?'yes':'no'),'Create 3 to 7 scenes depending on duration. Keep recurring characters visually consistent.'].join('\n')}
+  function show(html){if(!/<!doctype html>/i.test(html)||!/<canvas[\s>]/i.test(html))throw new Error('The model did not return a valid canvas cartoon. Try Generate again.');currentHtml=html;preview.srcdoc=html;preview.style.display='block';empty.style.display='none';source.value=html;['replayBtn','recordBtn','downloadBtn','sourceBtn','refineBtn'].forEach(id=>$(id).disabled=false);status.textContent='CARTOON FORGE — READY TO PLAY'}
+  generateBtn.onclick=async()=>{clearError();if(!$('brief').value.trim()){fail('Describe the cartoon you want.');return}generateBtn.disabled=true;generateBtn.textContent='Animating…';status.textContent='CARTOON FORGE — BUILDING…';try{show(await callAI(systemPrompt(),requestText()))}catch(e){fail(e.message||String(e));status.textContent='CARTOON FORGE — GENERATION FAILED'}finally{generateBtn.disabled=false;generateBtn.textContent='Generate cartoon'}};
+  refineBtn.onclick=async()=>{clearError();const instruction=$('refine').value.trim();if(!currentHtml||!instruction){fail(!currentHtml?'Generate a cartoon first.':'Describe the change you want.');return}refineBtn.disabled=true;refineBtn.textContent='Applying…';status.textContent='CARTOON FORGE — APPLYING CHANGE…';try{const prompt='Here is the current complete HTML cartoon:\n\n'+currentHtml+'\n\nCHANGE REQUEST:\n'+instruction+'\n\nReturn the entire updated HTML document only. Preserve all working features and window.cartoonController.';show(await callAI(systemPrompt(),prompt))}catch(e){fail(e.message||String(e));status.textContent='CARTOON FORGE — CHANGE FAILED'}finally{refineBtn.disabled=false;refineBtn.textContent='Apply change'}};
+  $('replayBtn').onclick=()=>{try{const w=preview.contentWindow;if(w?.cartoonController?.replay)w.cartoonController.replay();else preview.srcdoc=currentHtml}catch(e){preview.srcdoc=currentHtml}};
+  $('downloadBtn').onclick=()=>{const blob=new Blob([currentHtml],{type:'text/html'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='migabuilder-cartoon.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+  $('sourceBtn').onclick=()=>{const visible=source.style.display==='block';source.style.display=visible?'none':'block';$('sourceBtn').textContent=visible?'View source':'Hide source'};
+  recordBtn.onclick=async()=>{clearError();try{const w=preview.contentWindow,controller=w?.cartoonController,canvas=controller?.getCanvas?.()||preview.contentDocument?.querySelector('canvas');if(!canvas?.captureStream)throw new Error('This browser cannot record the generated canvas. Try Chrome or Edge.');const canvasStream=canvas.captureStream(30),stream=new MediaStream(canvasStream.getVideoTracks()),audioStream=controller?.getAudioStream?.();if(audioStream?.getAudioTracks)audioStream.getAudioTracks().forEach(track=>stream.addTrack(track));const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm',rec=new MediaRecorder(stream,{mimeType:mime}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='migabuilder-cartoon.webm';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);recordBtn.disabled=false;recordBtn.textContent='Record WebM';status.textContent='CARTOON FORGE — VIDEO RECORDED'};recordBtn.disabled=true;recordBtn.textContent='Recording…';status.textContent='CARTOON FORGE — RECORDING IN REAL TIME…';controller?.replay?.();rec.start(250);const seconds=Number(controller?.getDuration?.())||Number($('duration').value);setTimeout(()=>{if(rec.state!=='inactive')rec.stop()},(seconds+1)*1000)}catch(e){recordBtn.disabled=false;recordBtn.textContent='Record WebM';fail(e.message||String(e))}};
+})();
+</script>
+</body>
+</html>
