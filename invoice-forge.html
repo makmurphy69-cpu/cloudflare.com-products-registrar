@@ -425,8 +425,7 @@
       '<div class="parties"><div><strong>' + I18N.t('docTo') + '</strong><br>' + client.replace(/</g, '&lt;') + clientAddrBlock + '</div></div>' +
       '<table><tr><th>' + I18N.t('colDescription') + '</th><th style="text-align:right;">' + I18N.t('colQty') + '</th><th style="text-align:right;">' + I18N.t('colRate') + '</th><th style="text-align:right;">' + I18N.t('colAmount') + '</th></tr>' + rowsHtml + '</table>' +
       '<table class="totals-table">' + totalsRows.join('') + '</table>' +
-      '<script src="tutorials.js" defer></script>
-</body></html>';
+      '</body></html>';
 
     return { html: html, filename: type.toLowerCase() + '-' + docNumber + '.html', hasItems: items.length > 0 };
   }
@@ -734,5 +733,6 @@
   });
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body>
 </html>
