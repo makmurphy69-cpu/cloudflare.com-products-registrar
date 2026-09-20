@@ -163,6 +163,7 @@
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); max-width: 1300px; margin: 0 auto; }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 
@@ -632,7 +633,8 @@
     return snippet + html;
   }
   function injectBeforeBodyClose(html, snippet) {
-    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '</body>');
+    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, snippet + '<script src="tutorials.js" defer></script>
+</body>');
     return html + snippet;
   }
   function slugify(name) {
