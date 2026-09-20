@@ -523,6 +523,32 @@
     color: rgba(237, 234, 224, 0.5);
     padding-bottom: 18px;
   }
+  .hero-copy { max-width: 760px; }
+  .hero-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+  .hero-actions a { display:inline-flex; align-items:center; min-height:40px; padding:9px 14px; border:1px solid var(--line-cyan-dim); border-radius:var(--radius); text-decoration:none; font-size:13px; font-weight:600; }
+  .hero-actions .primary-link { background:var(--amber); border-color:var(--amber); color:var(--amber-ink); }
+  .trust-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:13px; }
+  .trust-row span { padding:5px 9px; border-radius:999px; background:rgba(111,209,224,.1); border:1px solid var(--line-cyan-dim); color:rgba(237,234,224,.78); font-size:11.5px; }
+  .tool-hub { padding:28px clamp(20px,4vw,48px) 8px; }
+  .tool-hub-head { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:16px; }
+  .tool-hub h2 { margin:0; font:700 clamp(23px,3vw,32px) 'Space Grotesk',sans-serif; letter-spacing:-.03em; }
+  .tool-hub-head p { margin:5px 0 0; color:rgba(237,234,224,.6); font-size:13px; }
+  .tool-search { width:min(300px,100%); background:rgba(8,24,38,.72); border-color:var(--line-cyan-dim); color:var(--paper); }
+  .tool-search::placeholder { color:rgba(237,234,224,.45); }
+  .tool-groups { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+  .tool-group { background:rgba(8,24,38,.76); border:1px solid var(--line-cyan-dim); border-radius:var(--radius); padding:16px; }
+  .tool-group h3 { margin:0 0 11px; font:600 12px 'IBM Plex Mono',monospace; color:var(--line-cyan); text-transform:uppercase; letter-spacing:.08em; }
+  .tool-card { display:flex; align-items:flex-start; gap:10px; padding:10px; margin:0 -5px 4px; color:var(--paper); text-decoration:none; border-radius:4px; transition:background .15s,transform .15s; }
+  .tool-card:hover { background:rgba(111,209,224,.09); transform:translateX(2px); }
+  .tool-icon { font-size:19px; line-height:1.2; flex:none; }
+  .tool-card strong { display:block; font-size:13px; }
+  .tool-card small { display:block; margin-top:2px; color:rgba(237,234,224,.52); line-height:1.35; font-size:11px; }
+  .builder-intro { padding:32px clamp(20px,4vw,48px) 0; }
+  .builder-intro-inner { max-width:760px; }
+  .builder-intro h2 { margin:0; font:700 clamp(25px,3vw,34px) 'Space Grotesk',sans-serif; }
+  .builder-intro p { margin:8px 0 0; color:rgba(237,234,224,.62); line-height:1.55; }
+  @media(max-width:1050px){.tool-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.tool-hub-head{align-items:stretch;flex-direction:column}.tool-search{width:100%}.tool-groups{grid-template-columns:1fr}.hero-actions a{width:100%;justify-content:center}}
 </style>
 </head>
 <body>
@@ -536,35 +562,50 @@
   </svg>
   <div>
     <h1>MigaBuilder</h1>
-    <p data-i18n="heroSubtitle">Describe a business. Get a real, multi-page website — drafted live in your browser.</p>
-    <p style="display:flex;flex-wrap:wrap;gap:4px 14px;">
-      <a href="slide-forge.html" style="color: var(--line-cyan);" data-i18n="navSlide">📊 PowerPoint generator</a>
-      <a href="file-forge.html" style="color: var(--line-cyan);" data-i18n="navFile">🖼️ Image converter</a>
-      <a href="paint-forge.html" style="color: var(--line-cyan);" data-i18n="navPaint">🖌️ Layered image editor</a>
-      <a href="qr-forge.html" style="color: var(--line-cyan);" data-i18n="navQr">▦ QR code generator</a>
-      <a href="logo-forge.html" style="color: var(--line-cyan);" data-i18n="navLogo">🎨 Logo &amp; favicon maker</a>
-      <a href="game-forge.html" style="color: var(--line-cyan);" data-i18n="navGame">🥷 AI game generator</a>
-      <a href="video-forge.html" style="color: var(--line-cyan);" data-i18n="navVideo">🎬 Drawing-to-video generator</a>
-      <a href="talk-forge.html" style="color: var(--line-cyan);" data-i18n="navTalk">🗣️ Make a photo talk</a>
-      <a href="bot-forge.html" style="color: var(--line-cyan);" data-i18n="navBot">🤖 Website chat/FAQ widget</a>
-      <a href="app-forge.html" style="color: var(--line-cyan);" data-i18n="navApp">📱 App generator</a>
-      <a href="post-forge.html" style="color: var(--line-cyan);" data-i18n="navPost">📣 Post to Discord/Bluesky/Mastodon</a>
-      <a href="screen-forge.html" style="color: var(--line-cyan);" data-i18n="navScreen">🤝 Screen share / remote help</a>
-      <a href="record-forge.html" style="color: var(--line-cyan);" data-i18n="navRecord">⏺️ Screen recorder with voice narration</a>
-      <a href="music-forge.html" style="color: var(--line-cyan);" data-i18n="navMusic">🎵 Music generator</a>
-      <a href="clip-forge.html" style="color: var(--line-cyan);" data-i18n="navClip">✂️ Video trimmer, captions &amp; translation</a>
-      <a href="merge-forge.html" style="color: var(--line-cyan);" data-i18n="navMerge">🧩 Merge images, clips &amp; music into one video</a>
-      <a href="invoice-forge.html" style="color: var(--line-cyan);" data-i18n="navInvoice">🧾 Quote &amp; invoice generator</a>
-      <a href="contract-forge.html" style="color: var(--line-cyan);" data-i18n="navContract">📜 Contract generator</a>
-      <a href="code-forge.html" style="color: var(--line-cyan);" data-i18n="navCode">🧑‍💻 Learn Python &amp; JavaScript</a>
-      <a href="model-forge.html" style="color: var(--line-cyan);" data-i18n="navModel">🧊 3D model &amp; 3D-print designer</a>
-      <a href="palette-forge.html" style="color: var(--line-cyan);" data-i18n="navPalette">🎨 Color palette generator</a>
-      <a href="name-forge.html" style="color: var(--line-cyan);" data-i18n="navName">✨ Business name generator</a>
-      <a href="feedback.html" style="color: var(--line-cyan);" data-i18n="navFeedback">💬 Feedback &amp; suggestions</a>
-    </p>
+    <p class="hero-copy" data-i18n="heroSubtitle">Create websites, games, cartoons, videos, music and practical business assets with AI — directly in your browser.</p>
+    <div class="hero-actions"><a class="primary-link" href="#website-builder">Build a website</a><a href="#tools">Explore all tools</a><a href="cartoon-forge.html">Try Cartoon Forge</a></div>
+    <div class="trust-row"><span>Free Gemini option</span><span>No signup</span><span>Files stay in your browser</span><span>Open source</span></div>
     <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
+
+<section class="tool-hub" id="tools">
+  <div class="tool-hub-head"><div><h2>What do you want to make?</h2><p>Choose a focused tool and start creating.</p></div><input class="tool-search" id="toolSearch" type="search" placeholder="Find a tool…" aria-label="Find a tool"></div>
+  <div class="tool-groups" id="toolGroups">
+    <div class="tool-group"><h3>Create</h3>
+      <a class="tool-card" href="#website-builder"><span class="tool-icon">🌐</span><span><strong>Website Builder</strong><small>Generate a complete multi-page business site.</small></span></a>
+      <a class="tool-card" href="game-forge.html"><span class="tool-icon">🥷</span><span><strong>Game Forge</strong><small>Turn a prompt into a playable browser game.</small></span></a>
+      <a class="tool-card" href="cartoon-forge.html"><span class="tool-icon">🎞️</span><span><strong>Cartoon Forge</strong><small>Create an animated story and record it as video.</small></span></a>
+      <a class="tool-card" href="app-forge.html"><span class="tool-icon">📱</span><span><strong>App Forge</strong><small>Build a self-contained browser app.</small></span></a>
+      <a class="tool-card" href="bot-forge.html"><span class="tool-icon">🤖</span><span><strong>Bot Forge</strong><small>Make a website FAQ and chat widget.</small></span></a>
+    </div>
+    <div class="tool-group"><h3>Video &amp; audio</h3>
+      <a class="tool-card" href="video-forge.html"><span class="tool-icon">🎬</span><span><strong>Video Forge</strong><small>Turn drawings and images into motion.</small></span></a>
+      <a class="tool-card" href="talk-forge.html"><span class="tool-icon">🗣️</span><span><strong>Talk Forge</strong><small>Make a photo speak with your audio.</small></span></a>
+      <a class="tool-card" href="clip-forge.html"><span class="tool-icon">✂️</span><span><strong>Clip Forge</strong><small>Trim, caption and translate video.</small></span></a>
+      <a class="tool-card" href="merge-forge.html"><span class="tool-icon">🧩</span><span><strong>Merge Forge</strong><small>Combine clips, images, text and music.</small></span></a>
+      <a class="tool-card" href="music-forge.html"><span class="tool-icon">🎵</span><span><strong>Music Forge</strong><small>Generate original browser-made music.</small></span></a>
+      <a class="tool-card" href="record-forge.html"><span class="tool-icon">⏺️</span><span><strong>Record Forge</strong><small>Record your screen with narration.</small></span></a>
+    </div>
+    <div class="tool-group"><h3>Business</h3>
+      <a class="tool-card" href="logo-forge.html"><span class="tool-icon">🎨</span><span><strong>Logo Forge</strong><small>Create a logo, favicon and brand kit.</small></span></a>
+      <a class="tool-card" href="slide-forge.html"><span class="tool-icon">📊</span><span><strong>Slide Forge</strong><small>Generate a downloadable PowerPoint.</small></span></a>
+      <a class="tool-card" href="invoice-forge.html"><span class="tool-icon">🧾</span><span><strong>Invoice Forge</strong><small>Make quotes and printable invoices.</small></span></a>
+      <a class="tool-card" href="contract-forge.html"><span class="tool-icon">📜</span><span><strong>Contract Forge</strong><small>Draft straightforward agreements.</small></span></a>
+      <a class="tool-card" href="name-forge.html"><span class="tool-icon">✨</span><span><strong>Name Forge</strong><small>Find business names and domains.</small></span></a>
+      <a class="tool-card" href="post-forge.html"><span class="tool-icon">📣</span><span><strong>Post Forge</strong><small>Prepare and publish social posts.</small></span></a>
+    </div>
+    <div class="tool-group"><h3>Design &amp; utilities</h3>
+      <a class="tool-card" href="paint-forge.html"><span class="tool-icon">🖌️</span><span><strong>Paint Forge</strong><small>Edit images with layers in the browser.</small></span></a>
+      <a class="tool-card" href="file-forge.html"><span class="tool-icon">🖼️</span><span><strong>File Forge</strong><small>Convert and resize image files.</small></span></a>
+      <a class="tool-card" href="model-forge.html"><span class="tool-icon">🧊</span><span><strong>Model Forge</strong><small>Design 3D models and printable forms.</small></span></a>
+      <a class="tool-card" href="palette-forge.html"><span class="tool-icon">🌈</span><span><strong>Palette Forge</strong><small>Build accessible color systems.</small></span></a>
+      <a class="tool-card" href="qr-forge.html"><span class="tool-icon">▦</span><span><strong>QR Forge</strong><small>Create downloadable QR codes.</small></span></a>
+      <a class="tool-card" href="code-forge.html"><span class="tool-icon">🧑‍💻</span><span><strong>Code Forge</strong><small>Learn Python and JavaScript.</small></span></a>
+      <a class="tool-card" href="screen-forge.html"><span class="tool-icon">🤝</span><span><strong>Screen Share Forge</strong><small>Get live remote help.</small></span></a>
+    </div>
+  </div>
+</section>
 
 <div class="showcase">
   <div class="showcase-header">
@@ -581,6 +622,8 @@
   <div class="showcase-grid" id="showcaseGrid"></div>
   <p class="showcase-empty" id="showcaseEmpty" style="display:none;" data-i18n="showcaseEmpty">No customer sites submitted yet — email yours in using the link above, or see SHOWCASE_SITES near the top of the script.</p>
 </div>
+
+<section class="builder-intro" id="website-builder"><div class="builder-intro-inner"><h2>Build a complete business website</h2><p>Describe the business once. MigaBuilder drafts the pages, copy and layout, then lets you preview, refine, download or publish the result.</p></div></section>
 
 <main>
   <section class="panel">
@@ -869,6 +912,17 @@
 
 <script>
 (function () {
+  const toolSearch = document.getElementById('toolSearch');
+  if (toolSearch) toolSearch.addEventListener('input', function () {
+    const query = toolSearch.value.trim().toLowerCase();
+    document.querySelectorAll('.tool-card').forEach(function (card) {
+      card.style.display = !query || card.textContent.toLowerCase().includes(query) ? 'flex' : 'none';
+    });
+    document.querySelectorAll('.tool-group').forEach(function (group) {
+      group.style.display = Array.from(group.querySelectorAll('.tool-card')).some(function (card) { return card.style.display !== 'none'; }) ? 'block' : 'none';
+    });
+  });
+
   // ---------- your affiliate link ----------
   // Replace this with your actual Namecheap affiliate link (sign up at
   // https://www.namecheap.com/affiliates/) so referrals earn you commission.
@@ -1935,7 +1989,7 @@
 <script>
 I18N.init({
   en: {
-    heroSubtitle: 'Describe a business. Get a real, multi-page website — drafted live in your browser.',
+    heroSubtitle: 'Create websites, games, cartoons, videos, music and practical business assets with AI — directly in your browser.',
     navSlide: '📊 PowerPoint generator', navFile: '🖼️ Image converter', navPaint: '🖌️ Layered image editor',
     navQr: '▦ QR code generator', navLogo: '🎨 Logo & favicon maker', navGame: '🥷 AI game generator',
     navVideo: '🎬 Drawing-to-video generator', navTalk: '🗣️ Make a photo talk', navBot: '🤖 Website chat/FAQ widget',
@@ -1953,7 +2007,7 @@ I18N.init({
     footerText: 'MigaBuilder generates real HTML pages per request using your own OpenAI account. Buy buttons link to your own Stripe payment links — no card data ever passes through this tool. Review generated content and links before publishing.'
   },
   es: {
-    heroSubtitle: 'Describe un negocio. Obtén un sitio web real de varias páginas, creado en vivo en tu navegador.',
+    heroSubtitle: 'Crea sitios web, juegos, dibujos animados, vídeos, música y recursos empresariales prácticos con IA, directamente en tu navegador.',
     navSlide: '📊 Generador de PowerPoint', navFile: '🖼️ Conversor de imágenes', navPaint: '🖌️ Editor de imágenes por capas',
     navQr: '▦ Generador de códigos QR', navLogo: '🎨 Creador de logotipos y favicons', navGame: '🥷 Generador de juegos con IA',
     navVideo: '🎬 Generador de dibujos a video', navTalk: '🗣️ Haz que una foto hable', navBot: '🤖 Widget de chat/FAQ para tu web',
@@ -1971,7 +2025,7 @@ I18N.init({
     footerText: 'MigaBuilder genera páginas HTML reales para cada solicitud usando tu propia cuenta de OpenAI. Los botones de compra enlazan a tus propios enlaces de pago de Stripe — ningún dato de tarjeta pasa nunca por esta herramienta. Revisa el contenido y los enlaces generados antes de publicar.'
   },
   ar: {
-    heroSubtitle: 'صِف نشاطك التجاري. احصل على موقع ويب حقيقي متعدد الصفحات — يُنشأ مباشرة في متصفحك.',
+    heroSubtitle: 'أنشئ مواقع وألعابًا ورسومًا متحركة وفيديوهات وموسيقى وأدوات عملية للأعمال بالذكاء الاصطناعي — مباشرة في متصفحك.',
     navSlide: '📊 مولد عروض PowerPoint', navFile: '🖼️ محول الصور', navPaint: '🖌️ محرر صور بطبقات',
     navQr: '▦ مولد رمز QR', navLogo: '🎨 صانع الشعارات وأيقونات المفضلة', navGame: '🥷 مولد ألعاب بالذكاء الاصطناعي',
     navVideo: '🎬 تحويل الرسومات إلى فيديو', navTalk: '🗣️ اجعل الصورة تتحدث', navBot: '🤖 أداة دردشة/أسئلة شائعة للموقع',
@@ -1989,7 +2043,7 @@ I18N.init({
     footerText: 'ينشئ MigaBuilder صفحات HTML حقيقية لكل طلب باستخدام حساب OpenAI الخاص بك. تؤدي أزرار الشراء إلى روابط الدفع الخاصة بك على Stripe — لا تمر أي بيانات بطاقة عبر هذه الأداة أبدًا. راجع المحتوى والروابط التي تم إنشاؤها قبل النشر.'
   },
   zh: {
-    heroSubtitle: '描述你的业务，即可在浏览器中实时生成一个真实的多页网站。',
+    heroSubtitle: '使用 AI 创建网站、游戏、动画、视频、音乐和实用商业素材——直接在浏览器中完成。',
     navSlide: '📊 PowerPoint 生成器', navFile: '🖼️ 图片转换器', navPaint: '🖌️ 分层图像编辑器',
     navQr: '▦ 二维码生成器', navLogo: '🎨 徽标与网站图标制作工具', navGame: '🥷 AI 游戏生成器',
     navVideo: '🎬 手绘转视频生成器', navTalk: '🗣️ 让照片开口说话', navBot: '🤖 网站聊天/常见问题小部件',
@@ -2007,7 +2061,7 @@ I18N.init({
     footerText: 'MigaBuilder 使用你自己的 OpenAI 账户为每个请求生成真实的 HTML 页面。购买按钮链接到你自己的 Stripe 支付链接——任何卡片数据都不会经过此工具。发布前请检查生成的内容和链接。'
   },
   sw: {
-    heroSubtitle: 'Eleza biashara yako. Pata tovuti halisi yenye kurasa nyingi — inayotengenezwa moja kwa moja kwenye kivinjari chako.',
+    heroSubtitle: 'Tengeneza tovuti, michezo, katuni, video, muziki na nyenzo za biashara kwa AI — moja kwa moja kwenye kivinjari chako.',
     navSlide: '📊 Kitengenezea PowerPoint', navFile: '🖼️ Kibadilishaji picha', navPaint: '🖌️ Kihariri picha chenye tabaka',
     navQr: '▦ Kitengenezea msimbo wa QR', navLogo: '🎨 Kitengenezea nembo na favicon', navGame: '🥷 Kitengenezea michezo kwa AI',
     navVideo: '🎬 Kigeuzi cha michoro kuwa video', navTalk: '🗣️ Fanya picha izungumze', navBot: '🤖 Kifaa cha mazungumzo/maswali ya tovuti',
