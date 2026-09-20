@@ -18,7 +18,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Site Visits — MigaBuilder</title>
-<meta name="description" content="Private visitor and page-view dashboard for MigaBuilder.">
+<meta name="description" content="Private aggregate tool-usage and page-view dashboard for MigaBuilder.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -86,7 +86,7 @@
   .stats-wrap { display: none; }
   .stats-wrap.show { display: block; }
 
-  .stat-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
   .stat-tile {
     background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
     padding: 18px 20px;
@@ -134,7 +134,7 @@
   </svg>
   <div>
     <h1>Site Visits</h1>
-    <p>Private tool-usage, page-view, and visitor dashboard — not linked from the site.</p>
+    <p>Private aggregate tool-usage and page-view dashboard — not linked from the site.</p>
   </div>
 </header>
 
@@ -152,23 +152,21 @@
   <div class="stats-wrap" id="statsWrap">
     <div class="stat-tiles">
       <div class="stat-tile"><div class="stat-value" id="totalViewsValue">0</div><div class="stat-label">Total page views</div></div>
-      <div class="stat-tile"><div class="stat-value" id="totalUniquesValue">0</div><div class="stat-label">Total unique visitors</div></div>
+      <div class="stat-tile"><div class="stat-value" id="totalActionsValue">0</div><div class="stat-label">Recorded actions</div></div>
       <div class="stat-tile"><div class="stat-value" id="trackedToolsValue">0</div><div class="stat-label">Tools opened</div></div>
+      <div class="stat-tile"><div class="stat-value" id="helpfulValue">—</div><div class="stat-label">Helpful rating</div></div>
     </div>
 
     <div class="panel-block">
       <h2>Last 14 days</h2>
-      <div class="legend">
-        <span><span class="dot views"></span>Page views</span>
-        <span><span class="dot uniques"></span>Unique visitors</span>
-      </div>
+      <div class="legend"><span><span class="dot views"></span>Aggregate page views</span></div>
       <div id="daysList"></div>
     </div>
 
     <div class="panel-block">
       <h2>Tool usage ranking</h2>
       <table class="pages-table" id="pagesTable" style="display:none;">
-        <thead><tr><th>Tool</th><th style="text-align:right;">Opens</th></tr></thead>
+        <thead><tr><th>Tool</th><th style="text-align:right;">Opens</th><th style="text-align:right;">Actions</th></tr></thead>
         <tbody id="pagesTableBody"></tbody>
       </table>
       <p class="pages-empty" id="pagesEmpty">No views recorded yet.</p>
@@ -176,7 +174,7 @@
   </div>
 </main>
 
-<footer>Part of <a href="index.html">MigaBuilder</a>. Visitor counting is cookie-free and privacy-friendly — see <a href="https://github.com/makmurphy69-cpu/cloudflare.com-products-registrar/blob/main/cloudflare-worker/visits-counter.js" target="_blank" rel="noopener">visits-counter.js</a> for exactly what it records.</footer>
+<footer>Part of <a href="index.html">MigaBuilder</a>. The counter stores aggregate page, action, and rating totals only—no unique identifiers or customer content. See <a href="https://github.com/makmurphy69-cpu/cloudflare.com-products-registrar/blob/main/cloudflare-worker/visits-counter.js" target="_blank" rel="noopener">the source</a>.</footer>
 
 <script>
 (function () {
@@ -187,8 +185,9 @@
   const errorBox = document.getElementById('errorBox');
   const statsWrap = document.getElementById('statsWrap');
   const totalViewsValue = document.getElementById('totalViewsValue');
-  const totalUniquesValue = document.getElementById('totalUniquesValue');
+  const totalActionsValue = document.getElementById('totalActionsValue');
   const trackedToolsValue = document.getElementById('trackedToolsValue');
+  const helpfulValue = document.getElementById('helpfulValue');
   const daysList = document.getElementById('daysList');
   const pagesTable = document.getElementById('pagesTable');
   const pagesTableBody = document.getElementById('pagesTableBody');
@@ -202,11 +201,10 @@
 
   function formatNumber(n) { return (n || 0).toLocaleString(); }
 
-  function renderDays(viewsByDay, uniquesByDay) {
+  function renderDays(viewsByDay) {
     daysList.innerHTML = '';
     const maxViews = Math.max(1, ...viewsByDay.map(d => d.views));
     viewsByDay.forEach((d, i) => {
-      const uniques = (uniquesByDay[i] && uniquesByDay[i].visitors) || 0;
       const viewsRow = document.createElement('div');
       viewsRow.className = 'day-row';
       viewsRow.innerHTML =
@@ -214,14 +212,6 @@
         '<span class="bar-track"><span class="bar-fill" style="width:' + Math.round((d.views / maxViews) * 100) + '%;"></span></span>' +
         '<span class="day-count">' + formatNumber(d.views) + '</span>';
       daysList.appendChild(viewsRow);
-      const uniqueRow = document.createElement('div');
-      uniqueRow.className = 'day-row';
-      uniqueRow.style.marginBottom = '14px';
-      uniqueRow.innerHTML =
-        '<span class="day-label"></span>' +
-        '<span class="bar-track"><span class="bar-fill uniques" style="width:' + Math.round((uniques / maxViews) * 100) + '%;"></span></span>' +
-        '<span class="day-count">' + formatNumber(uniques) + '</span>';
-      daysList.appendChild(uniqueRow);
     });
   }
 
@@ -229,7 +219,7 @@
     return page.replace(/\.html$/i, '').replace(/-forge$/i, ' Forge').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  function renderPages(topPages) {
+  function renderPages(topPages, events) {
     pagesTableBody.innerHTML = '';
     const tools = topPages.filter(p => /-forge\.html$/i.test(p.page));
     trackedToolsValue.textContent = formatNumber(tools.length);
@@ -242,7 +232,8 @@
     pagesEmpty.style.display = 'none';
     tools.slice(0, 30).forEach((p, index) => {
       const row = document.createElement('tr');
-      row.innerHTML = '<td><strong>' + (index + 1) + '.</strong> ' + toolName(p.page).replace(/</g, '&lt;') + '</td><td class="num">' + formatNumber(p.views) + '</td>';
+      const actions = events.filter(e => e.event === 'tool_action' && e.page === p.page).reduce((n,e)=>n+e.count,0);
+      row.innerHTML = '<td><strong>' + (index + 1) + '.</strong> ' + toolName(p.page).replace(/</g, '&lt;') + '</td><td class="num">' + formatNumber(p.views) + '</td><td class="num">' + formatNumber(actions) + '</td>';
       pagesTableBody.appendChild(row);
     });
   }
@@ -259,9 +250,11 @@
       }
       const data = await response.json();
       totalViewsValue.textContent = formatNumber(data.totalViews);
-      totalUniquesValue.textContent = formatNumber(data.totalUniqueVisitors);
-      renderDays(data.viewsByDay || [], data.uniquesByDay || []);
-      renderPages(data.topPages || []);
+      totalActionsValue.textContent = formatNumber(data.totalActions);
+      const yes=(data.events||[]).filter(e=>e.event==='helpful_yes').reduce((n,e)=>n+e.count,0),no=(data.events||[]).filter(e=>e.event==='helpful_no').reduce((n,e)=>n+e.count,0);
+      helpfulValue.textContent = yes+no ? Math.round(yes/(yes+no)*100)+'%' : '—';
+      renderDays(data.viewsByDay || []);
+      renderPages(data.topPages || [], data.events || []);
       statsWrap.classList.add('show');
       try { localStorage.setItem(STORAGE_KEY, key); } catch (e) { /* private browsing or storage disabled — not essential */ }
     } catch (err) {

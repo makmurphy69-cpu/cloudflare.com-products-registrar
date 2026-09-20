@@ -122,7 +122,7 @@ Two things worth knowing:
 # Visit counter — deploy steps
 
 Every page on the site sends a tiny, cookie-free beacon to this Worker on
-load; it tallies page views and an approximate unique-visitor count in KV,
+load; it tallies aggregate page views, tool actions, and helpful/not-helpful ratings in KV,
 and `visits.html` reads it back as a private dashboard (not linked from
 anywhere on the site — bookmark the URL yourself).
 
@@ -153,6 +153,6 @@ anywhere on the site — bookmark the URL yourself).
 9. Commit and push.
 
 This runs entirely on Cloudflare's free plan. Privacy notes: no cookies, no
-fingerprinting, and no IP address is ever stored — each visit is hashed
-(IP + day + a fixed salt) purely to dedupe repeat same-day visits, and that
-hash expires from KV after about a day on its own.
+fingerprinting, unique-person tracking, or customer-content storage. The
+Worker never reads or hashes IP addresses. Counts are approximate and are
+intended for product prioritisation, not billing or security decisions.

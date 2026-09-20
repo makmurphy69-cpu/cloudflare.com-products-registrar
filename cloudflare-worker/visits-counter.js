@@ -1,16 +1,12 @@
 /**
  * MigaBuilder's visit counter.
  *
- * A privacy-friendly, cookie-free page-view and visitor counter. Pages send
+ * A privacy-friendly, cookie-free aggregate page-view and action counter. Pages send
  * a tiny fire-and-forget beacon here on load; this Worker tallies it in KV
  * and exposes a /stats endpoint the visits.html dashboard reads.
  *
- * "Unique visitors" are approximated without cookies or fingerprinting: each
- * hit hashes the visitor's IP together with the current day (and a fixed
- * salt) via SHA-256, and only counts a visitor once per day per that hash.
- * The raw IP is never stored — only the opaque hash, and only for ~25 hours
- * (just long enough to dedupe same-day repeat visits), after which it
- * expires from KV on its own.
+ * It records aggregate page and action counts only. It does not read, hash,
+ * or store visitor IP addresses, cookies, names, emails, content, or device IDs.
  *
  * Deploy steps are in cloudflare-worker/README.md.
  */
@@ -20,11 +16,6 @@ const ALLOWED_ORIGINS = [
   'https://www.migabuilder.com'
 ];
 
-// A fixed (non-secret) salt is enough here — the goal is just to avoid
-// storing raw IPs, not to defeat a determined attacker with rainbow tables.
-const HASH_SALT = 'migabuilder-visits-v1';
-
-const DAY_TTL_SECONDS = 60 * 60 * 26; // a little over a day, to safely cover the full UTC day plus clock skew
 const MAX_PAGE_NAME_LENGTH = 80;
 const RECENT_DAYS = 14;
 
@@ -47,12 +38,6 @@ function json(body, status, origin) {
 
 function todayKey(date) {
   return (date || new Date()).toISOString().slice(0, 10); // YYYY-MM-DD, UTC
-}
-
-async function sha256Hex(text) {
-  const data = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function sanitizePageName(raw) {
@@ -78,22 +63,24 @@ async function handleHit(request, env, origin) {
     payload = {};
   }
   const page = sanitizePageName(payload && payload.page);
-  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   const day = todayKey();
 
   await incrementKV(env.VISITS_KV, 'views:total', 1);
   await incrementKV(env.VISITS_KV, 'views:day:' + day, 1);
   await incrementKV(env.VISITS_KV, 'views:page:' + page, 1);
 
-  const visitorHash = await sha256Hex(HASH_SALT + '|' + day + '|' + ip);
-  const seenKey = 'seen:' + day + ':' + visitorHash;
-  const alreadySeen = await env.VISITS_KV.get(seenKey);
-  if (!alreadySeen) {
-    await env.VISITS_KV.put(seenKey, '1', { expirationTtl: DAY_TTL_SECONDS });
-    await incrementKV(env.VISITS_KV, 'uniques:total', 1);
-    await incrementKV(env.VISITS_KV, 'uniques:day:' + day, 1);
-  }
+  return new Response(null, { status: 204, headers: corsHeaders(origin) });
+}
 
+async function handleEvent(request, env, origin) {
+  let payload;
+  try { payload = await request.json(); } catch (e) { payload = {}; }
+  const page = sanitizePageName(payload && payload.page);
+  const event = sanitizePageName(payload && payload.event).replace(/[/.]/g, '_').slice(0, 40);
+  const allowed = ['tool_action', 'helpful_yes', 'helpful_no'];
+  if (!allowed.includes(event)) return json({ error: 'Unsupported aggregate event.' }, 400, origin);
+  await incrementKV(env.VISITS_KV, 'events:total', 1);
+  await incrementKV(env.VISITS_KV, 'events:' + event + ':' + page, 1);
   return new Response(null, { status: 204, headers: corsHeaders(origin) });
 }
 
@@ -116,27 +103,30 @@ async function handleStats(request, env, origin) {
   const kv = env.VISITS_KV;
   const days = recentDayStrings(RECENT_DAYS);
 
-  const [totalViewsRaw, totalUniquesRaw, ...dayCounts] = await Promise.all([
+  const [totalViewsRaw, totalActionsRaw, ...dayCounts] = await Promise.all([
     kv.get('views:total'),
-    kv.get('uniques:total'),
-    ...days.map(d => kv.get('views:day:' + d)),
-    ...days.map(d => kv.get('uniques:day:' + d))
+    kv.get('events:total'),
+    ...days.map(d => kv.get('views:day:' + d))
   ]);
   const viewsByDay = days.map((d, i) => ({ day: d, views: parseInt(dayCounts[i] || '0', 10) || 0 }));
-  const uniquesByDay = days.map((d, i) => ({ day: d, visitors: parseInt(dayCounts[days.length + i] || '0', 10) || 0 }));
 
   const pageList = await kv.list({ prefix: 'views:page:' });
   const pageEntries = await Promise.all(
     pageList.keys.map(async (k) => ({ page: k.name.slice('views:page:'.length), views: parseInt((await kv.get(k.name)) || '0', 10) || 0 }))
   );
   pageEntries.sort((a, b) => b.views - a.views);
+  const eventList = await kv.list({ prefix: 'events:' });
+  const eventEntries = await Promise.all(eventList.keys.filter(k => k.name !== 'events:total').map(async k => {
+    const parts = k.name.split(':');
+    return { event: parts[1], page: parts.slice(2).join(':'), count: parseInt((await kv.get(k.name)) || '0', 10) || 0 };
+  }));
 
   return json({
     totalViews: parseInt(totalViewsRaw || '0', 10) || 0,
-    totalUniqueVisitors: parseInt(totalUniquesRaw || '0', 10) || 0,
+    totalActions: parseInt(totalActionsRaw || '0', 10) || 0,
     viewsByDay,
-    uniquesByDay,
-    topPages: pageEntries
+    topPages: pageEntries,
+    events: eventEntries
   }, 200, origin);
 }
 
@@ -155,6 +145,10 @@ export default {
     if (url.pathname === '/hit' && request.method === 'POST') {
       if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: 'Origin not allowed' }, 403, origin);
       return handleHit(request, env, origin);
+    }
+    if (url.pathname === '/event' && request.method === 'POST') {
+      if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: 'Origin not allowed' }, 403, origin);
+      return handleEvent(request, env, origin);
     }
     if (url.pathname === '/stats' && request.method === 'GET') {
       return handleStats(request, env, origin);
