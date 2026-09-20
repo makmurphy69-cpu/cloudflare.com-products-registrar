@@ -2,7 +2,7 @@
   'use strict';
   const file=(location.pathname.split('/').pop()||'index.html').toLowerCase();
   const tools={
-    'index.html':['Website Builder','describe a business and choose the pages and features you need','Draft the site','preview every page, refine the copy, then download or publish it'],
+    'website-builder.html':['Website Builder','describe a business and choose the pages and features you need','Draft the site','preview every page, refine the copy, then download or publish it'],
     'app-forge.html':['App Forge','describe the browser app and the result it should produce','Generate app','test the app, refine it, and download the finished HTML'],
     'bot-forge.html':['Bot Forge','add the website details and questions customers usually ask','Build bot','test answers, refine them, and copy the widget to your site'],
     'cartoon-forge.html':['Cartoon Forge','describe the characters, setting, story, dialogue, and ending','Generate cartoon','play the cartoon, refine scenes, then record or download it'],
@@ -17,6 +17,9 @@
     'logo-forge.html':['Logo Forge','enter the brand name, industry, style, colors, and symbol ideas','Generate logo','compare the result and download the logo, favicon, and brand kit'],
     'merge-forge.html':['Merge Forge','add clips, images, text, and music in the order you want','Merge media','preview the timeline and export the combined video'],
     'meet-forge.html':['Meet Forge','enter your name and create a meeting or an always-open community','Create new meeting','invite people, use the video room, or start separate topic discussions'],
+    'ocr-forge.html':['OCR Forge','choose a clear image and select the document language','Extract text','check names and numbers, then copy or download the text'],
+    'utility-forge.html':['Utility Forge','choose CSV/JSON conversion, text combining, or a checksum','Convert','review the output and download or copy the result'],
+    'site-checkup.html':['Website Checkup','upload or paste the HTML you want to review','Run website checkup','work through the SEO and accessibility fixes, then download the report'],
     'pdf-forge.html':['PDF Forge','choose one or more PDF files and set the page order or rotation','Merge / create PDF','download the finished PDF or split pages into a ZIP'],
     'project-hub.html':['Project Hub','review the projects and settings stored in this browser','Export local backup','open a project, restore a backup, or remove local data you no longer need'],
     'repurpose-forge.html':['Repurpose Forge','paste one piece of content and describe its audience and call to action','Create publishing pack','review, personalise, and copy the formats you need'],
@@ -35,7 +38,6 @@
     'video-forge.html':['Video Forge','upload drawings or images and describe how they should move','Create video','preview the motion, adjust it, and download the video']
   };
   const tool=tools[file]; if(!tool)return;
-  if(['project-hub.html','repurpose-forge.html','form-forge.html','pdf-forge.html'].includes(file)){try{const u=(typeof window!=='undefined'&&window.__VISITS_URL_OVERRIDE)||'https://migabuilder-visits.makmurphy69.workers.dev',body=JSON.stringify({page:file});if(navigator.sendBeacon)navigator.sendBeacon(u+'/hit',new Blob([body],{type:'application/json'}));else fetch(u+'/hit',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{})}catch(e){}}
   const languages={
     en:{label:'English',voice:'en-US',watch:'How to use this tool',hint:'A short guided walkthrough with captions and voice.',play:'Play tutorial',pause:'Pause',restart:'Restart',mute:'Voice on',unmute:'Voice off',step:'Step',steps:[n=>`Welcome to ${n}. This tutorial shows the fastest way to get a good result.`,(_,a)=>`First, ${a}. Specific details produce a much better result.`,(_,a,b)=>`Next, select your settings and press “${b}”. Keep this page open while it works.`,(_,a,b,c)=>`Finally, ${c}. Always check the result before publishing or sharing it.`]},
     es:{label:'Español',voice:'es-ES',watch:'Cómo usar esta herramienta',hint:'Una guía breve con subtítulos y voz.',play:'Ver tutorial',pause:'Pausa',restart:'Reiniciar',mute:'Voz activada',unmute:'Voz desactivada',step:'Paso',steps:[n=>`Bienvenido a ${n}. Este tutorial muestra la forma más rápida de obtener un buen resultado.`,()=>`Primero, introduce claramente el contenido solicitado. Los detalles específicos producen un resultado mucho mejor.`,(_,a,b)=>`Después, elige la configuración y pulsa el botón «${b}». Mantén esta página abierta mientras trabaja.`,()=>`Por último, revisa el resultado, haz los cambios necesarios y descárgalo o compártelo. Compruébalo siempre antes de publicarlo.`]},
@@ -57,9 +59,5 @@
   langSel.onchange=()=>{index=0;stop();render(false)};
   box.addEventListener('toggle',()=>{if(!box.open)stop()});render(false);
 
-  const usageUrl=(typeof window!=='undefined'&&window.__VISITS_URL_OVERRIDE)||'https://migabuilder-visits.makmurphy69.workers.dev';
-  function aggregateEvent(event){const body=JSON.stringify({page:file,event});if(navigator.sendBeacon)navigator.sendBeacon(usageUrl+'/event',new Blob([body],{type:'application/json'}));else fetch(usageUrl+'/event',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true}).catch(()=>{})}
-  document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||box.contains(b)||b.dataset.migaFeedback)return;const label=(b.textContent||'').toLowerCase();if(/generate|create|convert|download|export|build|process|merge|record|start|draft|apply/.test(label)){const key='miga-action-'+file;if(!sessionStorage.getItem(key)){sessionStorage.setItem(key,'1');aggregateEvent('tool_action')}}});
-  const feedback=document.createElement('div');feedback.style.cssText='margin:18px auto 30px;padding:10px 14px;max-width:430px;text-align:center;border:1px solid rgba(111,209,224,.28);background:#081826;color:#EDEAE0;font:13px system-ui';feedback.innerHTML='<span>Was this tool helpful?</span> <button data-miga-feedback="yes" style="margin-left:8px">👍 Yes</button> <button data-miga-feedback="no">👎 No</button>';feedback.querySelectorAll('button').forEach(b=>b.onclick=()=>{aggregateEvent('helpful_'+b.dataset.migaFeedback);feedback.textContent='Thank you—only the aggregate rating was recorded.'});document.body.insertBefore(feedback,document.querySelector('footer')||null);
   if(file==='meet-forge.html'){const actions=document.querySelector('.meeting-actions');if(actions){const cal=document.createElement('button');cal.type='button';cal.className='secondary';cal.textContent='Add to calendar';cal.onclick=()=>{const now=new Date(),end=new Date(now.getTime()+3600000),stamp=d=>d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),title=(document.getElementById('roomHeading')?.textContent||'MigaBuilder meeting').replace(/[\n,;]/g,' '),ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT','DTSTAMP:'+stamp(now),'DTSTART:'+stamp(now),'DTEND:'+stamp(end),'SUMMARY:'+title,'URL:'+location.href,'DESCRIPTION:'+location.href.replace(/,/g,'\\,'),'END:VEVENT','END:VCALENDAR'].join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.href=u;a.download='migabuilder-meeting.ics';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};actions.insertBefore(cal,document.getElementById('shareBtn'))}}
 })();
