@@ -133,6 +133,7 @@
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 
@@ -361,7 +362,8 @@
       '<div class="sign">' + bizSigBlock + '<div class="sign-line">' + bizName + ' — ' + I18N.t('docSigLine') + '</div></div>' +
       '<div class="sign">' + otherSigBlock + '<div class="sign-line">' + other + ' — ' + I18N.t('docSigLine') + '</div></div>' +
       '</div>' +
-      '</body></html>';
+      '<script src="tutorials.js" defer></script>
+</body></html>';
 
     return { html: html, filename: type.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + docNumber + '.html' };
   }
