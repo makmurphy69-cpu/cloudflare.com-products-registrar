@@ -9,6 +9,7 @@
     'clip-forge.html':['Clip Forge','upload a video and choose the cut, captions, or translation','Process clip','preview the edit and download the finished clip'],
     'code-forge.html':['Code Forge','choose Python or JavaScript and describe what you want to learn','Start lesson','run the examples, answer the exercises, and continue at your pace'],
     'contract-forge.html':['Contract Forge','choose the agreement type and enter the real parties and terms','Draft contract','review every clause carefully, edit it, and export the document'],
+    'cv-forge.html':['CV Forge','enter your contact details, summary, experience, education, and strongest skills','Download PDF','check the live preview, proofread every detail, and download or print the CV'],
     'document-forge.html':['Document Forge','drop in a document, image, or PDF and choose the output format','Convert & download','check the preview and open the converted download'],
     'file-forge.html':['File Forge','upload an image and choose the new format or size','Convert file','check the preview and download the converted file'],
     'game-forge.html':['Game Forge','describe the game, controls, goal, art style, and difficulty','Generate game','play-test it, request changes, and download the finished game'],
