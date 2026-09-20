@@ -16,6 +16,7 @@
     'invoice-forge.html':['Invoice Forge','enter the seller, customer, line items, prices, and payment terms','Create invoice','verify the totals and download or print the invoice'],
     'logo-forge.html':['Logo Forge','enter the brand name, industry, style, colors, and symbol ideas','Generate logo','compare the result and download the logo, favicon, and brand kit'],
     'merge-forge.html':['Merge Forge','add clips, images, text, and music in the order you want','Merge media','preview the timeline and export the combined video'],
+    'meet-forge.html':['Meet Forge','enter your name and create a meeting or an always-open community','Create new meeting','invite people, use the video room, or start separate topic discussions'],
     'model-forge.html':['Model Forge','describe the 3D object and set its measurements and shape','Generate model','inspect it from every angle and export the printable model'],
     'music-forge.html':['Music Forge','choose the mood, tempo, instruments, and length','Generate music','listen, adjust the arrangement, and download the track'],
     'name-forge.html':['Name Forge','describe the business, audience, tone, and useful keywords','Generate names','shortlist the strongest names and check their domains'],
