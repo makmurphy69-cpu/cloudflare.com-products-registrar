@@ -86,7 +86,7 @@
   .stats-wrap { display: none; }
   .stats-wrap.show { display: block; }
 
-  .stat-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .stat-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
   .stat-tile {
     background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: var(--radius);
     padding: 18px 20px;
@@ -120,6 +120,7 @@
 
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
+  @media (max-width: 700px) { .stat-tiles { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -133,7 +134,7 @@
   </svg>
   <div>
     <h1>Site Visits</h1>
-    <p>Private page-view and visitor dashboard — not linked from the site.</p>
+    <p>Private tool-usage, page-view, and visitor dashboard — not linked from the site.</p>
   </div>
 </header>
 
@@ -152,6 +153,7 @@
     <div class="stat-tiles">
       <div class="stat-tile"><div class="stat-value" id="totalViewsValue">0</div><div class="stat-label">Total page views</div></div>
       <div class="stat-tile"><div class="stat-value" id="totalUniquesValue">0</div><div class="stat-label">Total unique visitors</div></div>
+      <div class="stat-tile"><div class="stat-value" id="trackedToolsValue">0</div><div class="stat-label">Tools opened</div></div>
     </div>
 
     <div class="panel-block">
@@ -164,9 +166,9 @@
     </div>
 
     <div class="panel-block">
-      <h2>Most-viewed pages</h2>
+      <h2>Tool usage ranking</h2>
       <table class="pages-table" id="pagesTable" style="display:none;">
-        <thead><tr><th>Page</th><th style="text-align:right;">Views</th></tr></thead>
+        <thead><tr><th>Tool</th><th style="text-align:right;">Opens</th></tr></thead>
         <tbody id="pagesTableBody"></tbody>
       </table>
       <p class="pages-empty" id="pagesEmpty">No views recorded yet.</p>
@@ -186,6 +188,7 @@
   const statsWrap = document.getElementById('statsWrap');
   const totalViewsValue = document.getElementById('totalViewsValue');
   const totalUniquesValue = document.getElementById('totalUniquesValue');
+  const trackedToolsValue = document.getElementById('trackedToolsValue');
   const daysList = document.getElementById('daysList');
   const pagesTable = document.getElementById('pagesTable');
   const pagesTableBody = document.getElementById('pagesTableBody');
@@ -222,18 +225,24 @@
     });
   }
 
+  function toolName(page) {
+    return page.replace(/\.html$/i, '').replace(/-forge$/i, ' Forge').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
   function renderPages(topPages) {
     pagesTableBody.innerHTML = '';
-    if (!topPages.length) {
+    const tools = topPages.filter(p => /-forge\.html$/i.test(p.page));
+    trackedToolsValue.textContent = formatNumber(tools.length);
+    if (!tools.length) {
       pagesTable.style.display = 'none';
       pagesEmpty.style.display = 'block';
       return;
     }
     pagesTable.style.display = 'table';
     pagesEmpty.style.display = 'none';
-    topPages.slice(0, 25).forEach(p => {
+    tools.slice(0, 30).forEach((p, index) => {
       const row = document.createElement('tr');
-      row.innerHTML = '<td>' + p.page.replace(/</g, '&lt;') + '</td><td class="num">' + formatNumber(p.views) + '</td>';
+      row.innerHTML = '<td><strong>' + (index + 1) + '.</strong> ' + toolName(p.page).replace(/</g, '&lt;') + '</td><td class="num">' + formatNumber(p.views) + '</td>';
       pagesTableBody.appendChild(row);
     });
   }
