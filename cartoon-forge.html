@@ -34,6 +34,7 @@
   footer{padding:22px clamp(20px,4vw,48px) 38px;color:rgba(237,234,224,.52);font-size:12px;border-top:1px solid var(--cyan-dim)}
   @media(max-width:880px){main{grid-template-columns:1fr;padding-inline:16px}.panel{position:static}.stage{padding:10px;min-height:520px}.screen,.screen iframe{min-height:420px}.row{grid-template-columns:1fr}.masthead{padding-inline:18px}}
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 <header class="masthead">
@@ -107,5 +108,6 @@
   recordBtn.onclick=async()=>{clearError();try{const w=preview.contentWindow,controller=w?.cartoonController,canvas=controller?.getCanvas?.()||preview.contentDocument?.querySelector('canvas');if(!canvas?.captureStream)throw new Error('This browser cannot record the generated canvas. Try Chrome or Edge.');const canvasStream=canvas.captureStream(30),stream=new MediaStream(canvasStream.getVideoTracks()),audioStream=controller?.getAudioStream?.();if(audioStream?.getAudioTracks)audioStream.getAudioTracks().forEach(track=>stream.addTrack(track));const mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm',rec=new MediaRecorder(stream,{mimeType:mime}),chunks=[];rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};rec.onstop=()=>{const blob=new Blob(chunks,{type:'video/webm'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='migabuilder-cartoon.webm';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);recordBtn.disabled=false;recordBtn.textContent='Record WebM';status.textContent='CARTOON FORGE — VIDEO RECORDED'};recordBtn.disabled=true;recordBtn.textContent='Recording…';status.textContent='CARTOON FORGE — RECORDING IN REAL TIME…';controller?.replay?.();rec.start(250);const seconds=Number(controller?.getDuration?.())||Number($('duration').value);setTimeout(()=>{if(rec.state!=='inactive')rec.stop()},(seconds+1)*1000)}catch(e){recordBtn.disabled=false;recordBtn.textContent='Record WebM';fail(e.message||String(e))}};
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body>
 </html>

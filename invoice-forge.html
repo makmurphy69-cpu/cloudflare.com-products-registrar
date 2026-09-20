@@ -162,6 +162,7 @@
   footer { padding: 20px clamp(20px, 4vw, 48px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); border-top: 1px solid var(--line-cyan-dim); }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 
@@ -424,7 +425,8 @@
       '<div class="parties"><div><strong>' + I18N.t('docTo') + '</strong><br>' + client.replace(/</g, '&lt;') + clientAddrBlock + '</div></div>' +
       '<table><tr><th>' + I18N.t('colDescription') + '</th><th style="text-align:right;">' + I18N.t('colQty') + '</th><th style="text-align:right;">' + I18N.t('colRate') + '</th><th style="text-align:right;">' + I18N.t('colAmount') + '</th></tr>' + rowsHtml + '</table>' +
       '<table class="totals-table">' + totalsRows.join('') + '</table>' +
-      '</body></html>';
+      '<script src="tutorials.js" defer></script>
+</body></html>';
 
     return { html: html, filename: type.toLowerCase() + '-' + docNumber + '.html', hasItems: items.length > 0 };
   }
