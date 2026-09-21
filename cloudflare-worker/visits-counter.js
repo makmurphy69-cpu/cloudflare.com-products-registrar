@@ -96,7 +96,7 @@ async function handleTestResult(request, env, origin) {
   if (!Number.isInteger(correct) || !Number.isInteger(questions) ||
       !Number.isInteger(highestLevel) || ![21, 35, 70].includes(length) ||
       questions !== length || correct < 0 || correct > questions ||
-      highestLevel < 1 || highestLevel > 7) {
+      highestLevel < 0 || highestLevel > 7) {
     return json({ error: 'Invalid aggregate test result.' }, 400, origin);
   }
 
