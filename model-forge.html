@@ -152,7 +152,6 @@
   footer { padding: 20px clamp(16px, 3vw, 40px) 40px; font-size: 12.5px; color: rgba(237, 234, 224, 0.45); }
   footer a { color: rgba(237, 234, 224, 0.7); }
 </style>
-<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 
@@ -168,6 +167,28 @@
     <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
 </header>
+
+<style>
+  .real-demo { max-width: 1120px; margin: 22px auto; padding: 0 20px; }
+  .real-demo-inner { display: grid; grid-template-columns: minmax(230px,.75fr) minmax(0,1.4fr); gap: 24px; align-items: center; padding: 20px; background: var(--navy-deep); border: 1px solid var(--line-cyan-dim); border-radius: 10px; }
+  .real-demo h2 { margin: 8px 0 10px; font: 700 22px 'Space Grotesk', sans-serif; }
+  .real-demo p { color: rgba(237,234,224,.72); line-height: 1.55; }
+  .demo-kicker { color: var(--line-cyan); font-size: 12px; font-weight: 800; letter-spacing: .11em; }
+  .demo-stage { min-height: 170px; display: grid; align-content: center; gap: 12px; padding: 24px; border: 1px solid var(--line-cyan-dim); background: linear-gradient(135deg,rgba(111,209,224,.1),rgba(226,166,59,.08)); }
+  .demo-stage strong { font: 700 18px 'Space Grotesk', sans-serif; }
+  .demo-stage span { color: rgba(237,234,224,.72); line-height: 1.5; }
+  .demo-start { width: max-content; padding: 10px 16px; border: 0; border-radius: 3px; background: var(--amber); color: var(--amber-ink); font-weight: 700; cursor: pointer; }
+  .demo-start:disabled { opacity: .65; cursor: wait; }
+  .demo-focus { animation: demoPulse 1s ease-in-out 2; position: relative; z-index: 2; }
+  @keyframes demoPulse { 50% { box-shadow: 0 0 0 5px rgba(226,166,59,.45); } }
+  @media(max-width:780px){ .real-demo-inner { grid-template-columns:1fr; padding:15px; } }
+</style>
+<section class="real-demo" aria-label="Real demonstration">
+  <div class="real-demo-inner">
+    <div><span class="demo-kicker">REAL WALKTHROUGH</span><h2>Watch a printable 3D model being built</h2><p>This live walkthrough uses the real Model Forge controls to add two shapes, combine them, inspect the wireframe and prepare the model for STL export.</p></div>
+    <div class="demo-stage" aria-live="polite"><strong id="demoTitle">Build it with the real tool</strong><span id="demoText">Press start and Model Forge will demonstrate the complete workflow on this page.</span><button type="button" class="demo-start" id="startRealDemo">Start real walkthrough</button></div>
+  </div>
+</section>
 
 <main class="model-main">
   <section class="panel">
@@ -1037,8 +1058,28 @@
   });
 
   addShape('box');
+
+  var demoButton = document.getElementById('startRealDemo');
+  var demoTitle = document.getElementById('demoTitle');
+  var demoText = document.getElementById('demoText');
+  function demoStep(title, text, target, action, wait) {
+    return new Promise(function (resolve) {
+      demoTitle.textContent = title; demoText.textContent = text;
+      if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); target.classList.add('demo-focus'); }
+      setTimeout(function () { if (action) action(); setTimeout(function () { if (target) target.classList.remove('demo-focus'); resolve(); }, wait || 900); }, 500);
+    });
+  }
+  demoButton.addEventListener('click', function () {
+    demoButton.disabled = true; demoButton.textContent = 'Walkthrough running…';
+    Promise.resolve()
+      .then(function () { return demoStep('1. Start with a box', 'The box is the base of our printable part.', document.getElementById('addBoxBtn'), function () { if (!shapes.length) addShape('box'); }); })
+      .then(function () { return demoStep('2. Add a cylinder', 'A second shape can become a feature, support or opening.', document.getElementById('addCylinderBtn'), function () { addShape('cylinder'); }); })
+      .then(function () { return demoStep('3. Combine the shapes', 'Union turns both selected shapes into one model.', document.getElementById('unionBtn'), function () { boolA.selectedIndex = 0; boolB.selectedIndex = 1; runBoolean('union'); }, 1300); })
+      .then(function () { return demoStep('4. Inspect the geometry', 'Wireframe makes the model structure easier to check before export.', wireframeBtn, function () { if (!wireframeOn) wireframeBtn.click(); }); })
+      .then(function () { return demoStep('5. Export for your slicer', 'Export STL when the model is ready, then open it in Cura, PrusaSlicer or Bambu Studio.', document.getElementById('exportStlBtn'), null, 1200); })
+      .then(function () { demoTitle.textContent = 'Walkthrough complete'; demoText.textContent = 'You now have a combined 3D model ready to adjust and export. Nothing was uploaded.'; demoButton.disabled = false; demoButton.textContent = 'Run walkthrough again'; });
+  });
 })();
 </script>
-<script src="tutorials.js" defer></script>
 </body>
 </html>
