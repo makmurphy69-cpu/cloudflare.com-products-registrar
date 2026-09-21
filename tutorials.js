@@ -14,6 +14,10 @@
     'file-forge.html':['File Forge','upload an image and choose the new format or size','Convert file','check the preview and download the converted file'],
     'game-forge.html':['Game Forge','describe the game, controls, goal, art style, and difficulty','Generate game','play-test it, request changes, and download the finished game'],
     'invoice-forge.html':['Invoice Forge','enter the seller, customer, line items, prices, and payment terms','Create invoice','verify the totals and download or print the invoice'],
+    'image-studio.html':['Image Studio','choose one or more images and select the background, collage, meme, thumbnail, or upscale tab','Apply background effect','check the live canvas and download the finished PNG'],
+    'everyday-forge.html':['Everyday Forge','choose the everyday calculator or helper you need and enter its details','Calculate','review the result and copy or use it'],
+    'grammar-forge.html':['Grammar Forge','choose a language and paste or type the writing you want to improve','Check writing','review each explanation, accept the useful fixes, and copy the corrected text'],
+    'templates.html':['Template Gallery','browse the ready-made starting points and choose the result you want to create','Open template','customise the selected template in its Forge tool'],
     'logo-forge.html':['Logo Forge','enter the brand name, industry, style, colors, and symbol ideas','Generate logo','compare the result and download the logo, favicon, and brand kit'],
     'merge-forge.html':['Merge Forge','add clips, images, text, and music in the order you want','Merge media','preview the timeline and export the combined video'],
     'meet-forge.html':['Meet Forge','enter your name and create a meeting or an always-open community','Create new meeting','invite people, use the video room, or start separate topic discussions'],
@@ -51,7 +55,7 @@
   let index=0,timer=null,playing=false,voice=true,activeTarget=null;
   const visible=el=>el&&el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden';
   const firstVisible=selector=>Array.from(document.querySelectorAll(selector)).find(el=>visible(el)&&!box.contains(el));
-  const actionButton=()=>Array.from(document.querySelectorAll('button,input[type="button"],input[type="submit"],a.primary,.primary')).find(el=>visible(el)&&!box.contains(el)&&new RegExp(tool[2].split(/\s+/).filter(w=>w.length>2).slice(0,2).join('|'),'i').test(el.textContent||el.value||''))||firstVisible('button[data-primary],button.primary,.primary,button[type="submit"],input[type="submit"]');
+  const actionButton=()=>Array.from(document.querySelectorAll('button,input[type="button"],input[type="submit"],a.primary,.primary,a.card')).find(el=>visible(el)&&!box.contains(el)&&new RegExp(tool[2].split(/\s+/).filter(w=>w.length>2).slice(0,2).join('|'),'i').test(el.textContent||el.value||''))||firstVisible('button[data-primary],button.primary,.primary,button[type="submit"],input[type="submit"],a.card');
   const targets=()=>[
     document.querySelector('header')||document.querySelector('h1'),
     firstVisible('main textarea,main input:not([type="hidden"]):not([type="button"]):not([type="submit"]),main select,.panel textarea,.panel input:not([type="hidden"]),.panel select'),
