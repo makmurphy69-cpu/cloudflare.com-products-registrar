@@ -186,7 +186,7 @@
 <section class="real-demo" aria-label="Real demonstration">
   <div class="real-demo-inner">
     <div><span class="demo-kicker">REAL WALKTHROUGH</span><h2>Watch a printable 3D model being built</h2><p>This live walkthrough uses the real Model Forge controls to add two shapes, combine them, inspect the wireframe and prepare the model for STL export.</p></div>
-    <div class="demo-stage" aria-live="polite"><strong id="demoTitle">Build it with the real tool</strong><span id="demoText">Press start and Model Forge will demonstrate the complete workflow on this page.</span><button type="button" class="demo-start" id="startRealDemo">Start real walkthrough</button></div>
+    <div class="demo-stage" aria-live="polite"><strong id="demoTitle">Build it with the real tool</strong><span id="demoText">Press start and Model Forge will demonstrate the complete workflow on this page.</span><div class="btn-row"><button type="button" class="demo-start" id="startRealDemo">Start real walkthrough</button><button type="button" class="draft-btn secondary" id="toggleDemoVoice" aria-pressed="true">Voice on</button></div></div>
   </div>
 </section>
 
@@ -1060,25 +1060,53 @@
   addShape('box');
 
   var demoButton = document.getElementById('startRealDemo');
+  var demoVoiceButton = document.getElementById('toggleDemoVoice');
   var demoTitle = document.getElementById('demoTitle');
   var demoText = document.getElementById('demoText');
+  var demoVoiceOn = true;
+  var demoVoiceLang = { en: 'en-US', es: 'es-ES', ar: 'ar-SA', zh: 'zh-CN', sw: 'sw-KE' };
+  var demoCopy = {
+    en: { on: 'Voice on', off: 'Voice off', running: 'Walkthrough running…', again: 'Run walkthrough again', done: ['Walkthrough complete', 'You now have a combined 3D model ready to adjust and export. Nothing was uploaded.'], steps: [['1. Start with a box', 'The box is the base of our printable part.'], ['2. Add a cylinder', 'A second shape can become a feature, support or opening.'], ['3. Combine the shapes', 'Union turns both selected shapes into one model.'], ['4. Inspect the geometry', 'Wireframe makes the model structure easier to check before export.'], ['5. Export for your slicer', 'Export STL when the model is ready, then open it in Cura, PrusaSlicer or Bambu Studio.']] },
+    es: { on: 'Voz activada', off: 'Voz desactivada', running: 'Demostración en curso…', again: 'Repetir demostración', done: ['Demostración completa', 'Ahora tienes un modelo 3D combinado listo para ajustar y exportar. No se ha subido nada.'], steps: [['1. Empieza con una caja', 'La caja es la base de nuestra pieza imprimible.'], ['2. Añade un cilindro', 'Una segunda forma puede convertirse en una característica, soporte o abertura.'], ['3. Combina las formas', 'La unión convierte las dos formas seleccionadas en un solo modelo.'], ['4. Inspecciona la geometría', 'La vista alámbrica facilita revisar la estructura antes de exportarla.'], ['5. Exporta para tu laminador', 'Exporta el archivo STL cuando el modelo esté listo y ábrelo en Cura, PrusaSlicer o Bambu Studio.']] },
+    ar: { on: 'الصوت يعمل', off: 'الصوت متوقف', running: 'العرض قيد التشغيل…', again: 'تشغيل العرض مرة أخرى', done: ['اكتمل العرض', 'لديك الآن نموذج ثلاثي الأبعاد مدمج جاهز للتعديل والتصدير. لم يتم رفع أي شيء.'], steps: [['1. ابدأ بصندوق', 'الصندوق هو قاعدة القطعة القابلة للطباعة.'], ['2. أضف أسطوانة', 'يمكن أن يصبح الشكل الثاني ميزة أو دعامة أو فتحة.'], ['3. ادمج الشكلين', 'يحوّل الاتحاد الشكلين المحددين إلى نموذج واحد.'], ['4. افحص الهندسة', 'يسهّل العرض السلكي فحص بنية النموذج قبل التصدير.'], ['5. صدّر إلى برنامج التقطيع', 'صدّر ملف STL عندما يصبح النموذج جاهزاً ثم افتحه في Cura أو PrusaSlicer أو Bambu Studio.']] },
+    zh: { on: '语音开启', off: '语音关闭', running: '演示进行中…', again: '再次运行演示', done: ['演示完成', '现在你有了一个可调整和导出的组合三维模型。没有上传任何内容。'], steps: [['1. 从方盒开始', '方盒是可打印零件的基础。'], ['2. 添加圆柱体', '第二个形状可以成为结构、支撑或开孔。'], ['3. 合并形状', '并集会把两个选中的形状变成一个模型。'], ['4. 检查几何结构', '线框视图能让你在导出前更容易检查模型结构。'], ['5. 导出到切片软件', '模型准备好后导出 STL，然后在 Cura、PrusaSlicer 或 Bambu Studio 中打开。']] },
+    sw: { on: 'Sauti imewashwa', off: 'Sauti imezimwa', running: 'Mwongozo unaendelea…', again: 'Rudia mwongozo', done: ['Mwongozo umekamilika', 'Sasa una modeli ya 3D iliyounganishwa iliyo tayari kurekebishwa na kuhamishwa. Hakuna kilichopakiwa.'], steps: [['1. Anza na sanduku', 'Sanduku ndilo msingi wa sehemu yetu inayoweza kuchapishwa.'], ['2. Ongeza silinda', 'Umbo la pili linaweza kuwa sehemu, tegemeo au uwazi.'], ['3. Unganisha maumbo', 'Muungano hugeuza maumbo mawili yaliyochaguliwa kuwa modeli moja.'], ['4. Kagua jiometri', 'Mwonekano wa waya hurahisisha kukagua muundo wa modeli kabla ya kuhamisha.'], ['5. Hamisha kwenda programu ya kukata', 'Hamisha STL modeli ikiwa tayari, kisha ifungue katika Cura, PrusaSlicer au Bambu Studio.']] }
+  };
+  function currentDemoCopy() { return demoCopy[I18N.getLang()] || demoCopy.en; }
+  function speakDemo(text) {
+    if (!demoVoiceOn || !('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = demoVoiceLang[I18N.getLang()] || 'en-US';
+    utterance.rate = .95;
+    speechSynthesis.speak(utterance);
+  }
+  demoVoiceButton.addEventListener('click', function () {
+    demoVoiceOn = !demoVoiceOn;
+    demoVoiceButton.setAttribute('aria-pressed', String(demoVoiceOn));
+    demoVoiceButton.textContent = demoVoiceOn ? currentDemoCopy().on : currentDemoCopy().off;
+    if (!demoVoiceOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+  });
   function demoStep(title, text, target, action, wait) {
     return new Promise(function (resolve) {
       demoTitle.textContent = title; demoText.textContent = text;
+      speakDemo(title + '. ' + text);
       if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); target.classList.add('demo-focus'); }
       setTimeout(function () { if (action) action(); setTimeout(function () { if (target) target.classList.remove('demo-focus'); resolve(); }, wait || 900); }, 500);
     });
   }
   demoButton.addEventListener('click', function () {
-    demoButton.disabled = true; demoButton.textContent = 'Walkthrough running…';
+    var copy = currentDemoCopy();
+    demoButton.disabled = true; demoButton.textContent = copy.running;
     Promise.resolve()
-      .then(function () { return demoStep('1. Start with a box', 'The box is the base of our printable part.', document.getElementById('addBoxBtn'), function () { if (!shapes.length) addShape('box'); }); })
-      .then(function () { return demoStep('2. Add a cylinder', 'A second shape can become a feature, support or opening.', document.getElementById('addCylinderBtn'), function () { addShape('cylinder'); }); })
-      .then(function () { return demoStep('3. Combine the shapes', 'Union turns both selected shapes into one model.', document.getElementById('unionBtn'), function () { boolA.selectedIndex = 0; boolB.selectedIndex = 1; runBoolean('union'); }, 1300); })
-      .then(function () { return demoStep('4. Inspect the geometry', 'Wireframe makes the model structure easier to check before export.', wireframeBtn, function () { if (!wireframeOn) wireframeBtn.click(); }); })
-      .then(function () { return demoStep('5. Export for your slicer', 'Export STL when the model is ready, then open it in Cura, PrusaSlicer or Bambu Studio.', document.getElementById('exportStlBtn'), null, 1200); })
-      .then(function () { demoTitle.textContent = 'Walkthrough complete'; demoText.textContent = 'You now have a combined 3D model ready to adjust and export. Nothing was uploaded.'; demoButton.disabled = false; demoButton.textContent = 'Run walkthrough again'; });
+      .then(function () { return demoStep(copy.steps[0][0], copy.steps[0][1], document.getElementById('addBoxBtn'), function () { if (!shapes.length) addShape('box'); }); })
+      .then(function () { return demoStep(copy.steps[1][0], copy.steps[1][1], document.getElementById('addCylinderBtn'), function () { addShape('cylinder'); }); })
+      .then(function () { return demoStep(copy.steps[2][0], copy.steps[2][1], document.getElementById('unionBtn'), function () { boolA.selectedIndex = 0; boolB.selectedIndex = 1; runBoolean('union'); }, 1300); })
+      .then(function () { return demoStep(copy.steps[3][0], copy.steps[3][1], wireframeBtn, function () { if (!wireframeOn) wireframeBtn.click(); }); })
+      .then(function () { return demoStep(copy.steps[4][0], copy.steps[4][1], document.getElementById('exportStlBtn'), null, 1200); })
+      .then(function () { demoTitle.textContent = copy.done[0]; demoText.textContent = copy.done[1]; speakDemo(demoTitle.textContent + '. ' + demoText.textContent); demoButton.disabled = false; demoButton.textContent = copy.again; });
   });
+  I18N.onChange(function () { demoVoiceButton.textContent = demoVoiceOn ? currentDemoCopy().on : currentDemoCopy().off; });
 })();
 </script>
 </body>
