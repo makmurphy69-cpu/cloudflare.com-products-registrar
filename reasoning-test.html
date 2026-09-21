@@ -48,7 +48,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}select{widt
 <div class="notice"><strong>Important:</strong> This is an educational IQ-style reasoning exercise, not a standardized clinical IQ assessment. The “reasoning band” is a practice estimate and should not be used for medical, educational or employment decisions.</div>
 <div class="setup-grid">
 <div><label for="length">Test length</label><select id="length"><option value="21">Quick · 21 questions (about 15 min)</option><option value="35" selected>Standard · 35 questions (about 25 min)</option><option value="70">Extended · 70 questions (about 50 min)</option></select></div>
-<div><label for="mode">Question path</label><select id="mode"><option value="balanced" selected>Balanced · every level</option><option value="adaptive">Adaptive · difficulty follows performance</option></select></div>
+<div><label for="mode">Question path</label><select id="mode"><option value="balanced" selected>Balanced · every level</option><option value="random">Random ladder · shuffled levels</option></select></div>
 </div>
 <button class="btn" id="startBtn">Start private test</button>
 <p class="privacy">Everything runs locally in this browser. Answers are not sent to MigaBuilder or stored after you leave the page.</p>
@@ -131,7 +131,7 @@ function sampleAdaptive(total){
 function el(id){return document.getElementById(id)}
 function show(id){["start","test","results"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
 function start(){
- var total=Number(el("length").value);session=el("mode").value==="adaptive"?sampleAdaptive(total):sampleBalanced(total);answers=new Array(total).fill(null);index=0;startedAt=Date.now();show("test");render();clearInterval(timerId);timerId=setInterval(updateTime,1000);updateTime();scrollTo(0,0)
+ var total=Number(el("length").value);session=sampleBalanced(total);answers=new Array(total).fill(null);index=0;startedAt=Date.now();show("test");render();clearInterval(timerId);timerId=setInterval(updateTime,1000);updateTime();scrollTo(0,0)
 }
 function updateTime(){var s=Math.floor((Date.now()-startedAt)/1000),m=Math.floor(s/60);el("time").textContent=String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function render(){
