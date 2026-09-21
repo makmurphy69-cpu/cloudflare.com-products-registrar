@@ -224,10 +224,10 @@ el("nextBtn").onclick=function(){if(answers[index]===null)return;if(index<sessio
 function finish(){
  clearInterval(timerId);var correct=0,byBand={},byType={};BANDS.forEach(function(b){byBand[b]=[0,0]});TYPES.forEach(function(t){byType[t]=[0,0]});
  session.forEach(function(item,i){var ok=answers[i]===item.correct;if(ok)correct++;byBand[item.band][1]++;byType[item.type][1]++;if(ok){byBand[item.band][0]++;byType[item.type][0]++}});
- var pct=Math.round(correct/session.length*100),highest=80;BANDS.forEach(function(b){var x=byBand[b];if(x[1]&&x[0]/x[1]>=.6)highest=b});
+ var pct=Math.round(correct/session.length*100),highest=null;BANDS.forEach(function(b){var x=byBand[b];if(x[1]&&x[0]/x[1]>=.6)highest=b});
  el("scorePct").textContent=pct+"%";el("scoreRing").style.setProperty("--pct",pct+"%");
- var highestLevel=BANDS.indexOf(highest)+1;el("resultTitle").textContent="Highest demonstrated difficulty: Level "+highestLevel;
- el("resultCopy").textContent="You answered "+correct+" of "+session.length+" correctly. Your strongest reliably demonstrated MigaBuilder difficulty was Level "+highestLevel+" of 7. This describes performance on these puzzles only and is not an IQ estimate.";
+ var highestLevel=highest===null?0:BANDS.indexOf(highest)+1;el("resultTitle").textContent=highestLevel?"Highest demonstrated difficulty: Level "+highestLevel:"No difficulty level demonstrated yet";
+ el("resultCopy").textContent="You answered "+correct+" of "+session.length+" correctly. "+(highestLevel?"Your strongest reliably demonstrated MigaBuilder difficulty was Level "+highestLevel+" of 7.":"No level reached the 60% reliability threshold in this session.")+" This describes performance on these puzzles only and is not an IQ estimate.";
  el("categoryGrid").innerHTML="";TYPES.forEach(function(t){var x=byType[t],d=document.createElement("div");d.className="category";d.innerHTML="<strong>"+x[0]+"/"+x[1]+"</strong><span>"+t+"</span>";el("categoryGrid").appendChild(d)});
  el("bandRows").innerHTML="";BANDS.forEach(function(b){var x=byBand[b],p=x[1]?Math.round(x[0]/x[1]*100):0,tr=document.createElement("tr");tr.innerHTML="<td>Level "+(BANDS.indexOf(b)+1)+"</td><td>"+x[0]+" / "+x[1]+"</td><td><div class='bar'><i style='width:"+p+"%'></i></div></td>";el("bandRows").appendChild(tr)});
  var order=session.map(function(item,i){return {item:item,i:i,ok:answers[i]===item.correct}}).sort(function(a,b){return Number(a.ok)-Number(b.ok)});el("reviewList").innerHTML="";
@@ -241,8 +241,12 @@ function submitCommunityResult(correct,questions,highestLevel){
   .then(function(){return loadCommunityAverage()})
   .catch(function(){return loadCommunityAverage()});
 }
+function fetchWithTimeout(url,options){
+ var controller=new AbortController(),timer=setTimeout(function(){controller.abort()},6000),settings=Object.assign({},options||{},{signal:controller.signal});
+ return fetch(url,settings).finally(function(){clearTimeout(timer)});
+}
 function loadCommunityAverage(){
- return fetch(TEST_STATS_URL+"/test-average",{cache:"no-store"}).then(function(res){if(!res.ok)throw new Error("Unavailable");return res.json()}).then(function(data){
+ return fetchWithTimeout(TEST_STATS_URL+"/test-average",{cache:"no-store"}).then(function(res){if(!res.ok)throw new Error("Unavailable");return res.json()}).then(function(data){
   var status=el("communityStatus"),numbers=el("communityNumbers");
   el("communityTests").textContent=data.completed.toLocaleString();
   if(data.completed>=data.minimumForComparison){
@@ -258,7 +262,7 @@ function loadCommunityAverage(){
  }).catch(function(){el("communityStatus").textContent="Community averages are temporarily unavailable.";});
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};buildBank();
+el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};buildBank();loadCommunityAverage();
 })();
 </script>
 </body>
