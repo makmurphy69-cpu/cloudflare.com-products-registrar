@@ -110,18 +110,52 @@ function verbalQuestion(b,n,r){
  return q("Choose the closest meaning of “"+(b>=120?"meticulous":"brief")+"”.",b>=120?"careful and precise":"short",b>=120?["careless","rapid","uncertain"]:["loud","ancient","complex"],b>=120?"Meticulous describes someone very careful and attentive to detail.":"Brief means lasting a short time or using few words.","Replace the word in a simple sentence and choose the option that preserves the meaning.","Verbal reasoning",b,r);
 }
 function sequenceQuestion(b,n,r){
- var kind=n%4, symbols=["▲","●","■","◆","★"],a=symbols[n%symbols.length],c=symbols[(n+1)%symbols.length];
- if(kind===0)return q("What comes next? "+a+", "+c+", "+a+a+", "+c+c+", "+a+a+a+", ?",c+c+c,[a+c+c,c+c,a+a+a+a],"The symbol alternates while the count repeats twice: one "+a+", one "+c+", two "+a+", two "+c+", three "+a+", so next is three "+c+".","Track two features separately: which symbol appears and how many copies appear.","Sequence reasoning",b,r);
- if(kind===1){var dirs=["↑","→","↓","←"],start=n%4,seq=[];for(var i=0;i<4;i++)seq.push(dirs[(start+i)%4]);var ans=dirs[(start+4)%4];return q("The arrow rotates 90° clockwise: "+seq.join("  ")+"  ?",ans,[dirs[(start+1)%4],dirs[(start+2)%4],"↗"],"Each step is one quarter-turn clockwise, so after "+seq[3]+" comes "+ans+".","Imagine a clock face and apply the same rotation at every step.","Sequence reasoning",b,r)}
- if(kind===2)return q("Complete the alternating pattern: A1, C2, E1, G2, ?", "I1",["H1","I2","J1"],"Letters advance by two (A, C, E, G, I) while numbers alternate 1, 2, 1, 2, 1.","Split mixed sequences into independent tracks: one for letters and one for numbers.","Sequence reasoning",b,r);
- return q("A paper is folded once vertically, then once horizontally. One hole is punched through all layers. When fully opened, how many symmetric holes appear?","4",["1","2","8"],"Two folds create four layers. A hole through all layers mirrors across both fold lines, producing four positions.","Each full fold doubles the number of mirrored positions: 1 → 2 → 4.","Sequence reasoning",b,r);
+ var symbols=["▲","●","■","◆","★","○"],k=Math.floor(n/4),a=symbols[(n+k)%symbols.length],c=symbols[(n+k+1)%symbols.length];
+ if(b===80){
+  var count=1+(k%3),next=count+1;
+  return q("What comes next? "+a.repeat(count)+", "+c.repeat(count)+", "+a.repeat(next)+", ?",c.repeat(next),[a.repeat(next),c.repeat(count),a+c],"The symbol alternates while the number of copies increases from "+count+" to "+next+".","Track the symbol and number of copies as two separate patterns.","Sequence reasoning",b,r);
+ }
+ if(b===90){
+  var dirs=["↑","→","↓","←"],turn=(k%2)+1,st=(n+k)%4,seq=[];
+  for(var i=0;i<3;i++)seq.push(dirs[(st+i*turn)%4]);
+  var ans=dirs[(st+3*turn)%4];
+  return q("Continue the rotation: "+seq.join("  ")+"  ?",ans,[dirs[(st+1)%4],dirs[(st+2)%4],"↗"],"The arrow moves "+(turn===1?"90°":"180°")+" clockwise each time, so the next direction is "+ans+".","Compare each orientation with the next and reuse the same turn.","Sequence reasoning",b,r);
+ }
+ if(b===100){
+  var code=65+(k%8),jump=2+(k%3),n1=1+(k%3),n2=n1+1;
+  var l1=String.fromCharCode(code),l2=String.fromCharCode(code+jump),l3=String.fromCharCode(code+2*jump),l4=String.fromCharCode(code+3*jump),ans2=l4+n2;
+  return q("Complete the two-track pattern: "+l1+n1+", "+l2+n2+", "+l3+n1+", ?",ans2,[l4+n1,l3+n2,String.fromCharCode(code+4*jump)+n2],"Letters advance by "+jump+" while the numbers alternate "+n1+", "+n2+".","Separate the letters and numbers into two independent tracks.","Sequence reasoning",b,r);
+ }
+ if(b===110){
+  var x=2+(k%7),y=3+((k*2)%8),z=x+y,answer=x+y+3;
+  return q("In each row, the third number is the sum of the first two: "+x+", "+y+", "+z+" | "+(x+1)+", "+(y+2)+", ?",answer,[answer-1,answer+1,(x+1)*(y+2)],"Apply the same row rule: "+(x+1)+" + "+(y+2)+" = "+answer+".","Find a rule that explains the complete row, then test it on the incomplete row.","Sequence reasoning",b,r);
+ }
+ if(b===120){
+  var folds=2+(k%2),punches=1+(k%3),holes=punches*Math.pow(2,folds);
+  return q("A paper is folded "+folds+" times along different full fold lines. "+punches+" hole"+(punches>1?"s are":" is")+" punched through all layers away from the folds. How many holes appear when opened?",holes,[punches*Math.pow(2,folds-1),holes+punches,Math.pow(2,folds)],"Each full fold doubles every punched position. "+punches+" × 2^"+folds+" = "+holes+".","Double the layers once per fold, then multiply by the number of punches.","Sequence reasoning",b,r);
+ }
+ if(b===130){
+  var first=1+(k%5),gap=2+(k%4),vals=[first],g=gap;
+  for(var j=0;j<4;j++){vals.push(vals[vals.length-1]+g);g+=2}
+  var ans3=vals[4]+g;
+  return q("The gaps increase by 2. What comes next? "+vals.join(", ")+", ?",ans3,[ans3-2,ans3+2,vals[4]+gap],"The gaps are "+vals.slice(1).map(function(v,i){return v-vals[i]}).join(", ")+". The next gap is "+g+", giving "+ans3+".","Write a second row containing only the gaps, then continue that pattern.","Sequence reasoning",b,r);
+ }
+ var base=2+(k%5),mult=2+(k%3),vals2=[base];
+ for(var m=0;m<3;m++)vals2.push(vals2[m]*mult+(m+1));
+ var ans4=vals2[3]*mult+4;
+ return q("Apply ×"+mult+", then add 1, 2, 3, 4: "+vals2.join(", ")+", ?",ans4,[ans4-1,ans4+mult,vals2[3]+4],"The operations are ×"+mult+" +1, then +2, then +3, then +4. So "+vals2[3]+" × "+mult+" + 4 = "+ans4+".","Track the repeated multiplication and the changing addition separately.","Sequence reasoning",b,r);
 }
 function buildBank(){
  BANDS.forEach(function(b){var r=rng(9187+b),arr=[];for(var i=0;i<PER_BAND;i++){var type=i%4;arr.push(type===0?numberQuestion(b,i,r):type===1?logicQuestion(b,i,r):type===2?verbalQuestion(b,i,r):sequenceQuestion(b,i,r))}bank[b]=arr});
 }
 function sampleBalanced(total){
- var r=rng(Date.now()),base=Math.floor(total/BANDS.length),extra=total%7,out=[];
- BANDS.forEach(function(b,i){out=out.concat(shuffle(bank[b],r).slice(0,base+(i<extra?1:0)))});
+ var r=rng(Date.now()),base=Math.floor(total/BANDS.length),extra=total%7,out=[],seen=new Set();
+ BANDS.forEach(function(b,i){
+  var need=base+(i<extra?1:0),pool=shuffle(bank[b],r);
+  for(var j=0;j<pool.length&&need>0;j++){
+   if(!seen.has(pool[j].text)){seen.add(pool[j].text);out.push(pool[j]);need--}
+  }
+ });
  return shuffle(out,r);
 }
 function sampleAdaptive(total){
