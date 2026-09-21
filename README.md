@@ -1,6 +1,6 @@
 # MigaBuilder
 
-**38 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
+**39 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
 
 [Try MigaBuilder](https://migabuilder.com/)
 
