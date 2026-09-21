@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://migabuilder.com/reasoning-test.html">
 <meta name="robots" content="index,follow">
 <meta property="og:title" content="Free Reasoning Test with Worked Explanations">
-<meta property="og:description" content="Practice across seven difficulty bands and learn from every answer. Runs privately in your browser.">
+<meta property="og:description" content="Practice across seven progressive difficulty levels and learn from every answer. Runs privately in your browser.">
 <meta property="og:url" content="https://migabuilder.com/reasoning-test.html">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +45,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}select{widt
 <p class="bank">REASONING PRACTICE LAB · 1,050 ORIGINAL VARIANTS</p>
 <h1>Discover how you reason — then improve it.</h1>
 <p class="lead">Answer a balanced set of number, logic, verbal and sequence questions across seven difficulty bands. At the end, see exactly what you missed, why the correct answer works, and which thinking method to use next time.</p>
-<div class="notice"><strong>Important:</strong> This is an educational IQ-style reasoning exercise, not a standardized clinical IQ assessment. The “reasoning band” is a practice estimate and should not be used for medical, educational or employment decisions.</div>
+<div class="notice"><strong>Important:</strong> This is an educational IQ-style reasoning exercise, not a standardized clinical IQ assessment. The difficulty levels belong only to this practice tool and are not equivalent to clinical IQ scores.</div>
 <div class="setup-grid">
 <div><label for="length">Test length</label><select id="length"><option value="21">Quick · 21 questions (about 15 min)</option><option value="35" selected>Standard · 35 questions (about 25 min)</option><option value="70">Extended · 70 questions (about 50 min)</option></select></div>
 <div><label for="mode">Question path</label><select id="mode"><option value="balanced" selected>Balanced · every level</option><option value="random">Random ladder · shuffled levels</option></select></div>
@@ -64,10 +64,10 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}select{widt
 <section id="results" class="card hidden">
 <div class="result-hero"><div class="score-ring" id="scoreRing" style="--pct:0%"><div><strong id="scorePct">0%</strong><span>correct</span></div></div><div><p class="bank">YOUR LEARNING REPORT</p><h2 id="resultTitle">Your reasoning profile</h2><p id="resultCopy" class="lead"></p></div></div>
 <h3>Skill breakdown</h3><div class="category-grid" id="categoryGrid"></div>
-<h3>Performance by difficulty band</h3><table class="band-table"><thead><tr><th>Band</th><th>Correct</th><th>Performance</th></tr></thead><tbody id="bandRows"></tbody></table>
+<h3>Performance by difficulty level</h3><table class="band-table"><thead><tr><th>Difficulty</th><th>Correct</th><th>Performance</th></tr></thead><tbody id="bandRows"></tbody></table>
 <h3>Review every answer</h3><p>Open any question to see the correct reasoning. Incorrect answers appear first.</p><div id="reviewList"></div>
 <div class="navrow no-print"><button class="btn secondary" onclick="window.print()">Print report</button><button class="btn" id="restartBtn">Try a new set</button></div>
-<p class="privacy">A high or low result on one short session can reflect familiarity, language, attention, sleep and chance. For a valid IQ score, use a professionally administered standardized assessment.</p>
+<p class="privacy">A high or low result on one short session can reflect familiarity, language, attention, sleep and chance. For a valid IQ score, use a professionally administered, standardized assessment.</p>
 </section>
 </main>
 <script>
@@ -169,7 +169,7 @@ function start(){
 }
 function updateTime(){var s=Math.floor((Date.now()-startedAt)/1000),m=Math.floor(s/60);el("time").textContent=String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function render(){
- var item=session[index];el("pos").textContent=(index+1)+" / "+session.length;el("answered").textContent=answers.filter(function(x){return x!==null}).length;el("progress").style.width=((index/session.length)*100)+"%";el("qmeta").textContent="Practice band "+item.band+(item.band===140?"+":"")+" · "+item.type;el("question").textContent=item.text;el("answers").innerHTML="";
+ var item=session[index];el("pos").textContent=(index+1)+" / "+session.length;el("answered").textContent=answers.filter(function(x){return x!==null}).length;el("progress").style.width=((index/session.length)*100)+"%";el("qmeta").textContent="Difficulty level "+(BANDS.indexOf(item.band)+1)+" of 7 · "+item.type;el("question").textContent=item.text;el("answers").innerHTML="";
  item.options.forEach(function(opt){var b=document.createElement("button");b.className="answer"+(answers[index]===opt?" selected":"");b.textContent=opt;b.onclick=function(){answers[index]=opt;render()};el("answers").appendChild(b)});
  el("prevBtn").disabled=index===0;el("nextBtn").disabled=answers[index]===null;el("nextBtn").textContent=index===session.length-1?"Finish & see breakdown":"Next →";
 }
@@ -180,12 +180,12 @@ function finish(){
  session.forEach(function(item,i){var ok=answers[i]===item.correct;if(ok)correct++;byBand[item.band][1]++;byType[item.type][1]++;if(ok){byBand[item.band][0]++;byType[item.type][0]++}});
  var pct=Math.round(correct/session.length*100),highest=80;BANDS.forEach(function(b){var x=byBand[b];if(x[1]&&x[0]/x[1]>=.6)highest=b});
  el("scorePct").textContent=pct+"%";el("scoreRing").style.setProperty("--pct",pct+"%");
- el("resultTitle").textContent="Estimated practice band: "+highest+(highest===140?"+":"");
- el("resultCopy").textContent="You answered "+correct+" of "+session.length+" correctly. Your strongest reliably demonstrated practice band in this session was "+highest+(highest===140?"+":"")+". Treat this as a learning signal, not a clinical IQ score.";
+ var highestLevel=BANDS.indexOf(highest)+1;el("resultTitle").textContent="Highest demonstrated difficulty: Level "+highestLevel;
+ el("resultCopy").textContent="You answered "+correct+" of "+session.length+" correctly. Your strongest reliably demonstrated MigaBuilder difficulty was Level "+highestLevel+" of 7. This describes performance on these puzzles only and is not an IQ estimate.";
  el("categoryGrid").innerHTML="";TYPES.forEach(function(t){var x=byType[t],d=document.createElement("div");d.className="category";d.innerHTML="<strong>"+x[0]+"/"+x[1]+"</strong><span>"+t+"</span>";el("categoryGrid").appendChild(d)});
- el("bandRows").innerHTML="";BANDS.forEach(function(b){var x=byBand[b],p=x[1]?Math.round(x[0]/x[1]*100):0,tr=document.createElement("tr");tr.innerHTML="<td>"+b+(b===140?"+":"")+"</td><td>"+x[0]+" / "+x[1]+"</td><td><div class='bar'><i style='width:"+p+"%'></i></div></td>";el("bandRows").appendChild(tr)});
+ el("bandRows").innerHTML="";BANDS.forEach(function(b){var x=byBand[b],p=x[1]?Math.round(x[0]/x[1]*100):0,tr=document.createElement("tr");tr.innerHTML="<td>Level "+(BANDS.indexOf(b)+1)+"</td><td>"+x[0]+" / "+x[1]+"</td><td><div class='bar'><i style='width:"+p+"%'></i></div></td>";el("bandRows").appendChild(tr)});
  var order=session.map(function(item,i){return {item:item,i:i,ok:answers[i]===item.correct}}).sort(function(a,b){return Number(a.ok)-Number(b.ok)});el("reviewList").innerHTML="";
- order.forEach(function(row){var d=document.createElement("details");d.className="review "+(row.ok?"right":"wrong");d.innerHTML="<summary>"+(row.ok?"✓ Correct":"✗ Review")+" · Band "+row.item.band+" · "+row.item.type+"</summary><div class='review-body'><p><strong>Question:</strong> "+escapeHtml(row.item.text)+"</p><p><strong>Your answer:</strong> "+escapeHtml(answers[row.i])+"</p><p><strong>Correct answer:</strong> "+escapeHtml(row.item.correct)+"</p><p>"+escapeHtml(row.item.explain)+"</p><div class='method'><strong>Thinking method:</strong> "+escapeHtml(row.item.method)+"</div></div>";el("reviewList").appendChild(d)});
+ order.forEach(function(row){var d=document.createElement("details");d.className="review "+(row.ok?"right":"wrong");d.innerHTML="<summary>"+(row.ok?"✓ Correct":"✗ Review")+" · Level "+(BANDS.indexOf(row.item.band)+1)+" · "+row.item.type+"</summary><div class='review-body'><p><strong>Question:</strong> "+escapeHtml(row.item.text)+"</p><p><strong>Your answer:</strong> "+escapeHtml(answers[row.i])+"</p><p><strong>Correct answer:</strong> "+escapeHtml(row.item.correct)+"</p><p>"+escapeHtml(row.item.explain)+"</p><div class='method'><strong>Thinking method:</strong> "+escapeHtml(row.item.method)+"</div></div>";el("reviewList").appendChild(d)});
  show("results");scrollTo(0,0)
 }
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
