@@ -84,6 +84,55 @@ async function handleEvent(request, env, origin) {
   return new Response(null, { status: 204, headers: corsHeaders(origin) });
 }
 
+async function handleTestResult(request, env, origin) {
+  let payload;
+  try { payload = await request.json(); } catch (e) { payload = {}; }
+
+  const correct = Number(payload && payload.correct);
+  const questions = Number(payload && payload.questions);
+  const highestLevel = Number(payload && payload.highestLevel);
+  const length = Number(payload && payload.length);
+
+  if (!Number.isInteger(correct) || !Number.isInteger(questions) ||
+      !Number.isInteger(highestLevel) || ![21, 35, 70].includes(length) ||
+      questions !== length || correct < 0 || correct > questions ||
+      highestLevel < 1 || highestLevel > 7) {
+    return json({ error: 'Invalid aggregate test result.' }, 400, origin);
+  }
+
+  const kv = env.VISITS_KV;
+  await incrementKV(kv, 'tests:completed', 1);
+  await incrementKV(kv, 'tests:correct', correct);
+  await incrementKV(kv, 'tests:questions', questions);
+  await incrementKV(kv, 'tests:level_total', highestLevel);
+  await incrementKV(kv, 'tests:length:' + length + ':completed', 1);
+  await incrementKV(kv, 'tests:length:' + length + ':correct', correct);
+  await incrementKV(kv, 'tests:length:' + length + ':questions', questions);
+
+  return new Response(null, { status: 204, headers: corsHeaders(origin) });
+}
+
+async function handleTestAverage(request, env, origin) {
+  const kv = env.VISITS_KV;
+  const values = await Promise.all([
+    kv.get('tests:completed'),
+    kv.get('tests:correct'),
+    kv.get('tests:questions'),
+    kv.get('tests:level_total')
+  ]);
+  const completed = parseInt(values[0] || '0', 10) || 0;
+  const correct = parseInt(values[1] || '0', 10) || 0;
+  const questions = parseInt(values[2] || '0', 10) || 0;
+  const levelTotal = parseInt(values[3] || '0', 10) || 0;
+
+  return json({
+    completed,
+    averagePercent: questions ? Math.round((correct / questions) * 1000) / 10 : null,
+    averageHighestLevel: completed ? Math.round((levelTotal / completed) * 10) / 10 : null,
+    minimumForComparison: 5
+  }, 200, origin);
+}
+
 function recentDayStrings(count) {
   const days = [];
   const now = new Date();
@@ -149,6 +198,14 @@ export default {
     if (url.pathname === '/event' && request.method === 'POST') {
       if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: 'Origin not allowed' }, 403, origin);
       return handleEvent(request, env, origin);
+    }
+    if (url.pathname === '/test-result' && request.method === 'POST') {
+      if (!ALLOWED_ORIGINS.includes(origin)) return json({ error: 'Origin not allowed' }, 403, origin);
+      return handleTestResult(request, env, origin);
+    }
+    if (url.pathname === '/test-average' && request.method === 'GET') {
+      if (origin && !ALLOWED_ORIGINS.includes(origin)) return json({ error: 'Origin not allowed' }, 403, origin);
+      return handleTestAverage(request, env, origin);
     }
     if (url.pathname === '/stats' && request.method === 'GET') {
       return handleStats(request, env, origin);
