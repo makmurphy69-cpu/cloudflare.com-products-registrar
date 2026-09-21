@@ -86,7 +86,8 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}select{widt
 "use strict";
 var BANDS=[80,90,100,110,120,130,140], PER_BAND=150;
 var TYPES=["Number patterns","Logic","Verbal reasoning","Sequence reasoning"];
-var bank={}, session=[], answers=[], index=0, startedAt=0, timerId=0, resultSubmitted=false;\nvar TEST_STATS_URL='https://migabuilder-visits.makmurphy69.workers.dev';
+var bank={}, session=[], answers=[], index=0, startedAt=0, timerId=0, resultSubmitted=false;
+var TEST_STATS_URL='https://migabuilder-visits.makmurphy69.workers.dev';
 function rng(seed){var x=seed|0;return function(){x=(x*1664525+1013904223)|0;return (x>>>0)/4294967296}}
 function shuffle(a,r){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(r()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
 function makeOptions(correct,wrong,r){var vals=[String(correct)].concat(wrong.map(String));vals=Array.from(new Set(vals));while(vals.length<4)vals.push(String(Number(correct)+vals.length+2));return shuffle(vals.slice(0,4),r)}
