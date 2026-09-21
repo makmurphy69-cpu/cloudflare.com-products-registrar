@@ -143,8 +143,19 @@ function sequenceQuestion(b,n,r){
   return q("In each row, the third number is the sum of the first two: "+x+", "+y+", "+z+" | "+(x+1)+", "+(y+2)+", ?",answer,[answer-1,answer+1,(x+1)*(y+2)],"Apply the same row rule: "+(x+1)+" + "+(y+2)+" = "+answer+".","Find a rule that explains the complete row, then test it on the incomplete row.","Sequence reasoning",b,r);
  }
  if(b===120){
-  var folds=2+(k%2),punches=1+(k%3),holes=punches*Math.pow(2,folds);
-  return q("A paper is folded "+folds+" times along different full fold lines. "+punches+" hole"+(punches>1?"s are":" is")+" punched through all layers away from the folds. How many holes appear when opened?",holes,[punches*Math.pow(2,folds-1),holes+punches,Math.pow(2,folds)],"Each full fold doubles every punched position. "+punches+" × 2^"+folds+" = "+holes+".","Double the layers once per fold, then multiply by the number of punches.","Sequence reasoning",b,r);
+  var family=k%5,folds=2+(k%3),punches=1+((k*2)%4),holes=punches*Math.pow(2,folds);
+  if(family===0)return q("A paper is folded "+folds+" times along different full fold lines. "+punches+" hole"+(punches>1?"s are":" is")+" punched through all layers, away from every fold. How many holes appear when opened?",holes,[holes/2,holes+punches,punches+folds],"Each full fold doubles every punched position. "+punches+" × 2^"+folds+" = "+holes+".","Count the layers by doubling once per fold, then multiply by the number of punches.","Sequence reasoning",b,r);
+  if(family===1)return q("A fully opened sheet shows "+holes+" holes from "+punches+" punch"+(punches>1?"es":"")+" made away from fold lines. How many times was it folded?",folds,[folds-1,folds+1,punches],"Divide total holes by punches, then ask how many doublings make that number: "+holes+" ÷ "+punches+" = "+Math.pow(2,folds)+" = 2^"+folds+".","Work backwards: holes ÷ punches = layers; then convert layers into the number of folds.","Sequence reasoning",b,r);
+  if(family===2){
+   var offFold=1+((k+1)%3),crease=1+(k%2),creaseHoles=crease*Math.pow(2,folds-1),total=offFold*Math.pow(2,folds)+creaseHoles;
+   return q("A sheet is folded "+folds+" times. "+offFold+" punch"+(offFold>1?"es are":" is")+" away from folds and "+crease+" punch"+(crease>1?"es are":" is")+" on the final fold line. How many holes appear after opening?",total,[holes,offFold*Math.pow(2,folds)+crease*Math.pow(2,folds),total+crease],"Off-fold punches mirror at every fold: "+offFold+" × 2^"+folds+". A punch on the final fold line does not duplicate across that last fold: "+crease+" × 2^"+(folds-1)+". Total: "+total+".","Treat off-fold and on-fold punches separately, then add their mirrored totals.","Sequence reasoning",b,r);
+  }
+  if(family===3){
+   var layers=Math.pow(2,folds),extra=1+(k%3),answer=layers*extra;
+   return q("A folded paper packet has "+layers+" layers. "+extra+" new punch"+(extra>1?"es are":" is")+" made away from all fold edges. How many new marks will those punches add when opened?",answer,[layers+extra,answer/2,Math.pow(2,extra)],"Every punch passes through all "+layers+" layers, so "+extra+" × "+layers+" = "+answer+" new marks.","Use the stated layer count directly; do not double it again.","Sequence reasoning",b,r);
+  }
+  var firstPunches=1+(k%3),firstHoles=firstPunches*Math.pow(2,folds),added=1+((k+2)%3),addedHoles=added*Math.pow(2,folds+1),combined=firstHoles+addedHoles;
+  return q("A sheet is folded "+folds+" times and receives "+firstPunches+" punch"+(firstPunches>1?"es":"")+" away from folds. It is folded once more and receives "+added+" more punch"+(added>1?"es":"")+". How many holes appear after fully opening?",combined,[firstHoles+added*Math.pow(2,folds),combined-added, (firstPunches+added)*Math.pow(2,folds+1)],"The first punches pass through 2^"+folds+" layers: "+firstHoles+" holes. The later punches pass through 2^"+(folds+1)+" layers: "+addedHoles+" holes. Total: "+combined+".","Separate punches made at different folding stages; calculate each stage before adding.","Sequence reasoning",b,r);
  }
  if(b===130){
   var first=1+(k%5),gap=2+(k%4),vals=[first],g=gap;
@@ -160,24 +171,47 @@ function sequenceQuestion(b,n,r){
 function buildBank(){
  BANDS.forEach(function(b){var r=rng(9187+b),arr=[];for(var i=0;i<PER_BAND;i++){var type=i%4;arr.push(type===0?numberQuestion(b,i,r):type===1?logicQuestion(b,i,r):type===2?verbalQuestion(b,i,r):sequenceQuestion(b,i,r))}bank[b]=arr});
 }
+function questionSignature(item){
+ var text=item.text.toLowerCase()
+  .replace(/lina|omar|kai|maya|noah|zuri/g,"<name>")
+  .replace(/[0-9]+/g,"#")
+  .replace(/[▲●■◆★○↑→↓←↗]+/g,"<symbol>")
+  .replace(/\s+/g," ")
+  .trim();
+ return item.band+"|"+item.type+"|"+text;
+}
+function takeDistinct(pool,need,r,seenText,seenShape){
+ var chosen=[],deferred=[],mixed=shuffle(pool,r);
+ for(var j=0;j<mixed.length&&chosen.length<need;j++){
+  var item=mixed[j],sig=questionSignature(item);
+  if(seenText.has(item.text))continue;
+  if(seenShape.has(sig)){deferred.push(item);continue}
+  seenText.add(item.text);seenShape.add(sig);chosen.push(item);
+ }
+ for(var d=0;d<deferred.length&&chosen.length<need;d++){
+  var fallback=deferred[d];
+  if(!seenText.has(fallback.text)){seenText.add(fallback.text);chosen.push(fallback)}
+ }
+ return chosen;
+}
 function sampleBalanced(total){
- var r=rng(Date.now()),base=Math.floor(total/BANDS.length),extra=total%7,out=[],seen=new Set();
+ var r=rng(Date.now()),base=Math.floor(total/BANDS.length),extra=total%7,out=[],seenText=new Set(),seenShape=new Set();
  BANDS.forEach(function(b,i){
-  var need=base+(i<extra?1:0),pool=shuffle(bank[b],r);
-  for(var j=0;j<pool.length&&need>0;j++){
-   if(!seen.has(pool[j].text)){seen.add(pool[j].text);out.push(pool[j]);need--}
-  }
+  var need=base+(i<extra?1:0);
+  out=out.concat(takeDistinct(bank[b],need,r,seenText,seenShape));
  });
  return shuffle(out,r);
 }
 function sampleAdaptive(total){
- var r=rng(Date.now()),out=[],bandIndex=2,used={};BANDS.forEach(function(b){used[b]=0});
- for(var i=0;i<total;i++){var b=BANDS[bandIndex],pool=shuffle(bank[b],r),item=pool[used[b]++%pool.length];out.push(item);if(i%3===2){var simulated=r();bandIndex=Math.max(0,Math.min(6,bandIndex+(simulated>.55?1:-1)))}}return out;
+ var r=rng(Date.now()),all=[];
+ BANDS.forEach(function(b){all=all.concat(bank[b])});
+ var selected=takeDistinct(all,total,r,new Set(),new Set());
+ return shuffle(selected,r);
 }
 function el(id){return document.getElementById(id)}
 function show(id){["start","test","results"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
 function start(){
- var total=Number(el("length").value);session=sampleBalanced(total);answers=new Array(total).fill(null);index=0;resultSubmitted=false;startedAt=Date.now();show("test");render();clearInterval(timerId);timerId=setInterval(updateTime,1000);updateTime();scrollTo(0,0)
+ var total=Number(el("length").value),mode=el("mode").value;session=mode==="random"?sampleAdaptive(total):sampleBalanced(total);answers=new Array(session.length).fill(null);index=0;resultSubmitted=false;startedAt=Date.now();show("test");render();clearInterval(timerId);timerId=setInterval(updateTime,1000);updateTime();scrollTo(0,0)
 }
 function updateTime(){var s=Math.floor((Date.now()-startedAt)/1000),m=Math.floor(s/60);el("time").textContent=String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")}
 function render(){
