@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pattern Recognition Test with Explanations | MigaBuilder</title>
-<meta name="description" content="Practice number, symbol and matrix pattern recognition privately. Review every mistake with the correct rule and a step-by-step solving method.">
+<title>Work Pattern Test with Explanations | MigaBuilder</title>
+<meta name="description" content="Practise employer-style number, symbol, matrix and rule-transformation patterns privately. Review every mistake with the correct rule and a step-by-step solving method.">
 <link rel="canonical" href="https://migabuilder.com/pattern-lab.html"><meta name="robots" content="index,follow">
-<meta property="og:title" content="Pattern Lab — Learn the Rule Behind Every Answer"><meta property="og:description" content="A free private pattern-recognition practice test with worked explanations."><meta property="og:url" content="https://migabuilder.com/pattern-lab.html"><meta property="og:type" content="website">
+<meta property="og:title" content="Work Pattern Test — Learn the Rule Behind Every Answer"><meta property="og:description" content="A free private pattern-recognition practice test with worked explanations."><meta property="og:url" content="https://migabuilder.com/pattern-lab.html"><meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -20,20 +20,20 @@ h1,h2,h3{font-family:"Space Grotesk";margin-top:0}h1{font-size:clamp(32px,6vw,52
 </style></head><body>
 <header><div class="wrap brand"><a href="/">MigaBuilder</a><small>Free tools · no signup · private by design</small></div></header>
 <main class="wrap">
-<section class="card" id="start"><p class="bank">WORK-SKILLS PRACTICE</p><h1>Spot the rule. Learn the method.</h1>
-<p class="lead">Solve a balanced set of number sequences, symbol transformations and matrix rules. Your report explains every answer and teaches a reusable way to approach the patterns you missed.</p>
-<div class="setup"><div><strong>30</strong><span>randomised questions</span></div><div><strong>3</strong><span>pattern categories</span></div></div>
+<section class="card" id="start"><p class="bank">EMPLOYER-STYLE APTITUDE PRACTICE</p><h1>Work Pattern Test</h1>
+<p class="lead">Practise the kinds of abstract and inductive pattern questions used in many recruitment processes: number sequences, symbol changes, matrices and changing-rule problems. Your report explains every answer and teaches a reusable solving method for the questions you missed.</p>
+<div class="setup"><div><strong>32</strong><span>randomised questions</span></div><div><strong>4</strong><span>work-test pattern categories</span></div></div>
 <div class="notice"><strong>Practice, not recruitment screening.</strong> This original educational test is not normed against a workforce population and should not be treated as an employment-selection score.</div>
-<button class="btn" id="startBtn">Start private test</button><p class="privacy">Questions, answers and results stay in this browser.</p></section>
-<section class="card hidden" id="test"><div class="stats"><div class="stat"><strong id="position">1 / 30</strong><span>Question</span></div><div class="stat"><strong id="answered">0</strong><span>Answered</span></div><div class="stat"><strong id="timer">00:00</strong><span>Elapsed</span></div></div><div class="progress"><span id="progress"></span></div><div class="qmeta" id="category"></div><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="nav"><button class="btn secondary" id="prevBtn">← Previous</button><button class="btn" id="nextBtn" disabled>Next →</button></div></section>
-<section class="card hidden" id="results"><p class="bank">YOUR PATTERN REPORT</p><h2 id="resultTitle">Your result</h2><p class="lead" id="resultCopy"></p><div class="breakdown" id="breakdown"></div><h3>Review and learn</h3><p>Incorrect answers are shown first. Open any item to see the rule and solving method.</p><div id="reviews"></div><div class="nav no-print"><button class="btn secondary" onclick="window.print()">Print report</button><button class="btn" id="restartBtn">Try a new set</button></div><p class="privacy">Performance can be affected by familiarity, language, fatigue and time pressure. Use the explanations to practise rather than treating one score as a fixed ability.</p></section>
+<button class="btn" id="startBtn">Start work-pattern practice</button><p class="privacy">Questions, answers and results stay in this browser.</p></section>
+<section class="card hidden" id="test"><div class="stats"><div class="stat"><strong id="position">1 / 32</strong><span>Question</span></div><div class="stat"><strong id="answered">0</strong><span>Answered</span></div><div class="stat"><strong id="timer">00:00</strong><span>Elapsed</span></div></div><div class="progress"><span id="progress"></span></div><div class="qmeta" id="category"></div><div class="question" id="question"></div><div class="answers" id="answers"></div><div class="nav"><button class="btn secondary" id="prevBtn">← Previous</button><button class="btn" id="nextBtn" disabled>Next →</button></div></section>
+<section class="card hidden" id="results"><p class="bank">YOUR WORK-PATTERN REPORT</p><h2 id="resultTitle">Your result</h2><p class="lead" id="resultCopy"></p><div class="breakdown" id="breakdown"></div><h3>Review and learn</h3><p>Incorrect answers are shown first. Open any item to see the rule and solving method.</p><div id="reviews"></div><div class="nav no-print"><button class="btn secondary" onclick="window.print()">Print report</button><button class="btn" id="restartBtn">Try a new set</button></div><p class="privacy">Performance can be affected by familiarity, language, fatigue and time pressure. Use the explanations to practise rather than treating one score as a fixed ability.</p></section>
 </main>
 <script>
 (function(){
 "use strict";
-var categories=["Number sequences","Symbol patterns","Matrix rules"],bank=[],session=[],responses=[],index=0,started=0,timerId=0;
+var categories=["Number sequences","Symbol patterns","Matrix rules","Rule transformations"],bank=[],session=[],responses=[],index=0,started=0,timerId=0;
 function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
-function item(category,text,correct,wrong,rule,method){return {category:category,text:text,correct:String(correct),options:shuffle([String(correct)].concat(wrong.map(String))),rule:rule,method:method}}
+function item(category,text,correct,wrong,rule,method){var count=bank.filter(function(x){return x.category===category}).length;return {category:category,text:text,correct:String(correct),options:shuffle([String(correct)].concat(wrong.map(String))),rule:rule,method:method,difficulty:1+(count%3)}}
 function buildBank(){
  for(var n=0;n<24;n++){
   var start=2+n%7,gap=2+Math.floor(n/3)%6,seq=[start],g=gap;
@@ -55,12 +55,26 @@ function buildBank(){
    bank.push(item(categories[2],"Complete the matrix. The third value is formed from the first two:\n"+p+"   |   "+q+"   |   "+prod+"\n"+p2+"   |   "+q2+"   |   ?",cor3,[p2+q2,cor3-p2,cor3+q2],"The first row uses multiplication: "+p+" × "+q+" = "+prod+". Therefore "+p2+" × "+q2+" = "+cor3+".","Test simple relationships—addition, subtraction, multiplication and division—against the complete row before choosing one."));
   }
  }
+ for(var t=0;t<24;t++){
+  var base=2+(t%6),step=1+(Math.floor(t/3)%4),mode=t%3;
+  if(mode===0){
+   var v1=base,v2=v1+step,v3=v2*2,v4=v3+step,correct4=v4*2;
+   bank.push(item(categories[3],"The rule alternates +"+step+" and ×2. What comes next?\n"+v1+"   →   "+v2+"   →   "+v3+"   →   "+v4+"   →   ?",correct4,[v4+step,v4*2+step,v3*2],"The operations alternate: +"+step+", ×2, +"+step+", ×2. Therefore "+v4+" × 2 = "+correct4+".","Write the operation above each arrow. When one rule does not fit every step, test an alternating pair of rules."));
+  }else if(mode===1){
+   var letters=["A","B","C","D","E","F","G","H","I","J","K","L"],start=t%5,jump=2+(t%3),l1=letters[start],l2=letters[start+jump],l3=letters[start+jump+1],l4=letters[start+jump+1+jump],answerL=letters[start+jump+1+jump+1];
+   bank.push(item(categories[3],"Letters alternate jumps of +"+jump+" and +1. Which comes next?\n"+l1+"   →   "+l2+"   →   "+l3+"   →   "+l4+"   →   ?",answerL,[letters[start+jump+1+jump],letters[start+jump+1+jump+2],l3],"The jumps alternate +"+jump+", +1, +"+jump+", +1. The next letter is "+answerL+".","Convert letters to alphabet positions, write the jumps, and look for a repeating cycle."));
+  }else{
+   var small=1+(t%4),large=small+2,third=small+large,nextA=small+1,nextB=large+2,answerN=nextA+nextB;
+   bank.push(item(categories[3],"Apply the same relationship to the second group:\n"+small+" + "+large+" → "+third+"\n"+nextA+" + "+nextB+" → ?",answerN,[nextA*nextB,answerN-1,answerN+2],"Both groups use addition. "+nextA+" + "+nextB+" = "+answerN+".","Ignore surface changes and identify the relationship connecting the complete example; then transfer that exact relationship."));
+  }
+ }
 }
-function selectTest(){var out=[];categories.forEach(function(c){out=out.concat(shuffle(bank.filter(function(x){return x.category===c})).slice(0,10))});return shuffle(out)}
+function signature(q){return q.text.toLowerCase().replace(/[0-9]+/g,"#").replace(/[▲●■◆★○↑→↓←↗]+/g,"<symbol>").replace(/\s+/g," ")}
+function selectTest(){var out=[],seen=new Set();categories.forEach(function(c){var pool=shuffle(bank.filter(function(x){return x.category===c}));for(var i=0;i<pool.length&&out.filter(function(x){return x.category===c}).length<8;i++){var sig=c+"|"+signature(pool[i]);if(!seen.has(sig)){seen.add(sig);out.push(pool[i])}}for(var j=0;j<pool.length&&out.filter(function(x){return x.category===c}).length<8;j++){if(!out.includes(pool[j]))out.push(pool[j])}});return shuffle(out)}
 function el(id){return document.getElementById(id)}function show(id){["start","test","results"].forEach(function(x){el(x).classList.toggle("hidden",x!==id)})}
 function start(){session=selectTest();responses=new Array(session.length).fill(null);index=0;started=Date.now();show("test");render();clearInterval(timerId);timerId=setInterval(updateTime,1000);updateTime();scrollTo(0,0)}
 function updateTime(){var sec=Math.floor((Date.now()-started)/1000);el("timer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0")}
-function render(){var q=session[index];el("position").textContent=(index+1)+" / "+session.length;el("answered").textContent=responses.filter(function(x){return x!==null}).length;el("progress").style.width=(index/session.length*100)+"%";el("category").textContent=q.category;el("question").textContent=q.text;el("answers").innerHTML="";q.options.forEach(function(o){var b=document.createElement("button");b.className="answer"+(responses[index]===o?" selected":"");b.textContent=o;b.onclick=function(){responses[index]=o;render()};el("answers").appendChild(b)});el("prevBtn").disabled=index===0;el("nextBtn").disabled=responses[index]===null;el("nextBtn").textContent=index===session.length-1?"Finish & learn":"Next →"}
+function render(){var q=session[index];el("position").textContent=(index+1)+" / "+session.length;el("answered").textContent=responses.filter(function(x){return x!==null}).length;el("progress").style.width=(index/session.length*100)+"%";el("category").textContent=q.category+" · Difficulty "+q.difficulty+" of 3";el("question").textContent=q.text;el("answers").innerHTML="";q.options.forEach(function(o){var b=document.createElement("button");b.className="answer"+(responses[index]===o?" selected":"");b.textContent=o;b.onclick=function(){responses[index]=o;render()};el("answers").appendChild(b)});el("prevBtn").disabled=index===0;el("nextBtn").disabled=responses[index]===null;el("nextBtn").textContent=index===session.length-1?"Finish & learn":"Next →"}
 el("prevBtn").onclick=function(){if(index){index--;render()}};el("nextBtn").onclick=function(){if(responses[index]===null)return;if(index<session.length-1){index++;render();scrollTo(0,0)}else finish()};
 function escapeHtml(v){return String(v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function finish(){clearInterval(timerId);var correct=0,stats={};categories.forEach(function(c){stats[c]=[0,0]});session.forEach(function(q,i){var ok=responses[i]===q.correct;if(ok)correct++;stats[q.category][1]++;if(ok)stats[q.category][0]++});var pct=Math.round(correct/session.length*100);el("resultTitle").textContent=pct+"% correct";el("resultCopy").textContent="You solved "+correct+" of "+session.length+" patterns. The review below is the most useful part: focus on the methods behind the categories you missed.";el("breakdown").innerHTML="";categories.forEach(function(c){var d=document.createElement("div"),x=stats[c];d.className="metric";d.innerHTML="<strong>"+x[0]+"/"+x[1]+"</strong><span>"+c+"</span>";el("breakdown").appendChild(d)});
