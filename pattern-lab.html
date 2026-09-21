@@ -46,7 +46,7 @@ function buildBank(){
   if(s%2===0){var a=symbols[s%symbols.length],b=symbols[(s+1)%symbols.length],count=1+Math.floor(s/6)%3,next=count+1,correct=b.repeat(next);
    bank.push(item(categories[1],"Continue the pattern:\n"+a.repeat(count)+"   "+b.repeat(count)+"   "+a.repeat(next)+"   ?",correct,[a.repeat(next),b.repeat(count),a+b],"The symbols alternate while the number of copies increases from "+count+" to "+next+".","Track each changing feature separately: symbol, quantity, direction, colour or position."));
   }else{var st=s%4,turn=(Math.floor(s/4)%2)+1,arr=[arrows[st],arrows[(st+turn)%4],arrows[(st+2*turn)%4]],cor=arrows[(st+3*turn)%4];
-   bank.push(item(categories[1],"Which arrow comes next?\n"+arr.join("   →   ")+"   →   ?",cor,[arrows[(st+1)%4],arrows[(st+2)%4],"↗"],"Each arrow turns "+(turn===1?"90°":"180°")+" clockwise. Repeating that turn gives "+cor+".","Compare one symbol with the next and name the exact transformation before predicting another step."));}
+   bank.push(item(categories[1],"Which arrow comes next?\n"+arr.join("   →   ")+"   →   ?",cor,turn===1?[arrows[(st+1)%4],arrows[(st+2)%4],"↗"]:[arrows[(st+1)%4],arrows[(st+3)%4],"↗"],"Each arrow turns "+(turn===1?"90°":"180°")+" clockwise. Repeating that turn gives "+cor+".","Compare one symbol with the next and name the exact transformation before predicting another step."));}
  }
  for(var m=0;m<24;m++){
   if(m%2===0){var x=2+m%6,y=3+Math.floor(m/3)%7,z=x+y,u=x+1,v=y+2,cor2=u+v;
