@@ -29,8 +29,6 @@
 .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin:10px 0;color:var(--ink)}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}.toolbar .field{margin:0;flex:1;min-width:160px}
 .hidden{display:none!important}
-#docxRender{position:fixed;left:-10000px;top:0;width:794px;padding:60px 70px;background:#fff;color:#111;font:15px/1.5 'IBM Plex Sans',Arial,sans-serif}
-#docxRender img{max-width:100%}#docxRender table{border-collapse:collapse}#docxRender td,#docxRender th{border:1px solid #999;padding:4px}
 </style>
 </head>
 <body>
@@ -96,7 +94,6 @@
   <div class="status" id="status" role="status" aria-live="polite"></div>
 </section>
 </main>
-<div id="docxRender" aria-hidden="true"></div>
 <footer>Part of <a href="index.html">MigaBuilder</a>. A visual signature is not the same as a certificate-based digital signature. Need to merge, split or compress? Use <a href="pdf-forge.html">PDF Forge</a> or <a href="pdf-compress.html">Compress PDF</a>.</footer>
 <script>
 (function(){
@@ -181,8 +178,10 @@ let pageIndex=0,items=[],selected=null,nextId=1;
 const stage=$('stage'),pc=$('pageCanvas');
 $('doc').onchange=async()=>{const f=$('doc').files[0];if(!f)return;items=[];pageIndex=0;clearItems();say('docInfo','Opening '+f.name+'…');
   try{const base=f.name.replace(/\.[^.]+$/,'');$('outName').value=base+'-signed';const fmt=$('format');
-    if(/\.docx$/i.test(f.name)){await ensureDocxLibs();const html=(await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()})).value;const box=$('docxRender');box.innerHTML=html||'<p>(empty document)</p>';
-      const bytes=await html2pdf().set({margin:0,image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#ffffff'},jsPDF:{unit:'pt',format:'a4'},pagebreak:{mode:['css','legacy']}}).from(box).outputPdf('arraybuffer');box.innerHTML='';
+    if(/\.docx$/i.test(f.name)){await ensureDocxLibs();const html=(await mammoth.convertToHtml({arrayBuffer:await f.arrayBuffer()},{styleMap:["p[style-name='Title'] => h1.title:fresh","p[style-name='Subtitle'] => h2:fresh"]})).value;
+      // html2pdf renders the page in its own overlay, so hand it markup rather than an off-screen element (which would capture blank).
+      const page='<div class="docx-page" style="width:654px;padding:0;background:#fff;color:#111;font:15px/1.5 Arial,Helvetica,sans-serif"><style>.docx-page img{max-width:100%}.docx-page table{border-collapse:collapse}.docx-page td,.docx-page th{border:1px solid #999;padding:4px}.docx-page p{margin:0 0 10px}.docx-page h1{font-size:26px;margin:0 0 14px}.docx-page h2{font-size:20px;margin:16px 0 8px}.docx-page h3{font-size:17px;margin:14px 0 6px}</style>'+(html||'<p>(empty document)</p>')+'</div>';
+      const bytes=await html2pdf().set({margin:[50,60,50,60],image:{type:'jpeg',quality:.95},html2canvas:{scale:2,backgroundColor:'#ffffff',scrollX:0,scrollY:0},jsPDF:{unit:'pt',format:'a4'},pagebreak:{mode:['css','legacy']}}).from(page).outputPdf('arraybuffer');
       await openPdf(new Uint8Array(bytes),f.name);fmt.innerHTML='<option value="pdf">PDF</option>';say('docInfo',f.name+' converted to PDF · '+doc.pages.length+' page'+(doc.pages.length===1?'':'s')+'. Layout may differ slightly from Word.')}
     else if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){await openPdf(new Uint8Array(await f.arrayBuffer()),f.name);fmt.innerHTML='<option value="pdf">PDF</option>';say('docInfo',f.name+' · '+doc.pages.length+' page'+(doc.pages.length===1?'':'s'))}
     else{const bmp=await createImageBitmap(f);const c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;c.getContext('2d').drawImage(bmp,0,0);doc={kind:'image',image:c,mime:f.type==='image/jpeg'?'image/jpeg':'image/png',pages:[{w:bmp.width,h:bmp.height}],name:f.name};
