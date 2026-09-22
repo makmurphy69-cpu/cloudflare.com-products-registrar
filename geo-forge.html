@@ -168,7 +168,7 @@ function select(code,zoomIn){const c=DATA[code];if(!c)return;selected=code;seen.
   d.innerHTML='<h2><span class="flag" aria-hidden="true">'+c.f+'</span><span>'+esc(name(c))+'</span></h2><p class="official">'+esc(c.o||'')+(c.nm&&contentLang!=='en'&&c.nm[contentLang]?' · '+esc(c.n):'')+'</p>'
    +'<div class="facts">'+status
    +'<div class="fact"><b>Capital</b><span>'+list(c.c)+'</span></div><div class="fact"><b>Region</b><span>'+esc(c.s||c.r||'—')+'</span></div>'
-   +'<div class="fact"><b>Population</b><span>'+fmt(c.pop)+'</span></div><div class="fact"><b>Area</b><span>'+(c.area?Math.round(c.area).toLocaleString()+' km²':'—')+'</span></div>'
+   +'<div class="fact"><b>Population</b><span>'+fmt(c.pop)+(c.popy?' <small class="muted">('+esc(c.popy)+')</small>':'')+'</span></div><div class="fact"><b>Area</b><span>'+(c.area?Math.round(c.area).toLocaleString()+' km²':'—')+'</span></div>'
    +'<div class="fact wide"><b>💰 Currency</b><span>'+cur+'</span></div>'
    +'<div class="fact wide"><b>🗣️ Languages</b><span>'+list(c.l)+'</span></div>'
    +'<div class="fact wide"><b>🏛️ Political structure</b><span>'+list(c.g)+(c.leg&&c.leg.length?'<br><small>Legislature: '+list(c.leg)+'</small>':'')+'</span></div>'

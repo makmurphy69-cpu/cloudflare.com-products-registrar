@@ -13,7 +13,7 @@ Usage (from the repository root):
 Wikidata responses are cached in .geo-cache/ so an interrupted run can resume.
 Wikimedia rate-limits heavy use, so the script is deliberately slow and polite.
 """
-import json, os, sys, time, urllib.error, urllib.parse, urllib.request
+import json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 UA = {'User-Agent': 'MigaBuilderGeoBuild/1.0 (https://migabuilder.com)'}
 CACHE = '.geo-cache'
@@ -72,7 +72,7 @@ def entity(q):
     except urllib.error.HTTPError:
         return None
     d = data['entities'].get(q) or next(iter(data['entities'].values()))
-    d = {'id': d['id'], 'labels': {k: v for k, v in d.get('labels', {}).items() if k in LANGS},
+    d = {'id': d['id'], 'labels': {k: v for k, v in d.get('labels', {}).items() if k in LANGS + ('mul',)},
          'claims': {p: d['claims'][p] for p in PROPS if p in d.get('claims', {})},
          'sitelinks': {k: v['title'] for k, v in d.get('sitelinks', {}).items() if k in tuple(l + 'wiki' for l in LANGS)}}
     json.dump(d, open(path, 'w'))
@@ -100,7 +100,11 @@ def ids(claims,p): return [v['id'] for v in truthy(claims,p) if isinstance(v,dic
 def label(q, lang='en'):
     e = entity(q)
     if not e: return None
-    return (e['labels'].get(lang) or e['labels'].get('en') or {}).get('value')
+    v = (e['labels'].get(lang) or e['labels'].get('en') or e['labels'].get('mul') or {}).get('value')
+    # Wikidata increasingly keeps names in a shared 'mul' label; fall back to the English Wikipedia title.
+    if not v and e.get('sitelinks', {}).get('enwiki'):
+        v = re.sub(r' \([^)]*\)$', '', e['sitelinks']['enwiki'])
+    return v
 
 
 def labels(d, p):
@@ -128,7 +132,7 @@ def main(countries_path):
         k=c['cca2'];q=Q.get(k,{}).get('qid');d=ent(q) if q else None
         if not d: missing+=1;d={'claims':{},'labels':{},'sitelinks':{}}
         idd=c.get('idd',{});cc=idd.get('root','')+(idd['suffixes'][0] if len(idd.get('suffixes',[]))==1 else '')
-        pop=None
+        pop=None;popy=None
         for v in truthy(d['claims'],'P1082'):
             try: pop=max(pop or 0,float(v['amount']))
             except Exception: pass
@@ -139,12 +143,13 @@ def main(countries_path):
         if ps:
             best=sorted(ps,key=when)[-1];dv=best['mainsnak'].get('datavalue')
             if dv: pop=float(dv['value']['amount'])
+        popy=when(best)[1:5] or None
         drive=None
         for q2 in ids(d['claims'],'P1622'): drive=label(q2)
         hist=ids(d['claims'],'P2184');cult=ids(d['claims'],'P2596')
         rec={'n':c['name']['common'],'o':c['name']['official'],'f':c['flag'],'r':c['region'],'s':c.get('subregion') or None,'c':c.get('capital') or [],
           'cur':[[code,v.get('name'),v.get('symbol')] for code,v in (c.get('currencies') or {}).items()],'l':list((c.get('languages') or {}).values()),
-          'pop':round(pop) if pop else None,'area':c.get('area'),'g':labels(d,'P122') or ([FALLBACK_GOV[k]] if k in FALLBACK_GOV else []),'hs':labels(d,'P35'),'hg':labels(d,'P6'),'leg':labels(d,'P194'),
+          'pop':round(pop) if pop else None,'popy':popy,'area':c.get('area'),'g':labels(d,'P122') or ([FALLBACK_GOV[k]] if k in FALLBACK_GOV else []),'hs':labels(d,'P35'),'hg':labels(d,'P6'),'leg':labels(d,'P194'),
           'drv':drive,'cc':cc or None,'tld':(c.get('tld') or [None])[0],'b':[cca3[x] for x in c.get('borders',[]) if x in cca3],
           'dem':(c.get('demonyms',{}).get('eng') or {}).get('m'),'ll':c.get('latlng'),'lk':c.get('landlocked'),'ind':c.get('independent'),'un':c.get('unMember'),
           'id':c.get('ccn3') or None,'w':{k2[:2]:v for k2,v in d.get('sitelinks',{}).items()} or None,'h':links(hist[0]) if hist else None,'cu':links(cult[0]) if cult else None,
