@@ -27,6 +27,7 @@
     'pdf-forge.html':['PDF Forge','choose one or more PDF files and set the page order or rotation','Merge / create PDF','download the finished PDF or split pages into a ZIP'],
     'pdf-edit-forge.html':['Sign Documents','choose a PDF, Word file or photo of a document, then draw, type or upload your signature and press Use this signature','+ Signature','drag it into place, add the date if needed and download the signed document'],
     'pdf-compress.html':['Compress PDF','choose the PDF you want to make smaller and pick a compression level','Compress PDF','compare the sizes and download the compressed copy'],
+    'sim-forge.html':['Vehicle Simulator','choose a vehicle, read how it works and learn its controls','Start the simulator','complete each mission, then take the knowledge check'],
     'geo-forge.html':['Geography Forge','click a country on the map or search for it to read its facts, history and customs','Generate quiz','answer the questions and review the ones you missed'],
     'project-hub.html':['Project Hub','review the projects and settings stored in this browser','Export local backup','open a project, restore a backup, or remove local data you no longer need'],
     'repurpose-forge.html':['Repurpose Forge','paste one piece of content and describe its audience and call to action','Create publishing pack','review, personalise, and copy the formats you need'],

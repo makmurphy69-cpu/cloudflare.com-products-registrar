@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script><script src="usage-counter.js" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vehicle Simulator — learn to drive, fly and steer | MigaBuilder</title>
+<meta name="description" content="Choose a car, truck, motorcycle, boat, airplane or helicopter, learn how it works and what each control does, then practise step-by-step missions in a free browser simulator. No signup.">
+<link rel="canonical" href="https://migabuilder.com/sim-forge.html">
+<meta property="og:title" content="Vehicle Simulator — learn how to drive, fly and steer | MigaBuilder">
+<meta property="og:description" content="Pick a vehicle, read how it works, then practise guided missions: parking, reversing a trailer, docking a boat, landing a plane and hovering a helicopter.">
+<meta property="og:url" content="https://migabuilder.com/sim-forge.html"><meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="local-tools.css"><link rel="stylesheet" href="tutorials.css">
+<style>
+main{max-width:1320px}
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.vcard{display:flex;flex-direction:column;gap:4px;text-align:left;padding:16px;background:#fff;border:2px solid rgba(22,32,43,.14);border-radius:6px;color:var(--ink);cursor:pointer;position:relative}
+.vcard:hover,.vcard:focus-visible{border-color:var(--navy)}.vcard.active{border-color:var(--amber);background:#fff8ea}
+.vcard .vicon{font-size:36px;line-height:1.1}.vcard strong{font:700 17px 'Space Grotesk'}.vcard small{color:rgba(22,32,43,.66);line-height:1.4}
+.vcard .level{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#7a5a17}
+.vcard .prog{position:absolute;top:10px;right:12px;font-size:12px;font-weight:700;color:#2f6b49}
+.hidden{display:none!important}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 14px}.tab{padding:9px 14px;border:1px solid rgba(22,32,43,.25);background:#fff;border-radius:999px;cursor:pointer;font-weight:600;color:var(--ink)}.tab.active{background:var(--navy);color:var(--paper);border-color:var(--navy)}
+.learn h3{font:700 17px 'Space Grotesk';margin:16px 0 6px}.learn p,.learn li{line-height:1.6;font-size:15px}.learn ul,.learn ol{padding-left:22px;margin:6px 0}
+.parts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:8px}.part{background:#fff;border:1px solid rgba(22,32,43,.12);border-radius:4px;padding:11px 12px}.part b{display:block;font:700 14px 'Space Grotesk';margin-bottom:3px}.part span{font-size:14px;line-height:1.45;color:rgba(22,32,43,.8)}
+.keys{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}.keys td{padding:8px 6px;border-bottom:1px solid rgba(22,32,43,.1);vertical-align:top}.keys td:first-child{white-space:nowrap;width:1%}
+kbd{display:inline-block;min-width:24px;padding:2px 7px;margin:1px 2px;border:1px solid rgba(22,32,43,.3);border-bottom-width:2px;border-radius:4px;background:#fff;font:600 12px 'IBM Plex Sans';text-align:center}
+.safety{padding:10px 12px;background:rgba(226,166,59,.14);border-left:3px solid var(--amber);font-size:14px;line-height:1.5;margin-top:12px}
+.simwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:14px;align-items:start}
+.stage{position:relative;background:#0a2238;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.stage canvas{display:block;width:100%;height:auto;touch-action:none}
+.stage .banner{position:absolute;left:50%;top:18px;transform:translateX(-50%);background:rgba(8,24,38,.9);color:var(--paper);padding:10px 16px;border-radius:6px;font:700 16px 'Space Grotesk';text-align:center;max-width:90%;pointer-events:none;transition:opacity .3s}
+.stage .banner.good{border:2px solid var(--success)}.stage .banner.bad{border:2px solid var(--error)}
+.stage .paused{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,24,38,.55);color:var(--paper);font:700 18px 'Space Grotesk';cursor:pointer;text-align:center;padding:20px}
+.side{display:flex;flex-direction:column;gap:12px}
+.mission h3{font:700 16px 'Space Grotesk';margin:0 0 4px}.mission p{margin:0 0 8px;font-size:14px;line-height:1.5}
+.steps{list-style:none;padding:0;margin:0}.steps li{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid rgba(22,32,43,.08);font-size:14px;line-height:1.4;cursor:pointer}
+.steps li .mk{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid rgba(22,32,43,.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.steps li.done .mk{background:var(--success);border-color:var(--success);color:#fff}.steps li.current{font-weight:700}.steps li.current .mk{border-color:var(--amber);background:#fff3da}
+.hint{padding:9px 11px;background:rgba(14,42,71,.06);border-left:3px solid var(--navy);font-size:13px;line-height:1.5;margin-top:8px}
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:6px}.gauge{background:#fff;border:1px solid rgba(22,32,43,.12);border-radius:4px;padding:7px 9px}.gauge b{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:rgba(22,32,43,.55)}.gauge span{font:700 17px 'Space Grotesk'}.gauge.warn span{color:#b2432f}
+.pad{display:grid;gap:6px;grid-template-columns:repeat(4,1fr);margin-top:10px}
+.pad button{min-height:48px;border:1px solid rgba(111,209,224,.4);background:rgba(8,24,38,.8);color:var(--paper);border-radius:6px;font:600 13px 'IBM Plex Sans';cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:none;padding:4px}
+.pad button.on{background:var(--cyan);color:#081826}
+.simbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.quiz .q{margin:14px 0 6px;font-weight:600;line-height:1.45}.quiz .opts{display:grid;gap:6px}.quiz .opt{text-align:left;padding:10px 12px;border:1px solid rgba(22,32,43,.25);background:#fff;border-radius:4px;cursor:pointer;font-size:14px}
+.quiz .opt.right{background:#dff1e6;border-color:#4E9E73}.quiz .opt.wrong{background:#f8dfda;border-color:#D8604A}.quiz .why{font-size:13px;line-height:1.5;margin-top:6px;color:rgba(22,32,43,.8)}
+@media(max-width:980px){.simwrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="tool-nav"><a href="index.html">← All tools</a><span>Vehicle Simulator</span></nav>
+<header class="masthead"><div><h1>Vehicle Simulator</h1><p>Choose a vehicle, learn how it works and what every control does, then practise guided missions until it feels natural.</p></div></header>
+<main>
+<section class="panel">
+  <h2>1. What do you want to learn?</h2>
+  <p>Each vehicle has an explanation, a controls guide, step-by-step missions and a short knowledge check. Your progress is saved on this device.</p>
+  <div class="picker" id="picker"></div>
+</section>
+
+<section class="panel hidden" id="lesson">
+  <h2 id="lessonTitle"></h2>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="learn" role="tab">📖 How it works</button>
+    <button class="tab" data-tab="controls" role="tab">🎮 Controls &amp; what to do</button>
+    <button class="tab" data-tab="sim" role="tab">🚦 Simulator</button>
+    <button class="tab" data-tab="quiz" role="tab">✅ Knowledge check</button>
+  </div>
+  <div id="tab-learn" class="learn"></div>
+  <div id="tab-controls" class="learn hidden"></div>
+  <div id="tab-sim" class="hidden">
+    <div class="simwrap">
+      <div>
+        <div class="stage" id="stage"><canvas id="cv" width="960" height="560" aria-label="Simulator view"></canvas><div class="banner hidden" id="banner"></div><div class="paused" id="paused">▶ Click here (or press any control) to start</div></div>
+        <div class="pad" id="pad"></div>
+      </div>
+      <div class="side">
+        <div class="mission"><h3 id="mTitle"></h3><p id="mBrief"></p><div class="hint" id="mHint"></div></div>
+        <div class="gauges" id="gauges"></div>
+        <div><b style="font-size:13px">Missions</b><ul class="steps" id="steps"></ul></div>
+        <div class="simbar"><button class="secondary" id="resetBtn">↺ Restart mission</button><button class="secondary" id="freeBtn">Free practice</button></div>
+        <p class="muted" style="margin:0">Keyboard works when the simulator is on screen. On a phone or tablet use the buttons under the view.</p>
+      </div>
+    </div>
+  </div>
+  <div id="tab-quiz" class="quiz hidden"></div>
+</section>
+<p style="text-align:center;color:rgba(237,234,224,.65);font-size:13px;max-width:760px;margin:0 auto">This is a learning simulator with simplified physics. It helps you understand controls and good habits, but it does not replace lessons with a qualified instructor, a licence, or official training for any vehicle or aircraft.</p>
+</main>
+<footer>Part of <a href="index.html">MigaBuilder</a>. Runs entirely in your browser — nothing is uploaded.</footer>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const D2R=Math.PI/180,G=9.81;
+const wrapAng=a=>{while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;return a};
+const kmh=v=>Math.round(Math.abs(v)*3.6);
+const knots=v=>Math.round(v*1.944);
+const cv=$('cv'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+
+/* ------------------------------------------------------------------ input */
+// Held keys are tracked by KeyboardEvent.code; one-shot presses are queued for the active sim.
+const held=new Set(),pressed=[];
+const padHeld=new Set();
+const isDown=codes=>codes.some(c=>held.has(c)||padHeld.has(c));
+function inSimView(){return !$('tab-sim').classList.contains('hidden')&&!$('lesson').classList.contains('hidden')}
+addEventListener('keydown',e=>{
+  if(!inSimView()||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(!current||!current.keys.includes(e.code))return;
+  e.preventDefault();
+  if(!held.has(e.code))pressed.push(e.code);
+  held.add(e.code);start();
+});
+addEventListener('keyup',e=>held.delete(e.code));
+addEventListener('blur',()=>{held.clear();padHeld.clear()});
+
+/* ------------------------------------------------------- drawing helpers */
+function rrect(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h)}
+function text(t,x,y,size,color,align){ctx.font=`600 ${size||14}px 'IBM Plex Sans',sans-serif`;ctx.fillStyle=color||'#EDEAE0';ctx.textAlign=align||'left';ctx.fillText(t,x,y)}
+// Top-down camera: world metres -> screen pixels, centred on a point.
+const cam={x:0,y:0,s:8};
+// Zoom in on narrow screens so the vehicle stays a usable size on phones.
+const boost=()=>cv.clientWidth&&cv.clientWidth<640?1.7:1;
+function toScreen(x,y){const k=cam.s*boost();return[(x-cam.x)*k+W/2,(y-cam.y)*k+H/2]}
+function worldPath(fn){const k=cam.s*boost();ctx.save();ctx.translate(W/2,H/2);ctx.scale(k,k);ctx.translate(-cam.x,-cam.y);fn();ctx.restore()}
+function drawGrass(color){ctx.fillStyle=color;ctx.fillRect(0,0,W,H)}
+function drawBox(cx,cy,ang,len,wid,color,stroke){ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);ctx.fillStyle=color;ctx.fillRect(-len/2,-wid/2,len,wid);if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=.12;ctx.strokeRect(-len/2,-wid/2,len,wid)}ctx.restore()}
+function cone(x,y,hit){ctx.fillStyle=hit?'#D8604A':'#ff8c1a';ctx.beginPath();ctx.arc(x,y,.35,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,.14,0,7);ctx.fill()}
+function gateDraw(g,active,done){ctx.strokeStyle=done?'rgba(78,158,115,.9)':active?'#E2A63B':'rgba(255,255,255,.25)';ctx.lineWidth=active?.35:.2;ctx.setLineDash([.8,.6]);ctx.beginPath();ctx.moveTo(g.x1,g.y1);ctx.lineTo(g.x2,g.y2);ctx.stroke();ctx.setLineDash([]);if(active){ctx.fillStyle='#E2A63B';[[g.x1,g.y1],[g.x2,g.y2]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],.45,0,7);ctx.fill()})}}
+// Segment crossing test for gates.
+function crossed(ax,ay,bx,by,g){const d=(g.x2-g.x1)*(by-ay)-(g.y2-g.y1)*(bx-ax);if(Math.abs(d)<1e-9)return false;const t=((g.x1-ax)*(by-ay)-(g.y1-ay)*(bx-ax))/d,u=((g.x1-ax)*(g.y2-g.y1)-(g.y1-ay)*(g.x2-g.x1))/d;return t>=0&&t<=1&&u>=0&&u<=1}
+// Oriented-box overlap with a point (for cone hits).
+function pointInBox(px,py,cx,cy,ang,len,wid,pad){const dx=px-cx,dy=py-cy,c=Math.cos(-ang),s=Math.sin(-ang),lx=dx*c-dy*s,ly=dx*s+dy*c;return Math.abs(lx)<=len/2+(pad||0)&&Math.abs(ly)<=wid/2+(pad||0)}
+function corners(cx,cy,ang,len,wid){const c=Math.cos(ang),s=Math.sin(ang),hl=len/2,hw=wid/2;return[[hl,hw],[hl,-hw],[-hl,hw],[-hl,-hw]].map(([a,b])=>[cx+a*c-b*s,cy+a*s+b*c])}
+function boxesOverlap(A,B){return corners(...A).some(p=>pointInBox(p[0],p[1],...B))||corners(...B).some(p=>pointInBox(p[0],p[1],...A))}
+function arrowTo(tx,ty,label){const[sx,sy]=toScreen(tx,ty);if(sx>20&&sx<W-20&&sy>20&&sy<H-20)return;const a=Math.atan2(sy-H/2,sx-W/2),r=Math.min(W,H)/2-30,x=W/2+Math.cos(a)*r,y=H/2+Math.sin(a)*r;ctx.save();ctx.translate(x,y);ctx.rotate(a);ctx.fillStyle='#E2A63B';ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(-8,-9);ctx.lineTo(-8,9);ctx.fill();ctx.restore();if(label)text(label,x,y+26,12,'#E2A63B','center')}
+
+/* ============================================================ GROUND SIMS */
+/* A shared bicycle-model vehicle for car, truck and motorcycle.
+   x,y = rear axle centre (metres), h = heading (radians, 0 = east), v = speed along heading (m/s). */
+function makeGround(o){
+  return Object.assign({x:0,y:0,h:0,v:0,steer:0,throttle:0,brake:0,gear:'P',hits:0,ind:0,crashed:false,trail:[]},o);
+}
+function gearChange(s,g){if(Math.abs(s.v)>.6&&((g==='R'&&s.v>0)||(g==='D'&&s.v<0))){flash('Stop completely before changing between D and R.','bad');return}if(g==='P'&&Math.abs(s.v)>.4){flash('Only select P when stopped.','bad');return}s.gear=g}
+function groundDrive(s,dt,p){
+  const up=isDown(['ArrowUp','KeyW']),dn=isDown(['ArrowDown','KeyS']),lt=isDown(['ArrowLeft','KeyA']),rt=isDown(['ArrowRight','KeyD']);
+  s.throttle=lerp(s.throttle,up?1:0,clamp(dt*4,0,1));
+  s.brake=dn?1:0;
+  const target=(lt?-1:0)+(rt?1:0);
+  s.steer=clamp(s.steer+clamp(target*p.maxSteer-s.steer,-p.steerRate*dt,p.steerRate*dt),-p.maxSteer,p.maxSteer);
+  if(!lt&&!rt)s.steer*=Math.max(0,1-dt*p.centre); // steering self-centres like a real wheel
+  const hb=isDown(['Space']);
+  let a=0;
+  if(s.gear==='D')a+=s.throttle*p.accel*(1-s.v/p.vmax);
+  if(s.gear==='R')a-=s.throttle*p.accel*.5*(1-(-s.v)/(p.vmax*.25));
+  const brakeDecel=(s.brake?p.brakeDecel:0)+(hb?p.brakeDecel*.6:0)+(s.gear==='P'?p.brakeDecel*2:0)+p.roll+(s.gear==='N'?0:0);
+  const sign=Math.sign(s.v);
+  s.v+=a*dt;
+  const dv=brakeDecel*dt;
+  if(Math.abs(s.v)<=dv&&a===0)s.v=0;else if(s.v!==0)s.v-=Math.sign(s.v)*Math.min(Math.abs(s.v),dv);
+  if(sign!==0&&Math.sign(s.v)!==sign&&a===0)s.v=0;
+  // Idle creep in D or R, like an automatic gearbox.
+  if(!s.brake&&!hb&&s.throttle<.05){if(s.gear==='D'&&s.v<p.creep)s.v=Math.min(p.creep,s.v+dt*.8);if(s.gear==='R'&&s.v>-p.creep)s.v=Math.max(-p.creep,s.v-dt*.8)}
+  s.accelNow=a-sign*brakeDecel;
+  const px=s.x,py=s.y;
+  const yaw=s.v/p.wheelbase*Math.tan(s.steer);
+  s.h=wrapAng(s.h+yaw*dt);
+  s.x+=Math.cos(s.h)*s.v*dt;s.y+=Math.sin(s.h)*s.v*dt;
+  s.px=px;s.py=py;
+  if(s.trailer){const t=s.trailer;const hx=s.x-Math.cos(s.h)*p.hitchBack,hy=s.y-Math.sin(s.h)*p.hitchBack;
+    const vh=s.v; // hitch speed ≈ tractor speed
+    const rel=wrapAng(s.h-t.h);
+    t.h=wrapAng(t.h+vh/p.trailerLen*Math.sin(rel)*dt);
+    t.x=hx-Math.cos(t.h)*p.trailerLen;t.y=hy-Math.sin(t.h)*p.trailerLen;t.hx=hx;t.hy=hy;
+    s.hitchAngle=wrapAng(s.h-t.h);
+  }
+}
+function groundPress(s,code){
+  if(code==='KeyP')gearChange(s,'P');if(code==='KeyR')gearChange(s,'R');if(code==='KeyN')gearChange(s,'N');if(code==='KeyF')gearChange(s,'D');
+  if(code==='KeyQ')s.ind=s.ind===-1?0:-1;if(code==='KeyE')s.ind=s.ind===1?0:1;
+}
+function drawIndicators(s,len,wid,blink){if(!s.ind||!blink)return;ctx.fillStyle='#ffb300';const side=s.ind*wid/2;[[len-.2,side],[-.1,side]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],.22,0,7);ctx.fill()})}
+function drawCarBody(s,len,wid,color,opts){ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.h);
+  const f=opts.front||len*.8; // rear axle is at 0, front of body at +f
+  ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(-(len-f)+.15,-wid/2+.15,len,wid);
+  // wheels
+  ctx.fillStyle='#111';const wb=opts.wb;[[0,-wid/2],[0,wid/2]].forEach(w=>ctx.fillRect(w[0]-.35,w[1]-.12,.7,.24));
+  [[wb,-wid/2],[wb,wid/2]].forEach(w=>{ctx.save();ctx.translate(w[0],w[1]);ctx.rotate(opts.rearSteer?0:s.steer);ctx.fillRect(-.35,-.12,.7,.24);ctx.restore()});
+  ctx.fillStyle=color;rrect(-(len-f),-wid/2,len,wid,.35);ctx.fill();
+  ctx.fillStyle='rgba(180,220,255,.8)';ctx.fillRect(f-1.4,-wid/2+.2,.5,wid-.4);ctx.fillRect(-(len-f)+.25,-wid/2+.25,.35,wid-.5);
+  ctx.fillStyle='#fff7c2';[[f-.1,-wid/2+.3],[f-.1,wid/2-.3]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],.16,0,7);ctx.fill()});
+  if(s.brake){ctx.fillStyle='#ff3b30';[[-(len-f)+.08,-wid/2+.3],[-(len-f)+.08,wid/2-.3]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],.18,0,7);ctx.fill()})}
+  if(s.gear==='R'){ctx.fillStyle='#fff';[[-(len-f)+.08,-wid/2+.6],[-(len-f)+.08,wid/2-.6]].forEach(p=>{ctx.beginPath();ctx.arc(p[0],p[1],.12,0,7);ctx.fill()})}
+  ctx.translate(-(len-f),0);drawIndicators(s,len,wid,(performance.now()/350|0)%2);
+  ctx.restore();}
+
+/* ---------------------------------------------------------------- CAR */
+const CAR_P={wheelbase:2.7,maxSteer:35*D2R,steerRate:70*D2R,centre:2.5,accel:3.2,vmax:28,brakeDecel:7,roll:.25,creep:1.6};
+// Training ground: a straight road running east, a junction, and a car park with bays.
+const CAR_WORLD={
+  cones:[],
+  bays:[{x:62.8,h:Math.PI/2}],
+  parked:[43.6,46.8,53.2,59.6,66,69.2,75.6],
+  stopLine:{x:95,y1:-3.5,y2:3.5}
+};
+function carReset(sim,start){const s=makeGround(Object.assign({x:0,y:1.8,h:0},start||{}));sim.s=s}
+function drawCarWorld(sim,t){
+  drawGrass('#3f6f3a');
+  worldPath(()=>{
+    // main road
+    ctx.fillStyle='#4a4f55';ctx.fillRect(-60,-4,300,8);
+    ctx.fillRect(116,-60,8,120); // cross road at x=120
+    ctx.fillStyle='#fff';for(let x=-60;x<240;x+=6)if(x<114||x>126)ctx.fillRect(x,-.08,3,.16);
+    for(let y=-60;y<60;y+=6)if(y<-6||y>6)ctx.fillRect(119.92,y,.16,3);
+    ctx.fillRect(-60,-4,300,.12);ctx.fillRect(-60,3.88,300,.12);
+    // stop line
+    ctx.fillStyle='#fff';ctx.fillRect(CAR_WORLD.stopLine.x,0,.4,4);
+    ctx.save();ctx.translate(CAR_WORLD.stopLine.x-2.2,2.6);ctx.rotate(-Math.PI/2);ctx.font='700 1.1px sans-serif';ctx.fillStyle='rgba(255,255,255,.8)';ctx.textAlign='center';ctx.fillText('STOP',0,0);ctx.restore();
+    // car park
+    ctx.fillStyle='#55595e';ctx.fillRect(40,-38,44,34);
+    ctx.strokeStyle='#fff';ctx.lineWidth=.12;
+    for(let i=0;i<12;i++){const x=42+i*3.2;ctx.beginPath();ctx.moveTo(x,-38);ctx.lineTo(x,-32.5);ctx.stroke()}
+    CAR_WORLD.bays.forEach(b=>{ctx.fillStyle='rgba(226,166,59,.35)';ctx.fillRect(b.x-1.6,-38,3.2,5.5);ctx.strokeStyle='#E2A63B';ctx.lineWidth=.2;ctx.strokeRect(b.x-1.6,-38,3.2,5.5)});
+    // parked cars
+    CAR_WORLD.parked.forEach((x,i)=>drawBox(x,-35.3,Math.PI/2,4.4,1.8,['#8a2f2f','#2f5f8a','#777','#c9a227','#3a3a3a','#6a3b8a'][i%6],'#222'));
+    // trees
+    ctx.fillStyle='#2b5a2a';for(let i=0;i<40;i++){const x=-50+((i*37)%280),y=(i%2?1:-1)*(12+((i*17)%30));if(!(x>36&&x<88&&y<0&&y>-42)&&!(x>110&&x<130)){ctx.beginPath();ctx.arc(x,y,1.6,0,7);ctx.fill()}}
+    (sim.mission&&sim.mission.cones||[]).forEach(c=>cone(c.x,c.y,c.hit));
+    (sim.gates||[]).forEach((g,i)=>gateDraw(g,i===sim.gateIdx,i<sim.gateIdx));
+    drawCarBody(sim.s,4.5,1.85,'#2f7fd1',{front:3.6,wb:2.7});
+  });
+}
+const CAR={
+  id:'car',name:'Car',icon:'🚗',level:'Beginner',tag:'Automatic car: move off, steer, stop at a line and reverse into a parking bay.',
+  keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space','KeyP','KeyR','KeyN','KeyF','KeyQ','KeyE'],
+  learn:`<p>A car turns engine (or electric motor) power into movement of the wheels. In an <b>automatic</b> car the gearbox chooses the gears for you, so you only use two pedals: the <b>accelerator</b> (right) and the <b>brake</b>. The front wheels steer; the rear wheels follow a tighter path than the front, which is why you must leave room for the back of the car when turning around corners.</p>
+  <h3>The main parts you control</h3>
+  <div class="parts">
+   <div class="part"><b>Accelerator (gas) pedal</b><span>Press gently to go faster. The further you press, the more power.</span></div>
+   <div class="part"><b>Brake pedal</b><span>Slows and stops the car. Press progressively: gently first, then firmer.</span></div>
+   <div class="part"><b>Gear selector — P R N D</b><span><b>P</b>ark locks the wheels, <b>R</b>everse goes backwards, <b>N</b>eutral disconnects the engine, <b>D</b>rive goes forwards. Always be fully stopped before moving between D, R and P.</span></div>
+   <div class="part"><b>Steering wheel</b><span>Turns the front wheels. It returns to the centre by itself when you let go.</span></div>
+   <div class="part"><b>Handbrake / parking brake</b><span>Holds the car when parked or waiting on a hill.</span></div>
+   <div class="part"><b>Indicators</b><span>Tell other road users which way you are about to turn. Signal before you slow down and turn.</span></div>
+  </div>
+  <h3>Why the car creeps forward</h3>
+  <p>An automatic car in D or R moves slowly by itself even without the accelerator. This “creep” is useful for parking: you control speed with the brake alone.</p>
+  <h3>The golden routine: MSM + POM</h3>
+  <ul><li><b>Mirrors – Signal – Manoeuvre</b> before any change of direction.</li><li><b>Prepare – Observe – Move</b> before moving off: foot on brake, select D, check mirrors and blind spot, release the handbrake, then gently accelerate.</li></ul>`,
+  controls:{rows:[[['↑','W'],'Accelerator'],[['↓','S'],'Brake'],[['←','A'],['→','D'],'Steer left / right'],[['F'],'Select D (drive)'],[['R'],'Select R (reverse)'],[['P'],'Select P (park)'],[['N'],'Select N (neutral)'],[['Space'],'Handbrake'],[['Q'],['E'],'Left / right indicator']],
+   todo:`<ol><li>Hold the brake and press <kbd>F</kbd> to select Drive.</li><li>Release the brake — the car creeps. Press <kbd>↑</kbd> gently to accelerate.</li><li>Steer small amounts. Look where you want to go, not at the car.</li><li>Brake early and smoothly, easing off just before you stop so the car doesn’t jerk.</li><li>To reverse: stop, press <kbd>R</kbd>, then let the car creep backwards. Remember the steering works the “opposite” way from what your eyes expect when looking behind.</li><li>When parked, press <kbd>P</kbd>.</li></ol>`,
+   safety:'Real driving requires a licence or learner permit and a qualified supervisor. Always wear a seatbelt and adjust your seat and mirrors before you move.'},
+  pad:[['KeyQ','◀ Ind.'],['ArrowUp','Gas ▲'],['KeyE','Ind. ▶'],['KeyF','D'],['ArrowLeft','◀ Steer'],['ArrowDown','Brake ▼'],['ArrowRight','Steer ▶'],['KeyR','R'],['Space','Handbrake'],['KeyP','P'],['KeyN','N']],
+  reset:carReset,
+  update(sim,dt){groundDrive(sim.s,dt,CAR_P);const s=sim.s;cam.x=lerp(cam.x,s.x+Math.cos(s.h)*6,clamp(dt*3,0,1));cam.y=lerp(cam.y,s.y+Math.sin(s.h)*6,clamp(dt*3,0,1));cam.s=lerp(cam.s,Math.abs(s.v)>12?7:10,dt);
+    if(isDown(['ArrowUp','KeyW'])&&(s.gear==='P'||s.gear==='N'))sim.hint2='The car is in '+s.gear+' — press F for Drive (or R for Reverse).';},
+  press:(sim,c)=>groundPress(sim.s,c),
+  draw(sim){drawCarWorld(sim)},
+  gauges(sim){const s=sim.s;return[['Speed',kmh(s.v)+' km/h'],['Gear',s.gear],['Steering',Math.round(s.steer/D2R)+'°'],['Indicator',s.ind<0?'◀ Left':s.ind>0?'Right ▶':'Off'],['Cones hit',sim.mission&&sim.mission.cones?sim.mission.cones.filter(c=>c.hit).length:0,sim.mission&&sim.mission.cones&&sim.mission.cones.some(c=>c.hit)]]},
+  missions:[
+   {title:'Move off safely',brief:'Select Drive, move off and reach 30 km/h on the straight road.',
+    hint:'Press F for Drive. Then hold ↑. A real driver checks mirrors and the blind spot first.',
+    start:{x:0,y:1.8,h:0},check(sim){return sim.s.gear!=='P'&&sim.s.gear==='D'&&kmh(sim.s.v)>=30?'done':null}},
+   {title:'Stop at the line',brief:'Drive up to the STOP line and stop with the front of the car within 3 m of the line — without crossing it.',
+    hint:'Start braking early. Ease the brake slightly just before you stop for a smooth finish.',
+    start:{x:40,y:1.8,h:0,gear:'D',v:12},check(sim){const s=sim.s,front=s.x+3.6;if(front>CAR_WORLD.stopLine.x+.4)return'fail:You crossed the stop line.';if(Math.abs(s.v)<.05&&s.gear==='D'&&isDown(['ArrowDown','KeyS'])&&front>CAR_WORLD.stopLine.x-3)return'done';if(Math.abs(s.v)<.05&&front<=CAR_WORLD.stopLine.x-3&&!isDown(['ArrowUp','KeyW']))sim.hint2='Too early — creep forward a little closer to the line.';return null}},
+   {title:'Signal and turn left',brief:'Switch on the left indicator, then turn left at the junction onto the cross road and drive through the gate.',
+    hint:'Press Q for the left indicator before you reach the junction. Slow to about 15 km/h for the turn.',
+    start:{x:80,y:1.8,h:0,gear:'D',v:8},
+    setup(sim){sim.gates=[{x1:116,y1:-20,x2:124,y2:-20}];sim.gateIdx=0},
+    check(sim,m){const s=sim.s;if(s.x>108&&s.x<116&&s.ind===-1)m.signalled=true;if(s.x>126)return'fail:You missed the turn.';if(crossed(s.px,s.py,s.x,s.y,sim.gates[0])){if(!m.signalled)return'fail:You turned without signalling first. Press Q before the junction.';if(kmh(s.v)>30)return'fail:Too fast for a turn — slow down first.';sim.gateIdx=1;return'done'}return null}},
+   {title:'Weave through the cones',brief:'Drive through the slalom without touching any cones.',
+    hint:'Pass the 1st cone on its left, the 2nd on its right, and so on. Steer early and gently at 10–15 km/h — smooth beats fast.',
+    start:{x:-40,y:1.8,h:0,gear:'D'},
+    setup(sim,m){m.cones=[];for(let i=0;i<5;i++)m.cones.push({x:-20+i*14,y:0});sim.gates=[{x1:62,y1:-4,x2:62,y2:4}];sim.gateIdx=0;m.side=[]},
+    check(sim,m){const s=sim.s,cx=s.x+Math.cos(s.h)*1.35,cy=s.y+Math.sin(s.h)*1.35;if(Math.abs(cy)>4.6)return'fail:You left the road.';for(const[i,c]of m.cones.entries()){if(!c.hit&&pointInBox(c.x,c.y,cx,cy,s.h,4.5,1.85,.3)){c.hit=true;return'fail:You hit a cone. Try steering earlier.'}if(m.side[i]==null&&s.px<c.x&&s.x>=c.x)m.side[i]=cy<c.y?-1:1}
+      if(s.x>62){for(let i=0;i<m.cones.length;i++)if(m.side[i]!==(i%2?1:-1))return'fail:Cone '+(i+1)+' was passed on the wrong side.';return'done'}return null}},
+   {title:'Reverse into a parking bay',brief:'Reverse into the highlighted bay in the car park, straighten up, stop and select P.',
+    hint:'Drive past the bay, stop, select R. Turn the wheel towards the bay while creeping back slowly (brake to control speed), then straighten up as the car lines up.',
+    start:{x:52,y:-28,h:0,gear:'D'},
+    check(sim){const s=sim.s,b=CAR_WORLD.bays[0];const cx=s.x+Math.cos(s.h)*1.35,cy=s.y+Math.sin(s.h)*1.35;const ang=Math.abs(wrapAng(s.h-b.h));
+      for(const x of CAR_WORLD.parked)if(boxesOverlap([x,-35.3,Math.PI/2,4.4,1.8],[cx,cy,s.h,4.5,1.85]))return'fail:You touched a parked car.';
+      if(cy<-38.2)return'fail:You drove over the kerb at the back of the bay.';
+      if(s.gear==='P'){if(Math.abs(cx-b.x)<.7&&cy<-33&&cy>-37.5&&ang<10*D2R)return'done';return'fail:Selected P but not neatly inside the bay.'}return null}},
+  ],
+  quiz:[
+   ['When is it safe to move the selector from D to R?',['While rolling slowly forwards','Only when the car is completely stopped','At any speed under 10 km/h'],1,'The gearbox can be damaged and the car may lurch. Always stop fully with your foot on the brake first.'],
+   ['What does MSM stand for?',['Mirrors, Signal, Manoeuvre','Move, Stop, Move','Mirror, Steer, Mirror'],0,'Check mirrors, signal your intention, then make the manoeuvre.'],
+   ['Why does an automatic car move without the accelerator in D?',['The handbrake is broken','Idle “creep” from the gearbox','It is rolling downhill'],1,'Creep is normal and useful for slow parking — control it with the brake.']
+  ]
+};
+
+/* ---------------------------------------------------------------- TRUCK */
+const TRUCK_P={wheelbase:4.2,maxSteer:32*D2R,steerRate:45*D2R,centre:1.6,accel:1.3,vmax:24,brakeDecel:3.8,roll:.2,creep:1.1,hitchBack:.3,trailerLen:11};
+function truckReset(sim,start){const s=makeGround(Object.assign({x:0,y:0,h:0},start||{}));s.trailer={h:s.h+(start&&start.tAng||0),x:0,y:0};const t=s.trailer;t.x=s.x-Math.cos(s.h)*TRUCK_P.hitchBack-Math.cos(t.h)*TRUCK_P.trailerLen;t.y=s.y-Math.sin(s.h)*TRUCK_P.hitchBack-Math.sin(t.h)*TRUCK_P.trailerLen;s.hitchAngle=0;sim.s=s}
+const DOCK={x:0,y:-70,w:4.2,depth:14};
+function drawTruck(s){const t=s.trailer;
+  // trailer: body from hitch back 13 m (kingpin ~1.2 m behind front), axles at trailerLen behind hitch
+  worldPath(()=>{ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.h);ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(-2+.2,-1.25+.2,14.2,2.5);ctx.fillStyle='#111';[-.6,.7].forEach(x=>{ctx.fillRect(x-.4,-1.3,.8,.25);ctx.fillRect(x-.4,1.05,.8,.25)});ctx.fillStyle='#d9d5c7';ctx.fillRect(-2,-1.25,14.2,2.5);ctx.strokeStyle='#6d6a60';ctx.lineWidth=.1;ctx.strokeRect(-2,-1.25,14.2,2.5);ctx.fillStyle='#0E2A47';ctx.font='700 1px sans-serif';ctx.textAlign='center';ctx.fillText('MIGA FREIGHT',5,.35);ctx.restore();});
+  worldPath(()=>drawCarBody(s,6.2,2.45,'#c0392b',{front:5.4,wb:TRUCK_P.wheelbase}));}
+const TRUCK={
+  id:'truck',name:'Truck & trailer',icon:'🚛',level:'Intermediate',tag:'Articulated lorry: wide turns, long stopping distances and reversing a trailer.',
+  keys:CAR.keys,
+  learn:`<p>An articulated truck is a <b>tractor unit</b> (the cab with the engine) pulling a <b>semi-trailer</b>. They are joined at a pivot called the <b>fifth wheel</b>, which lets the trailer swing. This pivot is why a truck behaves very differently from a car.</p>
+  <h3>Key ideas</h3>
+  <div class="parts">
+   <div class="part"><b>Off-tracking (cutting in)</b><span>In a turn the trailer wheels take a tighter line than the cab. Swing wider and go further into the junction before turning so the trailer does not hit the kerb or the cone.</span></div>
+   <div class="part"><b>Weight and momentum</b><span>A loaded truck can weigh 40 tonnes. It accelerates slowly and needs much more distance to stop. Leave big gaps and brake early.</span></div>
+   <div class="part"><b>Air brakes</b><span>Truck brakes use compressed air. You press progressively; harsh braking can make the trailer push the cab sideways.</span></div>
+   <div class="part"><b>Reversing a trailer</b><span>The trailer goes the <i>opposite</i> way to the steering. Steer <b>left</b> to send the back of the trailer <b>right</b>. Small inputs, then follow the trailer.</span></div>
+   <div class="part"><b>Jackknife</b><span>If the angle between cab and trailer gets too large, they fold into each other. Stop, drive forwards to straighten and try again.</span></div>
+   <div class="part"><b>Mirrors</b><span>You cannot see directly behind a truck. The large side mirrors are your main view, especially when reversing.</span></div>
+  </div>
+  <h3>Reversing trick</h3>
+  <p>Put your hand at the <b>bottom</b> of the steering wheel. Move your hand in the direction you want the back of the trailer to go. This turns the confusing opposite steering into something natural.</p>`,
+  controls:{rows:[[['↑','W'],'Accelerator'],[['↓','S'],'Brake (air brake — slower to bite)'],[['←','A'],['→','D'],'Steer left / right'],[['F'],'Drive'],[['R'],'Reverse'],[['P'],'Park'],[['Q'],['E'],'Indicators']],
+   todo:`<ol><li>Accelerate gently — the truck builds speed slowly.</li><li>Before a turn, slow down <b>early</b>. Drive further forward than you would in a car, then turn so the trailer clears the inside corner.</li><li>Watch the hitch angle gauge. Over 60° you are close to a jackknife.</li><li>For reversing into the dock: line the whole truck up straight first if you can, then reverse slowly making tiny corrections.</li><li>If it goes wrong: stop, pull forwards to straighten, try again. Professionals do this all the time (“pull-ups”).</li></ol>`,
+   safety:'Driving a truck requires a special licence (e.g. category C/CE or a CDL) and professional training.'},
+  pad:[['KeyQ','◀ Ind.'],['ArrowUp','Gas ▲'],['KeyE','Ind. ▶'],['KeyF','D'],['ArrowLeft','◀ Steer'],['ArrowDown','Brake ▼'],['ArrowRight','Steer ▶'],['KeyR','R'],['Space','Handbrake'],['KeyP','P']],
+  reset:truckReset,
+  update(sim,dt){const s=sim.s;if(s.crashed)return;groundDrive(s,dt,TRUCK_P);if(Math.abs(s.hitchAngle)>75*D2R&&!s.crashed){s.crashed=true;s.v=0}
+    const t=s.trailer;const mx=(s.x+t.x)/2,my=(s.y+t.y)/2;cam.x=lerp(cam.x,mx+Math.cos(s.h)*5*Math.sign(s.v||1),clamp(dt*2.5,0,1));cam.y=lerp(cam.y,my+Math.sin(s.h)*5*Math.sign(s.v||1),clamp(dt*2.5,0,1));cam.s=lerp(cam.s,6,dt*2)},
+  press:(sim,c)=>groundPress(sim.s,c),
+  draw(sim){drawGrass('#4c6b3c');worldPath(()=>{
+    ctx.fillStyle='#8b8f93';ctx.fillRect(-60,-110,160,150);
+    // loading dock building
+    ctx.fillStyle='#35424f';ctx.fillRect(-40,-100,80,14);
+    for(let i=-3;i<=3;i++){const x=i*9;ctx.fillStyle=i===0?'#E2A63B':'#1b2530';ctx.fillRect(x-DOCK.w/2,-86.5,DOCK.w,.8)}
+    ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=.15;for(let i=-3;i<=4;i++){const x=i*9-4.5;ctx.beginPath();ctx.moveTo(x,-86);ctx.lineTo(x,-72);ctx.stroke()}
+    ctx.fillStyle='rgba(226,166,59,.18)';ctx.fillRect(-DOCK.w/2-.3,-86,DOCK.w+.6,14);
+    ctx.save();ctx.translate(0,-93);ctx.font='700 2px sans-serif';ctx.fillStyle='#EDEAE0';ctx.textAlign='center';ctx.fillText('LOADING DOCK',0,0);ctx.restore();
+    (sim.mission&&sim.mission.cones||[]).forEach(c=>cone(c.x,c.y,c.hit));
+    (sim.gates||[]).forEach((g,i)=>gateDraw(g,i===sim.gateIdx,i<sim.gateIdx));
+  });drawTruck(sim.s);if(sim.s.crashed){text('JACKKNIFE! Restart the mission.',W/2,H-30,20,'#ff8a73','center')}},
+  gauges(sim){const s=sim.s,a=Math.round(s.hitchAngle/D2R);return[['Speed',kmh(s.v)+' km/h'],['Gear',s.gear],['Hitch angle',a+'°',Math.abs(a)>55],['Steering',Math.round(s.steer/D2R)+'°'],['Trailer',Math.abs(a)<3?'straight':a>0?'swung left':'swung right']]},
+  missions:[
+   {title:'Get moving and stop',brief:'Accelerate to 40 km/h, then bring the truck to a full stop before the cones at the end of the yard.',
+    hint:'Notice how slowly the truck gains speed — and how much earlier you need to brake than in a car.',
+    start:{x:-50,y:20,h:0},setup(sim,m){m.cones=[{x:95,y:18},{x:95,y:20},{x:95,y:22}]},
+    check(sim,m){const s=sim.s;if(kmh(s.v)>=40)m.fast=true;for(const c of m.cones)if(!c.hit&&pointInBox(c.x,c.y,s.x+Math.cos(s.h)*2.2,s.y+Math.sin(s.h)*2.2,s.h,6.2,2.45,.2)){c.hit=true;return'fail:Braked too late — the truck hit the cones.'}if(m.fast&&Math.abs(s.v)<.05&&isDown(['ArrowDown','KeyS','Space']))return'done';if(!m.fast&&Math.abs(s.v)<.05&&s.x>20)sim.hint2='Reach 40 km/h first.';return null}},
+   {title:'Wide left turn',brief:'Turn left through the gate without letting the trailer hit the cone on the inside corner.',
+    hint:'Drive past the cone before you start steering. Watch the trailer cut the corner in the mirror view.',
+    start:{x:-50,y:20,h:0,gear:'D'},
+    setup(sim,m){m.cones=[{x:6,y:14}];sim.gates=[{x1:-2,y1:-30,x2:14,y2:-30}];sim.gateIdx=0},
+    check(sim,m){const s=sim.s,t=s.trailer;const c=m.cones[0];if(!c.hit&&(pointInBox(c.x,c.y,s.x+Math.cos(s.h)*2.2,s.y+Math.sin(s.h)*2.2,s.h,6.2,2.45,.2)||pointInBox(c.x,c.y,t.x+Math.cos(t.h)*5.1,t.y+Math.sin(t.h)*5.1,t.h,14.2,2.5,.1))){c.hit=true;return'fail:The trailer cut in and hit the cone. Go further before turning.'}if(s.crashed)return'fail:Jackknifed.';if(s.x>60||s.y>40)return'fail:Missed the gate — restart and try again.';if(crossed(s.px,s.py,s.x,s.y,sim.gates[0])){sim.gateIdx=1;return'done'}return null}},
+   {title:'Reverse onto the loading dock',brief:'Reverse the trailer straight into the highlighted dock bay until it touches the dock, then stop and press P.',
+    hint:'You are nearly lined up but slightly off. Press R and creep back. To move the back of the trailer left, steer RIGHT (and vice versa). Tiny corrections!',
+    start:{x:2.5,y:-50,h:Math.PI/2,gear:'P',tAng:4*D2R},
+    check(sim){const s=sim.s,t=s.trailer;if(s.crashed)return'fail:Jackknifed — pull forwards to straighten earlier next time.';const rx=t.x-Math.cos(t.h)*2,ry=t.y-Math.sin(t.h)*2,atDock=ry<=-86.2;
+      if(atDock&&!(Math.abs(rx)<.9&&Math.abs(wrapAng(t.h-Math.PI/2))<6*D2R))return'fail:The trailer reached the dock off-centre or at an angle. Correct earlier with small steering inputs.';
+      if(s.gear==='P'&&s.moved)return atDock?'done':'fail:Park only once the trailer touches the dock.';if(s.gear!=='P')s.moved=true;if(atDock)sim.hint2='At the dock — press P.';return null},
+    after(sim){const s=sim.s,t=s.trailer;const ry=t.y-Math.sin(t.h)*2;if(ry<-86.3){const d=-86.3-ry;s.y+=d;t.y+=d;if(s.v<0)s.v=0}}},
+  ],
+  quiz:[
+   ['When reversing a trailer, you want its back end to go left. Which way do you steer?',['Left','Right','Keep straight'],1,'A trailer reverses the opposite way to the steering. Hand at the bottom of the wheel, move it left → wheel turns right.'],
+   ['Why must a truck go further into a junction before turning?',['To show other drivers where it is going','Because the trailer cuts in on the inside of the turn','To use less fuel'],1,'This is called off-tracking. The trailer wheels follow a tighter path than the cab.'],
+   ['What is a jackknife?',['When the cab and trailer fold towards each other','A type of truck brake','A tight parking space'],0,'The angle between cab and trailer grows too large. Straighten early to avoid it.']
+  ]
+};
+
+/* ---------------------------------------------------------------- MOTORCYCLE */
+const MOTO_P={accel:4.2,vmax:36,wheelbase:1.45};
+function motoReset(sim,start){sim.s=Object.assign({x:0,y:0,h:0,v:0,lean:0,brakeF:0,brakeR:0,down:false,feet:true,ind:0,trail:[]},start||{})}
+const MOTO={
+  id:'moto',name:'Motorcycle',icon:'🏍️',level:'Intermediate',tag:'Balance, leaning into bends, countersteering and emergency braking with both brakes.',
+  keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space','KeyQ','KeyE'],
+  learn:`<p>A motorcycle stays upright because its wheels are spinning and the steering geometry keeps correcting the balance. At walking speed you must balance it yourself (or put your feet down); above roughly 20 km/h it becomes stable. To turn, a bike does not just steer — it <b>leans</b>.</p>
+  <h3>How a motorcycle turns: countersteering</h3>
+  <p>Above about 20 km/h, a tiny push on the <b>right</b> handlebar (steering briefly left) makes the bike lean <b>right</b> and turn right. It feels backwards, but every rider does it. “Push right, go right. Push left, go left.” In this simulator, holding right leans the bike right — the countersteer is done for you, and the turning rate depends on lean and speed, just like reality.</p>
+  <div class="parts">
+   <div class="part"><b>Throttle (right grip)</b><span>Twist to accelerate. Smooth, steady throttle through a bend keeps the bike settled.</span></div>
+   <div class="part"><b>Front brake (right lever)</b><span>Does about 70% of the stopping because weight moves forward when you brake. Squeeze progressively.</span></div>
+   <div class="part"><b>Rear brake (right foot)</b><span>Stabilises the bike and helps at low speed. Using only the rear gives a long stopping distance.</span></div>
+   <div class="part"><b>Clutch and gears</b><span>Most motorcycles have a clutch lever (left) and foot gear lever. This simulator behaves like an automatic scooter so you can focus on balance and steering.</span></div>
+   <div class="part"><b>Lean angle</b><span>More speed in a bend needs more lean. Too much lean, or braking hard while leaned over, makes tyres lose grip.</span></div>
+   <div class="part"><b>Look where you want to go</b><span>The bike goes where your eyes point. In a bend, turn your head and look at the exit.</span></div>
+  </div>
+  <h3>Slow in, fast out</h3><p>Do your braking <b>before</b> the bend while the bike is upright, then roll on the throttle gently through and out of the bend.</p>`,
+  controls:{rows:[[['↑','W'],'Throttle'],[['Space'],'Front brake'],[['↓','S'],'Rear brake'],[['←','A'],['→','D'],'Lean left / right (countersteer)'],[['Q'],['E'],'Indicators']],
+   todo:`<ol><li>Roll on the throttle smoothly — the bike wobbles below 10 km/h, so get moving positively.</li><li>Lean into turns; release to stand the bike back up.</li><li>Brake with <b>both</b> brakes, mostly the front (<kbd>Space</kbd> + <kbd>↓</kbd>), with the bike upright.</li><li>Never grab a lot of brake while leaned over.</li></ol>`,
+   safety:'Real riding requires a licence, a certified training course (e.g. CBT/MSF), a helmet and protective clothing.'},
+  pad:[['KeyQ','◀ Ind.'],['ArrowUp','Throttle ▲'],['KeyE','Ind. ▶'],['ArrowLeft','◀ Lean'],['ArrowDown','Rear brake'],['ArrowRight','Lean ▶'],['Space','Front brake']],
+  reset:motoReset,
+  press(sim,c){const s=sim.s;if(c==='KeyQ')s.ind=s.ind===-1?0:-1;if(c==='KeyE')s.ind=s.ind===1?0:1},
+  update(sim,dt){const s=sim.s;if(s.down){s.v*=Math.max(0,1-dt*2);return}
+    const up=isDown(['ArrowUp','KeyW']),lt=isDown(['ArrowLeft','KeyA']),rt=isDown(['ArrowRight','KeyD']);
+    s.brakeF=isDown(['Space'])?1:0;s.brakeR=isDown(['ArrowDown','KeyS'])?1:0;
+    s.thr=lerp(s.thr||0,up?1:0,clamp(dt*5,0,1));
+    const target=((rt?1:0)-(lt?1:0))*45*D2R;
+    s.lean+=clamp(target-s.lean,-70*D2R*dt,70*D2R*dt);
+    let a=s.thr*MOTO_P.accel*(1-s.v/MOTO_P.vmax)-s.brakeF*7-s.brakeR*3-.3-.0015*s.v*s.v;
+    s.v=Math.max(0,s.v+a*dt);s.decel=-a;
+    s.feet=s.v<1.2;
+    // Low speed wobble: below ~3 m/s balance is hard; leaning too far means a fall.
+    if(s.v>.3&&s.v<3&&Math.abs(s.lean)>18*D2R){s.down=true;s.why='Fell over — too much lean at walking speed. Keep the bike upright when slow.'}
+    // Grip: required lean vs. available friction; braking hard while leaned also reduces grip.
+    const brakeG=(s.brakeF*7+s.brakeR*3)/G,latG=Math.tan(Math.abs(s.lean));
+    if(s.v>3&&Math.hypot(latG,brakeG)>1.05){s.down=true;s.why=brakeG>.3?'Crashed — heavy braking while leaned over. Brake before the bend, upright.':'Crashed — leaned over too far.'}
+    if(s.v<1.2)s.lean*=Math.max(0,1-dt*6);
+    const turn=s.v>1?G*Math.tan(s.lean)/Math.max(s.v,3):0;
+    s.px=s.x;s.py=s.y;
+    s.h=wrapAng(s.h+turn*dt);s.x+=Math.cos(s.h)*s.v*dt;s.y+=Math.sin(s.h)*s.v*dt;
+    cam.x=lerp(cam.x,s.x+Math.cos(s.h)*8,clamp(dt*3,0,1));cam.y=lerp(cam.y,s.y+Math.sin(s.h)*8,clamp(dt*3,0,1));cam.s=lerp(cam.s,s.v>14?6:9,dt)},
+  draw(sim){const s=sim.s;drawGrass('#4a7040');worldPath(()=>{
+    // track: straight then a big right-hand bend
+    ctx.strokeStyle='#4a4f55';ctx.lineWidth=9;ctx.lineCap='butt';ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(160,0);ctx.arc(160,40,40,-Math.PI/2,Math.PI/2*0.0);ctx.lineTo(200,160);ctx.stroke();
+    ctx.strokeStyle='#fff';ctx.lineWidth=.15;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(-40,0);ctx.lineTo(160,0);ctx.arc(160,40,40,-Math.PI/2,0);ctx.lineTo(200,160);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(226,166,59,.25)';ctx.fillRect(118,-4.5,14,9);
+    (sim.mission&&sim.mission.cones||[]).forEach(c=>cone(c.x,c.y,c.hit));
+    (sim.gates||[]).forEach((g,i)=>gateDraw(g,i===sim.gateIdx,i<sim.gateIdx));
+    ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.h);
+    const w=.5+Math.abs(Math.sin(s.lean))*.9,off=Math.sin(s.lean)*.6;
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(-.3,-.25+off*1.4,2.2,.5);
+    ctx.fillStyle='#111';ctx.fillRect(-.35,-.12,.7,.24);ctx.fillRect(1.25,-.12,.7,.24);
+    ctx.fillStyle=s.down?'#777':'#E2A63B';rrect(0,-w/2+off,1.6,w,.2);ctx.fill();
+    ctx.fillStyle='#1c1c1c';ctx.beginPath();ctx.arc(.6,off*1.3,.32,0,7);ctx.fill();
+    if(s.feet&&!s.down){ctx.fillStyle='#333';ctx.fillRect(.5,-.6,.3,.18);ctx.fillRect(.5,.42,.3,.18)}
+    if(s.brakeF||s.brakeR){ctx.fillStyle='#ff3b30';ctx.beginPath();ctx.arc(-.1,off*.5,.13,0,7);ctx.fill()}
+    if(s.ind&&(performance.now()/350|0)%2){ctx.fillStyle='#ffb300';ctx.beginPath();ctx.arc(1.8,s.ind*.4,.12,0,7);ctx.fill();ctx.beginPath();ctx.arc(-.2,s.ind*.4,.12,0,7);ctx.fill()}
+    ctx.restore()});
+    if(s.down)text(s.why||'Down!',W/2,H-30,18,'#ff8a73','center');
+    // lean gauge
+    ctx.save();ctx.translate(W-80,H-70);ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,44,Math.PI,2*Math.PI);ctx.stroke();ctx.rotate(s.lean);ctx.strokeStyle=Math.abs(s.lean)>40*D2R?'#D8604A':'#6FD1E0';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-40);ctx.stroke();ctx.restore();text('LEAN',W-80,H-18,12,'#EDEAE0','center')},
+  gauges(sim){const s=sim.s;return[['Speed',kmh(s.v)+' km/h'],['Lean',Math.round(s.lean/D2R)+'°',Math.abs(s.lean)>38*D2R],['Front brake',s.brakeF?'ON':'off'],['Rear brake',s.brakeR?'ON':'off'],['Balance',s.down?'fallen':s.v<3&&s.v>.3?'wobbly':'stable',s.down]]},
+  missions:[
+   {title:'Pull away and balance',brief:'Pull away smoothly and reach 30 km/h while keeping the bike upright.',hint:'Hold ↑. At very low speed avoid leaning — speed gives stability.',start:{x:-30,y:0,h:0},
+    check(sim){if(sim.s.down)return'fail:'+sim.s.why;return kmh(sim.s.v)>=30?'done':null}},
+   {title:'Slalom',brief:'Weave through the cones — left of the first, right of the second and so on — then pass the gate.',
+    hint:'Lean early and gently; release to straighten. Keep a steady throttle around 25 km/h.',
+    start:{x:-35,y:0,h:0,v:6},
+    setup(sim,m){m.cones=[];for(let i=0;i<6;i++)m.cones.push({x:-10+i*14,y:0});sim.gates=[{x1:80,y1:-4.5,x2:80,y2:4.5}];sim.gateIdx=0;m.side=[]},
+    check(sim,m){const s=sim.s;if(s.down)return'fail:'+s.why;for(const[i,c]of m.cones.entries()){if(Math.hypot(c.x-s.x-Math.cos(s.h)*.8,c.y-s.y-Math.sin(s.h)*.8)<.7&&!c.hit){c.hit=true;return'fail:You hit a cone.'}if(m.side[i]==null&&s.px<c.x&&s.x>=c.x)m.side[i]=s.y<c.y?-1:1}
+      if(Math.abs(s.y)>4.5)return'fail:You left the road.';
+      if(s.x>80){for(let i=0;i<m.cones.length;i++)if(m.side[i]!==(i%2?1:-1))return'fail:Cone '+(i+1)+' was passed on the wrong side (left of the 1st, right of the 2nd…).';return'done'}return null}},
+   {title:'Emergency stop',brief:'Reach at least 50 km/h, then stop inside the yellow box using both brakes.',
+    hint:'Brake hard but progressively with the bike upright: Space (front) + ↓ (rear). Front does most of the work.',
+    start:{x:-35,y:0,h:0},
+    check(sim,m){const s=sim.s;if(s.down)return'fail:'+s.why;if(kmh(s.v)>=50)m.fast=true;if(s.x>134)return'fail:Overshot the box. Brake sooner and use the front brake.';if(s.v<.05&&s.x>118){if(!m.fast)return'fail:Reach 50 km/h first.';return'done'}if(s.v<.05&&s.x>0&&s.x<118&&m.fast)return'fail:Stopped short of the box.';return null}},
+   {title:'Take the bend',brief:'Slow down to below 60 km/h before the bend, lean through the right-hand curve and exit at the gate.',
+    hint:'Slow in, fast out: brake on the straight, release the brakes, lean right (→) and look through the bend, then gently roll on the throttle.',
+    start:{x:60,y:0,h:0,v:20},
+    setup(sim){sim.gates=[{x1:195.5,y1:60,x2:204.5,y2:60}];sim.gateIdx=0},
+    check(sim,m){const s=sim.s;if(s.down)return'fail:'+s.why;if(s.x>=158&&s.x<162&&s.y<5&&!m.entry){m.entry=true;if(kmh(s.v)>60)return'fail:Too fast into the bend — brake before it, on the straight.'}
+      const d=s.x>160&&s.y<40?Math.abs(Math.hypot(s.x-160,s.y-40)-40):s.x<=160?Math.abs(s.y):Math.abs(s.x-200);if(d>5)return'fail:You ran wide off the road.';
+      if(crossed(s.px,s.py,s.x,s.y,sim.gates[0])){sim.gateIdx=1;return'done'}return null}},
+  ],
+  quiz:[
+   ['Which brake does most of the stopping on a motorcycle?',['Rear','Front','Both equally'],1,'Weight transfers forward under braking, so the front tyre has most grip — around 70% of stopping power.'],
+   ['To turn right at road speed, a rider briefly pushes the…',['Left handlebar','Right handlebar','Rear brake'],1,'Countersteering: push right, go right. The bike leans right and turns.'],
+   ['When should you do most of your braking for a bend?',['In the middle of the bend','Before the bend, bike upright','After the bend'],1,'Braking while leaned over asks the tyres for too much grip. Slow in, fast out.']
+  ]
+};
+
+/* ---------------------------------------------------------------- BOAT */
+function boatReset(sim,start){sim.s=Object.assign({x:0,y:0,h:0,vx:0,vy:0,r:0,thr:0,rudder:0,hits:0},start||{})}
+const BOAT_WIND={x:.2,y:-.1};
+const BOAT_OBST=[...[0,1,2,3,4,5].map(i=>[-57.4+i*9,22,0,1.2,16]),...[-53.5,-44.5,-26.5,-17.5].map(x=>[x,22,Math.PI/2,7,2.4])];
+const PIER={x:40,y:-60,len:26};
+const BOAT={
+  id:'boat',name:'Motor boat',icon:'🚤',level:'Beginner',tag:'No brakes! Use throttle, rudder and reverse to leave the marina, follow buoys and dock.',
+  keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD','Space'],
+  learn:`<p>A boat has <b>no brakes</b>. It floats on water, which lets it slide and drift, so you control it with a propeller (<b>throttle</b>) and a <b>rudder</b> or steerable engine. Wind and current are always pushing you, so good boat handling is about planning ahead.</p>
+  <div class="parts">
+   <div class="part"><b>Throttle lever</b><span>Forward, neutral (middle) and reverse. The lever stays where you put it. To slow down you go to neutral; to stop, use a short burst of reverse.</span></div>
+   <div class="part"><b>Rudder / helm</b><span>The rudder only works when water flows past it. At very low speed a boat steers poorly — a short burst of throttle with the wheel turned gives a “kick” to turn.</span></div>
+   <div class="part"><b>Pivot point</b><span>A boat turns around a point near its middle-front, so the <b>stern swings out</b> when you turn. Beware of swinging into a pier.</span></div>
+   <div class="part"><b>Drift</b><span>Wind and current push the boat sideways. Aim slightly into them to hold your course (the white arrow shows the wind).</span></div>
+   <div class="part"><b>Navigation buoys</b><span>Channel markers show the safe path. In most of Europe, Africa and Asia (IALA A) you keep <b>red on the left (port)</b> and <b>green on the right (starboard)</b> when entering from sea; in the Americas (IALA B) it is the reverse. Here we use “green right, red left”.</span></div>
+   <div class="part"><b>Docking</b><span>Approach slowly at a shallow angle, never faster than you are willing to hit the pier. Use short bursts of reverse to stop.</span></div>
+  </div>`,
+  controls:{rows:[[['↑','W'],'Throttle lever forward (it stays set)'],[['↓','S'],'Throttle lever back / reverse'],[['Space'],'Throttle to neutral'],[['←','A'],['→','D'],'Turn the helm left / right']],
+   todo:`<ol><li>Push the throttle a little — the boat slowly gathers way.</li><li>Steer and wait: a boat responds slowly, so don’t keep adding helm.</li><li>To stop, go to neutral (<kbd>Space</kbd>) early and use a short burst of reverse.</li><li>Always go slow in a marina (“no wake zone”).</li></ol>`,
+   safety:'Wear a lifejacket, check the weather, tell someone your plans, and learn the local rules of the water. Many countries require a boating licence or certificate.'},
+  pad:[['ArrowLeft','◀ Helm'],['ArrowUp','Throttle +'],['ArrowRight','Helm ▶'],['Space','Neutral'],['ArrowDown','Throttle −']],
+  reset:boatReset,
+  press(sim,c){const s=sim.s;if(c==='Space')s.thr=0},
+  update(sim,dt){const s=sim.s;
+    if(isDown(['ArrowUp','KeyW']))s.thr=clamp(s.thr+dt*.6,-.5,1);if(isDown(['ArrowDown','KeyS']))s.thr=clamp(s.thr-dt*.6,-.5,1);
+    if(Math.abs(s.thr)<.04&&!isDown(['ArrowUp','KeyW','ArrowDown','KeyS']))s.thr=0;
+    const lt=isDown(['ArrowLeft','KeyA']),rt=isDown(['ArrowRight','KeyD']);s.rudder=clamp(s.rudder+((rt?1:0)-(lt?1:0))*dt*1.5,-1,1);if(!lt&&!rt)s.rudder*=Math.max(0,1-dt*.8);
+    const c=Math.cos(s.h),sn=Math.sin(s.h);
+    // velocity in boat frame
+    let u=s.vx*c+s.vy*sn,w=-s.vx*sn+s.vy*c;
+    const thrust=s.thr*(s.thr>0?2.2:1.2);
+    u+=(thrust-u*Math.abs(u)*.05-u*.15)*dt;
+    w-=w*1.6*dt; // strong sideways resistance from the hull
+    const flow=u+Math.max(0,s.thr)*3; // prop wash helps the rudder
+    s.r+=(s.rudder*flow*.09-s.r*1.2)*dt;
+    s.h=wrapAng(s.h+s.r*dt);
+    const c2=Math.cos(s.h),s2=Math.sin(s.h);
+    s.vx=u*c2-w*s2;s.vy=u*s2+w*c2;
+    s.px=s.x;s.py=s.y;const ph=s.h-s.r*dt;
+    s.x+=(s.vx+BOAT_WIND.x)*dt;s.y+=(s.vy+BOAT_WIND.y)*dt;
+    s.sog=Math.hypot(s.vx+BOAT_WIND.x,s.vy+BOAT_WIND.y);
+    // Collisions: shore, berth posts, moored boats and the pier. Gentle touches are absorbed by fenders.
+    const me=[s.x+Math.cos(s.h)*.2,s.y+Math.sin(s.h)*.2,s.h,6.8,2.4];
+    const obst=BOAT_OBST.concat([[PIER.x+PIER.len/2,PIER.y-1,0,PIER.len,2],[PIER.x+PIER.len/2,PIER.y-16,0,2,28]]);
+    if(corners(...me).some(p=>p[1]>30)||obst.some(o=>boxesOverlap(me,o))){s.x=s.px;s.y=s.py;s.h=ph;s.r=0;if(s.sog>.3){s.hits++;flash('Bump! Too fast — go slower near obstacles.','bad')}s.vx*=-.2;s.vy*=-.2}
+    cam.x=lerp(cam.x,s.x+Math.cos(s.h)*8,clamp(dt*2,0,1));cam.y=lerp(cam.y,s.y+Math.sin(s.h)*8,clamp(dt*2,0,1));cam.s=lerp(cam.s,5.5,dt)},
+  draw(sim){const s=sim.s,t=performance.now()/1000;ctx.fillStyle='#1d5a7a';ctx.fillRect(0,0,W,H);
+    worldPath(()=>{ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.2;for(let i=-40;i<40;i++){const y=i*8+((t*2)%8);ctx.beginPath();ctx.moveTo(cam.x-120,y);ctx.lineTo(cam.x+120,y+4);ctx.stroke()}
+      ctx.fillStyle='#c9b27c';ctx.fillRect(-200,30,500,8);ctx.fillStyle='#4a7040';ctx.fillRect(-200,38,500,80);
+      // marina berths
+      for(let i=0;i<6;i++){ctx.fillStyle='#7b5a3a';ctx.fillRect(-58+i*9,14,1.2,16)}
+      [[-53.5,'#eee'],[-44.5,'#d9534f'],[-26.5,'#eee'],[-17.5,'#5bc0de']].forEach(b=>drawBox(b[0],22,Math.PI/2,7,2.4,b[1],'#333'));
+      // pier
+      ctx.fillStyle='#7b5a3a';ctx.fillRect(PIER.x,PIER.y-2,PIER.len,2);ctx.fillRect(PIER.x+PIER.len/2-1,PIER.y-30,2,28);
+      ctx.fillStyle='rgba(226,166,59,.3)';ctx.fillRect(PIER.x+4,PIER.y,PIER.len-8,3);
+      (sim.mission&&sim.mission.buoys||[]).forEach(b=>{ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(b.x,b.y,.7,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=.15;ctx.stroke()});
+      (sim.gates||[]).forEach((g,i)=>gateDraw(g,i===sim.gateIdx,i<sim.gateIdx));
+      // wake
+      if(s.sog>.8){ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.3;ctx.beginPath();ctx.moveTo(s.x-Math.cos(s.h)*3.5,s.y-Math.sin(s.h)*3.5);ctx.lineTo(s.x-Math.cos(s.h+.25)*12,s.y-Math.sin(s.h+.25)*12);ctx.moveTo(s.x-Math.cos(s.h)*3.5,s.y-Math.sin(s.h)*3.5);ctx.lineTo(s.x-Math.cos(s.h-.25)*12,s.y-Math.sin(s.h-.25)*12);ctx.stroke()}
+      ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.h);ctx.fillStyle='#f4f1e8';ctx.beginPath();ctx.moveTo(3.6,0);ctx.quadraticCurveTo(2,-1.3,-3.2,-1.2);ctx.lineTo(-3.2,1.2);ctx.quadraticCurveTo(2,1.3,3.6,0);ctx.fill();ctx.strokeStyle='#0E2A47';ctx.lineWidth=.12;ctx.stroke();
+      ctx.fillStyle='#0E2A47';ctx.fillRect(-1,-.7,1.6,1.4);ctx.fillStyle='#333';ctx.save();ctx.translate(-3.3,0);ctx.rotate(-s.rudder*.6);ctx.fillRect(-.5,-.15,.6,.3);ctx.restore();
+      ctx.fillStyle='#d9534f';ctx.beginPath();ctx.arc(2.5,-.9,.15,0,7);ctx.fill();ctx.fillStyle='#4E9E73';ctx.beginPath();ctx.arc(2.5,.9,.15,0,7);ctx.fill();ctx.restore()});
+    // wind arrow + throttle lever
+    ctx.save();ctx.translate(60,H-60);ctx.rotate(Math.atan2(BOAT_WIND.y,BOAT_WIND.x));ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-22,0);ctx.lineTo(18,0);ctx.lineTo(10,-7);ctx.moveTo(18,0);ctx.lineTo(10,7);ctx.stroke();ctx.restore();text('Wind & current',60,H-20,12,'#fff','center');
+    ctx.fillStyle='rgba(8,24,38,.7)';rrect(W-70,H-170,44,140,6);ctx.fill();ctx.fillStyle='rgba(255,255,255,.3)';ctx.fillRect(W-50,H-160,4,120);const ly=H-160+120*(1-(s.thr+.5)/1.5);ctx.fillStyle=s.thr<0?'#D8604A':s.thr>0?'#6FD1E0':'#EDEAE0';ctx.fillRect(W-64,ly-5,32,10);text('FWD',W-48,H-172,10,'#EDEAE0','center');text('REV',W-48,H-18,10,'#EDEAE0','center');ctx.fillStyle='#EDEAE0';ctx.fillRect(W-66,H-160+120*(1-.5/1.5),36,1)},
+  gauges(sim){const s=sim.s;return[['Speed',(s.sog*1.944).toFixed(1)+' kn'],['Throttle',s.thr===0?'Neutral':s.thr>0?'Fwd '+Math.round(s.thr*100)+'%':'Rev '+Math.round(-s.thr*200)+'%'],['Helm',s.rudder<-.05?'◀ '+Math.round(-s.rudder*100)+'%':s.rudder>.05?Math.round(s.rudder*100)+'% ▶':'centre'],['Heading',((Math.round(s.h/D2R)+450)%360)+'°'],['Bumps',s.hits,s.hits>0]]},
+  missions:[
+   {title:'Leave the marina slowly',brief:'Back out of the berth, turn, and leave the marina through the gate without going faster than 5 knots.',
+    hint:'Pull the throttle back (↓) to reverse out gently. Go to neutral (Space), then forward. Notice how the stern swings when you turn.',
+    start:{x:-35.5,y:22,h:Math.PI/2},setup(sim){sim.gates=[{x1:-5,y1:-4,x2:-5,y2:28}];sim.gateIdx=0},
+    check(sim,m){const s=sim.s;if(s.sog*1.944>5.5)return'fail:Too fast in the marina — keep under 5 knots.';if(s.hits)return'fail:You bumped into something. Go slower.';if(crossed(s.px,s.py,s.x,s.y,sim.gates[0])&&s.x>s.px){sim.gateIdx=1;return'done'}return null}},
+   {title:'Follow the channel',brief:'Steer through the buoyed channel: keep green buoys on your right and red on your left.',
+    hint:'Aim a little into the wind to stop drifting sideways. Small helm movements — then wait for the boat to respond.',
+    start:{x:-30,y:0,h:0},
+    setup(sim,m){m.buoys=[];const pts=[[0,0],[25,-8],[50,-22],[75,-30],[100,-24]];pts.forEach(p=>{m.buoys.push({x:p[0],y:p[1]-6,c:'#d9534f'},{x:p[0],y:p[1]+6,c:'#4E9E73'})});sim.gates=pts.map(p=>({x1:p[0],y1:p[1]-6,x2:p[0],y2:p[1]+6}));sim.gateIdx=0},
+    check(sim,m){const s=sim.s;const g=sim.gates[sim.gateIdx];if(!g)return'done';if(s.px<g.x1&&s.x>=g.x1){if(s.y>g.y1&&s.y<g.y2){sim.gateIdx++;if(sim.gateIdx>=sim.gates.length)return'done'}else return'fail:You went outside buoy pair '+(sim.gateIdx+1)+'. Keep red on your left, green on your right.'}for(const b of m.buoys)if(Math.hypot(b.x-s.x,b.y-s.y)<1.6)return'fail:You hit a buoy.';return null}},
+   {title:'Dock alongside the pier',brief:'Bring the boat alongside the pier in the highlighted area, parallel to it, moving slower than 0.6 knots.',
+    hint:'Approach the south side of the pier at a shallow angle, slowly. Go to neutral early; a short burst of reverse stops you. Finish in neutral (Space). The wind gently pushes you onto the pier.',
+    start:{x:10,y:-35,h:-.3},
+    check(sim,m){const s=sim.s;const inY=s.y>PIER.y+1&&s.y<PIER.y+3.4,inX=s.x>PIER.x+4&&s.x<PIER.x+PIER.len-4;const par=Math.abs(Math.sin(s.h))<Math.sin(15*D2R);
+      if(s.hits)return'fail:You bumped into the pier too fast. Approach slower.';
+      if(inY&&inX&&par&&s.sog*1.944<.6&&s.thr===0){m.t=(m.t||0)+1/60;if(m.t>1.5)return'done'}else m.t=0;return null}},
+  ],
+  quiz:[
+   ['How do you stop a motor boat?',['Press the brake pedal','Go to neutral early and use a short burst of reverse','Turn the rudder fully'],1,'Boats have no brakes — plan ahead, go to neutral, then use reverse.'],
+   ['Why is steering poor at very low speed?',['The rudder needs water flowing past it','The engine is too weak','Boats cannot turn when slow'],0,'No flow, no steering. A short burst of throttle with helm applied gives a kick.'],
+   ['When you turn a boat, which part swings outwards?',['The bow (front)','The stern (back)','Neither'],1,'The boat pivots near the front, so the stern swings out — careful near piers.']
+  ]
+};
+
+/* ============================================================ AIRPLANE (side view) */
+const PLANE_P={m:1000,S:16.2,rho:1.225,Tstatic:2700,cd0:.03,k:.053,clA:.095,cl0:.3,stall:15};
+const RUNWAY1={x0:0,x1:900},RUNWAY2={x0:6000,x1:6900};
+function planeReset(sim,start){sim.s=Object.assign({x:60,alt:0,v:0,gamma:0,pitch:0,thr:0,flaps:0,brakes:false,ground:true,crashed:false,stall:false,maxAlt:0},start||{})}
+function planeCL(s){const aoa=(s.pitch-s.gamma)/D2R;s.aoa=aoa;const stallA=PLANE_P.stall-s.flaps*1.5;let cl=PLANE_P.cl0+s.flaps*.35+PLANE_P.clA*aoa;
+  if(aoa>stallA){cl=Math.max(.4,PLANE_P.cl0+s.flaps*.35+PLANE_P.clA*stallA-(aoa-stallA)*.12);s.stall=!s.ground}else s.stall=false;s.stallWarn=aoa>stallA-3&&!s.ground;return cl}
+const PLANE={
+  id:'plane',name:'Airplane',icon:'✈️',level:'Advanced',tag:'Light aircraft: take-off, climbing, levelling off, recovering from a stall and landing.',
+  keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyS','KeyA','KeyD','KeyF','KeyG','KeyB','Space'],
+  learn:`<p>An aeroplane flies because its <b>wings</b> push air downwards as they move through it, creating an upward force called <b>lift</b>. Four forces act on every aircraft: <b>lift</b> (up) against <b>weight</b> (down), and <b>thrust</b> from the propeller (forward) against <b>drag</b> (backward).</p>
+  <h3>Angle of attack — the most important idea</h3>
+  <p>The angle between the wing and the oncoming air is the <b>angle of attack</b>. Raising the nose increases it and makes more lift — but only up to about 15°. Beyond that the air can no longer flow smoothly over the wing and it suddenly loses lift. This is a <b>stall</b>. A stall is about angle, not engine power: you can stall at any speed if you pull the nose up too far.</p>
+  <p><b>Recovery:</b> lower the nose to reduce the angle of attack, add full power, then gently level off.</p>
+  <div class="parts">
+   <div class="part"><b>Yoke / control stick (elevator)</b><span>Pull back: nose up. Push forward: nose down. Pitch controls <i>speed and angle</i>.</span></div>
+   <div class="part"><b>Throttle</b><span>Controls engine power. Power mostly controls whether you <i>climb or descend</i>.</span></div>
+   <div class="part"><b>Flaps</b><span>Panels on the back of the wing that give more lift at low speed. Used for take-off and landing so you can fly slower.</span></div>
+   <div class="part"><b>Airspeed indicator</b><span>Shows speed through the air in knots. Rotation (lifting the nose) for this plane is about 55 kn; stall is about 48 kn clean, ~40 kn with full flaps.</span></div>
+   <div class="part"><b>Altimeter & vertical speed</b><span>How high you are and how fast you are climbing or descending (feet per minute).</span></div>
+   <div class="part"><b>Wheel brakes</b><span>Only work on the ground — used after landing.</span></div>
+  </div>
+  <h3>The phases of a flight</h3>
+  <ol><li><b>Take-off roll:</b> full power, keep straight, at ~55 kn gently raise the nose (“rotate”).</li><li><b>Climb:</b> nose about 8–10° up, full power, speed around 70–75 kn.</li><li><b>Cruise:</b> lower the nose to level, reduce power, trim.</li><li><b>Approach:</b> reduce power, add flaps, descend at a steady 3° slope with ~65 kn.</li><li><b>Flare and touchdown:</b> just above the runway raise the nose slightly so the main wheels touch first, gently. Then close the throttle and brake.</li></ol>
+  <p>This simulator shows the aircraft from the side, so it models pitch, power, flaps and lift. Real aircraft also roll (ailerons) and yaw (rudder pedals) to turn.</p>`,
+  controls:{rows:[[['↑','W'],'Push forward — nose down'],[['↓','S'],'Pull back — nose up'],[['→','D'],'More throttle'],[['←','A'],'Less throttle'],[['F'],'Flaps down one step'],[['G'],'Flaps up one step'],[['B'],'Wheel brakes (on ground)']],
+   todo:`<ol><li>Full throttle (<kbd>→</kbd>), 1 notch of flaps optional.</li><li>At 55 kn, pull back (<kbd>↓</kbd>) gently to raise the nose ~10°.</li><li>Climb, then push forward to level off and reduce power.</li><li>Watch the angle of attack gauge — keep it below 12°.</li><li>If the <b>STALL</b> warning appears: push the nose down and add full power.</li><li>To land: line up with the runway, reduce power, flaps down, descend gently, raise the nose slightly just before touching down, then brake.</li></ol>`,
+   safety:'Real flying needs a pilot licence, medical certificate and training with a certified flight instructor.'},
+  pad:[['ArrowLeft','Power −'],['ArrowUp','Nose ▼'],['ArrowRight','Power +'],['KeyF','Flaps ↓'],['KeyG','Flaps ↑'],['ArrowDown','Nose ▲'],['KeyB','Brakes']],
+  reset:planeReset,
+  press(sim,c){const s=sim.s;if(c==='KeyF')s.flaps=Math.min(2,s.flaps+1);if(c==='KeyG')s.flaps=Math.max(0,s.flaps-1)},
+  update(sim,dt){const s=sim.s;if(s.crashed){return}
+    if(isDown(['ArrowRight','KeyD']))s.thr=clamp(s.thr+dt*.5,0,1);if(isDown(['ArrowLeft','KeyA']))s.thr=clamp(s.thr-dt*.5,0,1);
+    s.brakes=isDown(['KeyB','Space']);
+    const pitchIn=(isDown(['ArrowDown','KeyS'])?1:0)-(isDown(['ArrowUp','KeyW'])?1:0);
+    const elevAuth=clamp(s.v/30,0,1); // controls need airflow
+    s.pitch+=pitchIn*10*D2R*elevAuth*dt;
+    const cl=planeCL(s);
+    // A stalled wing drops the nose — the aircraft's natural stability.
+    if(s.stall)s.pitch-=12*D2R*dt;
+    s.pitch=clamp(s.pitch,-25*D2R,30*D2R);
+    const q=.5*PLANE_P.rho*s.v*s.v,L=q*PLANE_P.S*cl,cd=PLANE_P.cd0+s.flaps*.012+PLANE_P.k*cl*cl,Dr=q*PLANE_P.S*cd;
+    const T=s.thr*Math.max(0,PLANE_P.Tstatic-18*s.v);
+    const m=PLANE_P.m;
+    if(s.ground){
+      if(s.pitch<0)s.pitch=0;
+      if(s.v<27&&pitchIn<=0)s.pitch=Math.max(0,s.pitch-dt*5*D2R);
+      if(s.v<22)s.pitch=Math.min(s.pitch,2*D2R);
+      const fric=(s.brakes?4:.35)*Math.max(0,1-L/(m*G));
+      s.v=Math.max(0,s.v+((T-Dr)/m-fric)*dt);s.gamma=0;
+      if(L>m*G*1.02){s.ground=false;s.gamma=.5*D2R}
+    }else{
+      s.v=Math.max(1,s.v+((T-Dr)/m-G*Math.sin(s.gamma))*dt);
+      s.gamma+=(L-m*G*Math.cos(s.gamma))/(m*s.v)*dt;s.gamma=clamp(s.gamma,-60*D2R,60*D2R);
+    }
+    s.vs=s.ground?0:s.v*Math.sin(s.gamma);
+    s.px=s.x;s.x+=s.v*Math.cos(s.gamma)*dt;s.alt+=s.vs*dt;s.maxAlt=Math.max(s.maxAlt,s.alt);
+    if(!s.ground&&s.alt<=0){s.alt=0;const onRw=(s.x>RUNWAY1.x0&&s.x<RUNWAY1.x1)||(s.x>RUNWAY2.x0&&s.x<RUNWAY2.x1);
+      if(s.vs<-3.5||s.pitch<-3*D2R){s.crashed=true;s.why=s.pitch<-3*D2R?'Crashed — landed nose-first. Raise the nose slightly (flare) just before touching down.':'Crashed — descending too fast ('+Math.round(-s.vs*197)+' ft/min). Touch down gently.';}
+      else if(!onRw){s.crashed=true;s.why='Landed off the runway.'}
+      else{s.ground=true;s.touch={vs:s.vs,x:s.x};s.gamma=0}}
+    if(s.ground&&!((s.x>RUNWAY1.x0&&s.x<RUNWAY1.x1)||(s.x>RUNWAY2.x0&&s.x<RUNWAY2.x1))&&s.v>3){s.crashed=true;s.why='Ran off the end of the runway.'}
+  },
+  draw(sim){const s=sim.s;const sc=2.2*boost();const camX=s.x+60,camY=Math.max(s.alt,40);
+    const X=x=>W/2+(x-camX)*sc,Y=a=>H*.62-(a-camY)*sc;
+    const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#3d7fc1');sky.addColorStop(1,'#a9d3f0');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+    // clouds (parallax)
+    ctx.fillStyle='rgba(255,255,255,.75)';for(let i=0;i<14;i++){const cx=((i*713-(camX*.3))%1800+1800)%1800-300,cy=H*.62-((300+i*97%400)-camY*.5)*sc*.5;ctx.beginPath();ctx.ellipse(cx,cy,60+i%3*20,18,0,0,7);ctx.fill()}
+    const gy=Y(0);ctx.fillStyle='#5b8c3a';ctx.fillRect(0,gy,W,H-gy);
+    ctx.fillStyle='#3e6b27';for(let i=0;i<60;i++){const tx=((i*157-camX*sc)%2400+2400)%2400-200;ctx.beginPath();ctx.arc(tx,gy-6,8,0,7);ctx.fill();ctx.fillRect(tx-1,gy-6,2,6)}
+    [RUNWAY1,RUNWAY2].forEach((r,i)=>{ctx.fillStyle='#444';ctx.fillRect(X(r.x0),gy-2,(r.x1-r.x0)*sc,6);ctx.fillStyle='#fff';for(let x=r.x0+20;x<r.x1-20;x+=40)ctx.fillRect(X(x),gy,12*sc,1.5);text(i?'RUNWAY 2 — land here':'RUNWAY 1',X(r.x0)+10,gy+22,13,'#fff')});
+    // approach guide (3° glide slope) to runway 2
+    if(sim.mission&&sim.mission.glide){ctx.strokeStyle='rgba(226,166,59,.7)';ctx.setLineDash([8,8]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X(RUNWAY2.x0+150),gy);ctx.lineTo(X(RUNWAY2.x0+150-4000),Y(4000*Math.tan(3*D2R)));ctx.stroke();ctx.setLineDash([])}
+    if(sim.mission&&sim.mission.band){const b=sim.mission.band;ctx.fillStyle='rgba(226,166,59,.18)';ctx.fillRect(0,Y(b[1]),W,Y(b[0])-Y(b[1]));ctx.strokeStyle='rgba(226,166,59,.6)';ctx.strokeRect(-2,Y(b[1]),W+4,Y(b[0])-Y(b[1]))}
+    // aircraft
+    ctx.save();ctx.translate(X(s.x),Y(s.alt)-6);ctx.rotate(-s.pitch);ctx.scale(1.3,1.3);
+    ctx.fillStyle='#f4f1e8';ctx.beginPath();ctx.moveTo(18,0);ctx.quadraticCurveTo(16,-5,6,-5);ctx.lineTo(-14,-2);ctx.lineTo(-20,-10);ctx.lineTo(-23,-10);ctx.lineTo(-21,1);ctx.lineTo(10,3);ctx.quadraticCurveTo(17,3,18,0);ctx.fill();
+    ctx.fillStyle='#0E2A47';ctx.fillRect(-2,-7,14,2);ctx.fillStyle='#6FD1E0';ctx.fillRect(4,-4.5,6,2.5);ctx.fillStyle='#c0392b';ctx.fillRect(-18,-2,30,1.4);
+    if(s.flaps){ctx.save();ctx.translate(-2,-6);ctx.rotate(s.flaps*.3);ctx.fillStyle='#0E2A47';ctx.fillRect(-4,0,4,1.5);ctx.restore()}
+    ctx.fillStyle='#222';ctx.beginPath();ctx.arc(8,5,1.8,0,7);ctx.arc(-4,5,1.8,0,7);ctx.fill();ctx.fillRect(7.5,2,1,3);ctx.fillRect(-4.5,2,1,3);
+    const pr=(performance.now()/20)%2;ctx.fillStyle='rgba(40,40,40,.6)';if(s.thr>0)ctx.fillRect(18.5,-6+pr,1.2,12-pr*2);else ctx.fillRect(18.5,-5,1.2,9);
+    ctx.restore();
+    if(s.stallWarn&&!s.crashed){ctx.fillStyle=(performance.now()/250|0)%2?'#D8604A':'#8a2d20';rrect(W/2-70,70,140,34,6);ctx.fill();text('STALL',W/2,94,20,'#fff','center')}
+    if(s.crashed)text(s.why,W/2,H/2,18,'#fff','center');
+    // mini map: distance to runway 2
+    ctx.fillStyle='rgba(8,24,38,.7)';rrect(16,16,260,26,4);ctx.fill();ctx.fillStyle='#6FD1E0';const mm=x=>20+clamp(x/7200,0,1)*252;ctx.fillRect(mm(0),27,mm(900)-mm(0),4);ctx.fillRect(mm(6000),27,mm(6900)-mm(6000),4);ctx.fillStyle='#E2A63B';ctx.beginPath();ctx.arc(mm(s.x),29,4,0,7);ctx.fill();
+    // attitude + AoA mini instruments
+    ctx.save();ctx.translate(W-70,70);ctx.beginPath();ctx.arc(0,0,44,0,7);ctx.clip();ctx.fillStyle='#3d7fc1';ctx.fillRect(-50,-50,100,100);ctx.fillStyle='#8a5a2b';ctx.fillRect(-50,s.pitch/D2R*2,100,100);ctx.strokeStyle='#fff';ctx.lineWidth=1;for(let p=-20;p<=20;p+=10){ctx.beginPath();ctx.moveTo(-10,s.pitch/D2R*2-p*2);ctx.lineTo(10,s.pitch/D2R*2-p*2);ctx.stroke()}ctx.strokeStyle='#E2A63B';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-28,0);ctx.lineTo(-8,0);ctx.lineTo(0,6);ctx.lineTo(8,0);ctx.lineTo(28,0);ctx.stroke();ctx.restore();text('ATTITUDE',W-70,132,10,'#0E2A47','center')},
+  gauges(sim){const s=sim.s;return[['Airspeed',knots(s.v)+' kn',s.stallWarn],['Altitude',Math.round(s.alt*3.281)+' ft'],['Vert. speed',Math.round((s.vs||0)*196.9)+' fpm'],['Pitch',Math.round(s.pitch/D2R)+'°'],['Angle of attack',Math.round(s.aoa||0)+'°',(s.aoa||0)>12],['Throttle',Math.round(s.thr*100)+'%'],['Flaps',['Up','10°','30°'][s.flaps]],['Status',s.crashed?'crashed':s.ground?'on ground':s.stall?'STALLED':'flying',s.crashed||s.stall]]},
+  missions:[
+   {title:'Take-off',brief:'Apply full power, rotate at about 55 kn and climb to 500 ft.',
+    hint:'Hold → for full throttle. When airspeed passes 55 kn, pull back (↓) gently until the nose is ~10° up, then release.',
+    start:{},check(sim){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(s.alt*3.281>=500)return'done';if(s.ground&&s.x>RUNWAY1.x1-150&&s.v<25)sim.hint2='Running out of runway — more power, rotate earlier.';return null}},
+   {title:'Level off',brief:'Level off inside the highlighted band (1,000–1,300 ft) and hold it for 10 seconds with speed above 70 kn.',
+    hint:'Approaching 1,000 ft, push forward gently until the vertical speed is near 0, then reduce power to about 70%.',
+    start:{x:1200,alt:180,v:36,pitch:8*D2R,gamma:4*D2R,thr:1,ground:false},setup(sim,m){m.band=[1000/3.281,1300/3.281]},
+    check(sim,m){const s=sim.s;if(s.crashed)return'fail:'+s.why;const ft=s.alt*3.281;if(ft>1000&&ft<1300&&knots(s.v)>70){m.t=(m.t||0)+1/60;sim.hint2='Holding… '+Math.ceil(10-m.t)+' s';if(m.t>=10)return'done'}else{if(m.t)sim.hint2='';m.t=0}return null}},
+   {title:'Stall and recover',brief:'Reduce power and slowly raise the nose until the aircraft stalls, then recover: nose down, full power, and climb away losing less than 300 ft.',
+    hint:'Power to 0 (hold ←), keep pulling back gently as speed drops. When STALL shows and the nose drops: push forward (↑), full power (→), then ease back to level.',
+    start:{x:2000,alt:1200/3.281,v:36,pitch:2*D2R,gamma:0,thr:.6,ground:false},
+    check(sim,m){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(s.stall&&!m.stalled){m.stalled=true;m.alt=s.alt}if(m.stalled){m.minAlt=Math.min(m.minAlt??s.alt,s.alt);if(!s.stall&&s.vs>0&&s.thr>.9&&knots(s.v)>55){return(m.alt-m.minAlt)*3.281<300?'done':'fail:Recovered, but lost '+Math.round((m.alt-m.minAlt)*3.281)+' ft. Lower the nose and add power sooner.'}}return null}},
+   {title:'Approach and land',brief:'Follow the dashed 3° glide path down to Runway 2, touch down gently (less than 400 ft/min) and brake to a stop.',
+    hint:'Power about 20%, flaps down (F), keep about 65 kn. Stay near the dashed line. Just above the runway, pull back slightly to flare. After touchdown: power to 0 (←) and brakes (B).',
+    start:{x:6150-1900,alt:1900*Math.tan(3*D2R),v:35,pitch:-1.8*D2R,gamma:-3*D2R,thr:.2,flaps:1,ground:false},setup(sim,m){m.glide=true},
+    check(sim,m){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(s.ground&&s.touch&&!m.rated){m.rated=true;const fpm=-s.touch.vs*196.9;if(fpm>400)return'fail:Hard landing ('+Math.round(fpm)+' ft/min). Flare to soften it.'}if(s.ground&&s.x>RUNWAY2.x0&&s.v<.5)return'done';return null}},
+  ],
+  quiz:[
+   ['What causes a stall?',['The engine stopping','The wing exceeding its critical angle of attack','Flying too high'],1,'A stall happens when the angle between wing and airflow is too great — at any speed.'],
+   ['How do you recover from a stall?',['Pull back harder','Lower the nose and add power','Lower the flaps'],1,'Reducing the angle of attack restores smooth airflow; power reduces height loss.'],
+   ['What do flaps do?',['Increase lift at low speed, allowing slower take-off and landing','Make the plane go faster','Steer the plane left and right'],0,'Flaps increase lift (and drag), so you can fly more slowly and steeply on approach.']
+  ]
+};
+
+/* ============================================================ HELICOPTER (side view) */
+const HELI_P={m:1100,Tmax:1100*G/.58};
+const PAD={x:300,w:14};
+function heliReset(sim,start){sim.s=Object.assign({x:0,alt:0,vx:0,vy:0,tilt:0,coll:0,yaw:0,pedal:0,ground:true,crashed:false},start||{})}
+const HELI={
+  id:'heli',name:'Helicopter',icon:'🚁',level:'Advanced',tag:'Collective, cyclic and pedals: lift off, hover, fly to a helipad and land gently.',
+  keys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyS','KeyA','KeyD','KeyQ','KeyE','KeyT'],
+  learn:`<p>A helicopter’s main rotor is a set of spinning wings. Instead of the aircraft moving forward to create airflow, the <b>blades spin</b> to create lift. That lets it take off vertically, hover and fly in any direction — but it also makes it one of the hardest vehicles to control, because every control affects the others.</p>
+  <div class="parts">
+   <div class="part"><b>Collective (left hand)</b><span>Changes the angle of <i>all</i> blades together. Raise it for more lift (go up), lower it to descend. In a hover about 58% here.</span></div>
+   <div class="part"><b>Cyclic (right hand)</b><span>Tilts the rotor disc. Tilt forward and part of the lift pulls you forward. Tilt back to slow down. Small movements!</span></div>
+   <div class="part"><b>Anti-torque pedals (feet)</b><span>The engine turns the rotor one way, so the body wants to spin the other way. The tail rotor pushes against this. More collective = more torque = more pedal needed.</span></div>
+   <div class="part"><b>Ground effect</b><span>Close to the ground (under about one rotor width), air cushions the rotor, so hovering needs less power. It disappears as you climb.</span></div>
+   <div class="part"><b>Translational lift</b><span>Above about 15–20 kn of forward speed the rotor gets extra lift from clean air, so the helicopter climbs a little by itself.</span></div>
+   <div class="part"><b>Anticipation</b><span>A helicopter reacts with a delay. Make a small input, wait, then correct. Chasing the aircraft causes oscillations.</span></div>
+  </div>
+  <h3>Hovering</h3><p>Hovering is the classic hardest skill. Keep the collective steady, use tiny cyclic movements to stay over one spot, and keep the pedals balancing the torque so the nose doesn’t swing. Beginners can switch on <b>pedal assist</b> (key <kbd>T</kbd>) so the pedals are handled automatically.</p>`,
+  controls:{rows:[[['W'],'Collective up (more lift)'],[['S'],'Collective down'],[['→','D'],'Cyclic forward (move forward)'],[['←','A'],'Cyclic back (slow / move back)'],[['Q'],['E'],'Left / right pedal (only if assist is off)'],[['T'],'Toggle pedal assist']],
+   todo:`<ol><li>Raise the collective (<kbd>W</kbd>) slowly until the skids leave the ground.</li><li>Stop raising once you climb and settle into a hover at 3–10 m. Tiny collective corrections.</li><li>Tilt the cyclic forward (<kbd>→</kbd>) a little to move; the helicopter will sink slightly — add a touch of collective.</li><li>To stop, tilt back (<kbd>←</kbd>). Plan ahead: it takes time to slow down.</li><li>To land: hover over the pad, stop all sideways movement, then lower the collective gently until the skids touch.</li></ol>`,
+   safety:'Real helicopter flying requires a private pilot licence (helicopter) and many hours with a certified instructor.'},
+  pad:[['KeyQ','◀ Pedal'],['KeyW','Collective ▲'],['KeyE','Pedal ▶'],['KeyT','Pedal assist'],['ArrowLeft','◀ Cyclic back'],['KeyS','Collective ▼'],['ArrowRight','Cyclic fwd ▶']],
+  reset:heliReset,
+  press(sim,c){if(c==='KeyT'){sim.assist=!sim.assist;flash('Pedal assist '+(sim.assist?'ON':'OFF'),'good')}},
+  update(sim,dt){const s=sim.s;if(s.crashed)return;
+    if(isDown(['KeyW']))s.coll=clamp(s.coll+dt*.15,0,1);if(isDown(['KeyS']))s.coll=clamp(s.coll-dt*.15,0,1);
+    const cy=(isDown(['ArrowRight','KeyD'])?1:0)-(isDown(['ArrowLeft','KeyA'])?1:0);
+    s.tilt+=clamp(cy*15*D2R-s.tilt,-25*D2R*dt,25*D2R*dt);
+    // Torque from the main rotor yaws the body; the pedals counter it.
+    const torque=s.coll*1.2;
+    if(sim.assist)s.pedal=lerp(s.pedal,torque+s.yaw*1.5,clamp(dt*4,0,1));else{const pd=(isDown(['KeyE'])?1:0)-(isDown(['KeyQ'])?1:0);s.pedal=clamp(s.pedal+pd*dt*.8,-1,1.5)}
+    if(!s.ground)s.yaw+=(torque-s.pedal)*dt*.9;else s.yaw*=Math.max(0,1-dt*3);
+    s.yaw=clamp(s.yaw,-1.2,1.2);
+    const ge=s.alt<8?1+.12*(1-s.alt/8):1; // ground effect
+    const etl=1+clamp((Math.abs(s.vx)-7)/10,0,1)*.08; // effective translational lift
+    const T=s.coll*HELI_P.Tmax*ge*etl;
+    let ax=T*Math.sin(s.tilt)/HELI_P.m-s.vx*Math.abs(s.vx)*.004-s.vx*.08;
+    let ay=T*Math.cos(s.tilt)/HELI_P.m-G-s.vy*.7;
+    if(Math.abs(s.yaw)>1){s.crashed=true;s.why='Spun out — the tail rotor pedals didn’t counter the torque. Try pedal assist (T).';return}
+    if(s.ground){if(ay<=0){s.vx*=Math.max(0,1-dt*6);s.vy=0;ax=0;ay=0;s.alt=0}else s.ground=false}
+    s.vx+=ax*dt;s.vy+=ay*dt;s.px=s.x;s.x+=s.vx*dt;s.alt+=s.vy*dt;
+    if(s.alt<=0&&!s.ground){const hard=s.vy<-3||Math.abs(s.vx)>3||Math.abs(s.tilt)>10*D2R;if(hard){s.crashed=true;s.why=s.vy<-3?'Hard landing ('+(-s.vy).toFixed(1)+' m/s). Lower the collective more gently.':'Skids hit the ground while moving sideways or tilted. Stop first, then descend.'}s.touch={vy:s.vy,vx:s.vx,x:s.x};s.alt=0;s.vy=0;s.ground=true}
+    s.rot=(s.rot||0)+dt*(s.coll>0?30:4)},
+  draw(sim){const s=sim.s,sc=10*boost(),camX=s.x+(s.vx*1.2),camY=Math.max(s.alt,8);
+    const X=x=>W/2+(x-camX)*sc,Y=a=>H*.66-(a-camY)*sc;
+    const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,'#5a8fc4');sky.addColorStop(1,'#cfe6f5');ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(120,140,160,.5)';for(let i=0;i<8;i++){const bx=((i*290-camX*sc*.3)%2400+2400)%2400-300;ctx.fillRect(bx,Y(0)-120-i%3*30,70,200)}
+    const gy=Y(0);ctx.fillStyle='#6a8f4a';ctx.fillRect(0,gy,W,H-gy);
+    // start pad and target pad
+    [[0,'START'],[PAD.x,'H']].forEach(([px,l],i)=>{ctx.fillStyle='#555';ctx.fillRect(X(px-PAD.w/2),gy-2,PAD.w*sc,6);ctx.fillStyle=i?'#E2A63B':'#ddd';text(l,X(px),gy+22,14,i?'#E2A63B':'#fff','center')});
+    for(let x=Math.floor((camX-60)/10)*10;x<camX+60;x+=10){ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(X(x),gy+8,1,6)}
+    if(sim.mission&&sim.mission.band){const b=sim.mission.band;ctx.fillStyle='rgba(226,166,59,.18)';ctx.fillRect(0,Y(b[1]),W,Y(b[0])-Y(b[1]))}
+    if(s.alt<8&&s.coll>.3){ctx.fillStyle='rgba(200,180,140,.35)';for(let i=0;i<6;i++){ctx.beginPath();ctx.arc(X(s.x)+(i-2.5)*18+Math.sin(performance.now()/100+i)*4,gy-2,8-s.alt,0,7);ctx.fill()}}
+    ctx.save();ctx.translate(X(s.x),Y(s.alt)-12);ctx.rotate(s.tilt);
+    const squash=Math.cos(s.yaw);ctx.scale(Math.max(.25,Math.abs(squash)),1);
+    ctx.fillStyle='#c0392b';ctx.beginPath();ctx.ellipse(0,0,22,12,0,0,7);ctx.fill();ctx.fillStyle='#9ad3ea';ctx.beginPath();ctx.ellipse(10,-2,9,8,0,-1.4,1.4);ctx.fill();
+    ctx.fillStyle='#8a2a1f';ctx.fillRect(-48,-4,30,5);ctx.fillRect(-50,-14,5,14);
+    const tr=(performance.now()/30)%10;ctx.fillStyle='rgba(30,30,30,.6)';ctx.fillRect(-52,-16+tr,3,6);
+    ctx.fillStyle='#333';ctx.fillRect(-16,12,34,2);ctx.fillRect(-10,9,2,4);ctx.fillRect(10,9,2,4);ctx.fillRect(-2,-16,3,6);
+    ctx.restore();
+    ctx.save();ctx.translate(X(s.x),Y(s.alt)-12);ctx.rotate(s.tilt);ctx.translate(0,-17);const rw=48*Math.abs(Math.cos(s.rot));ctx.fillStyle='rgba(30,30,30,.75)';ctx.fillRect(-rw,-1.5,rw*2,3);ctx.fillStyle='rgba(30,30,30,.12)';ctx.fillRect(-48,-2,96,4);ctx.restore();
+    // heading/torque indicator
+    ctx.save();ctx.translate(70,H-70);ctx.fillStyle='rgba(8,24,38,.7)';ctx.beginPath();ctx.arc(0,0,48,0,7);ctx.fill();ctx.strokeStyle=Math.abs(s.yaw)>.6?'#D8604A':'#6FD1E0';ctx.lineWidth=4;ctx.rotate(s.yaw);ctx.beginPath();ctx.moveTo(0,10);ctx.lineTo(0,-38);ctx.stroke();ctx.restore();text('YAW '+(sim.assist?'(assist)':''),70,H-8,11,'#0E2A47','center');
+    if(s.crashed)text(s.why,W/2,H/2-40,17,'#8a2d20','center');
+    ctx.fillStyle='rgba(8,24,38,.7)';rrect(W-60,H-170,36,140,6);ctx.fill();ctx.fillStyle='#E2A63B';ctx.fillRect(W-52,H-40-120*s.coll,20,120*s.coll);ctx.fillStyle='#fff';ctx.fillRect(W-58,H-40-120*.58,32,1.5);text('COLL',W-42,H-14,10,'#0E2A47','center')},
+  gauges(sim){const s=sim.s;return[['Height',s.alt.toFixed(1)+' m'],['Vert. speed',s.vy.toFixed(1)+' m/s',s.vy<-2],['Ground speed',knots(Math.abs(s.vx))+' kn'+(s.vx<-.2?' back':'')],['Collective',Math.round(s.coll*100)+'%'],['Cyclic tilt',Math.round(s.tilt/D2R)+'°'],['Yaw',Math.round(s.yaw/D2R)+'°',Math.abs(s.yaw)>.5],['Pedal assist',sim.assist?'ON':'off'],['To helipad',Math.round(PAD.x-s.x)+' m']]},
+  missions:[
+   {title:'Lift off and hover',brief:'Lift off and hold a steady hover between 3 and 10 m for 8 seconds, staying within 10 m of the start pad.',
+    hint:'Raise the collective (W) slowly. The moment you start to rise, stop. Use tiny W/S taps to hold height.',
+    start:{},setup(sim,m){m.band=[3,10]},
+    check(sim,m){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(Math.abs(s.x)>10)return'fail:Drifted away from the pad. Use tiny cyclic inputs.';if(s.alt>3&&s.alt<10&&Math.abs(s.vy)<1.5){m.t=(m.t||0)+1/60;sim.hint2='Hovering… '+Math.ceil(8-m.t)+' s';if(m.t>=8)return'done'}else m.t=0;return null}},
+   {title:'Fly to the helipad',brief:'Fly forward to the H pad 300 m away and come to a hover above it (within 5 m, speed under 3 kn).',
+    hint:'Tilt forward gently (→) and add a little collective to avoid sinking. Start slowing (←) about 80 m before the pad.',
+    start:{x:0,alt:6,coll:.56,ground:false},
+    check(sim,m){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(s.ground&&Math.abs(s.x-PAD.x)>PAD.w/2)return'fail:Touched down away from the pad.';if(Math.abs(s.x-PAD.x)<5&&knots(Math.abs(s.vx))<3&&s.alt>1){m.t=(m.t||0)+1/60;if(m.t>2)return'done'}else m.t=0;return null}},
+   {title:'Land on the pad',brief:'Descend gently and land on the H pad with less than 1.5 m/s descent rate and no sideways movement.',
+    hint:'Stop moving forward first. Then lower the collective (S) little by little. Ground effect will cushion you near the ground.',
+    start:{x:PAD.x-2,alt:12,coll:.58,ground:false},
+    check(sim){const s=sim.s;if(s.crashed)return'fail:'+s.why;if(s.ground&&s.touch){if(Math.abs(s.touch.x-PAD.x)>PAD.w/2)return'fail:Landed off the pad.';if(s.touch.vy<-1.5)return'fail:A bit firm ('+(-s.touch.vy).toFixed(1)+' m/s). Lower the collective more slowly.';if(s.coll<.3)return'done';sim.hint2='On the ground — lower the collective fully (S).'}return null}},
+  ],
+  quiz:[
+   ['Which control makes the helicopter go straight up?',['Cyclic','Collective','Pedals'],1,'The collective changes the pitch of all blades together, increasing total lift.'],
+   ['Why does a helicopter need a tail rotor?',['To go faster','To counter the torque that spins the body','To help it land'],1,'The main rotor’s torque would spin the fuselage. The tail rotor (controlled by pedals) balances it.'],
+   ['What is ground effect?',['Extra lift when hovering close to the ground','Dust blown up by the rotor','A type of hard landing'],0,'Near the ground the rotor’s downwash is cushioned, so less power is needed to hover.']
+  ]
+};
+
+const VEHICLES=[CAR,TRUCK,MOTO,BOAT,PLANE,HELI];
+
+/* ============================================================ UI + LOOP */
+const PROG_KEY='miga-sim-progress';
+let progress={};try{progress=JSON.parse(localStorage.getItem(PROG_KEY)||'{}')||{}}catch(e){}
+function saveProg(){try{localStorage.setItem(PROG_KEY,JSON.stringify(progress))}catch(e){}}
+let current=null,sim=null,running=false,last=0,missionIdx=0,free=false,bannerTimer=null;
+
+function renderPicker(){$('picker').innerHTML=VEHICLES.map(v=>{const done=(progress[v.id]||[]).length;return`<button class="vcard${current===v?' active':''}" data-id="${v.id}"><span class="vicon">${v.icon}</span><strong>${v.name}</strong><span class="level">${v.level}</span><small>${v.tag}</small>${done?`<span class="prog">${done}/${v.missions.length} ✓</span>`:''}</button>`}).join('');
+  $('picker').querySelectorAll('.vcard').forEach(b=>b.onclick=()=>choose(b.dataset.id))}
+function keyCell(k){return k.map(x=>`<kbd>${x}</kbd>`).join(' ')}
+function choose(id){current=VEHICLES.find(v=>v.id===id);renderPicker();$('lesson').classList.remove('hidden');$('lessonTitle').textContent=current.icon+' Learn to handle '+(/^[aeiou]/i.test(current.name)?'an ':'a ')+current.name.toLowerCase();
+  $('tab-learn').innerHTML=current.learn+`<div class="actions" style="margin-top:14px"><button class="primary" data-go="controls">Next: controls &amp; what to do →</button></div>`;
+  const c=current.controls;$('tab-controls').innerHTML=`<h3>Controls</h3><table class="keys">${c.rows.map(r=>{const keys=r.slice(0,-1);return`<tr><td>${keys.map(keyCell).join(' / ')}</td><td>${r[r.length-1]}</td></tr>`}).join('')}</table><h3>What to do</h3>${c.todo}<div class="safety">⚠️ ${c.safety}</div><div class="actions" style="margin-top:14px"><button class="primary" data-go="sim">Start the simulator →</button></div>`;
+  renderQuiz();
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>showTab(b.dataset.go));
+  pause();sim={};missionIdx=Math.min((progress[current.id]||[]).length,current.missions.length-1);free=false;
+  for(let i=0;i<current.missions.length;i++)if(!(progress[current.id]||[]).includes(i)){missionIdx=i;break}
+  buildPad();loadMission();showTab('learn');$('lesson').scrollIntoView({behavior:'smooth',block:'start'})}
+function showTab(t){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));['learn','controls','sim','quiz'].forEach(x=>$('tab-'+x).classList.toggle('hidden',x!==t));if(t!=='sim')pause();else{drawFrame()}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+function buildPad(){$('pad').innerHTML='';current.pad.forEach(([code,label])=>{const b=document.createElement('button');b.type='button';b.textContent=label;
+  const down=e=>{e.preventDefault();b.setPointerCapture&&e.pointerId!=null&&b.setPointerCapture(e.pointerId);if(!padHeld.has(code))pressed.push(code);padHeld.add(code);b.classList.add('on');start()};
+  const up=()=>{padHeld.delete(code);b.classList.remove('on')};
+  b.addEventListener('pointerdown',down);b.addEventListener('pointerup',up);b.addEventListener('pointercancel',up);b.addEventListener('lostpointercapture',up);b.addEventListener('contextmenu',e=>e.preventDefault());$('pad').appendChild(b)})}
+
+function loadMission(){const m=free?null:current.missions[missionIdx];sim={assist:true,gates:null,gateIdx:0,mission:{},hint2:'',result:null,missionDef:m};
+  const st=m?Object.assign({},m.start):{};current.reset(sim,st);if(m&&m.setup)m.setup(sim,sim.mission);
+  const s=sim.s;cam.x=s.x;cam.y=s.y||0;
+  $('mTitle').textContent=m?`Mission ${missionIdx+1}: ${m.title}`:'Free practice';$('mBrief').textContent=m?m.brief:'Drive or fly anywhere with no goals. Try the moves from the lesson at your own pace.';$('mHint').textContent='💡 '+(m?m.hint:'Use the controls table in the “Controls” tab.');
+  renderSteps();hideBanner();drawFrame();if(!running){$('paused').textContent='▶ Click here (or press any control) to start';$('paused').classList.remove('hidden')}}
+function renderSteps(){const done=progress[current.id]||[];$('steps').innerHTML=current.missions.map((m,i)=>`<li data-i="${i}" class="${done.includes(i)?'done':''} ${!free&&i===missionIdx?'current':''}"><span class="mk">${done.includes(i)?'✓':i+1}</span><span>${m.title}</span></li>`).join('');$('steps').querySelectorAll('li').forEach(li=>li.onclick=()=>{missionIdx=+li.dataset.i;free=false;loadMission()})}
+$('resetBtn').onclick=()=>loadMission();$('freeBtn').onclick=()=>{free=true;loadMission()};
+$('paused').onclick=()=>start();
+
+function flash(msg,kind,ms){const b=$('banner');b.textContent=msg;b.className='banner '+(kind||'');clearTimeout(bannerTimer);if(ms!==0)bannerTimer=setTimeout(hideBanner,ms||2200)}
+function hideBanner(){$('banner').className='banner hidden'}
+
+function start(){if(running||!current||!inSimView())return;running=true;$('paused').classList.add('hidden');last=performance.now();requestAnimationFrame(loop)}
+function pause(){if(running){$('paused').textContent='⏸ Paused — click to continue';$('paused').classList.remove('hidden')}running=false;held.clear();padHeld.clear();document.querySelectorAll('#pad .on').forEach(b=>b.classList.remove('on'))}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
+
+function step(dt){sim.hint2='';while(pressed.length){const c=pressed.shift();current.press&&current.press(sim,c)}
+  current.update(sim,dt);const m=sim.missionDef;if(m&&m.after)m.after(sim);
+  if(m&&!sim.result){const r=m.check(sim,sim.mission);if(r==='done'){sim.result='done';const d=progress[current.id]=progress[current.id]||[];if(!d.includes(missionIdx))d.push(missionIdx);saveProg();renderPicker();renderSteps();
+      const nextIdx=current.missions.findIndex((_,i)=>!d.includes(i));flash(nextIdx<0?'🏆 All '+current.name.toLowerCase()+' missions complete! Try the knowledge check.':'✓ Mission complete! Next mission starts in 3 s…','good',0);
+      const doneSim=sim;setTimeout(()=>{if(sim!==doneSim||nextIdx<0)return;missionIdx=nextIdx;loadMission()},3000)}
+    else if(r&&r.startsWith('fail:')){sim.result='fail';flash('✗ '+r.slice(5)+' — press “Restart mission” to try again.','bad',0)}}}
+function loop(t){if(!running)return;let dt=Math.min(.05,(t-last)/1000);last=t;
+  // fixed 1/60 s physics steps keep behaviour identical on fast and slow screens
+  sim.acc=(sim.acc||0)+dt;let n=0;while(sim.acc>=1/60&&n<5){step(1/60);sim.acc-=1/60;n++}if(n===5)sim.acc=0;
+  drawFrame();requestAnimationFrame(loop)}
+let lastG='';
+function drawFrame(){if(!current||!sim||!sim.s)return;ctx.setTransform(1,0,0,1,0,0);current.draw(sim);
+  const g=current.gauges(sim).map(([k,v,warn])=>`<div class="gauge${warn?' warn':''}"><b>${k}</b><span>${v}</span></div>`).join('');if(g!==lastG){$('gauges').innerHTML=g;lastG=g}
+  if(sim.hint2){text(sim.hint2,W/2,H-60,15,'#fff','center')}
+  if(sim.gates&&sim.gates[sim.gateIdx]&&cam&&current.id!=='plane'&&current.id!=='heli'){const g=sim.gates[sim.gateIdx];arrowTo((g.x1+g.x2)/2,(g.y1+g.y2)/2,'Next')}}
+
+function renderQuiz(){const qz=current.quiz;$('tab-quiz').innerHTML=`<p>Three quick questions to check you understood how a ${current.name.toLowerCase()} works.</p>`+qz.map((q,i)=>`<div class="q">${i+1}. ${q[0]}</div><div class="opts" data-q="${i}">${q[1].map((o,j)=>`<button class="opt" data-j="${j}">${o}</button>`).join('')}</div><div class="why hidden" id="why${i}"></div>`).join('')+`<p id="quizScore" style="font-weight:700;margin-top:14px"></p>`;
+  let score=0,answered=0;$('tab-quiz').querySelectorAll('.opts').forEach(box=>{const i=+box.dataset.q;box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(box.dataset.done)return;box.dataset.done=1;answered++;const j=+b.dataset.j,ok=j===qz[i][2];if(ok)score++;b.classList.add(ok?'right':'wrong');box.children[qz[i][2]].classList.add('right');const w=$('why'+i);w.textContent=(ok?'✓ Correct. ':'✗ Not quite. ')+qz[i][3];w.classList.remove('hidden');if(answered===qz.length)$('quizScore').textContent=`You scored ${score} / ${qz.length}. ${score===qz.length?'Excellent — you know the theory!':'Re-read “How it works” and try again.'}`})})}
+
+renderPicker();
+const want=new URLSearchParams(location.search).get('v');if(want&&VEHICLES.some(v=>v.id===want))choose(want);
+})();
+</script>
+<script src="tutorials.js" defer></script>
+</body>
+</html>
