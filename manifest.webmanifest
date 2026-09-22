@@ -13,7 +13,8 @@
   "shortcuts": [
     { "name": "Website Builder", "url": "/website-builder.html" },
     { "name": "PDF Forge", "url": "/pdf-forge.html" },
-    { "name": "Sign PDF", "url": "/pdf-edit-forge.html" },
+    { "name": "Sign Documents", "url": "/pdf-edit-forge.html" },
+    { "name": "Geography Forge", "url": "/geo-forge.html" },
     { "name": "Image Studio", "url": "/image-studio.html" }
   ]
 }
