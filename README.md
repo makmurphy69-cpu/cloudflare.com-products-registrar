@@ -1,6 +1,6 @@
 # MigaBuilder
 
-**39 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
+**43 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
 
 [Try MigaBuilder](https://migabuilder.com/)
 
@@ -14,6 +14,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - Videos, captions, music and merged media
 - Logos, palettes, QR codes and layered image edits
 - Presentations, invoices, quotes and contracts
+- Merged, split and signed PDFs
 - Browser apps, FAQ bots and social posts
 - 3D models and beginner coding projects
 
@@ -27,7 +28,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Slide Forge** — generate a downloadable PowerPoint
 - **Record Forge** — record your screen with narration
 
-Explore all 34 tools at **[migabuilder.com](https://migabuilder.com/)**.
+Explore all 43 tools at **[migabuilder.com](https://migabuilder.com/)**.
 
 ## Why MigaBuilder
 

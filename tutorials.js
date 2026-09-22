@@ -25,6 +25,7 @@
     'utility-forge.html':['Utility Forge','choose CSV/JSON conversion, text combining, or a checksum','Convert','review the output and download or copy the result'],
     'site-checkup.html':['Website Checkup','upload or paste the HTML you want to review','Run website checkup','work through the SEO and accessibility fixes, then download the report'],
     'pdf-forge.html':['PDF Forge','choose one or more PDF files and set the page order or rotation','Merge / create PDF','download the finished PDF or split pages into a ZIP'],
+    'pdf-edit-forge.html':['Sign PDF','choose a PDF, then draw your signature or type your name and pick the page and position','Sign and download PDF','open the downloaded copy and check the signature placement'],
     'project-hub.html':['Project Hub','review the projects and settings stored in this browser','Export local backup','open a project, restore a backup, or remove local data you no longer need'],
     'repurpose-forge.html':['Repurpose Forge','paste one piece of content and describe its audience and call to action','Create publishing pack','review, personalise, and copy the formats you need'],
     'form-forge.html':['Form Forge','add a title and list each question with its response type','Download form HTML','preview the form and share the self-contained downloaded file'],

@@ -1,0 +1,19 @@
+{
+  "name": "MigaBuilder",
+  "short_name": "MigaBuilder",
+  "description": "Free, private browser tools for websites, video, documents, PDFs, images and business assets.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0E2A47",
+  "theme_color": "#081826",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Website Builder", "url": "/website-builder.html" },
+    { "name": "PDF Forge", "url": "/pdf-forge.html" },
+    { "name": "Sign PDF", "url": "/pdf-edit-forge.html" },
+    { "name": "Image Studio", "url": "/image-studio.html" }
+  ]
+}
