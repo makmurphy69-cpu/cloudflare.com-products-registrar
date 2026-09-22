@@ -2,3 +2,4 @@
 .geo-cache/
 package/
 world-countries-*.tgz
+__pycache__/
