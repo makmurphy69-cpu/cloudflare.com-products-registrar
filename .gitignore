@@ -1,0 +1,5 @@
+# Geography data build (scripts/build-geo-data.py)
+.geo-cache/
+package/
+world-countries-*.tgz
+__pycache__/
