@@ -31,7 +31,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Record Forge** — record your screen with narration
 - **Sign Documents** — sign PDFs, Word files and photos with a drawn, typed or uploaded signature
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
-- **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions
+- **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions with a live control panel, 3D flight, hazard scenarios, a narrator and a printable report card
 
 Explore all 46 tools at **[migabuilder.com](https://migabuilder.com/)**.
 
