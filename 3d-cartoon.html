@@ -55,12 +55,17 @@
     cursor: pointer;
     box-shadow: 0 6px 0 #b3002d;
   }
+  .back-link {
+    position: fixed; top: 12px; left: 16px; z-index: 20;
+    color: #fff; text-decoration: none; font-family: sans-serif; font-size: 15px;
+    background: rgba(255,255,255,0.12); padding: 8px 14px; border-radius: 20px;
+  }
   .caption-box {
     position: absolute;
-    bottom: 60px;
+    bottom: 8%;
     width: 100%;
     text-align: center;
-    font-size: 26px;
+    font-size: clamp(15px, 3.5vw, 26px);
     font-weight: bold;
     text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
     pointer-events: none;
@@ -70,6 +75,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+<a class="back-link" href="index.html#tools">← All tools</a>
 
 <div class="cartoon-container">
   <div id="overlay" class="overlay-screen">
@@ -89,7 +95,7 @@ const camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 1000);
 camera.position.set(0, 3, 12);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(960, 540);
+renderer.setSize(960, 540, false);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambientLight);
