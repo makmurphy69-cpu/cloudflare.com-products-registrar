@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script><script src="usage-counter.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saturday Morning Romance - 3D Cartoon</title>
+<title>Saturday Morning Romance — 3D Cartoon | MigaBuilder</title>
+<meta name="description" content="Watch a short cel-shaded 3D cartoon built with Three.js, playing right in your browser. No signup.">
+<link rel="canonical" href="https://migabuilder.com/3d-cartoon.html">
+<meta property="og:title" content="Saturday Morning Romance — 3D Cartoon | MigaBuilder">
+<meta property="og:description" content="A short cel-shaded 3D cartoon that plays right in your browser.">
+<meta property="og:url" content="https://migabuilder.com/3d-cartoon.html"><meta property="og:type" content="website">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -15,8 +20,10 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    overflow: hidden;
+    padding: 16px;
+    gap: 12px;
   }
+  .back-link { align-self: center; width: 100%; max-width: 960px; color: #ffcc80; font-family: sans-serif; font-size: 15px; }
   .cartoon-container {
     position: relative;
     width: 100%;
@@ -66,17 +73,23 @@
     pointer-events: none;
     z-index: 5;
   }
+  .caption-box.hidden { display: none; }
+  @media (max-width: 600px) {
+    .caption-box { bottom: 16px; font-size: 16px; padding: 0 8px; }
+    .start-btn { font-size: 18px; padding: 12px 28px; }
+  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
 
+<a class="back-link" href="index.html">← MigaBuilder tools</a>
 <div class="cartoon-container">
   <div id="overlay" class="overlay-screen">
     <button class="start-btn" id="startBtn">▶ PLAY 3D CARTOON</button>
   </div>
 
-  <div id="caption" class="caption-box">OH LA LA! Look who walked into the party!</div>
+  <div id="caption" class="caption-box hidden" aria-live="polite">OH LA LA! Look who walked into the party!</div>
   <canvas id="webglCanvas"></canvas>
 </div>
 
@@ -89,7 +102,16 @@ const camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 1000);
 camera.position.set(0, 3, 12);
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(960, 540);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+// Size the drawing buffer to the canvas's on-screen size so it stays sharp at any width.
+function resize() {
+  const w = canvas.clientWidth;
+  const h = Math.round(w * 9 / 16);
+  renderer.setSize(w, h, false);
+}
+resize();
+window.addEventListener('resize', resize);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambientLight);
@@ -150,14 +172,33 @@ const floor = new THREE.Mesh(floorGeo, floorMat);
 floor.rotation.x = -Math.PI / 2;
 scene.add(floor);
 
-let clock = new THREE.Clock();
+const clock = new THREE.Clock(false);
+const DURATION = 22;
+const overlay = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
+const captionBox = document.getElementById('caption');
+const CAPTIONS = [
+  [0, "OH LA LA! Look who walked into the party!"],
+  [7, "BRAD BROUGHT HIS LEGENDARY BIG ENERGY!"],
+  [15, "💥 BAM! 3D CELL-SHADED ACTION! 💥"]
+];
 let isPlaying = false;
 
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('overlay').classList.add('hidden');
+startBtn.addEventListener('click', () => {
+  overlay.classList.add('hidden');
+  captionBox.textContent = CAPTIONS[0][1];
+  captionBox.classList.remove('hidden');
   isPlaying = true;
   clock.start();
 });
+
+function finish() {
+  isPlaying = false;
+  clock.stop();
+  captionBox.classList.add('hidden');
+  startBtn.textContent = '↻ WATCH AGAIN';
+  overlay.classList.remove('hidden');
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -177,12 +218,11 @@ function animate() {
     camera.position.z = 10 + Math.cos(t * 0.5) * 2;
     camera.lookAt(0, 1.5, 0);
 
-    const captionBox = document.getElementById('caption');
-    if (t > 15.0) {
-      captionBox.textContent = "💥 BAM! 3D CELL-SHADED ACTION! 💥";
-    } else if (t > 7.0) {
-      captionBox.textContent = "BRAD BROUGHT HIS LEGENDARY BIG ENERGY!";
-    }
+    let line = CAPTIONS[0][1];
+    for (const [at, text] of CAPTIONS) if (t >= at) line = text;
+    if (captionBox.textContent !== line) captionBox.textContent = line;
+
+    if (t >= DURATION) finish();
   }
 
   renderer.render(scene, camera);
