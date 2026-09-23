@@ -32,6 +32,7 @@
     'project-hub.html':['Project Hub','review the projects and settings stored in this browser','Export local backup','open a project, restore a backup, or remove local data you no longer need'],
     'repurpose-forge.html':['Repurpose Forge','paste one piece of content and describe its audience and call to action','Create publishing pack','review, personalise, and copy the formats you need'],
     'form-forge.html':['Form Forge','add a title and list each question with its response type','Download form HTML','preview the form and share the self-contained downloaded file'],
+    'cad-forge.html':['CAD Forge','set the wall height, wall thickness and roof, then draw walls, doors and windows on the plan','Load sample house','check the 3D house and timber frame, then download the drawings, material list and DXF file'],
     'model-forge.html':['Model Forge','describe the 3D object and set its measurements and shape','Generate model','inspect it from every angle and export the printable model'],
     'music-forge.html':['Music Forge','choose the mood, tempo, instruments, and length','Generate music','listen, adjust the arrangement, and download the track'],
     'name-forge.html':['Name Forge','describe the business, audience, tone, and useful keywords','Generate names','shortlist the strongest names and check their domains'],

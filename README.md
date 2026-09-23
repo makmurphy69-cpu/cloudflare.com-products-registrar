@@ -1,6 +1,6 @@
 # MigaBuilder
 
-**46 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
+**48 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
 
 [Try MigaBuilder](https://migabuilder.com/)
 
@@ -18,6 +18,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - Interactive world geography lessons and quizzes
 - Driving, boating and flying practice in a vehicle simulator
 - Browser apps, FAQ bots and social posts
+- House floor plans, 3D building models, construction drawings and material lists
 - 3D models and beginner coding projects
 
 ## Featured tools
@@ -31,9 +32,10 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Record Forge** — record your screen with narration
 - **Sign Documents** — sign PDFs, Word files and photos with a drawn, typed or uploaded signature
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
+- **CAD Forge** — draw walls, doors and windows on a floor plan, then get a 3D house with roof and timber framing, plan and elevation drawings, a material list and DXF, OBJ and STL exports
 - **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions with a live control panel, 3D flight, hazard scenarios, a narrator and a printable report card
 
-Explore all 46 tools at **[migabuilder.com](https://migabuilder.com/)**.
+Explore all 48 tools at **[migabuilder.com](https://migabuilder.com/)**.
 
 ## Why MigaBuilder
 
