@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mimi's Rocket to the Moon</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  #container {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #87CEEB;
+  }
+  /* Start overlay screen */
+  #overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.5s ease;
+  }
+  #overlay h1 {
+    font-size: 3rem;
+    margin: 0 0 10px 0;
+    text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+    color: #fff;
+    text-align: center;
+  }
+  #overlay p {
+    font-size: 1.3rem;
+    margin: 0 0 30px 0;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.2);
+  }
+  .big-btn {
+    background: #FFE66D;
+    color: #333;
+    border: none;
+    padding: 18px 45px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #D4B22B, 0 10px 20px rgba(0,0,0,0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .big-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #D4B22B, 0 5px 10px rgba(0,0,0,0.3);
+  }
+  /* Controls Bar */
+  #controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 960px;
+    background: #222;
+    padding: 10px 15px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    gap: 10px;
+  }
+  .ctrl-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  button.ctrl-btn {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  button.ctrl-btn:hover { background: #444; }
+  #progress-container {
+    flex-grow: 1;
+    height: 10px;
+    background: #444;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  #progress-bar {
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    width: 0%;
+    background: #4ECDC4;
+    pointer-events: none;
+  }
+  #time-display {
+    font-size: 0.9rem;
+    color: #ccc;
+    min-width: 45px;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div id="overlay">
+    <h1>Mimi's Rocket to the Moon</h1>
+    <p>A Saturday Morning Cartoon Adventure</p>
+    <button class="big-btn" id="start-btn">▶ PLAY CARTOON</button>
+  </div>
+  <canvas id="cartCanvas" width="960" height="540"></canvas>
+</div>
+
+<div id="controls">
+  <div class="ctrl-group">
+    <button class="ctrl-btn" id="playpause-btn">Pause</button>
+    <button class="ctrl-btn" id="replay-btn">Replay</button>
+    <button class="ctrl-btn" id="prev-btn">◀ Scene</button>
+    <button class="ctrl-btn" id="next-btn">Scene ▶</button>
+  </div>
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <div id="time-display">0:00</div>
+  <div class="ctrl-group">
+    <button class="ctrl-btn" id="mute-btn">🔊 Sound</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('cartCanvas');
+  const ctx = canvas.getContext('2d');
+  const overlay = document.getElementById('overlay');
+  const startBtn = document.getElementById('start-btn');
+  const playPauseBtn = document.getElementById('playpause-btn');
+  const replayBtn = document.getElementById('replay-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const muteBtn = document.getElementById('mute-btn');
+  const progressBar = document.getElementById('progress-bar');
+  const progressContainer = document.getElementById('progress-container');
+  const timeDisplay = document.getElementById('time-display');
+
+  const TOTAL_DURATION = 30.0; // seconds
+  let currentTime = 0;
+  let isPlaying = false;
+  let isMuted = false;
+  let started = false;
+  let lastTime = 0;
+
+  // Web Audio setup with MediaStream export capability
+  let audioCtx = null;
+  let masterGain = null;
+  let mediaStreamDest = null;
+  let soundEnabled = true;
+
+  function initAudio() {
+    if (audioCtx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AudioContext();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.3;
+    
+    mediaStreamDest = audioCtx.createMediaStreamDestination();
+    masterGain.connect(mediaStreamDest);
+    masterGain.connect(audioCtx.destination);
+  }
+
+  function playTone(freq, type, duration, vol = 0.1, delay = 0) {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      const now = audioCtx.currentTime + delay;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(vol, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+      osc.connect(gain);
+      gain.connect(masterGain);
+      osc.start(now);
+      osc.stop(now + duration);
+    } catch(e) {}
+  }
+
+  function playBeep(high = false) {
+    playTone(high ? 880 : 440, 'sine', 0.2, 0.15);
+  }
+
+  function playWhoosh() {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      const now = audioCtx.currentTime;
+      const bufferSize = audioCtx.sampleRate * 0.5;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(300, now);
+      filter.frequency.exponentialRampToValueAtTime(1200, now + 0.25);
+      filter.frequency.exponentialRampToValueAtTime(200, now + 0.5);
+      
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.01, now);
+      gain.gain.linearRampToValueAtTime(0.2, now + 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain);
+      noise.start(now);
+      noise.stop(now + 0.5);
+    } catch(e) {}
+  }
+
+  // Scene definitions (total 30s)
+  // Scene 1: 0 - 6s (Mimi dreams of the moon)
+  // Scene 2: 6 - 13s (Building cardboard rocket with blue bird)
+  // Scene 3: 13 - 18s (Countdown 3, 2, 1!)
+  // Scene 4: 18 - 24s (Flying past stars, waving at moon)
+  // Scene 5: 24 - 30s (Coming home for dinner, happy ending)
+  const scenes = [
+    { start: 0, end: 6, name: "The Dream" },
+    { start: 6, end: 13, name: "Building the Rocket" },
+    { start: 13, end: 18, name: "Countdown" },
+    { start: 18, end: 24, name: "Space Flight" },
+    { start: 24, end: 30, name: "Dinner Time" }
+  ];
+
+  function getCurrentSceneIndex(t) {
+    for (let i = 0; i < scenes.length; i++) {
+      if (t >= scenes[i].start && t <= scenes[i].end) return i;
+    }
+    return scenes.length - 1;
+  }
+
+  // --- DRAWING UTILITIES & CHARACTERS ---
+  
+  function drawBackground(sc, t) {
+    if (sc === 0) {
+      // Sunny backyard day
+      let grad = ctx.createLinearGradient(0, 0, 0, 540);
+      grad.addColorStop(0, '#4facfe');
+      grad.addColorStop(1, '#00f2fe');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Grass
+      ctx.fillStyle = '#76c442';
+      ctx.fillRect(0, 420, 960, 120);
+      ctx.fillStyle = '#55a022';
+      ctx.fillRect(0, 440, 960, 100);
+
+      // Sun
+      ctx.fillStyle = '#ffeb3b';
+      ctx.beginPath();
+      ctx.arc(850, 90, 50, 0, Math.PI * 2);
+      ctx.fill();
+
+    } else if (sc === 1) {
+      // Backyard afternoon / workshop
+      let grad = ctx.createLinearGradient(0, 0, 0, 540);
+      grad.addColorStop(0, '#ff9966');
+      grad.addColorStop(1, '#ff5e62');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Grass
+      ctx.fillStyle = '#5d8a34';
+      ctx.fillRect(0, 420, 960, 120);
+
+      // Cardboard boxes scattered
+      ctx.fillStyle = '#c8965c';
+      ctx.fillRect(150, 400, 70, 50);
+      ctx.fillRect(700, 410, 80, 45);
+      // box flaps
+      ctx.fillStyle = '#b07f45';
+      ctx.beginPath();
+      ctx.moveTo(150, 400); ctx.lineTo(170, 380); ctx.lineTo(190, 400); ctx.fill();
+
+    } else if (sc === 2) {
+      // Evening ready for launch
+      let grad = ctx.createLinearGradient(0, 0, 0, 540);
+      grad.addColorStop(0, '#2b1055');
+      grad.addColorStop(0.5, '#7597de');
+      grad.addColorStop(1, '#fbc531');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      ctx.fillStyle = '#3e5c26';
+      ctx.fillRect(0, 420, 960, 120);
+
+    } else if (sc === 3) {
+      // Deep Space
+      let grad = ctx.createLinearGradient(0, 0, 0, 540);
+      grad.addColorStop(0, '#000022');
+      grad.addColorStop(1, '#110033');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Stars
+      ctx.fillStyle = '#fff';
+      const starSeed = 42;
+      for (let i = 0; i < 50; i++) {
+        let x = (Math.sin(i * 99 + starSeed) * 10000) % 960;
+        let y = (Math.cos(i * 33 + starSeed) * 10000) % 540;
+        if (x < 0) x += 960;
+        if (y < 0) y += 540;
+        let size = (i % 3) + 1;
+        ctx.fillRect(x, y, size, size);
+      }
+
+      // Moon in distance (glowing)
+      ctx.fillStyle = '#e0e0e0';
+      ctx.beginPath();
+      ctx.arc(800, 120, 70, 0, Math.PI * 2);
+      ctx.fill();
+      // moon craters
+      ctx.fillStyle = '#ccc';
+      ctx.beginPath(); ctx.arc(780, 100, 15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(830, 140, 10, 0, Math.PI * 2); ctx.fill();
+
+    } else if (sc === 4) {
+      // Cozy living room at night
+      let grad = ctx.createLinearGradient(0, 0, 0, 540);
+      grad.addColorStop(0, '#292b4a');
+      grad.addColorStop(1, '#4b384c');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Wooden floor
+      ctx.fillStyle = '#8B5A2B';
+      ctx.fillRect(0, 420, 960, 120);
+
+      // Window showing stars
+      ctx.fillStyle = '#111b2b';
+      ctx.fillRect(700, 80, 180, 240);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(700, 80, 180, 240);
+      // Window cross
+      ctx.beginPath();
+      ctx.moveTo(790, 80); ctx.lineTo(790, 320);
+      ctx.moveTo(700, 200); ctx.lineTo(880, 200);
+      ctx.stroke();
+
+      // Dinner bowl on floor
+      ctx.fillStyle = '#ff6b6b';
+      ctx.beginPath();
+      ctx.ellipse(350, 450, 45, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Fish inside bowl
+      ctx.fillStyle = '#ffa500';
+      ctx.beginPath();
+      ctx.ellipse(350, 448, 25, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  // Draw Mimi (small orange cat)
+  function drawMimi(x, y, scale = 1, angle = 0, expression = 'happy', action = 'stand') {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.scale(scale, scale);
+
+    // Tail
+    ctx.strokeStyle = '#ff8c00';
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    let tailWag = Math.sin(currentTime * 8) * 10;
+    ctx.moveTo(-25, 10);
+    ctx.quadraticCurveTo(-50 + tailWag, -10, -45, -30);
+    ctx.stroke();
+
+    // Body
+    ctx.fillStyle = '#ffa500';
+    ctx.beginPath();
+    ctx.ellipse(0, 10, 30, 35, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Belly patch
+    ctx.fillStyle = '#fff5e6';
+    ctx.beginPath();
+    ctx.ellipse(0, 15, 18, 22, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#ffa500';
+    ctx.beginPath();
+    ctx.arc(0, -25, 28, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Ears
+    ctx.beginPath();
+    ctx.moveTo(-22, -42); ctx.lineTo(-32, -65); ctx.lineTo(-10, -48); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(22, -42); ctx.lineTo(32, -65); ctx.lineTo(10, -48); ctx.fill();
+
+    // Inner Ears
+    ctx.fillStyle = '#ffb6c1';
+    ctx.beginPath();
+    ctx.moveTo(-20, -45); ctx.lineTo(-27, -58); ctx.lineTo(-12, -48); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(20, -45); ctx.lineTo(27, -58); ctx.lineTo(12, -48); ctx.fill();
+
+    // Face / Eyes
+    ctx.fillStyle = '#000';
+    if (expression === 'happy') {
+      ctx.beginPath(); ctx.arc(-10, -28, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(10, -28, 4, 0, Math.PI * 2); ctx.fill();
+      // Smile
+      ctx.beginPath();
+      ctx.arc(0, -23, 8, 0, Math.PI);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    } else if (expression === 'excited') {
+      // big sparkling eyes (arcs)
+      ctx.beginPath(); ctx.arc(-10, -28, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(10, -28, 6, 0, Math.PI * 2); ctx.fill();
+      // open mouth
+      ctx.fillStyle = '#ff3333';
+      ctx.beginPath(); ctx.arc(0, -20, 6, 0, Math.PI); ctx.fill();
+    } else if (expression === 'determined') {
+      ctx.beginPath(); ctx.arc(-10, -28, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(10, -28, 4, 0, Math.PI * 2); ctx.fill();
+      // angry brows
+      ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(-18, -36); ctx.lineTo(-4, -32); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(18, -36); ctx.lineTo(4, -32); ctx.stroke();
+      // flat mouth
+      ctx.beginPath(); ctx.moveTo(-5, -20); ctx.lineTo(5, -20); ctx.stroke();
+    }
+
+    // Whiskers
+    ctx.strokeStyle = '#e07b00'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-15, -20); ctx.lineTo(-35, -23);
+    ctx.moveTo(-15, -16); ctx.lineTo(-35, -16);
+    ctx.moveTo(15, -20); ctx.lineTo(35, -23);
+    ctx.moveTo(15, -16); ctx.lineTo(35, -16);
+    ctx.stroke();
+
+    // Nose
+    ctx.fillStyle = '#ff69b4';
+    ctx.beginPath();
+    ctx.arc(0, -24, 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Arms & Legs based on action
+    ctx.fillStyle = '#ffa500';
+    if (action === 'wave') {
+      // right arm waving up
+      ctx.save();
+      ctx.translate(20, 0);
+      ctx.rotate(Math.sin(currentTime * 12) * 0.8 - 0.8);
+      ctx.fillRect(0, -15, 10, 20);
+      ctx.restore();
+      // left arm down
+      ctx.fillRect(-28, 0, 10, 20);
+    } else if (action === 'build') {
+      // hammering / moving paws
+      let pawOffset = Math.sin(currentTime * 15) * 8;
+      ctx.fillRect(-25 + pawOffset, 15, 12, 16);
+      ctx.fillRect(15 - pawOffset, 15, 12, 16);
+    } else {
+      // standing normal
+      ctx.fillRect(-22, 25, 12, 20);
+      ctx.fillRect(10, 25, 12, 20);
+      ctx.fillRect(-25, 5, 10, 18);
+      ctx.fillRect(15, 5, 10, 18);
+    }
+
+    ctx.restore();
+  }
+
+  // Draw Blue Bird (clever friend)
+  function drawBird(x, y, scale = 1, angle = 0, action = 'stand') {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.scale(scale, scale);
+
+    // Body
+    ctx.fillStyle = '#1e90ff';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 22, 18, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Belly
+    ctx.fillStyle = '#e0f7ff';
+    ctx.beginPath();
+    ctx.ellipse(5, 4, 12, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#1e90ff';
+    ctx.beginPath();
+    ctx.arc(-12, -8, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eye
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(-16, -11, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-17, -12, 1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Beak
+    ctx.fillStyle = '#ffa500';
+    ctx.beginPath();
+    ctx.moveTo(-26, -9); ctx.lineTo(-36, -6); ctx.lineTo(-26, -3); ctx.fill();
+
+    // Wing
+    ctx.fillStyle = '#0066cc';
+    ctx.beginPath();
+    let wingFlap = action === 'fly' ? Math.sin(currentTime * 25) * 15 : 0;
+    ctx.ellipse(-2, wingFlap, 14, 8, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hard hat / construction helmet (clever bird!)
+    ctx.fillStyle = '#ffd700';
+    ctx.beginPath();
+    ctx.arc(-12, -20, 12, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(-26, -20, 28, 4);
+
+    ctx.restore();
+  }
+
+  // Draw Cardboard Rocket
+  function drawRocket(x, y, scale = 1, angle = 0, showFire = false) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.scale(scale, scale);
+
+    // Rocket body (Cardboard brown tone)
+    ctx.fillStyle = '#d29034';
+    ctx.fillRect(-35, -70, 70, 140);
+
+    // Cardboard texture lines
+    ctx.strokeStyle = '#b57724';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(-35, -70, 70, 140);
+
+    // Nose Cone
+    ctx.fillStyle = '#e65100';
+    ctx.beginPath();
+    ctx.moveTo(-35, -70);
+    ctx.lineTo(0, -130);
+    ctx.lineTo(35, -70);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Fins
+    ctx.fillStyle = '#d84315';
+    // Left fin
+    ctx.beginPath();
+    ctx.moveTo(-35, 30);
+    ctx.lineTo(-65, 70);
+    ctx.lineTo(-35, 70);
+    ctx.closePath();
+    ctx.fill();
+    // Right fin
+    ctx.beginPath();
+    ctx.moveTo(35, 30);
+    ctx.lineTo(65, 70);
+    ctx.lineTo(35, 70);
+    ctx.closePath();
+    ctx.fill();
+
+    // Window Porthole
+    ctx.fillStyle = '#87ceeb';
+    ctx.beginPath();
+    ctx.arc(0, -20, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // "ROKET" kids handwriting on side
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('MIMI-1', 0, 30);
+
+    // Fire exhaust if flying
+    if (showFire) {
+      let flicker = Math.random() * 20;
+      ctx.fillStyle = '#ff3d00';
+      ctx.beginPath();
+      ctx.moveTo(-25, 70);
+      ctx.lineTo(0, 130 + flicker);
+      ctx.lineTo(25, 70);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#ffeb3b';
+      ctx.beginPath();
+      ctx.moveTo(-15, 70);
+      ctx.lineTo(0, 100 + flicker * 0.5);
+      ctx.lineTo(15, 70);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.restore();
+  }
+
+  // --- SCENE RENDERERS ---
+
+  function renderScene0(t) {
+    // 0 - 6s: Mimi dreams of the moon
+    drawBackground(0, t);
+
+    // Sleeping Mimi in hammock or grass
+    drawMimi(480, 350, 1.2, 0, 'happy', 'stand');
+
+    // Thought bubble floating to the moon
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 3;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    
+    // Bubble circles
+    ctx.beginPath(); ctx.arc(520, 280, 15, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(560, 240, 25, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    
+    // Big thought cloud
+    ctx.beginPath();
+    ctx.arc(650, 150, 60, 0, Math.PI * 2);
+    ctx.fill(); ctx.stroke();
+
+    // Draw tiny moon inside thought bubble
+    ctx.fillStyle = '#f1c40f';
+    ctx.beginPath(); ctx.arc(650, 150, 35, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#f39c12';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('🌙', 650, 158);
+
+    // Caption
+    drawCaption("Little Mimi looks at the glowing moon and dreams of flying high!");
+  }
+
+  function renderScene1(t) {
+    // 6 - 13s: Building cardboard rocket with clever bird friend
+    drawBackground(1, t);
+
+    // Large cardboard box structure being assembled
+    ctx.fillStyle = '#b07f45';
+    ctx.fillRect(430, 280, 120, 150);
+    ctx.strokeStyle = '#8c5e23';
+    ctx.lineWidth = 4;
+    ctx.strokeRect(430, 280, 120, 150);
+
+    // Mimi building excitedly
+    drawMimi(360, 370, 1, 0, 'excited', 'build');
+
+    // Bird helping with tools / hammer
+    drawBird(580, 330, 1, 0, 'stand');
+
+    // Draw little hammer in bird's wing
+    ctx.save();
+    ctx.translate(560, 340);
+    ctx.rotate(Math.sin(t * 20) * 0.5);
+    ctx.fillStyle = '#8b4513';
+    ctx.fillRect(0, -15, 6, 25);
+    ctx.fillStyle = '#7f8c8d';
+    ctx.fillRect(-8, -22, 22, 10);
+    ctx.restore();
+
+    // Tools scattered (wrench, tape)
+    ctx.fillStyle = '#bdc3c7';
+    ctx.fillRect(400, 410, 25, 8);
+    ctx.fillStyle = '#e74c3c';
+    ctx.beginPath(); ctx.arc(580, 420, 12, 0, Math.PI * 2); ctx.fill(); // duct tape roll
+
+    drawCaption("With her clever bird friend, she builds a cardboard rocket ship!");
+  }
+
+  function renderScene2(t) {
+    // 13 - 18s: Countdown from 3!
+    drawBackground(2, t);
+
+    // Rocket is fully built and standing upright
+    drawRocket(480, 320, 1.1, 0, false);
+
+    // Mimi and Bird inside or beside rocket ready
+    drawMimi(390, 370, 1, 0, 'determined', 'stand');
+    drawBird(570, 380, 1.1, 0, 'stand');
+
+    // Countdown logic & big text overlay
+    let localT = t - 13;
+    let countNum = 3 - Math.floor(localT / 1.5);
+    if (countNum < 1) countNum = 1;
+    if (localT > 4.5) countNum = "BLAST OFF!";
+
+    ctx.save();
+    ctx.font = 'bold 80px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffeb3b';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 8;
+    ctx.strokeText(countNum, 480, 150);
+    ctx.fillText(countNum, 480, 150);
+    ctx.restore();
+
+    drawCaption("3... 2... 1... Ignition!");
+  }
+
+  function renderScene3(t) {
+    // 18 - 24s: Flying past stars & waving at moon
+    drawBackground(3, t);
+
+    // Rocket flying upward across screen with camera tracking or motion
+    let flightProgress = (t - 18) / 6; // 0 to 1
+    let rocketY = 420 - flightProgress * 300;
+    let moonX = 800;
+    let moonY = 120;
+
+    // Draw rocket with fire
+    drawRocket(480, rocketY, 1.2, 0.1, true);
+
+    // Mimi looking out porthole or standing on top waving with bird
+    drawMimi(480, rocketY - 30, 0.9, 0, 'excited', 'wave');
+    drawBird(520, rocketY - 10, 0.9, 0, 'fly');
+
+    // Passing stars effect (moving down)
+    ctx.fillStyle = '#fff';
+    for(let i=0; i<15; i++) {
+      let sy = ((t * 200 + i * 50) % 540);
+      let sx = (i * 67) % 960;
+      ctx.fillRect(sx, sy, 3, 15);
+    }
+
+    // Waving at the big friendly moon
+    ctx.fillStyle = '#f9e79f';
+    ctx.beginPath();
+    ctx.arc(moonX, moonY, 80, 0, Math.PI * 2);
+    ctx.fill();
+    // Friendly moon face
+    ctx.fillStyle = '#d4ac0d';
+    ctx.beginPath(); ctx.arc(moonX - 25, moonY - 10, 8, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(moonX + 25, moonY - 10, 8, 0, Math.PI * 2); ctx.fill();
+    // Smile
+    ctx.beginPath();
+    ctx.arc(moonX, moonY + 10, 25, 0, Math.PI);
+    ctx.strokeStyle = '#d4ac0d'; ctx.lineWidth = 4; ctx.stroke();
+
+    drawCaption("They zoom past twinkling stars and wave hello to the friendly moon!");
+  }
+
+  function renderScene4(t) {
+    // 24 - 30s: Coming home for dinner
+    drawBackground(4, t);
+
+    // Mimi happily eating dinner from her bowl
+    drawMimi(420, 380, 1.1, 0, 'happy', 'stand');
+    // Bird friend resting nearby
+    drawBird(530, 390, 1, 0, 'stand');
+
+    // Small cardboard rocket toy in the corner
+    drawRocket(820, 360, 0.4, 0.5, false);
+
+    drawCaption("Back home just in time for a yummy dinner! What an adventure.");
+  }
+
+  function drawCaption(text) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.roundRect ? ctx.roundRect(120, 465, 720, 55, 12) : ctx.fillRect(120, 465, 720, 55);
+    ctx.fill();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 480, 492.5);
+    ctx.restore();
+  }
+
+  // --- MAIN ANIMATION LOOP ---
+  function update(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    let dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    if (isPlaying) {
+      currentTime += dt;
+      if (currentTime >= TOTAL_DURATION) {
+        currentTime = TOTAL_DURATION;
+        isPlaying = false;
+        playPauseBtn.textContent = "Play";
+        overlay.style.opacity = '1';
+        overlay.style.display = 'flex';
+        startBtn.textContent = "REPLAY CARTOON";
+      }
+    }
+
+    // Render current frame
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let scIndex = getCurrentSceneIndex(currentTime);
+
+    if (scIndex === 0) renderScene0(currentTime);
+    else if (scIndex === 1) renderScene1(currentTime);
+    else if (scIndex === 2) renderScene2(currentTime);
+    else if (scIndex === 3) renderScene3(currentTime);
+    else if (scIndex === 4) renderScene4(currentTime);
+
+    // Update UI controls
+    let progPct = (currentTime / TOTAL_DURATION) * 100;
+    progressBar.style.width = progPct + '%';
+    
+    let mins = Math.floor(currentTime / 60);
+    let secs = Math.floor(currentTime % 60);
+    timeDisplay.textContent = mins + ':' + (secs < 10 ? '0' : '') + secs;
+
+    // Procedural sound triggers based on exact time milestones
+    if (isPlaying) {
+      // Sound FX trigger checks
+      if (Math.abs(currentTime - 13.0) < 0.05) playBeep(false);
+      if (Math.abs(currentTime - 14.5) < 0.05) playBeep(false);
+      if (Math.abs(currentTime - 16.0) < 0.05) playBeep(true);
+      if (Math.abs(currentTime - 17.5) < 0.05) playWhoosh();
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  // --- CONTROLS & INTERACTION ---
+  function startCartoon() {
+    initAudio();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    started = true;
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 500);
+    isPlaying = true;
+    playPauseBtn.textContent = "Pause";
+    if (currentTime >= TOTAL_DURATION) {
+      currentTime = 0;
+    }
+    lastTime = performance.now();
+  }
+
+  startBtn.addEventListener('click', startCartoon);
+
+  playPauseBtn.addEventListener('click', () => {
+    if (!started) {
+      startCartoon();
+      return;
+    }
+    isPlaying = !isPlaying;
+    playPauseBtn.textContent = isPlaying ? "Pause" : "Play";
+    if (currentTime >= TOTAL_DURATION) {
+      currentTime = 0;
+      isPlaying = true;
+      playPauseBtn.textContent = "Pause";
+    }
+  });
+
+  replayBtn.addEventListener('click', () => {
+    currentTime = 0;
+    isPlaying = true;
+    playPauseBtn.textContent = "Pause";
+    overlay.style.opacity = '0';
+    overlay.style.display = 'none';
+    started = true;
+  });
+
+  prevBtn.addEventListener('click', () => {
+    let sc = getCurrentSceneIndex(currentTime);
+    if (currentTime - scenes[sc].start < 1.0 && sc > 0) {
+      sc--;
+    }
+    currentTime = scenes[sc].start;
+  });
+
+  nextBtn.addEventListener('click', () => {
+    let sc = getCurrentSceneIndex(currentTime);
+    if (sc < scenes.length - 1) {
+      currentTime = scenes[sc + 1].start;
+    }
+  });
+
+  progressContainer.addEventListener('click', (e) => {
+    const rect = progressContainer.getBoundingClientRect();
+    const pos = (e.clientX - rect.left) / rect.width;
+    currentTime = Math.max(0, Math.min(1, pos)) * TOTAL_DURATION;
+  });
+
+  muteBtn.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    muteBtn.textContent = soundEnabled ? "🔊 Sound" : "🔇 Muted";
+    if (masterGain) {
+      masterGain.gain.value = soundEnabled ? 0.3 : 0.0;
+    }
+  });
+
+  // Expose required controller API
+  window.cartoonController = {
+    play: () => { isPlaying = true; playPauseBtn.textContent = "Pause"; started = true; overlay.style.display = 'none'; },
+    pause: () => { isPlaying = false; playPauseBtn.textContent = "Play"; },
+    replay: () => { currentTime = 0; isPlaying = true; playPauseBtn.textContent = "Pause"; overlay.style.display = 'none'; started = true; },
+    getDuration: () => TOTAL_DURATION,
+    getCanvas: () => canvas,
+    getAudioStream: () => mediaStreamDest ? mediaStreamDest.stream : null
+  };
+
+  // Start animation loop
+  requestAnimationFrame(update);
+
+})();
+</script>
+</body>
+</html>

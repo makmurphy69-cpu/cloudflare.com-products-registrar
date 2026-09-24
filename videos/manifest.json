@@ -1,0 +1,1132 @@
+{
+ "3d-cartoon.html": {
+  "title": "3D Cartoon",
+  "video": "videos/3d-cartoon.mp4",
+  "poster": "videos/3d-cartoon.jpg",
+  "duration": 60,
+  "transcript": [
+   "Welcome to 3D Cartoon, a short cel shaded cartoon scene that plays right in your browser.",
+   "Press play to start the scene.",
+   "Sit back and watch. Everything is drawn live in 3D, in your browser.",
+   "Want to make your own story? Try Cartoon Forge, which animates any idea you describe.",
+   "Now it is your turn. Open 3D Cartoon on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/3d-cartoon.png",
+   "label": "Scene from this video",
+   "kind": "image"
+  }
+ },
+ "alphabet-forge.html": {
+  "title": "Alphabet Forge",
+  "video": "videos/alphabet-forge.mp4",
+  "poster": "videos/alphabet-forge.jpg",
+  "duration": 71,
+  "transcript": [
+   "Welcome to Alphabet Forge. Learn to read, say and write alphabets from around the world.",
+   "Choose a writing system: Thai, Arabic, Mandarin, Japanese, Korean and many more.",
+   "Each symbol sits in its own square. Tap one to hear it.",
+   "You see a real word that uses it, and why it sounds that way. In Thai, the consonant class decides the tone of the word.",
+   "Now Arabic. Arabic letters change shape depending on where they are in a word: alone, at the start, in the middle or at the end.",
+   "Korean letters are pictures of the mouth. This one, ㄱ, shows the back of the tongue touching the roof of the mouth, which makes the g sound.",
+   "Scroll down to practise writing. Trace mode shows a faint guide you can write over.",
+   "Write the letter with your finger or mouse, then press Check to get a score.",
+   "When you are ready, take the listening quiz: hear a sound and pick the right symbol.",
+   "Now it is your turn. Open Alphabet Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/alphabet-forge.png",
+   "label": "Writing practice from this video",
+   "kind": "image"
+  }
+ },
+ "app-forge.html": {
+  "title": "App Forge",
+  "video": "videos/app-forge.mp4",
+  "poster": "videos/app-forge.jpg",
+  "duration": 55,
+  "transcript": [
+   "Welcome to App Forge. Describe an app, and get it built as an app people can install on their phone.",
+   "Choose what you want to build. Here we make an installable web app.",
+   "Give it a name and describe what it should do.",
+   "Pick a theme colour, then press Generate app.",
+   "The app runs in the preview. Try it out, and ask for changes in plain words.",
+   "Download it as a zip, ready to put online or install.",
+   "Now it is your turn. Open App Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/app-forge.html",
+   "label": "App made in this video",
+   "kind": "html"
+  }
+ },
+ "audio-forge.html": {
+  "title": "Audio Forge",
+  "video": "videos/audio-forge.mp4",
+  "poster": "videos/audio-forge.jpg",
+  "duration": 58,
+  "transcript": [
+   "Welcome to Audio Forge. Edit audio right in your browser. Your files never leave your device.",
+   "Open an audio or video file, or record from your microphone. Here we open a podcast intro.",
+   "Drag across the waveform to select a part. Let us cut off the “umm” at the start.",
+   "Press Keep selection to trim everything else away.",
+   "Add a fade in and a fade out, and make the voice as loud as possible with Normalise.",
+   "Finally choose MP3 or WAV, and download.",
+   "Now it is your turn. Open Audio Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/audio-forge.mp3",
+   "label": "Edited audio from this video",
+   "kind": "audio"
+  }
+ },
+ "background-forge.html": {
+  "title": "Background Forge",
+  "video": "videos/background-forge.mp4",
+  "poster": "videos/background-forge.jpg",
+  "duration": 48,
+  "transcript": [
+   "Welcome to Background Forge. It removes the background from a picture, right in your browser.",
+   "Choose an image with a clear subject.",
+   "Adjust the removal strength if you need to, then press Remove background.",
+   "The background is now transparent. Check the edges, and download the PNG.",
+   "Now it is your turn. Open Background Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/background-forge.png",
+   "label": "Cut-out made in this video",
+   "kind": "image"
+  }
+ },
+ "big-five.html": {
+  "title": "Big Five Personality",
+  "video": "videos/big-five.mp4",
+  "poster": "videos/big-five.jpg",
+  "duration": 55,
+  "transcript": [
+   "Welcome to the Big Five personality test. It describes your personality across five well researched dimensions.",
+   "Press Start. Everything stays private in your browser.",
+   "Read each statement and choose how accurately it describes you. There are no right or wrong answers.",
+   "Your report shows where you are on each dimension, with a plain language explanation.",
+   "Now it is your turn. Open Big Five Personality on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/big-five.png",
+   "label": "Example report from this video",
+   "kind": "image"
+  }
+ },
+ "bot-forge.html": {
+  "title": "Bot Forge",
+  "video": "videos/bot-forge.mp4",
+  "poster": "videos/bot-forge.jpg",
+  "duration": 53,
+  "transcript": [
+   "Welcome to Bot Forge. It makes a chat helper that answers your customers’ questions on your website.",
+   "Enter your business name and a short description.",
+   "The bot runs on your own website, so it uses your own free Gemini key. Paste it here. In this video we use a demo key.",
+   "Now the important part: everything the bot should know, like opening hours, prices and delivery.",
+   "Set a welcome message and a colour, then press Build widget preview.",
+   "Test it like a customer would. Open the chat and ask a question.",
+   "The bot answers from your information only. When you are happy, copy the embed code into your website.",
+   "Now it is your turn. Open Bot Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/bot-forge.html",
+   "label": "Chat widget made in this video",
+   "kind": "html"
+  }
+ },
+ "bug-scanner.html": {
+  "title": "Bug Scanner",
+  "video": "videos/bug-scanner.mp4",
+  "poster": "videos/bug-scanner.jpg",
+  "duration": 72,
+  "transcript": [
+   "Welcome to Bug Scanner. In one minute you will see how to find the bugs in your code, understand why they happen, and get the fixed version.",
+   "Paste your code into the box, open files, or drop a whole project as a zip file. For this example, we load a small shopping list web page that has a few hidden bugs.",
+   "Choose the language, or leave it on auto detect. Then press Scan code.",
+   "Here are the results. The score shows the overall quality, and every problem is listed from most to least serious.",
+   "Each problem tells you what is wrong, why it matters, and exactly how to fix it, with the corrected code ready to copy.",
+   "Open What it builds to read what the code does, and see the page running live. Real errors from your code appear in the console.",
+   "The Fixed code tab shows the complete corrected version, with every change highlighted.",
+   "You can copy it, download it, or download the full report.",
+   "Now it is your turn. Open Bug Scanner on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/bug-scanner.md",
+   "label": "Bug report made in this video",
+   "kind": "text"
+  }
+ },
+ "cad-forge.html": {
+  "title": "CAD Forge",
+  "video": "videos/cad-forge.mp4",
+  "poster": "videos/cad-forge.jpg",
+  "duration": 122,
+  "transcript": [
+   "Welcome to CAD Forge. Draw a floor plan and get a 3D house, drawings and a material list.",
+   "Draw walls, doors and windows on the plan, or start from the sample house.",
+   "Rooms are found automatically, with their areas.",
+   "The 3D model builds itself, with the roof you choose.",
+   "Open the drawings for a plan and elevations at a proper scale.",
+   "The material list counts the timber, boards, roof and windows you need.",
+   "Export the floor plan for other CAD programs, or the 3D model and a picture.",
+   "Now it is your turn. Open CAD Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/cad-forge.png",
+   "label": "3D house made in this video",
+   "kind": "image"
+  }
+ },
+ "cartoon-forge.html": {
+  "title": "Cartoon Forge",
+  "video": "videos/cartoon-forge.mp4",
+  "poster": "videos/cartoon-forge.jpg",
+  "duration": 83,
+  "transcript": [
+   "Welcome to Cartoon Forge. Describe a story, and watch it come to life as an animated cartoon.",
+   "Choose a style, the length, the format and who it is for.",
+   "Describe the characters, the setting and what happens.",
+   "Press Generate cartoon.",
+   "Here is the cartoon, with captions and narration. Press Replay to watch it again.",
+   "Refine any scene in plain words, then record it as a video or download it.",
+   "Now it is your turn. Open Cartoon Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/cartoon-forge.html",
+   "label": "Cartoon made in this video",
+   "kind": "html"
+  }
+ },
+ "clip-forge.html": {
+  "title": "Clip Forge",
+  "video": "videos/clip-forge.mp4",
+  "poster": "videos/clip-forge.jpg",
+  "duration": 39,
+  "transcript": [
+   "Welcome to Clip Forge. Trim a video, add captions, change the shape, and download it.",
+   "Upload a video. It plays right here in your browser.",
+   "Set where the clip should start and end.",
+   "Change the shape, for example square for Instagram, and add a text overlay.",
+   "Press Render video.",
+   "Preview the result, then download it.",
+   "Now it is your turn. Open Clip Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/clip-forge.webm",
+   "label": "Video made in this video",
+   "kind": "video"
+  }
+ },
+ "code-forge.html": {
+  "title": "Code Forge",
+  "video": "videos/code-forge.mp4",
+  "poster": "videos/code-forge.jpg",
+  "duration": 59,
+  "transcript": [
+   "Welcome to Code Forge. Learn to code in Python or JavaScript, one small lesson at a time.",
+   "Choose Python or JavaScript, and start with the first lesson.",
+   "Each lesson explains one idea, and gives you a small task. Write your code in the editor.",
+   "Press Run and check. You see the output, and whether you solved the task.",
+   "Stuck? Use a hint, or ask the AI to explain your code in simple words.",
+   "Now it is your turn. Open Code Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/code-forge.png",
+   "label": "Lesson from this video",
+   "kind": "image"
+  }
+ },
+ "contract-forge.html": {
+  "title": "Contract Forge",
+  "video": "videos/contract-forge.mp4",
+  "poster": "videos/contract-forge.jpg",
+  "duration": 50,
+  "transcript": [
+   "Welcome to Contract Forge. It helps you draft a clear, simple agreement.",
+   "Enter your business name, choose the type of contract, and add the other party.",
+   "Describe the work and the payment terms in plain words.",
+   "The contract preview fills in as you type. Both people can even sign on screen.",
+   "Always read every clause carefully. Then print it or download it.",
+   "Now it is your turn. Open Contract Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/contract-forge.html",
+   "label": "Contract made in this video",
+   "kind": "html"
+  }
+ },
+ "cv-forge.html": {
+  "title": "CV Forge",
+  "video": "videos/cv-forge.mp4",
+  "poster": "videos/cv-forge.jpg",
+  "duration": 40,
+  "transcript": [
+   "Welcome to CV Forge. Let us make a professional CV and download it as a PDF.",
+   "Choose a layout and an accent colour.",
+   "Fill in your name, job title and contact details. The preview updates as you type.",
+   "Add a short summary, your experience, education and skills.",
+   "You can paste a job advert to see how well your CV matches it. When you are happy, download the PDF.",
+   "Now it is your turn. Open CV Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/cv-forge.pdf",
+   "label": "CV made in this video",
+   "kind": "pdf"
+  }
+ },
+ "design-forge.html": {
+  "title": "Design Forge",
+  "video": "videos/design-forge.mp4",
+  "poster": "videos/design-forge.jpg",
+  "duration": 47,
+  "transcript": [
+   "Welcome to Design Forge. Make thumbnails, social posts and collages in seconds.",
+   "Choose the size, for example a YouTube thumbnail.",
+   "Add up to nine images and a headline.",
+   "Pick a layout and a text colour, then press Create design.",
+   "Download your design as a picture.",
+   "Now it is your turn. Open Design Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/design-forge.png",
+   "label": "Design made in this video",
+   "kind": "image"
+  }
+ },
+ "document-forge.html": {
+  "title": "Document Forge",
+  "video": "videos/document-forge.mp4",
+  "poster": "videos/document-forge.jpg",
+  "duration": 43,
+  "transcript": [
+   "Welcome to Document Forge. Convert documents, images and PDFs without uploading them anywhere.",
+   "Drop in a file: a Word document, text, Markdown, a web page, a photo or a PDF. Here is a bakery menu written as a simple text file.",
+   "Choose the format you need. Let us turn it into a neat PDF document.",
+   "Check the preview, then press Convert and download.",
+   "Now it is your turn. Open Document Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/document-forge.pdf",
+   "label": "PDF made in this video",
+   "kind": "pdf"
+  }
+ },
+ "everyday-forge.html": {
+  "title": "Everyday Forge",
+  "video": "videos/everyday-forge.mp4",
+  "poster": "videos/everyday-forge.jpg",
+  "duration": 50,
+  "transcript": [
+   "Welcome to Everyday Forge. It bundles everyday helpers: charts, writing tools, passwords and converters.",
+   "Let us make a chart. Choose the chart type and give it a title.",
+   "Type one label and number per line.",
+   "Press Create chart.",
+   "Your chart is ready to download as a picture. The other tabs generate passwords and convert units and currencies.",
+   "Now it is your turn. Open Everyday Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/everyday-forge.png",
+   "label": "Chart made in this video",
+   "kind": "image"
+  }
+ },
+ "file-forge.html": {
+  "title": "Image Forge",
+  "video": "videos/file-forge.mp4",
+  "poster": "videos/file-forge.jpg",
+  "duration": 37,
+  "transcript": [
+   "Welcome to Image Forge. Convert, resize and compress many images at once, privately.",
+   "Choose your images, or drag them onto the page. Here is a large landscape photo.",
+   "Pick the new format. WebP makes much smaller files for websites.",
+   "Set the quality, and a maximum size if you want to shrink the image.",
+   "Press Convert and download. Location data and other hidden details are removed too.",
+   "Now it is your turn. Open Image Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/file-forge.webp",
+   "label": "Converted image from this video",
+   "kind": "image"
+  }
+ },
+ "flashcard-forge.html": {
+  "title": "Flashcard Forge",
+  "video": "videos/flashcard-forge.mp4",
+  "poster": "videos/flashcard-forge.jpg",
+  "duration": 73,
+  "transcript": [
+   "Welcome to Flashcard Forge. Make flashcards in seconds and remember them for good.",
+   "Create a deck. You can type cards, paste a list, or let the AI write them from your notes.",
+   "Here we paste a list of Swahili words, one card per line.",
+   "Now study. Tap the card to see the answer.",
+   "Then say how well you remembered it. Cards you know come back later, and cards you forget come back sooner.",
+   "Test yourself with multiple choice or typed answers, and export your deck to Anki, Quizlet or Excel.",
+   "Now it is your turn. Open Flashcard Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/flashcard-forge.csv",
+   "label": "Deck made in this video (CSV)",
+   "kind": "text"
+  }
+ },
+ "form-forge.html": {
+  "title": "Form Forge",
+  "video": "videos/form-forge.mp4",
+  "poster": "videos/form-forge.jpg",
+  "duration": 45,
+  "transcript": [
+   "Welcome to Form Forge. It makes a simple form or survey that you can share as a single file.",
+   "Give the form a title and a short description.",
+   "List your questions, one per line.",
+   "Press Preview form to see exactly what people will fill in.",
+   "Download the form as one file and share it by email or on your website.",
+   "Now it is your turn. Open Form Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/form-forge.html",
+   "label": "Form made in this video",
+   "kind": "html"
+  }
+ },
+ "game-forge.html": {
+  "title": "Game Forge",
+  "video": "videos/game-forge.mp4",
+  "poster": "videos/game-forge.jpg",
+  "duration": 55,
+  "transcript": [
+   "Welcome to Game Forge. Describe a game, and play it in your browser a minute later.",
+   "Describe the game you want: the hero, the goal, the controls and the style.",
+   "Pick a genre and the features you want, like sound effects and touch controls for phones. Then press Generate game.",
+   "Your game is ready. Press start and play it right here.",
+   "Use the arrow keys to move and the space bar to jump. Collect the croissants and dodge the wasps.",
+   "To change it, type a request like make it harder, or use the quick buttons. Then download the finished game.",
+   "Now it is your turn. Open Game Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/game-forge.html",
+   "label": "Game made in this video",
+   "kind": "html"
+  }
+ },
+ "geo-forge.html": {
+  "title": "Geography Forge",
+  "video": "videos/geo-forge.mp4",
+  "poster": "videos/geo-forge.jpg",
+  "duration": 90,
+  "transcript": [
+   "Welcome to Geography Forge. Explore any country on the world map, then test yourself with a quiz.",
+   "Click a country on the map, or search for it. Let us look at Kenya.",
+   "You get the capital, currency, languages and government, plus its history and customs.",
+   "Every country you open is saved, so you can build a quiz from what you explored.",
+   "Choose the questions and press Generate quiz.",
+   "Answer each question and see an explanation straight away.",
+   "Now it is your turn. Open Geography Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/geo-forge.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
+ "grammar-forge.html": {
+  "title": "Grammar Forge",
+  "video": "videos/grammar-forge.mp4",
+  "poster": "videos/grammar-forge.jpg",
+  "duration": 49,
+  "transcript": [
+   "Welcome to Grammar Forge. It checks your spelling and grammar privately, in six languages.",
+   "Choose the language of your text, then type or paste your writing.",
+   "Press Check writing. Every problem is underlined and explained in the list.",
+   "Read each explanation and accept the fixes you agree with, or accept all the safe fixes at once.",
+   "Finally, copy the corrected text and use it anywhere.",
+   "Now it is your turn. Open Grammar Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/grammar-forge.png",
+   "label": "Checked text from this video",
+   "kind": "image"
+  }
+ },
+ "idea-atlas.html": {
+  "title": "Idea Atlas",
+  "video": "videos/idea-atlas.mp4",
+  "poster": "videos/idea-atlas.jpg",
+  "duration": 119,
+  "transcript": [
+   "Welcome to Idea Atlas. Explore the history of philosophies and political ideologies, and how they connect.",
+   "Each circle on the map is an idea. Older ideas are on the left and newer ones on the right, and the lines show who influenced whom.",
+   "Click an idea to read its history, core ideas and key thinkers. Let us open Stoicism.",
+   "You see what it drew on, what it influenced, and what its critics say.",
+   "You can also switch to a timeline or a list.",
+   "Now the game. Choose the questions and press Generate quiz. Challenge mode gives you twenty seconds per question, with bonus points for speed and streaks.",
+   "Pick an answer. You get an explanation every time, and your best score is saved.",
+   "Now it is your turn. Open Idea Atlas on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/idea-atlas.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
+ "image-studio.html": {
+  "title": "Image Studio",
+  "video": "videos/image-studio.mp4",
+  "poster": "videos/image-studio.jpg",
+  "duration": 51,
+  "transcript": [
+   "Welcome to Image Studio. Change backgrounds, and make collages, memes and thumbnails.",
+   "Choose a picture. Then choose how to find the background, and what to do with it.",
+   "Here we replace the background with a warm colour.",
+   "The other tabs make collages, memes, YouTube thumbnails and sharper, upscaled pictures.",
+   "Download the finished picture.",
+   "Now it is your turn. Open Image Studio on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/image-studio.png",
+   "label": "Picture made in this video",
+   "kind": "image"
+  }
+ },
+ "invoice-forge.html": {
+  "title": "Invoice Forge",
+  "video": "videos/invoice-forge.mp4",
+  "poster": "videos/invoice-forge.jpg",
+  "duration": 53,
+  "transcript": [
+   "Welcome to Invoice Forge. Let us make a professional invoice in about a minute.",
+   "Enter your business name and your client’s name.",
+   "Choose whether this is a quote or an invoice.",
+   "Add each line item with a quantity and price. The totals are calculated for you.",
+   "Add a discount or tax rate if you need one. The preview updates as you type.",
+   "When it looks right, print it, save it as a PDF, or download it.",
+   "Now it is your turn. Open Invoice Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/invoice-forge.html",
+   "label": "Invoice made in this video",
+   "kind": "html"
+  }
+ },
+ "logo-forge.html": {
+  "title": "Logo Forge",
+  "video": "videos/logo-forge.mp4",
+  "poster": "videos/logo-forge.jpg",
+  "duration": 55,
+  "transcript": [
+   "Welcome to Logo Forge. Describe your business, and get a logo and a brand kit.",
+   "Describe the business and the feeling you want, and add its name.",
+   "Press Generate a logo and brand kit.",
+   "Here is your logo with colours, fonts and a small icon for your website tab.",
+   "Download the files you need: the logo, the favicon and the brand kit.",
+   "Now it is your turn. Open Logo Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/logo-forge.png",
+   "label": "Logo made in this video",
+   "kind": "image"
+  }
+ },
+ "media-convert-forge.html": {
+  "title": "Media Convert Forge",
+  "video": "videos/media-convert-forge.mp4",
+  "poster": "videos/media-convert-forge.jpg",
+  "duration": 29,
+  "transcript": [
+   "Welcome to Media Convert Forge. Convert video to a GIF, an MP3 or a smaller MP4.",
+   "Choose a video or audio file.",
+   "Pick the output. Here we pull out the sound as an MP3.",
+   "Press Convert and download.",
+   "Now it is your turn. Open Media Convert Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/media-convert-forge.mp3",
+   "label": "Audio made in this video",
+   "kind": "audio"
+  }
+ },
+ "media-convert.html": {
+  "title": "Media Convert",
+  "video": "videos/media-convert.mp4",
+  "poster": "videos/media-convert.jpg",
+  "duration": 41,
+  "transcript": [
+   "Welcome to Media Convert. Turn video into a GIF, pull out the audio, or transcribe speech.",
+   "Choose a video. Pick where the GIF should start and how long it is.",
+   "Choose the size and smoothness, then press Create and download GIF.",
+   "The other tabs extract the sound as audio, or write down speech as text.",
+   "Now it is your turn. Open Media Convert on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/media-convert.gif",
+   "label": "GIF made in this video",
+   "kind": "image"
+  }
+ },
+ "meet-forge.html": {
+  "title": "Meet Forge",
+  "video": "videos/meet-forge.mp4",
+  "poster": "videos/meet-forge.jpg",
+  "duration": 52,
+  "transcript": [
+   "Welcome to Meet Forge. Host a free video meeting, or an always open group for your team.",
+   "Enter your name and a meeting name.",
+   "Press Create new meeting, then share the link with the people you want to invite.",
+   "To join someone else’s meeting, paste their link or code here.",
+   "Or create an always open group with separate topics, like a small community.",
+   "Now it is your turn. Open Meet Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/meet-forge.png",
+   "label": "Meeting setup from this video",
+   "kind": "image"
+  }
+ },
+ "merge-forge.html": {
+  "title": "Merge Forge",
+  "video": "videos/merge-forge.mp4",
+  "poster": "videos/merge-forge.jpg",
+  "duration": 59,
+  "transcript": [
+   "Welcome to Merge Forge. Combine pictures and clips with text and music into one video.",
+   "Add your images and clips in order.",
+   "Choose a transition, the shape, and add a caption.",
+   "Pick background music, or record your own voice.",
+   "Press Merge and render video.",
+   "Play the preview, then download the finished video.",
+   "Now it is your turn. Open Merge Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/merge-forge.webm",
+   "label": "Video made in this video",
+   "kind": "video"
+  }
+ },
+ "model-forge.html": {
+  "title": "Model Forge",
+  "video": "videos/model-forge.mp4",
+  "poster": "videos/model-forge.jpg",
+  "duration": 79,
+  "transcript": [
+   "Welcome to Model Forge. Design simple 3D models, ready for a 3D printer.",
+   "Add shapes: a box, a cylinder, a sphere or a cone.",
+   "Combine them. Subtract cuts one shape out of another, like drilling a hole.",
+   "Turn the model around to look at it from every side.",
+   "Export it as an STL or OBJ file for your 3D printer.",
+   "Now it is your turn. Open Model Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/model-forge.png",
+   "label": "Model made in this video",
+   "kind": "image"
+  }
+ },
+ "music-forge.html": {
+  "title": "Music Forge",
+  "video": "videos/music-forge.mp4",
+  "poster": "videos/music-forge.jpg",
+  "duration": 47,
+  "transcript": [
+   "Welcome to Music Forge. It creates original music for your videos, free to use.",
+   "Choose a mood. Each preset sets the tempo, chords and instruments.",
+   "Set the length and tempo, then press Generate track.",
+   "Listen to it, or press Regenerate for a new variation. Advanced users can edit every note in the tracker.",
+   "Download the music as a WAV audio file, free to use in your videos.",
+   "Now it is your turn. Open Music Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/music-forge.wav",
+   "label": "Music made in this video",
+   "kind": "audio"
+  }
+ },
+ "name-forge.html": {
+  "title": "Name Forge",
+  "video": "videos/name-forge.mp4",
+  "poster": "videos/name-forge.jpg",
+  "duration": 37,
+  "transcript": [
+   "Welcome to Name Forge. It helps you brainstorm a name for your business.",
+   "Describe what your business does, and choose a style.",
+   "Press Generate names.",
+   "Shortlist the names you like and check whether the web address is free. Press More ideas for a new batch.",
+   "Now it is your turn. Open Name Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/name-forge.png",
+   "label": "Name ideas from this video",
+   "kind": "image"
+  }
+ },
+ "ocr-forge.html": {
+  "title": "OCR Forge",
+  "video": "videos/ocr-forge.mp4",
+  "poster": "videos/ocr-forge.jpg",
+  "duration": 44,
+  "transcript": [
+   "Welcome to OCR Forge. It reads the text in a photo or scan, privately on your device.",
+   "Choose a clear image. Here is a photo of a bakery receipt.",
+   "Select the document language and press Extract text.",
+   "Check names and numbers, then copy the text or download it.",
+   "Now it is your turn. Open OCR Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/ocr-forge.txt",
+   "label": "Extracted text from this video",
+   "kind": "text"
+  }
+ },
+ "paint-forge.html": {
+  "title": "Paint Forge",
+  "video": "videos/paint-forge.mp4",
+  "poster": "videos/paint-forge.jpg",
+  "duration": 56,
+  "transcript": [
+   "Welcome to Paint Forge. A layered image editor that runs in your browser.",
+   "Pick a tool from the toolbar. Let us draw a rectangle.",
+   "Now an ellipse, and some free drawing with the brush.",
+   "Work with layers, import photos, and adjust brightness, contrast and colours.",
+   "When you are finished, export your picture as PNG or JPG.",
+   "Now it is your turn. Open Paint Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/paint-forge.png",
+   "label": "Picture made in this video",
+   "kind": "image"
+  }
+ },
+ "palette-forge.html": {
+  "title": "Palette Forge",
+  "video": "videos/palette-forge.mp4",
+  "poster": "videos/palette-forge.jpg",
+  "duration": 43,
+  "transcript": [
+   "Welcome to Palette Forge. It builds a colour palette for your brand that is easy to read.",
+   "Pick a base colour for your brand.",
+   "Choose a harmony, such as complementary or triadic, and press Generate palette.",
+   "Each colour shows its code and how readable text is on it.",
+   "Copy the colour codes, or copy them as ready made CSS for your website.",
+   "Now it is your turn. Open Palette Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/palette-forge.png",
+   "label": "Palette made in this video",
+   "kind": "image"
+  }
+ },
+ "pattern-lab.html": {
+  "title": "Work Pattern Test",
+  "video": "videos/pattern-lab.mp4",
+  "poster": "videos/pattern-lab.jpg",
+  "duration": 48,
+  "transcript": [
+   "Welcome to the Work Pattern Test. It lets you practise the pattern questions many employers use.",
+   "Press Start to begin a practice set.",
+   "Find the rule in the pattern and pick what comes next.",
+   "Your result shows each answer with a worked explanation. You can print the report or try a new set.",
+   "Now it is your turn. Open Work Pattern Test on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/pattern-lab.png",
+   "label": "Example result from this video",
+   "kind": "image"
+  }
+ },
+ "pdf-compress.html": {
+  "title": "Compress PDF",
+  "video": "videos/pdf-compress.mp4",
+  "poster": "videos/pdf-compress.jpg",
+  "duration": 39,
+  "transcript": [
+   "Welcome to Compress PDF. It makes a PDF smaller, so it fits email and upload limits.",
+   "Choose the PDF you want to shrink. Here is a class booklet full of big pictures.",
+   "Pick a compression level. Stronger compression means a smaller file.",
+   "Press Compress PDF.",
+   "Compare the old and new sizes, then download the smaller copy.",
+   "Now it is your turn. Open Compress PDF on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/pdf-compress.pdf",
+   "label": "Compressed PDF from this video",
+   "kind": "pdf"
+  }
+ },
+ "pdf-edit-forge.html": {
+  "title": "Sign Documents",
+  "video": "videos/pdf-edit-forge.mp4",
+  "poster": "videos/pdf-edit-forge.jpg",
+  "duration": 51,
+  "transcript": [
+   "Welcome to Sign Documents. Sign a PDF, a Word file or a photo of a document, without printing it.",
+   "Choose the document you need to sign.",
+   "Create your signature: draw it, type it, or upload a photo of it. Here we type it.",
+   "Press Use this signature, then add it to the page with Signature. You can also add the date.",
+   "Drag each item into place, then download the signed document.",
+   "Now it is your turn. Open Sign Documents on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/pdf-edit-forge.pdf",
+   "label": "Signed document from this video",
+   "kind": "pdf"
+  }
+ },
+ "pdf-forge.html": {
+  "title": "PDF Forge",
+  "video": "videos/pdf-forge.mp4",
+  "poster": "videos/pdf-forge.jpg",
+  "duration": 55,
+  "transcript": [
+   "Welcome to PDF Forge. Merge, split, reorder and watermark PDFs in your browser.",
+   "Choose one or more PDF files. We add a rental agreement and a bakery menu.",
+   "Optionally pick the pages to keep, rotate them, or add a footer.",
+   "Add a watermark and page numbers.",
+   "Press Create PDF to download one combined file.",
+   "Now it is your turn. Open PDF Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/pdf-forge.pdf",
+   "label": "PDF made in this video",
+   "kind": "pdf"
+  }
+ },
+ "post-forge.html": {
+  "title": "Post Forge",
+  "video": "videos/post-forge.mp4",
+  "poster": "videos/post-forge.jpg",
+  "duration": 40,
+  "transcript": [
+   "Welcome to Post Forge. Write one announcement and post it to several networks at once.",
+   "Connect your accounts once. The keys are saved only in this browser.",
+   "Write your announcement, add a link and an image.",
+   "Tick where it should go, and press Post now.",
+   "Now it is your turn. Open Post Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/post-forge.png",
+   "label": "Post written in this video",
+   "kind": "image"
+  }
+ },
+ "project-hub.html": {
+  "title": "Project Hub",
+  "video": "videos/project-hub.mp4",
+  "poster": "videos/project-hub.jpg",
+  "duration": 43,
+  "transcript": [
+   "Welcome to Project Hub. It shows the projects and settings MigaBuilder saved in this browser.",
+   "Every tool that remembers your work lists it here, so you can open it again.",
+   "Export a backup to move your work to another device, and restore it there.",
+   "You can also remove data you no longer need. Nothing is stored on a server.",
+   "Now it is your turn. Open Project Hub on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/project-hub.json",
+   "label": "Backup file from this video",
+   "kind": "text"
+  }
+ },
+ "qr-forge.html": {
+  "title": "QR Forge",
+  "video": "videos/qr-forge.mp4",
+  "poster": "videos/qr-forge.jpg",
+  "duration": 53,
+  "transcript": [
+   "Welcome to QR Forge. Let us make a QR code that people can scan with their phone camera.",
+   "First choose what the code is for: a link or text, a Wi-Fi network, a contact card, a phone number or an email.",
+   "Type the link you want people to open. The code updates instantly as you type.",
+   "Pick the size and colours. A dark code on a light background scans best.",
+   "Scan it with your phone to test it, then download the finished code as a picture.",
+   "Now it is your turn. Open QR Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/qr-forge.png",
+   "label": "QR code made in this video",
+   "kind": "image"
+  }
+ },
+ "reasoning-test.html": {
+  "title": "Reasoning Test",
+  "video": "videos/reasoning-test.mp4",
+  "poster": "videos/reasoning-test.jpg",
+  "duration": 47,
+  "transcript": [
+   "Welcome to the Reasoning Test. It helps you practise number, word and pattern reasoning.",
+   "Choose the test length, then press Start.",
+   "Pick the answer you think is right. The questions get harder as you go.",
+   "At the end you see your score, and a worked explanation for every question, so you learn how to solve them.",
+   "Now it is your turn. Open Reasoning Test on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/reasoning-test.png",
+   "label": "Example result from this video",
+   "kind": "image"
+  }
+ },
+ "record-forge.html": {
+  "title": "Record Forge",
+  "video": "videos/record-forge.mp4",
+  "poster": "videos/record-forge.jpg",
+  "duration": 51,
+  "transcript": [
+   "Welcome to Record Forge. Record your screen with your voice, to show someone how something works.",
+   "Choose what to include: your microphone, the computer sound, and your webcam in a corner.",
+   "Press Start recording, and choose the screen, window or browser tab to record.",
+   "Show the task and explain as you go. When you stop, trim the start and end and download the recording.",
+   "Now it is your turn. Open Record Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/record-forge.png",
+   "label": "Recording settings from this video",
+   "kind": "image"
+  }
+ },
+ "repurpose-forge.html": {
+  "title": "Repurpose Forge",
+  "video": "videos/repurpose-forge.mp4",
+  "poster": "videos/repurpose-forge.jpg",
+  "duration": 47,
+  "transcript": [
+   "Welcome to Repurpose Forge. It turns one piece of content into posts for every channel.",
+   "Paste your original content or idea.",
+   "Say who it is for and what you want people to do.",
+   "Press Create publishing pack.",
+   "You get versions for social media, email and more. Personalise them, then copy the ones you need.",
+   "Now it is your turn. Open Repurpose Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/repurpose-forge.png",
+   "label": "Publishing pack made in this video",
+   "kind": "image"
+  }
+ },
+ "screen-forge.html": {
+  "title": "Screen Share Forge",
+  "video": "videos/screen-forge.mp4",
+  "poster": "videos/screen-forge.jpg",
+  "duration": 54,
+  "transcript": [
+   "Welcome to Screen Share Forge. Help someone by seeing their screen live, without installing anything.",
+   "If you are the helper, press I want to help someone. You get a short code and a link to send.",
+   "The person who needs help opens the link, or presses the second button and types your code. Then they choose what to share: a window, a tab or the whole screen.",
+   "You see their screen live and can point at things. The video goes directly between the two browsers, and nothing is recorded unless you choose to.",
+   "Now it is your turn. Open Screen Share Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/screen-forge.png",
+   "label": "Screen Share Forge start screen",
+   "kind": "image"
+  }
+ },
+ "sim-forge.html": {
+  "title": "Vehicle Simulator",
+  "video": "videos/sim-forge.mp4",
+  "poster": "videos/sim-forge.jpg",
+  "duration": 50,
+  "transcript": [
+   "Welcome to the Vehicle Simulator. Learn how cars, boats, planes and helicopters work, then practise.",
+   "Choose a vehicle. Let us start with the car.",
+   "First read how it works: the pedals, the gears and the mirrors.",
+   "Then learn the controls and what each warning light means.",
+   "Now open the simulator. Use the on-screen pedals, or the arrow keys, to drive through each mission.",
+   "At the end, take the knowledge check and print your report card.",
+   "Now it is your turn. Open Vehicle Simulator on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/sim-forge.png",
+   "label": "Simulator from this video",
+   "kind": "image"
+  }
+ },
+ "site-checkup.html": {
+  "title": "Website Checkup",
+  "video": "videos/site-checkup.mp4",
+  "poster": "videos/site-checkup.jpg",
+  "duration": 50,
+  "transcript": [
+   "Welcome to Website Checkup. It reviews a web page for search engine and accessibility problems.",
+   "Upload an HTML file or paste the code. Here we use the built in example.",
+   "Press Run website checkup.",
+   "You get a score and a list of problems, such as missing page titles, images without descriptions, or links with unclear text.",
+   "Work through the fixes one by one, then download the report to keep track.",
+   "Now it is your turn. Open Website Checkup on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/site-checkup.txt",
+   "label": "Checkup report made in this video",
+   "kind": "text"
+  }
+ },
+ "slide-forge.html": {
+  "title": "Slide Forge",
+  "video": "videos/slide-forge.mp4",
+  "poster": "videos/slide-forge.jpg",
+  "duration": 53,
+  "transcript": [
+   "Welcome to Slide Forge. Describe a presentation, and download it as a PowerPoint file.",
+   "Describe the presentation: the topic, the audience and the goal.",
+   "Choose how many slides and a colour theme. Then press Plan slides with AI.",
+   "Every slide appears here. Edit the titles and points, reorder them, or add photos.",
+   "Press Build and download to get your PowerPoint file.",
+   "Now it is your turn. Open Slide Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/slide-forge.pptx",
+   "label": "Presentation made in this video",
+   "kind": "download"
+  }
+ },
+ "strength-compass.html": {
+  "title": "Strength Compass",
+  "video": "videos/strength-compass.mp4",
+  "poster": "videos/strength-compass.jpg",
+  "duration": 33,
+  "transcript": [
+   "Welcome to Strength Compass. It helps you discover the strengths that shape how you work.",
+   "Press Begin. Each question shows two statements.",
+   "Choose which one sounds more like you, or both equally.",
+   "Your top five strengths appear with ideas for using them at work.",
+   "Now it is your turn. Open Strength Compass on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/strength-compass.png",
+   "label": "Example strengths report from this video",
+   "kind": "image"
+  }
+ },
+ "talk-forge.html": {
+  "title": "Talk Forge",
+  "video": "videos/talk-forge.mp4",
+  "poster": "videos/talk-forge.jpg",
+  "duration": 61,
+  "transcript": [
+   "Welcome to Talk Forge. Make a photo speak, with moving lips.",
+   "Add a photo. Faces are found automatically, or you can place the mouth yourself.",
+   "Here we place it by hand: press Place manually, then click on the mouth.",
+   "Type what the person says, or record your own voice.",
+   "Pick a voice, and press Preview to watch the lips move.",
+   "When you are happy, record it and download the video.",
+   "Now it is your turn. Open Talk Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/talk-forge.png",
+   "label": "Talking photo set up in this video",
+   "kind": "image"
+  }
+ },
+ "templates.html": {
+  "title": "Template Gallery",
+  "video": "videos/templates.mp4",
+  "poster": "videos/templates.jpg",
+  "duration": 36,
+  "transcript": [
+   "Welcome to the Template Gallery: ready made starting points for websites, games, cartoons and documents.",
+   "Browse the templates and pick the result you want to create.",
+   "Open a template, and it loads in the right tool, ready for you to change the words, pictures and colours.",
+   "Now it is your turn. Open Template Gallery on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/templates.png",
+   "label": "Template gallery",
+   "kind": "image"
+  }
+ },
+ "text-compare.html": {
+  "title": "Text Compare",
+  "video": "videos/text-compare.mp4",
+  "poster": "videos/text-compare.jpg",
+  "duration": 57,
+  "transcript": [
+   "Welcome to Text Compare. It shows you exactly what changed between two versions of a text, like a contract, an essay or some code.",
+   "Paste the original on the left and the new version on the right. Here we use two versions of a rental agreement.",
+   "Added words are green and removed words are red, so changes like a higher rent or a new rule are impossible to miss.",
+   "You can switch to one column, or to a words only view for essays, and ignore capital letters or extra spaces.",
+   "When you are done, download the comparison as a report to share it.",
+   "Now it is your turn. Open Text Compare on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/text-compare.png",
+   "label": "Comparison made in this video",
+   "kind": "image"
+  }
+ },
+ "utility-forge.html": {
+  "title": "Utility Forge",
+  "video": "videos/utility-forge.mp4",
+  "poster": "videos/utility-forge.jpg",
+  "duration": 50,
+  "transcript": [
+   "Welcome to Utility Forge. It converts data files and checks files, privately in your browser.",
+   "Choose the conversion. Here we turn a spreadsheet in CSV format into JSON for a web app.",
+   "Paste your data.",
+   "Press Convert, and the result appears below.",
+   "Download the result. The other tabs combine text files and create checksums to verify downloads.",
+   "Now it is your turn. Open Utility Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/utility-forge.json",
+   "label": "Converted data from this video",
+   "kind": "text"
+  }
+ },
+ "video-forge.html": {
+  "title": "Video Forge",
+  "video": "videos/video-forge.mp4",
+  "poster": "videos/video-forge.jpg",
+  "duration": 56,
+  "transcript": [
+   "Welcome to Video Forge. Turn drawings and pictures into a moving video.",
+   "Add drawings, photos or scans, in the order they should appear.",
+   "Choose how they move: a slow zoom, quick cuts, or a flipbook. Then choose a transition.",
+   "Add a title, captions and music if you like, then press Render video.",
+   "Preview it, and download the video.",
+   "Now it is your turn. Open Video Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/video-forge.webm",
+   "label": "Video made in this video",
+   "kind": "video"
+  }
+ },
+ "website-builder.html": {
+  "title": "Website Builder",
+  "video": "videos/website-builder.mp4",
+  "poster": "videos/website-builder.jpg",
+  "duration": 70,
+  "transcript": [
+   "Welcome to Website Builder. Describe your business, and get a complete multi page website you can publish.",
+   "Describe the business in a few sentences: what you sell, who your customers are, and the feeling you want.",
+   "Add your contact details so the site is ready to use.",
+   "Choose pictures and features such as a booking form, then press Draft the site.",
+   "Here is your website. Look through every page in the preview.",
+   "Want a change? Type it in plain words, like add a photo gallery, and press Apply change.",
+   "When you are happy, download all the pages, or publish them straight to free hosting.",
+   "Now it is your turn. Open Website Builder on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/website-builder.html",
+   "label": "Website made in this video",
+   "kind": "html"
+  }
+ },
+ "writing-forge.html": {
+  "title": "Writing Forge",
+  "video": "videos/writing-forge.mp4",
+  "poster": "videos/writing-forge.jpg",
+  "duration": 49,
+  "transcript": [
+   "Welcome to Writing Forge. It cleans up and reshapes text instantly, right in your browser.",
+   "Paste your text into the box. Here is a long, messy product description.",
+   "Press Summarize to keep only the most important sentences.",
+   "The result appears on the right. You can also clean spacing, shorten sentences, or change the capital letters.",
+   "Copy the result, or download it as a text file.",
+   "Now it is your turn. Open Writing Forge on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/writing-forge.txt",
+   "label": "Summary made in this video",
+   "kind": "text"
+  }
+ }
+}

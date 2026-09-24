@@ -44,6 +44,8 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 
 Explore all 54 tools at **[migabuilder.com](https://migabuilder.com/)**.
 
+Every tool has a narrated **video guide** that shows it being used on a real example, plus the **sample made in that video** — browse them all on the [samples page](https://migabuilder.com/sample-viewer.html).
+
 ## Why MigaBuilder
 
 - Free Gemini option

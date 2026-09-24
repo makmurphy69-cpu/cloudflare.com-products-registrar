@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Bakery | Fresh Bread & Coffee in Nairobi</title>
+    <meta name="description" content="Welcome to Sunrise Bakery in the heart of Nairobi. Enjoy freshly baked artisanal bread, sweet pastries, and rich Kenyan coffee every morning.">
+    <meta property="og:title" content="Sunrise Bakery | Fresh Bread & Coffee in Nairobi">
+    <meta property="og:description" content="Welcome to Sunrise Bakery in the heart of Nairobi. Enjoy freshly baked artisanal bread, sweet pastries, and rich Kenyan coffee every morning.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-dark: #5c2c0c;
+            --accent: #E65100;
+            --cream: #FAF3E0;
+            --sand: #F4EAD5;
+            --dark: #2C221E;
+            --text-muted: #6B5B53;
+            --white: #FFFFFF;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--dark);
+            background-color: var(--cream);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-weight: 500;
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-cta {
+            background-color: var(--accent);
+            color: var(--white) !important;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        .nav-cta:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mobile-toggle span {
+            width: 28px;
+            height: 3px;
+            background-color: var(--dark);
+            border-radius: 3px;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 5rem 2rem;
+            background: linear-gradient(rgba(44, 34, 30, 0.7), rgba(44, 34, 30, 0.7)), url('https://loremflickr.com/1200/800/fresh%2Cbread%2Cbakery?random=21104') no-repeat center center/cover;
+            color: var(--white);
+            text-align: center;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            color: var(--sand);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--white);
+            color: var(--dark);
+        }
+
+        /* Daily Morning Bake Highlight */
+        .daily-bake {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bake-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .bake-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .bake-text h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .bake-text p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--sand);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Features Section */
+        .features {
+            background-color: var(--sand);
+            padding: 5rem 2rem;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features-container h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            padding: 2.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            text-align: left;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+        }
+
+        /* Vibe / Atmosphere Section */
+        .vibe {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .vibe h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        .vibe > p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            font-size: 1.1rem;
+        }
+
+        .vibe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .vibe-img img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-col h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            color: var(--sand);
+        }
+
+        .footer-col p, .footer-col a {
+            color: #d1c7c1;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: #9c8e87;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 1.5rem 0;
+                box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+                text-align: center;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .bake-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .vibe-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vibe-img img {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Sunrise Bakery</a>
+            <button class="mobile-toggle" aria-label="Toggle navigation menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="about.html">Our Story</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                    <li><a href="menu.html" class="nav-cta">Order Online</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Freshly Baked Happiness in Nairobi</h1>
+            <p>Wake up to the aroma of golden sourdough, flaky pastries, and rich, locally roasted coffee right in the heart of the city.</p>
+            <div class="btn-group">
+                <a href="menu.html" class="btn btn-primary">Explore Our Menu</a>
+                <a href="about.html" class="btn btn-secondary">Our Story</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daily Morning Bake Section -->
+    <section class="daily-bake">
+        <div class="bake-grid">
+            <div class="bake-image">
+                <img src="https://loremflickr.com/1200/800/artisanal%2Cbread%2Coven?random=50608" alt="Fresh artisanal bread straight from the oven">
+            </div>
+            <div class="bake-text">
+                <span class="badge">Fresh Every Day</span>
+                <h2>The Daily Morning Bake</h2>
+                <p>Every morning before the sun clears the Nairobi skyline, our master bakers are already hard at work. We knead, proof, and bake in small batches to ensure absolute perfection.</p>
+                <p>From our signature crusty country loaves to buttery croissants that melt in your mouth, everything is made from scratch using premium ingredients and a whole lot of love.</p>
+                <a href="menu.html" class="btn btn-primary" style="margin-top: 1rem;">View Today's Bakes</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-container">
+            <h2>Why Nairobi Loves Sunrise Bakery</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Artisanal Craftsmanship</h3>
+                    <p>Traditional baking techniques paired with time-tested recipes result in breads with unmatched texture and rich flavor depth.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Locally Sourced Coffee</h3>
+                    <p>Pair your pastry with a cup of Kenya's finest Arabica coffee, expertly brewed to kickstart your busy morning.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Warm Community Vibe</h3>
+                    <p>A cozy, welcoming space designed for catching up with friends, quiet morning reads, or grabbing a quick treat on the go.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vibe / Atmosphere Gallery -->
+    <section class="vibe">
+        <h2>Life at Sunrise Bakery</h2>
+        <p>Step inside our doors and experience the warmth of fresh flour, bubbling coffee, and friendly smiles.</p>
+        <div class="vibe-grid">
+            <div class="vibe-img">
+                <img src="https://loremflickr.com/1200/800/bakery%2Cpastries%2Cdisplay?random=13150" alt="Delicious sweet pastries displayed in cabinet">
+            </div>
+            <div class="vibe-img">
+                <img src="https://loremflickr.com/1200/800/coffee%2Clatte%2Cart?random=88591" alt="Expertly brewed barista coffee">
+            </div>
+            <div class="vibe-img">
+                <img src="https://loremflickr.com/1200/800/cozy%2Cbakery%2Cinterior?random=66365" alt="Cozy seating area inside Sunrise Bakery">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Sunrise Bakery</h3>
+                <p>Freshly baked bread, sweet treats, and good coffee in the heart of Nairobi.</p>
+                <p><strong>Phone:</strong> +254 700 123 456</p>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <a href="index.html">Home</a>
+                <a href="menu.html">Menu</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="footer-col">
+                <h3>Opening Hours</h3>
+                <p>Monday – Friday: 6:30 AM – 7:00 PM</p>
+                <p>Saturday: 7:00 AM – 6:00 PM</p>
+                <p>Sunday: 8:00 AM – 4:00 PM</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Sunrise Bakery. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+MigaBuilder Website Checkup
+Score: 30/100
+
+FIX: Page title — 6 characters; aim for roughly 15–60.
+FIX: Meta description — Missing meta description.
+PASS: Main heading — 1 H1 element found; use one clear H1.
+FIX: Image descriptions — 1 image(s) are missing alt attributes.
+FIX: Mobile viewport — Add a responsive viewport meta tag.
+FIX: Page language — Add lang to the html element.
+FIX: Canonical URL — Add a canonical link on public pages.
+PASS: Heading order — Avoid skipping heading levels.
+FIX: Descriptive links — Use link text that explains its destination.
+PASS: Readable text — Avoid extremely small fixed text.
