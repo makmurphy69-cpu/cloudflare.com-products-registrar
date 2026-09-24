@@ -153,7 +153,7 @@
     <div class="stat-tiles">
       <div class="stat-tile"><div class="stat-value" id="totalViewsValue">0</div><div class="stat-label">Total page views</div></div>
       <div class="stat-tile"><div class="stat-value" id="totalActionsValue">0</div><div class="stat-label">Recorded actions</div></div>
-      <div class="stat-tile"><div class="stat-value" id="trackedToolsValue">42</div><div class="stat-label">Tools tracked</div></div>
+      <div class="stat-tile"><div class="stat-value" id="trackedToolsValue">—</div><div class="stat-label">Tools tracked</div></div>
       <div class="stat-tile"><div class="stat-value" id="helpfulValue">—</div><div class="stat-label">Helpful rating</div></div>
     </div>
 
@@ -195,14 +195,34 @@
 
   const VISITS_URL = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
   const STORAGE_KEY = 'migabuilderVisitsStatsKey';
-  const TOOL_NAMES = {
-    'website-builder.html':'Website Builder','game-forge.html':'Game Forge','cartoon-forge.html':'Cartoon Forge','app-forge.html':'App Forge','bot-forge.html':'Bot Forge','video-forge.html':'Video Forge','talk-forge.html':'Talk Forge','clip-forge.html':'Clip Forge','merge-forge.html':'Merge Forge','music-forge.html':'Music Forge','record-forge.html':'Record Forge','media-convert.html':'Media Convert','logo-forge.html':'Logo Forge','slide-forge.html':'Slide Forge','invoice-forge.html':'Invoice Forge','contract-forge.html':'Contract Forge','cv-forge.html':'CV Forge','name-forge.html':'Name Forge','post-forge.html':'Post Forge','repurpose-forge.html':'Repurpose Forge','form-forge.html':'Form Forge','paint-forge.html':'Paint Forge','file-forge.html':'Image Forge','image-studio.html':'Image Studio','everyday-forge.html':'Everyday Forge','grammar-forge.html':'Grammar Forge','document-forge.html':'Document Forge','pdf-forge.html':'PDF Forge','pdf-edit-forge.html':'Sign Documents','pdf-compress.html':'Compress PDF','geo-forge.html':'Geography Forge','ocr-forge.html':'OCR Forge','utility-forge.html':'Utility Forge','site-checkup.html':'Website Checkup','project-hub.html':'Project Hub','model-forge.html':'Model Forge','palette-forge.html':'Palette Forge','qr-forge.html':'QR Forge','reasoning-test.html':'Reasoning Test','pattern-lab.html':'Work Pattern Test','strength-compass.html':'Strength Compass','big-five.html':'Big Five Personality','code-forge.html':'Code Forge','screen-forge.html':'Screen Share Forge','meet-forge.html':'Meet Forge'
+  // Fallback only: the live list is read from the homepage (loadToolNames), so new tools
+  // appear here automatically as soon as they are added to index.html.
+  const FALLBACK_TOOL_NAMES = {
+    'website-builder.html':'Website Builder','game-forge.html':'Game Forge','cartoon-forge.html':'Cartoon Forge','3d-cartoon.html':'3D Cartoon','app-forge.html':'App Forge','bot-forge.html':'Bot Forge','bug-scanner.html':'Bug Scanner','video-forge.html':'Video Forge','talk-forge.html':'Talk Forge','clip-forge.html':'Clip Forge','merge-forge.html':'Merge Forge','music-forge.html':'Music Forge','record-forge.html':'Record Forge','media-convert.html':'Media Convert','audio-forge.html':'Audio Forge','logo-forge.html':'Logo Forge','slide-forge.html':'Slide Forge','invoice-forge.html':'Invoice Forge','contract-forge.html':'Contract Forge','cv-forge.html':'CV Forge','name-forge.html':'Name Forge','post-forge.html':'Post Forge','repurpose-forge.html':'Repurpose Forge','form-forge.html':'Form Forge','document-forge.html':'Document Forge','pdf-forge.html':'PDF Forge','pdf-edit-forge.html':'Sign Documents','pdf-compress.html':'Compress PDF','ocr-forge.html':'OCR Forge','grammar-forge.html':'Grammar Forge','text-compare.html':'Text Compare','geo-forge.html':'Geography Forge','sim-forge.html':'Vehicle Simulator','reasoning-test.html':'Reasoning Test','pattern-lab.html':'Work Pattern Test','strength-compass.html':'Strength Compass','big-five.html':'Big Five Personality','code-forge.html':'Code Forge','alphabet-forge.html':'Alphabet Forge','idea-atlas.html':'Idea Atlas','flashcard-forge.html':'Flashcard Forge','paint-forge.html':'Paint Forge','file-forge.html':'Image Forge','image-studio.html':'Image Studio','everyday-forge.html':'Everyday Forge','utility-forge.html':'Utility Forge','site-checkup.html':'Website Checkup','project-hub.html':'Project Hub','model-forge.html':'Model Forge','cad-forge.html':'CAD Forge','palette-forge.html':'Palette Forge','qr-forge.html':'QR Forge','screen-forge.html':'Screen Share Forge','meet-forge.html':'Meet Forge'
   };
+  const NOT_TOOLS = ['index.html', 'visits.html', 'feedback.html', '404.html', 'unknown'];
+  let TOOL_NAMES = FALLBACK_TOOL_NAMES;
+
+  async function loadToolNames() {
+    try {
+      const res = await fetch('index.html', { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+      const names = {};
+      doc.querySelectorAll('#toolGroups a.tool-card[href]').forEach(a => {
+        const href = (a.getAttribute('href') || '').split(/[?#]/)[0];
+        const name = a.querySelector('strong');
+        if (/^[\w.-]+\.html$/.test(href) && name && !names[href]) names[href] = name.textContent.trim();
+      });
+      if (Object.keys(names).length >= 10) TOOL_NAMES = names;
+    } catch (e) { /* offline or blocked: keep the fallback list */ }
+  }
 
   function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
   function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
 
   function formatNumber(n) { return (n || 0).toLocaleString(); }
+  function escapeHtml(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   function renderDays(viewsByDay) {
     daysList.innerHTML = '';
@@ -221,8 +241,11 @@
   function renderPages(topPages, events) {
     pagesTableBody.innerHTML = '';
     const totals = new Map(topPages.map(p => [p.page, p.views]));
-    const tools = Object.keys(TOOL_NAMES).map(page => ({ page, views: totals.get(page) || 0 })).sort((a,b) => b.views - a.views || TOOL_NAMES[a.page].localeCompare(TOOL_NAMES[b.page]));
+    const tools = Object.keys(TOOL_NAMES).map(page => ({ page, name: TOOL_NAMES[page], views: totals.get(page) || 0 }));
     trackedToolsValue.textContent = formatNumber(tools.length);
+    // Pages that were counted but are not (or no longer) on the homepage still get a row, so no traffic is hidden.
+    topPages.forEach(p => { if (!TOOL_NAMES[p.page] && !NOT_TOOLS.includes(p.page) && /\.html$/.test(p.page)) tools.push({ page: p.page, name: p.page + ' (not on homepage)', views: p.views }); });
+    tools.sort((a,b) => b.views - a.views || a.name.localeCompare(b.name));
     if (!tools.some(tool => tool.views)) {
       pagesTable.style.display = 'none';
       pagesEmpty.style.display = 'block';
@@ -233,7 +256,7 @@
     tools.forEach((p, index) => {
       const row = document.createElement('tr');
       const actions = events.filter(e => e.event === 'tool_action' && e.page === p.page).reduce((n,e)=>n+e.count,0);
-      row.innerHTML = '<td><strong>' + (index + 1) + '.</strong> ' + TOOL_NAMES[p.page] + '</td><td class="num">' + formatNumber(p.views) + '</td><td class="num">' + formatNumber(actions) + '</td>';
+      row.innerHTML = '<td><strong>' + (index + 1) + '.</strong> ' + escapeHtml(p.name) + '</td><td class="num">' + formatNumber(p.views) + '</td><td class="num">' + formatNumber(actions) + '</td>';
       pagesTableBody.appendChild(row);
     });
   }
@@ -248,7 +271,7 @@
         const body = await response.json().catch(() => null);
         throw new Error((body && body.error) || ('Request failed with status ' + response.status));
       }
-      const data = await response.json();
+      const [data] = await Promise.all([response.json(), toolNamesReady]);
       totalViewsValue.textContent = formatNumber(data.totalViews);
       totalActionsValue.textContent = formatNumber(data.totalActions);
       const yes=(data.events||[]).filter(e=>e.event==='helpful_yes').reduce((n,e)=>n+e.count,0),no=(data.events||[]).filter(e=>e.event==='helpful_no').reduce((n,e)=>n+e.count,0);
@@ -265,6 +288,8 @@
       loadStatsBtn.textContent = 'Load stats';
     }
   }
+
+  const toolNamesReady = loadToolNames();
 
   loadStatsBtn.addEventListener('click', function () {
     const key = statsKeyInput.value.trim();
