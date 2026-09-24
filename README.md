@@ -37,9 +37,10 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
 - **CAD Forge** — draw walls, doors and windows on a floor plan, then get a 3D house with roof and timber framing, plan and elevation drawings, a material list and DXF, OBJ and STL exports
 - **Bug Scanner** — paste code or drop a whole project in 30+ languages to see what it builds, what is wrong and exactly how to fix it
-- **Alphabet Forge** — tap any Thai, Arabic, Mandarin, Japanese, Korean, Greek, Russian, Hebrew, Hindi or Georgian symbol to hear it, learn a word and why it sounds that way, then practise writing it
+- **Alphabet Forge** — tap any Thai, Arabic, Mandarin, Japanese, Korean, Greek, Russian, Hebrew, Hindi or Georgian symbol to hear it, learn a word and why it sounds that way, then practise writing it — and type it with the built-in on-screen keyboard (Korean syllables join as you type, Japanese from romaji, Mandarin from pinyin), plus a typing challenge
 - **Idea Atlas** — explore the history, key thinkers and connections of 37 philosophies and ideologies, then play a timed quiz game
-- **Audio Forge**, **Text Compare** and **Flashcard Forge** — edit audio, compare texts and study with spaced repetition
+- **Flashcard Forge** — AI-made or pasted decks, an Anki-style (SM-2) scheduler, fill-in-the-blank and image cards, a matching game, listening and speaking tests, streaks and stats, and decks shared as a link
+- **Audio Forge** and **Text Compare** — edit audio and compare texts
 - **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions with a live control panel, 3D flight, hazard scenarios, a narrator and a printable report card
 
 Explore all 54 tools at **[migabuilder.com](https://migabuilder.com/)**.
@@ -54,6 +55,8 @@ Every tool has a narrated **video guide** that shows it being used on a real exa
 - Open-source project
 - Five interface languages
 - Focused tools that can be chained into complete workflows
+- Your work is auto-saved in the browser — restore it when you come back, or save it to a `.miga` file
+- An on-screen keyboard for 17 languages and alphabets on every tool, plus dark mode
 
 ## Feedback
 

@@ -4,12 +4,12 @@
  * Styles, scripts and CDN libraries: served from cache and refreshed in the background.
  * Analytics, AI proxies and Wikipedia requests are never cached. */
 'use strict';
-const VERSION = 'miga-v2';
+const VERSION = 'miga-v3';
 const PAGES = VERSION + '-pages';
 const ASSETS = VERSION + '-assets';
 const CDN = VERSION + '-cdn';
 const CDN_LIMIT = 80;
-const CORE = ['/', '/index.html', '/local-tools.css', '/tutorials.css', '/tutorials.js', '/usage-counter.js', '/i18n.js', '/favicon.svg', '/manifest.webmanifest', '/404.html'];
+const CORE = ['/', '/index.html', '/local-tools.css', '/tutorials.css', '/tutorials.js', '/miga-extras.js', '/usage-counter.js', '/i18n.js', '/favicon.svg', '/manifest.webmanifest', '/404.html'];
 const CDN_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com', 'unpkg.com'];
 
 self.addEventListener('install', event => {

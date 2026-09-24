@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="local-tools.css"><link rel="stylesheet" href="tutorials.css">
 <script src="ai-client.js"></script>
 <script src="alphabet-data.js"></script>
+<script src="script-keyboard.js"></script>
 <style>
 main{max-width:1320px}
 .scripts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -54,6 +55,13 @@ main{max-width:1320px}
 .opt.big-g{font-size:40px}.opt.right{background:#dff1e6;border-color:#4E9E73}.opt.wrong{background:#f8dcd6;border-color:#D8604A}
 .progress{height:6px;background:rgba(22,32,43,.12);border-radius:3px;overflow:hidden;margin:6px 0}.progress i{display:block;height:100%;background:var(--amber)}
 .ai-out{line-height:1.55;font-size:14.5px}.ai-out h4{margin:10px 0 4px;font:700 15px 'Space Grotesk'}
+.typebox{width:100%;min-height:110px;padding:12px;font-size:26px;line-height:1.4;border:1px solid rgba(22,32,43,.28);border-radius:6px;background:#fff;color:var(--ink);resize:vertical}
+.breakdown{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.breakdown button{background:#fff;border:1px solid rgba(22,32,43,.18);border-radius:6px;padding:6px 8px;cursor:pointer;text-align:center;color:var(--ink);min-width:48px}
+.breakdown button b{display:block;font-size:24px;font-weight:400;line-height:1.2}.breakdown button small{display:block;font-size:11px;color:rgba(22,32,43,.65)}.breakdown button.unk{opacity:.55}
+.tc-card{background:#fff;border:1px solid rgba(22,32,43,.14);border-radius:6px;padding:14px;margin-top:10px}.tc-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tc-row input{flex:1;min-width:200px;padding:10px;font-size:24px;border:1px solid rgba(22,32,43,.3);border-radius:4px}
+.diff span{font-size:28px;padding:0 1px;border-radius:3px}.diff .ok{background:#dff1e6}.diff .bad{background:#f8dcd6}.diff .miss{background:#fff2cc;opacity:.8}
+body.kb-open{padding-bottom:330px}
 .hidden{display:none!important}
 .rtl{direction:rtl}
 @media(max-width:980px){.layout{grid-template-columns:1fr}.layout>aside{position:static}.pad-wrap{grid-template-columns:1fr}}
@@ -61,7 +69,7 @@ main{max-width:1320px}
 </head>
 <body>
 <nav class="tool-nav"><a href="index.html">← All tools</a><span>Alphabet Forge</span></nav>
-<header class="masthead"><div><h1>Alphabet Forge</h1><p>Tap any symbol to hear it, see a real word, learn why it sounds that way — then practise writing it.</p></div></header>
+<header class="masthead"><div><h1>Alphabet Forge</h1><p>Tap any symbol to hear it, see a real word, learn why it sounds that way — then practise writing and typing it with the built-in keyboard.</p></div></header>
 <main>
 <section class="panel">
   <h2>Choose a writing system</h2>
@@ -108,6 +116,21 @@ main{max-width:1320px}
   </div>
 </section>
 
+<section class="panel" id="typePanel">
+  <h2>⌨️ Type in <span id="tName"></span></h2>
+  <p>No <span id="tName2"></span> keyboard on your device? Open the on-screen keyboard and tap the letters — or turn on <b>🖮 My keys type it</b> and your own keys type the script by position (the small grey letters show which key to press). Korean letters join into syllables as you type, Japanese can be typed in romaji and Mandarin in pinyin.</p>
+  <div class="actions" style="margin-bottom:8px"><button class="primary" id="kbOpen">⌨️ Open keyboard</button><button class="secondary" id="typeSay">🔊 Read aloud</button><button class="secondary" id="typeCopy">📋 Copy</button><button class="secondary" id="typeClear">Clear</button></div>
+  <textarea class="typebox" id="typeBox" dir="auto" placeholder="Type here…" spellcheck="false" aria-label="Type in the chosen script"></textarea>
+  <p class="muted" style="margin:8px 0 0">Letter by letter — tap any letter to hear it and open its explanation:</p>
+  <div class="breakdown" id="typeBreak"></div>
+  <div class="tc-card">
+    <h3 style="margin:0 0 4px;font:700 17px 'Space Grotesk'">🏁 Typing challenge</h3>
+    <p class="muted" style="margin:0 0 8px">You hear a word and see what it means — type it in the script. Use <b>Hint</b> to reveal the next letter.</p>
+    <div class="actions"><button class="primary" id="tcStart">▶ Start: 10 words</button></div>
+    <div id="tcArea" style="margin-top:10px"></div>
+  </div>
+</section>
+
 <section class="panel" id="quizPanel">
   <h2>🎧 Listening and reading quiz</h2>
   <p>Test yourself on the section you are viewing. Listening: hear a sound and pick the symbol. Reading: see a symbol and pick its sound.</p>
@@ -115,7 +138,7 @@ main{max-width:1320px}
   <div id="quizArea" class="hidden" style="margin-top:12px"></div>
 </section>
 </main>
-<footer>Alphabet Forge · MigaBuilder · Sounds use your device’s built-in voices.</footer>
+<footer>Alphabet Forge · MigaBuilder · Sounds use your device’s built-in voices. The on-screen keyboard runs entirely in your browser.</footer>
 
 <script>
 (function(){
@@ -161,6 +184,7 @@ function choose(s){
   if($('rmScript'))$('rmScript').onclick=()=>{const c=store.get('alphabetCustom',[]).filter(x=>x.id!==s.id);store.set('alphabetCustom',c);scripts=scripts.filter(x=>x!==s);choose(scripts[0])};
   renderGrid();pick(items()[0],true);setPad(items()[0]);
   try{history.replaceState(null,'','#'+s.id)}catch(e){}
+  prepKeyboard();if(tc){tc=null;$('tcArea').innerHTML=''}
 }
 function renderGrid(){
   $('grid').className='grid-sym'+(cur.dir==='rtl'?' rtl':'');
@@ -341,6 +365,84 @@ function endQuiz(){const pct=Math.round(quiz.score/quiz.qs.length*100);const bes
   $('quizArea').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{pick(itemByGlyph(b.dataset.g));$('detailPanel').scrollIntoView({behavior:'smooth'})});
   const kind=quiz.kind;$('againQ').onclick=()=>startQuiz(kind)}
 $('quizListen').onclick=()=>startQuiz('listen');$('quizRead').onclick=()=>startQuiz('read');$('quizWord').onclick=()=>startQuiz('word');
+
+// ---------- typing with the on-screen keyboard ----------
+const KB={thai:'thai',arabic:'arabic',mandarin:'mandarin',hiragana:'hiragana',katakana:'katakana',hangul:'hangul',greek:'greek',cyrillic:'russian',hebrew:'hebrew',devanagari:'devanagari',georgian:'georgian'};
+const allItems=()=>cur.sections.reduce((a,s)=>a.concat(s.items),[]);
+function kbLayout(s){
+  s=s||cur;if(KB[s.id])return KB[s.id];
+  const id='chart-'+s.id,base=MigaKeyboard.forLang(s.lang),lay={name:s.name+' (chart)',lang:s.lang,dir:s.dir,font:s.font,chart:MigaKeyboard.keysFromGlyphs(allItems().map(it=>it.g))};
+  MigaKeyboard.registerLayout(id,lay);return id;
+}
+let glyphMap=new Map();
+function prepKeyboard(){
+  const id=kbLayout();
+  if(!/^(hiragana|katakana)$/.test(cur.id)&&KB[cur.id])MigaKeyboard.setChartKeys(id,MigaKeyboard.keysFromGlyphs(allItems().filter(it=>it.font!=='latin').map(it=>it.g)));
+  glyphMap=new Map();allItems().forEach(it=>{if(it.font==='latin')return;MigaKeyboard.keysFromGlyphs([it.g]).forEach(k=>{if(!glyphMap.has(k))glyphMap.set(k,it)});if(!glyphMap.has(it.g))glyphMap.set(it.g,it)});
+  $('tName').textContent=cur.name;$('tName2').textContent=cur.name;
+  $('typeBox').dir=cur.dir||'ltr';$('typeBox').style.fontFamily=(cur.font||'inherit')+',sans-serif';$('typeBox').lang=cur.lang||'';
+  if(MigaKeyboard.isOpen())MigaKeyboard.setLayout(id);
+  renderBreakdown();
+}
+MigaKeyboard.layoutFor(el=>el.closest('#typePanel')?kbLayout():null);
+document.addEventListener('migakeyboard',e=>document.body.classList.toggle('kb-open',e.detail.open));
+$('kbOpen').onclick=()=>MigaKeyboard.open({layout:kbLayout(),target:$('typeBox'),view:cur.id==='mandarin'?'std':'abc'});
+$('typeSay').onclick=()=>{const t=$('typeBox').value.trim();if(t)speak(t,cur.lang,.8)};
+$('typeCopy').onclick=async()=>{try{await navigator.clipboard.writeText($('typeBox').value);$('typeCopy').textContent='✅ Copied'}catch(e){$('typeBox').select();document.execCommand('copy')}setTimeout(()=>$('typeCopy').textContent='📋 Copy',1500)};
+$('typeClear').onclick=()=>{$('typeBox').value='';renderBreakdown();$('typeBox').focus()};
+$('typeBox').addEventListener('input',renderBreakdown);
+function lookup(ch){
+  if(glyphMap.has(ch))return glyphMap.get(ch);
+  const low=ch.toLowerCase(),up=ch.toUpperCase();for(const [k,it] of glyphMap)if(k===low||k===up)return it;
+  return null;
+}
+function renderBreakdown(){
+  const text=$('typeBox').value.slice(0,300),out=[];
+  Array.from(text).forEach(ch=>{
+    if(/\s/.test(ch))return;
+    const parts=cur.id==='hangul'&&MigaKeyboard.decomposeHangul(ch);
+    if(parts){out.push({ch,label:parts.map(p=>{const it=lookup(p);return it?(it.r||'').split(/[ /(]/)[0]:p}).join('·'),it:lookup(parts[0]),parts:parts.join(' ')});return}
+    const it=lookup(ch);out.push({ch,label:it?(it.r||it.n||'').split(' (')[0]:'',it});
+  });
+  $('typeBreak').innerHTML=out.length?out.map((o,i)=>'<button type="button" class="'+(o.it?'':'unk')+'" data-b="'+i+'" title="'+esc(o.parts||'')+'"><b style="font-family:'+fontOf(o.it||{})+'">'+esc(o.ch)+'</b><small>'+esc(o.label||'?')+'</small></button>').join(''):'<span class="muted">Your letters appear here with their sounds.</span>';
+  $('typeBreak').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const o=out[+b.dataset.b];speak(o.ch,cur.lang,.7);if(o.it){const si=cur.sections.findIndex(s=>s.items.includes(o.it));if(si>=0&&si!==sec){sec=si;$('sections').querySelectorAll('[data-sec]').forEach(x=>x.classList.toggle('active',+x.dataset.sec===si));renderGrid()}pick(o.it,true)}});
+}
+// Typing challenge
+let tc=null;
+const cleanWord=w=>String(w||'').replace(/\(.*?\)/g,'').trim();
+const normWord=w=>{let s=cleanWord(w).normalize('NFC').replace(/\s+/g,'');if(cur.id==='arabic'||cur.id==='hebrew')s=s.replace(/\p{M}/gu,'');return cur.noCase?s:s.toLowerCase()};
+$('tcStart').onclick=()=>{
+  const pool=allItems().filter(it=>it.w&&cleanWord(it.w)&&!/[A-Za-z]/.test(cleanWord(it.w)));
+  const seen=new Set(),uniq=pool.filter(it=>{const k=cleanWord(it.w);if(seen.has(k))return false;seen.add(k);return true});
+  if(uniq.length<3){$('tcArea').innerHTML='<p class="muted">This chart has too few example words for a challenge.</p>';return}
+  tc={list:shuffle(uniq.slice()).slice(0,10),i:0,score:0,hints:0,res:[]};tcShow();
+};
+function tcShow(){
+  const it=tc.list[tc.i],w=cleanWord(it.w);
+  $('tcArea').innerHTML='<div class="progress"><i style="width:'+(tc.i/tc.list.length*100)+'%"></i></div><p class="muted">Word '+(tc.i+1)+' of '+tc.list.length+' · score '+tc.score+'</p>'+
+    '<p class="q">Type the word for “'+esc(it.wm||it.m||'')+'”'+(it.wr?' <small class="muted">('+esc(it.wr)+')</small>':'')+'</p>'+
+    '<div class="tc-row"><input id="tcIn" dir="'+(cur.dir||'ltr')+'" lang="'+esc(cur.lang||'')+'" autocomplete="off" spellcheck="false" style="font-family:'+fontOf({})+'" aria-label="Your answer"><button class="secondary" id="tcKb" title="On-screen keyboard">⌨️</button><button class="secondary" id="tcPlay">🔊</button><button class="secondary" id="tcHint">💡 Hint</button><button class="primary" id="tcCheck">Check</button></div><div id="tcFb" style="margin-top:8px"></div>';
+  const inp=$('tcIn');
+  $('tcPlay').onclick=()=>speak(w,cur.lang,.75);$('tcKb').onclick=()=>MigaKeyboard.open({layout:kbLayout(),target:inp,view:cur.id==='mandarin'?'std':'abc'});
+  $('tcHint').onclick=()=>{const a=Array.from(w),v=Array.from(inp.value);let k=0;while(k<v.length&&k<a.length&&v[k]===a[k])k++;inp.value=a.slice(0,k+1).join('');tc.hints++;inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length)};
+  $('tcCheck').onclick=tcCheck;inp.onkeydown=e=>{if(e.key==='Enter'&&!e.defaultPrevented)tcCheck()};
+  speak(w,cur.lang,.75);
+  if(MigaKeyboard.isOpen())MigaKeyboard.open({layout:kbLayout(),target:inp});else inp.focus();
+}
+function tcCheck(){
+  const it=tc.list[tc.i],w=cleanWord(it.w),v=$('tcIn').value;if(!v.trim()||tc.done)return;tc.done=true;
+  const ok=normWord(v)===normWord(w);if(ok)tc.score++;tc.res.push([it,ok]);if(ok)setProg(it.g,1);
+  const a=Array.from(cleanWord(w).replace(/\s+/g,'')),b=Array.from(v.trim().replace(/\s+/g,''));
+  const diff=a.map((c,k)=>'<span class="'+(b[k]===undefined?'miss':(b[k].normalize('NFC')===c||(!cur.noCase&&b[k].toLowerCase()===c.toLowerCase()))?'ok':'bad')+'">'+esc(b[k]===undefined?c:b[k])+'</span>').join('')+(b.length>a.length?'<span class="bad">'+esc(b.slice(a.length).join(''))+'</span>':'');
+  $('tcFb').innerHTML=(ok?'<p class="result-score" style="color:#2f6b49">✅ Correct!</p>':'<p class="result-score" style="color:#9b3322">❌ Not quite</p>')+
+    '<div class="diff" dir="'+(cur.dir||'ltr')+'" style="font-family:'+fontOf({})+'">'+diff+'</div><p>Answer: <b style="font-size:24px;font-family:'+fontOf({})+'">'+esc(w)+'</b> — '+esc(it.wr||'')+' — '+esc(it.wm||it.m||'')+'</p><button class="primary" id="tcNext">'+(tc.i<tc.list.length-1?'Next word →':'See results')+'</button>';
+  $('tcNext').onclick=()=>{tc.done=false;if(++tc.i<tc.list.length)tcShow();else tcEnd()};$('tcNext').focus();
+}
+function tcEnd(){
+  const pct=Math.round(tc.score/tc.list.length*100),best=store.get('alphabetBest',{}),k=cur.id+'|typing',prev=best[k]||0;if(pct>prev){best[k]=pct;store.set('alphabetBest',best)}
+  $('tcArea').innerHTML='<p class="result-score">You typed '+tc.score+' / '+tc.list.length+' words correctly ('+pct+'%) '+(pct>=90?'🏆':pct>=70?'🎉':'📚')+'</p><p class="muted">Best: '+Math.max(pct,prev)+'% · hints used: '+tc.hints+'</p><ul>'+tc.res.map(([it,ok])=>'<li>'+(ok?'✅':'❌')+' <span style="font-size:22px;font-family:'+fontOf({})+'">'+esc(cleanWord(it.w))+'</span> — '+esc(it.wm||it.m||'')+'</li>').join('')+'</ul>';
+  tc=null;
+}
 
 // ---------- start ----------
 const start=scripts.find(s=>'#'+s.id===location.hash)||scripts[0];
