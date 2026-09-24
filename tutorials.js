@@ -44,7 +44,23 @@
     'screen-forge.html':['Screen Share Forge','create a support session and choose what you want to share','Start session','share the link safely and end the session when help is finished'],
     'slide-forge.html':['Slide Forge','describe the topic, audience, purpose, and number of slides','Generate presentation','review each slide and download the PowerPoint file'],
     'talk-forge.html':['Talk Forge','upload a photo and add or record the spoken audio','Create talking photo','preview the lip movement and export the finished video'],
-    'video-forge.html':['Video Forge','upload drawings or images and describe how they should move','Create video','preview the motion, adjust it, and download the video']
+    'video-forge.html':['Video Forge','upload drawings or images and describe how they should move','Create video','preview the motion, adjust it, and download the video'],
+    'bug-scanner.html':['Bug Scanner','paste your code, open files or drop a project zip, and choose the language','Scan code','read each problem and how to fix it, check the live preview of what the code builds, then copy the fixed code'],
+    'alphabet-forge.html':['Alphabet Forge','choose a writing system such as Thai, Arabic or Mandarin and tap any symbol to hear it','Practise writing it','trace or copy the symbol on the writing pad, press Check for a score, then take the listening quiz'],
+    'idea-atlas.html':['Idea Atlas','search or click a philosophy or ideology on the connections map to read its history and key thinkers','Generate quiz','answer the questions against the clock, read each explanation and try to beat your best score'],
+    'audio-forge.html':['Audio Forge','open an audio or video file, or record from your microphone','Keep selection','drag across the waveform to select a part, apply fades, volume or speed, then download MP3 or WAV'],
+    'text-compare.html':['Text Compare','paste the original text on the left and the changed version on the right','Compare','review the highlighted additions, removals and changes, then download the report'],
+    'flashcard-forge.html':['Flashcard Forge','create a deck and add cards by typing, pasting a list or letting AI write them from your notes','Make cards','study the due cards, grade how well you remembered each one, then take a test'],
+    '3d-cartoon.html':['3D Cartoon','press play to start the cel-shaded 3D cartoon scene','PLAY 3D CARTOON','watch the scene, then create your own story in Cartoon Forge'],
+    'background-forge.html':['Background Forge','choose a photo with a clear subject','Remove background','check the cut-out edges and download the transparent PNG'],
+    'big-five.html':['Big Five Personality','read how the private 50-question test works','Start private test','answer honestly, then read your report across the five dimensions'],
+    'design-forge.html':['Design Forge','choose a thumbnail, meme or collage and add your images and text','Create design','check the preview and download the PNG'],
+    'media-convert.html':['Media Convert','choose a video or audio file and pick GIF, audio extraction or live transcription','Create and download GIF','check the result, then download it or copy the transcript'],
+    'media-convert-forge.html':['Media Convert Forge','choose a video and the output format','Convert and download','check the converted file after it downloads'],
+    'pattern-lab.html':['Work Pattern Test','read the instructions and start when you are ready','Start work-pattern practice','answer each pattern question, then read the worked explanations and print your report'],
+    'reasoning-test.html':['Reasoning Test','read how the private reasoning test works','Start private test','answer the questions, then study the worked explanations and print your report'],
+    'strength-compass.html':['Strength Compass','read how the private assessment works','Begin private assessment','choose between each pair of statements, then read your top five strengths'],
+    'writing-forge.html':['Writing Forge','paste the text you want to summarize or clean up','Summarize','compare the result, then copy it or download it as a text file']
   };
   const tool=tools[file]; if(!tool)return;
   const languages={

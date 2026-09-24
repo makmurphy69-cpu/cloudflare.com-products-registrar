@@ -1,6 +1,6 @@
 # MigaBuilder
 
-**48 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
+**54 free, open-source browser tools for websites, games, cartoons, video, meetings, audio, documents, private OCR, grammar, design, coding and business.**
 
 [Try MigaBuilder](https://migabuilder.com/)
 
@@ -20,6 +20,9 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - Browser apps, FAQ bots and social posts
 - House floor plans, 3D building models, construction drawings and material lists
 - 3D models and beginner coding projects
+- Code bug reports with plain-language fixes and live previews
+- Alphabet lessons with sounds and writing practice, and a philosophy & politics quiz game
+- Audio edits, text comparisons and flashcard decks
 
 ## Featured tools
 
@@ -33,9 +36,13 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Sign Documents** — sign PDFs, Word files and photos with a drawn, typed or uploaded signature
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
 - **CAD Forge** — draw walls, doors and windows on a floor plan, then get a 3D house with roof and timber framing, plan and elevation drawings, a material list and DXF, OBJ and STL exports
+- **Bug Scanner** — paste code or drop a whole project in 30+ languages to see what it builds, what is wrong and exactly how to fix it
+- **Alphabet Forge** — tap any Thai, Arabic, Mandarin, Japanese, Korean, Greek, Russian, Hebrew, Hindi or Georgian symbol to hear it, learn a word and why it sounds that way, then practise writing it
+- **Idea Atlas** — explore the history, key thinkers and connections of 37 philosophies and ideologies, then play a timed quiz game
+- **Audio Forge**, **Text Compare** and **Flashcard Forge** — edit audio, compare texts and study with spaced repetition
 - **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions with a live control panel, 3D flight, hazard scenarios, a narrator and a printable report card
 
-Explore all 48 tools at **[migabuilder.com](https://migabuilder.com/)**.
+Explore all 54 tools at **[migabuilder.com](https://migabuilder.com/)**.
 
 ## Why MigaBuilder
 
