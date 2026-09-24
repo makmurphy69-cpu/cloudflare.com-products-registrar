@@ -3,12 +3,14 @@
   "title": "3D Cartoon",
   "video": "videos/3d-cartoon.mp4",
   "poster": "videos/3d-cartoon.jpg",
-  "duration": 60,
+  "duration": 55,
   "transcript": [
-   "Welcome to 3D Cartoon, a short cel shaded cartoon scene that plays right in your browser.",
-   "Press play to start the scene.",
-   "Sit back and watch. Everything is drawn live in 3D, in your browser.",
-   "Want to make your own story? Try Cartoon Forge, which animates any idea you describe.",
+   "Welcome to 3D Cartoon. Write a short script, and your characters act it out in 3D, right in your browser.",
+   "Write one line per character, like Roxie colon hello, and add an action in brackets such as wave, jump or dance.",
+   "Every name in the script becomes a character. Pick their body, skin and hair colours here.",
+   "Choose the scene and the format, then press Play cartoon.",
+   "Sit back and watch. The camera follows whoever is talking.",
+   "When you like it, record it as a video or download it as a web page to share.",
    "Now it is your turn. Open 3D Cartoon on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
   ],
   "sample": {

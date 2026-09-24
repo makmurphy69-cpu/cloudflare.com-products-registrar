@@ -445,8 +445,9 @@ function createCartoon(canvas, data, hooks) {
       pace: +el.pace.value,
       voice: el.voice.checked,
       captions: el.captions.checked,
-      cast: parsed.names.map(function (name) {
-        var c = castColors[name.toLowerCase()] || PALETTE[0];
+      cast: parsed.names.map(function (name, i) {
+        var key = name.toLowerCase();
+        var c = castColors[key] || (castColors[key] = PALETTE[i % PALETTE.length].slice());
         return { name: name, body: parseInt(c[0].slice(1), 16), skin: parseInt(c[1].slice(1), 16), hair: parseInt(c[2].slice(1), 16) };
       }),
       lines: parsed.lines
