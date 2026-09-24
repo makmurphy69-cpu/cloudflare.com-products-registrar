@@ -460,6 +460,17 @@ Total output lines: 2100
   .table-actions button:hover:not(:disabled) { border-color: var(--line-cyan); }
   .table-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  .canvas-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+  .canvas-bar button { background: transparent; color: var(--paper); border: 1px solid var(--line-cyan-dim); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+  .canvas-bar button:hover:not(:disabled) { border-color: var(--line-cyan); color: var(--line-cyan); }
+  .canvas-bar button[aria-pressed="true"] { background: var(--line-cyan); color: var(--navy-deep); border-color: var(--line-cyan); font-weight: 600; }
+  .canvas-bar button:disabled { opacity: .4; cursor: not-allowed; }
+  .canvas-bar .canvas-note { font-size: 12px; color: rgba(237, 234, 224, 0.6); }
+  .sheet.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 560px; }
+  .sheet.split iframe { height: 100%; min-height: 560px; }
+  .sheet .code-pane { display: none; margin: 0; border: 0; border-left: 1px solid var(--line-cyan-dim); resize: none; width: 100%; height: 100%; min-height: 560px; padding: 12px; font: 11.5px/1.5 'IBM Plex Mono', monospace; background: #0b1622; color: #cfe8ee; white-space: pre; tab-size: 2; }
+  .sheet.split .code-pane { display: block; }
+  @media (max-width: 900px) { .sheet.split { grid-template-columns: 1fr; grid-template-rows: 460px 320px; } .sheet.split iframe { min-height: 0; } .sheet .code-pane { min-height: 0; border-left: 0; border-top: 1px solid var(--line-cyan-dim); } }
   .source-view { display: none; margin-top: 14px; }
   .source-view.show { display: block; }
   .source-view textarea {
@@ -859,12 +870,19 @@ Total output lines: 2100
       <p class="hint" style="color: rgba(237,234,224,0.55);">Only works if that site allows cross-site requests (most don't, for security). If it fails, open the page yourself, press Ctrl/Cmd+S → "Webpage, HTML only", and upload that file above instead. Only import sites you own or have permission to reuse — copying someone else's live site's content isn't something to publish as your own.</p>
     </div>
 
+    <div class="canvas-bar" id="canvasBar">
+      <button type="button" id="editModeBtn" aria-pressed="false" disabled title="Click any heading, paragraph or button in the preview and type">✏️ Edit text on the page</button>
+      <button type="button" id="splitViewBtn" aria-pressed="false" disabled title="Show the page's HTML beside the preview — it updates as you edit">⟨/⟩ Show code beside it</button>
+      <button type="button" id="starterSiteBtn" title="Load a ready-made landing page you can edit">✨ Starter template</button>
+      <span class="canvas-note" id="canvasNote"></span>
+    </div>
     <div class="sheet" id="sheet">
       <div class="sheet-empty" id="sheetEmpty">
         <strong>Nothing on the table yet.</strong>
         Add your API key and a brief, then draft the site — it'll render here, page by page.
       </div>
       <iframe id="preview" style="display:none;" title="Generated website preview"></iframe>
+      <textarea class="code-pane" id="codePane" readonly spellcheck="false" aria-label="HTML code of this page (read-only)" data-no-autosave></textarea>
     </div>
 
     <div class="field" style="margin-top:14px;">
@@ -902,6 +920,7 @@ Total output lines: 2100
     <div class="field" style="margin-top:14px;">
       <label style="color: var(--paper);">Instant hosting, no domain needed (optional)</label>
       <button type="button" class="draft-btn" id="downloadZipBtn" disabled>⬇ Download all pages as .zip</button>
+      <label class="check-row" style="color: var(--paper); font-size: 13px; margin-top: 8px;"><input type="checkbox" id="zipSplitAssets" checked> <span>Tidy project: put styles in <code>style.css</code> and pictures in an <code>images/</code> folder</span></label>
       <p class="hint" style="color: rgba(237,234,224,0.55);">Unzip it, then drag the folder onto <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">Netlify Drop</a> or upload it in the <a href="https://developers.cloudflare.com/pages/get-started/direct-upload/" target="_blank" rel="noopener">Cloudflare Pages dashboard</a> — both give you a live public link in seconds, free, no domain purchase or GitHub account required.</p>
     </div>
 
@@ -917,7 +936,7 @@ Total output lines: 2100
     </div>
 
     <div class="source-view" id="sourceView">
-      <textarea id="sourceText" readonly></textarea>
+      <textarea id="sourceText" readonly data-no-autosave></textarea>
     </div>
   </section>
 </main>
@@ -1644,6 +1663,10 @@ Total output lines: 2100
     preview.style.display = 'block';
     preview.srcdoc = page.html;
     sourceText.value = page.html;
+    codePane.value = page.html;
+    editModeBtn.disabled = false;
+    splitViewBtn.disabled = false;
+    saveSiteDraft();
     viewSourceBtn.disabled = false;
     downloadBtn.disabled = false;
     downloadZipBtn.disabled = false;
@@ -1822,7 +1845,8 @@ Total output lines: 2100
     downloadZipBtn.textContent = 'Zipping…';
     try {
       const zip = new JSZip();
-      generatedPages.forEach(page => zip.file(page.slug + '.html', page.html));
+      if (document.getElementById('zipSplitAssets').checked) addTidyProject(zip, generatedPages);
+      else generatedPages.forEach(page => zip.file(page.slug + '.html', page.html));
       const blob = await zip.generateAsync({ type: 'blob' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1899,6 +1923,171 @@ Total output lines: 2100
   }
 
   refineBtn.addEventListener('click', refinePage);
+
+  // ---------- starter template, click-to-edit canvas and live code pane ----------
+  const editModeBtn = document.getElementById('editModeBtn');
+  const splitViewBtn = document.getElementById('splitViewBtn');
+  const starterSiteBtn = document.getElementById('starterSiteBtn');
+  const canvasNote = document.getElementById('canvasNote');
+  const codePane = document.getElementById('codePane');
+  const STARTER_SITE = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>Harbor &amp; Pine \u2014 Studio for small businesses<\/title>\n<meta name=\"description\" content=\"Friendly design, websites and branding for local businesses.\">\n<style>\n  :root { --ink: #1b2430; --muted: #5b6776; --bg: #fbf8f3; --card: #ffffff; --brand: #1f6f6b; --brand-dark: #16504d; --accent: #f2a541; --line: #e7e1d7; }\n  * { box-sizing: border-box; }\n  html { scroll-behavior: smooth; }\n  body { margin: 0; font-family: \"Segoe UI\", system-ui, -apple-system, sans-serif; color: var(--ink); background: var(--bg); line-height: 1.6; }\n  a { color: var(--brand); }\n  .wrap { width: min(1120px, 100% - 40px); margin: 0 auto; }\n  header.top { position: sticky; top: 0; z-index: 10; background: rgba(251, 248, 243, .92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }\n  header.top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; }\n  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; color: var(--ink); text-decoration: none; letter-spacing: -.01em; }\n  .logo-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--brand), #3aa39c); display: grid; place-items: center; color: #fff; font-size: 17px; }\n  nav.links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }\n  nav.links a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 15px; }\n  nav.links a:hover { color: var(--brand); }\n  .btn { display: inline-block; padding: 12px 22px; border-radius: 999px; font-weight: 700; text-decoration: none; border: 2px solid transparent; transition: transform .15s, background .15s; }\n  .btn:hover { transform: translateY(-1px); }\n  .btn-primary { background: var(--brand); color: #fff; }\n  .btn-primary:hover { background: var(--brand-dark); }\n  .btn-ghost { border-color: var(--ink); color: var(--ink); }\n  .hero { padding: 84px 0 72px; background: radial-gradient(circle at 85% 20%, rgba(242, 165, 65, .22), transparent 42%), radial-gradient(circle at 10% 90%, rgba(31, 111, 107, .16), transparent 45%); }\n  .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; }\n  .eyebrow { display: inline-block; background: #fff; border: 1px solid var(--line); padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; color: var(--brand); letter-spacing: .02em; }\n  .hero h1 { font-size: clamp(36px, 5vw, 58px); line-height: 1.07; margin: 18px 0 18px; letter-spacing: -.025em; }\n  .hero h1 span { color: var(--brand); }\n  .hero p.lead { font-size: 19px; color: var(--muted); max-width: 540px; margin: 0 0 30px; }\n  .hero .cta { display: flex; gap: 12px; flex-wrap: wrap; }\n  .hero-card { background: var(--card); border-radius: 22px; padding: 26px; box-shadow: 0 24px 60px rgba(27, 36, 48, .12); border: 1px solid var(--line); }\n  .hero-art { height: 190px; border-radius: 14px; background: linear-gradient(135deg, #1f6f6b 0%, #3aa39c 55%, #f2a541 100%); position: relative; overflow: hidden; margin-bottom: 18px; }\n  .hero-art::before, .hero-art::after { content: \"\"; position: absolute; border-radius: 50%; background: rgba(255, 255, 255, .18); }\n  .hero-art::before { width: 180px; height: 180px; right: -40px; top: -50px; }\n  .hero-art::after { width: 120px; height: 120px; left: 30px; bottom: -60px; }\n  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }\n  .stats strong { display: block; font-size: 24px; color: var(--brand); }\n  .stats span { font-size: 13px; color: var(--muted); }\n  section { padding: 76px 0; }\n  .section-head { text-align: center; max-width: 640px; margin: 0 auto 44px; }\n  .section-head h2 { font-size: clamp(28px, 3.4vw, 40px); margin: 0 0 12px; letter-spacing: -.02em; }\n  .section-head p { color: var(--muted); font-size: 17px; margin: 0; }\n  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }\n  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 28px; }\n  .card .icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: rgba(31, 111, 107, .1); margin-bottom: 16px; }\n  .card h3 { margin: 0 0 8px; font-size: 20px; }\n  .card p { margin: 0; color: var(--muted); }\n  .band { background: var(--ink); color: #f4efe6; }\n  .band .section-head p, .band .step p { color: rgba(244, 239, 230, .72); }\n  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; counter-reset: step; }\n  .step { position: relative; padding-top: 58px; }\n  .step::before { counter-increment: step; content: counter(step); position: absolute; top: 0; left: 0; width: 42px; height: 42px; border-radius: 50%; background: var(--accent); color: var(--ink); font-weight: 800; display: grid; place-items: center; }\n  .step h3 { margin: 0 0 6px; }\n  .step p { margin: 0; }\n  .pricing .card { display: flex; flex-direction: column; }\n  .pricing .card.featured { border: 2px solid var(--brand); box-shadow: 0 18px 44px rgba(31, 111, 107, .16); }\n  .price { font-size: 40px; font-weight: 800; margin: 8px 0 4px; letter-spacing: -.02em; }\n  .price small { font-size: 15px; color: var(--muted); font-weight: 600; }\n  .pricing ul { list-style: none; padding: 0; margin: 18px 0 24px; flex: 1; }\n  .pricing li { padding: 7px 0 7px 28px; position: relative; border-bottom: 1px dashed var(--line); }\n  .pricing li::before { content: \"\u2713\"; position: absolute; left: 0; color: var(--brand); font-weight: 800; }\n  .contact-box { background: linear-gradient(135deg, var(--brand), #2c8a84); color: #fff; border-radius: 26px; padding: 52px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 32px; align-items: center; }\n  .contact-box h2 { margin: 0 0 10px; font-size: clamp(26px, 3vw, 36px); }\n  .contact-box p { margin: 0; opacity: .9; }\n  .contact-list { background: rgba(255, 255, 255, .12); border-radius: 16px; padding: 22px; }\n  .contact-list p { margin: 6px 0; }\n  .contact-box .btn { background: #fff; color: var(--brand-dark); margin-top: 22px; }\n  footer.site { padding: 34px 0 44px; color: var(--muted); font-size: 14px; }\n  footer.site .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 24px; }\n  @media (max-width: 860px) {\n    .hero .wrap, .contact-box { grid-template-columns: 1fr; }\n    .grid-3, .steps { grid-template-columns: 1fr; }\n    nav.links a:not(.btn) { display: none; }\n    .contact-box { padding: 32px; }\n    section { padding: 56px 0; }\n  }\n<\/style>\n<\/head>\n<body>\n<header class=\"top\">\n  <div class=\"wrap\">\n    <a class=\"logo\" href=\"#top\"><span class=\"logo-mark\">\u2693<\/span>Harbor &amp; Pine<\/a>\n    <nav class=\"links\" aria-label=\"Main\">\n      <a href=\"#services\">Services<\/a>\n      <a href=\"#process\">How it works<\/a>\n      <a href=\"#pricing\">Pricing<\/a>\n      <a class=\"btn btn-primary\" href=\"#contact\">Get a quote<\/a>\n    <\/nav>\n  <\/div>\n<\/header>\n\n<main id=\"top\">\n  <section class=\"hero\">\n    <div class=\"wrap\">\n      <div>\n        <span class=\"eyebrow\">Design studio for local businesses<\/span>\n        <h1>A brand your neighbours <span>remember<\/span> \u2014 and a website that brings them in.<\/h1>\n        <p class=\"lead\">We help small shops, caf\u00e9s and trades look as good online as they are in person. Clear pricing, friendly people, and launch in weeks, not months.<\/p>\n        <div class=\"cta\">\n          <a class=\"btn btn-primary\" href=\"#contact\">Book a free call<\/a>\n          <a class=\"btn btn-ghost\" href=\"#services\">See what we do<\/a>\n        <\/div>\n      <\/div>\n      <div class=\"hero-card\">\n        <div class=\"hero-art\" role=\"img\" aria-label=\"Abstract teal and amber artwork\"><\/div>\n        <div class=\"stats\">\n          <div><strong>2\u20134<\/strong><span>weeks to launch<\/span><\/div>\n          <div><strong>1<\/strong><span>simple monthly price<\/span><\/div>\n          <div><strong>0<\/strong><span>long contracts<\/span><\/div>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/section>\n\n  <section id=\"services\">\n    <div class=\"wrap\">\n      <div class=\"section-head\">\n        <h2>Everything you need to look professional<\/h2>\n        <p>Pick one service or bundle them together \u2014 every project starts with a relaxed conversation about your goals.<\/p>\n      <\/div>\n      <div class=\"grid-3\">\n        <article class=\"card\"><div class=\"icon\">\ud83c\udfa8<\/div><h3>Logo &amp; brand<\/h3><p>A logo, colours and fonts that fit your personality, delivered with a one-page guide so everything stays consistent.<\/p><\/article>\n        <article class=\"card\"><div class=\"icon\">\ud83d\udcbb<\/div><h3>Websites<\/h3><p>Fast, mobile-friendly sites that are easy to update yourself \u2014 with booking, menus or product pages built in.<\/p><\/article>\n        <article class=\"card\"><div class=\"icon\">\ud83d\udce3<\/div><h3>Local marketing<\/h3><p>Google Business profile, social media templates and simple flyers that turn passers-by into regulars.<\/p><\/article>\n      <\/div>\n    <\/div>\n  <\/section>\n\n  <section class=\"band\" id=\"process\">\n    <div class=\"wrap\">\n      <div class=\"section-head\">\n        <h2>How it works<\/h2>\n        <p>Three simple steps from first hello to a finished result you are proud to share.<\/p>\n      <\/div>\n      <div class=\"steps\">\n        <div class=\"step\"><h3>Talk<\/h3><p>A free 30-minute call about your business, your customers and what success looks like.<\/p><\/div>\n        <div class=\"step\"><h3>Create<\/h3><p>We design, you give feedback, and we refine together until it feels exactly right.<\/p><\/div>\n        <div class=\"step\"><h3>Launch<\/h3><p>We publish everything, show you how to make changes, and stay on hand for questions.<\/p><\/div>\n      <\/div>\n    <\/div>\n  <\/section>\n\n  <section class=\"pricing\" id=\"pricing\">\n    <div class=\"wrap\">\n      <div class=\"section-head\">\n        <h2>Simple, honest pricing<\/h2>\n        <p>No hidden fees. Change or cancel your plan whenever you like.<\/p>\n      <\/div>\n      <div class=\"grid-3\">\n        <div class=\"card\"><h3>Starter<\/h3><div class=\"price\">$490<small> one-off<\/small><\/div><p>For new businesses that need to get online quickly.<\/p><ul><li>One-page website<\/li><li>Contact form<\/li><li>Mobile friendly<\/li><\/ul><a class=\"btn btn-ghost\" href=\"#contact\">Choose Starter<\/a><\/div>\n        <div class=\"card featured\"><h3>Growth<\/h3><div class=\"price\">$1,290<small> one-off<\/small><\/div><p>Our most popular package for established shops.<\/p><ul><li>Up to five pages<\/li><li>Logo refresh<\/li><li>Google Business setup<\/li><li>Two rounds of changes<\/li><\/ul><a class=\"btn btn-primary\" href=\"#contact\">Choose Growth<\/a><\/div>\n        <div class=\"card\"><h3>Care plan<\/h3><div class=\"price\">$59<small> / month<\/small><\/div><p>Keep everything fresh without lifting a finger.<\/p><ul><li>Monthly updates<\/li><li>Hosting &amp; backups<\/li><li>Priority support<\/li><\/ul><a class=\"btn btn-ghost\" href=\"#contact\">Choose Care<\/a><\/div>\n      <\/div>\n    <\/div>\n  <\/section>\n\n  <section id=\"contact\">\n    <div class=\"wrap\">\n      <div class=\"contact-box\">\n        <div>\n          <h2>Let's make something great together<\/h2>\n          <p>Tell us a little about your business and we will reply within one working day with ideas and a clear quote.<\/p>\n          <a class=\"btn\" href=\"mailto:hello@example.com\">Email hello@example.com<\/a>\n        <\/div>\n        <div class=\"contact-list\">\n          <p><strong>Phone:<\/strong> (555) 010-2024<\/p>\n          <p><strong>Studio:<\/strong> 12 Harbour Street, Your Town<\/p>\n          <p><strong>Hours:<\/strong> Mon\u2013Fri, 9am\u20135pm<\/p>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/section>\n<\/main>\n\n<footer class=\"site\">\n  <div class=\"wrap\">\n    <span>\u00a9 Harbor &amp; Pine Studio. All rights reserved.<\/span>\n    <span>Made with MigaBuilder<\/span>\n  <\/div>\n<\/footer>\n<\/body>\n<\/html>\n";
+  const SITE_DRAFT_KEY = 'miga-site-draft';
+  let editMode = false;
+  let editSyncTimer = 0;
+
+  function saveSiteDraft() {
+    try { localStorage.setItem(SITE_DRAFT_KEY, JSON.stringify({ pages: generatedPages, active: activePageIndex, saved: Date.now() })); }
+    catch (e) { /* too big for browser storage (e.g. an embedded video) — the page still works, it just won't be restored */ }
+  }
+  function loadStarterSite() {
+    generatedPages = [{ slug: 'index', navLabel: 'Home', html: STARTER_SITE }];
+    activePageIndex = 0;
+    renderTabs();
+    showActivePage();
+    titleBlockRight.textContent = 'STARTER TEMPLATE · EDIT IT OR DRAFT YOUR OWN';
+  }
+  starterSiteBtn.addEventListener('click', function () {
+    if (generatedPages.length && !confirm('Replace the pages on the table with the starter template? Download them first if you want to keep them.')) return;
+    loadStarterSite();
+  });
+
+  // Edit mode renders the page with its scripts switched off, so what you see is exactly the
+  // HTML you'll download, then makes every piece of text editable in place.
+  const EDIT_STYLE_ID = 'miga-edit-style';
+  function enableEditing() {
+    let doc;
+    try { doc = preview.contentDocument; } catch (e) { return; }
+    if (!doc || !doc.body) return;
+    const style = doc.createElement('style');
+    style.id = EDIT_STYLE_ID;
+    style.textContent = '[data-miga-edit]{outline:1px dashed rgba(31,111,160,.35);outline-offset:2px;cursor:text}[data-miga-edit]:hover{outline:2px dashed #1f6fa0}[data-miga-edit]:focus{outline:2px solid #E2A63B;background:rgba(226,166,59,.08)}';
+    doc.head.appendChild(style);
+    const hasText = el => Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent.trim());
+    doc.body.querySelectorAll('*').forEach(function (el) {
+      if (/^(SCRIPT|STYLE|NOSCRIPT|IFRAME|SVG|svg|VIDEO|AUDIO|SELECT|TEXTAREA|INPUT|OPTION)$/.test(el.tagName)) return;
+      if (el.closest('[data-miga-edit]') || !hasText(el)) return;
+      el.setAttribute('contenteditable', 'true');
+      el.setAttribute('data-miga-edit', '');
+      el.spellcheck = true;
+    });
+    // Links and buttons should be editable, not followed.
+    doc.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('a, button, form')) e.preventDefault(); }, true);
+    doc.addEventListener('submit', function (e) { e.preventDefault(); }, true);
+    doc.addEventListener('input', scheduleEditSync);
+    doc.addEventListener('keydown', function (e) {
+      // Enter inside a one-line element (headings, buttons, links) finishes the edit instead of adding a line.
+      if (e.key === 'Enter' && !e.shiftKey && e.target.matches && e.target.matches('h1,h2,h3,h4,h5,h6,a,button,span,strong,label,small,li')) { e.preventDefault(); e.target.blur(); }
+    });
+  }
+  function serializeEditedPage() {
+    const doc = preview.contentDocument;
+    if (!doc || !doc.getElementById(EDIT_STYLE_ID)) throw new Error('page not in edit mode yet');
+    const root = doc.documentElement.cloneNode(true);
+    root.querySelectorAll('#' + EDIT_STYLE_ID).forEach(n => n.remove());
+    root.querySelectorAll('[data-miga-edit]').forEach(n => { n.removeAttribute('data-miga-edit'); n.removeAttribute('contenteditable'); n.removeAttribute('spellcheck'); });
+    root.querySelectorAll('[style=""]').forEach(n => n.removeAttribute('style'));
+    const dt = doc.doctype ? '<!DOCTYPE ' + doc.doctype.name + '>\n' : '<!DOCTYPE html>\n';
+    return dt + root.outerHTML;
+  }
+  function flushEdits() {
+    clearTimeout(editSyncTimer);
+    const page = generatedPages[activePageIndex];
+    if (!page || !editMode) return;
+    try { page.html = serializeEditedPage(); } catch (e) { return; }
+    sourceText.value = page.html;
+    codePane.value = page.html;
+    saveSiteDraft();
+    canvasNote.textContent = '✓ Edit saved — it is in the download and the code view';
+  }
+  function scheduleEditSync() {
+    clearTimeout(editSyncTimer);
+    editSyncTimer = setTimeout(flushEdits, 300);
+  }
+  preview.addEventListener('load', function () { if (editMode) enableEditing(); });
+  function setEditMode(on) {
+    if (!on) flushEdits();
+    editMode = on;
+    editModeBtn.setAttribute('aria-pressed', String(on));
+    editModeBtn.textContent = on ? '✓ Done editing' : '✏️ Edit text on the page';
+    if (on) preview.setAttribute('sandbox', 'allow-same-origin');
+    else preview.removeAttribute('sandbox');
+    canvasNote.textContent = on ? 'Click any text in the preview and type. Animations and menus are paused while editing.' : '';
+    showActivePage();
+  }
+  editModeBtn.addEventListener('click', function () { setEditMode(!editMode); });
+  splitViewBtn.addEventListener('click', function () {
+    const on = !sheet.classList.contains('split');
+    sheet.classList.toggle('split', on);
+    splitViewBtn.setAttribute('aria-pressed', String(on));
+  });
+  // Save the last keystrokes before anything reads or replaces the page.
+  pageTabsEl.addEventListener('click', flushEdits, true);
+  [refineBtn, downloadBtn, downloadZipBtn, copyEmbedBtn, publishBtn, viewSourceBtn].forEach(b => b.addEventListener('click', flushEdits, true));
+
+  // ---------- tidy .zip: shared style.css + images/ folder instead of one giant file per page ----------
+  function addTidyProject(zip, pages) {
+    const assetNames = new Map(); // data URI -> path
+    const EXT = { jpeg: 'jpg', 'svg+xml': 'svg', 'x-icon': 'ico', quicktime: 'mov', mpeg: 'mp3' };
+    function assetPath(uri) {
+      if (assetNames.has(uri)) return assetNames.get(uri);
+      const m = /^data:(image|video|audio)\/([\w.+-]+)(?:;[\w=.-]+)*;base64,/i.exec(uri);
+      if (!m) return null;
+      const kind = m[1].toLowerCase(), sub = m[2].toLowerCase();
+      const folder = kind === 'image' ? 'images' : 'media';
+      const path = folder + '/' + (kind === 'image' ? 'image' : kind) + '-' + (assetNames.size + 1) + '.' + (EXT[sub] || sub.replace(/[^a-z0-9]/g, ''));
+      zip.file(path, uri.slice(m[0].length), { base64: true });
+      assetNames.set(uri, path);
+      return path;
+    }
+    const DATA_ATTR = /(\s(?:src|href|poster)\s*=\s*)(["'])(data:(?:image|video|audio)\/[^"']+)\2/gi;
+    const DATA_URL = /url\(\s*(["']?)(data:(?:image|video|audio)\/[^"')]+)\1\s*\)/gi;
+    const fixCss = (css, prefix) => css.replace(DATA_URL, (all, q, uri) => { const path = assetPath(uri); return path ? 'url(' + prefix + path + ')' : all; });
+    const STYLE = /<style\b([^>]*)>([\s\S]*?)<\/style>/gi;
+    // Pull every plain <style> block out of each page.
+    const perPage = pages.map(page => {
+      const blocks = [];
+      page.html.replace(STYLE, (all, attrs, css) => { if (!/\bmedia\s*=|\bid\s*=/i.test(attrs)) blocks.push(css.trim()); return all; });
+      return blocks;
+    });
+    // Blocks every page shares go into style.css; anything page-specific gets its own file.
+    const shared = perPage[0].filter(b => b && perPage.every(list => list.includes(b)));
+    if (shared.length) zip.file('style.css', fixCss(shared.join('\n\n'), '') + '\n');
+    pages.forEach((page, i) => {
+      const own = perPage[i].filter(b => b && !shared.includes(b));
+      if (own.length) zip.file(page.slug + '.css', fixCss(own.join('\n\n'), '') + '\n');
+      let linked = false;
+      let html = page.html.replace(STYLE, (all, attrs) => {
+        if (/\bmedia\s*=|\bid\s*=/i.test(attrs)) return all;
+        if (linked) return '';
+        linked = true;
+        return (shared.length ? '<link rel="stylesheet" href="style.css">' : '') + (own.length ? (shared.length ? '\n' : '') + '<link rel="stylesheet" href="' + page.slug + '.css">' : '');
+      });
+      html = html.replace(DATA_ATTR, (all, attr, q, uri) => { const path = assetPath(uri); return path ? attr + q + path + q : all; });
+      html = html.replace(/(\sstyle\s*=\s*)(["'])([^"']*url\([^"']*)\2/gi, (all, attr, q, css) => attr + q + fixCss(css, '') + q);
+      zip.file(page.slug + '.html', html);
+    });
+    zip.file('README.txt', 'Your MigaBuilder website\n\n' +
+      '- Open index.html in a browser to view it.\n' +
+      '- Pages: ' + pages.map(p => p.slug + '.html').join(', ') + '\n' +
+      (shared.length ? '- style.css holds the styles every page shares.\n' : '') +
+      (assetNames.size ? '- Pictures and media are in the images/ and media/ folders.\n' : '') +
+      '- To publish, drag this whole folder onto Netlify Drop (app.netlify.com/drop) or upload it to any web host.\n');
+  }
+
+  // Open with the visitor's last site (kept in this browser) or a ready-made starter page.
+  (function restoreOrStarter() {
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(SITE_DRAFT_KEY) || 'null'); } catch (e) {}
+    if (saved && Array.isArray(saved.pages) && saved.pages.length && saved.pages.every(p => p && typeof p.html === 'string' && typeof p.slug === 'string')) {
+      generatedPages = saved.pages.map(p => ({ slug: p.slug, navLabel: p.navLabel || p.slug, html: p.html }));
+      activePageIndex = Math.min(Math.max(0, saved.active | 0), generatedPages.length - 1);
+      renderTabs();
+      showActivePage();
+      titleBlockRight.textContent = 'RESTORED FROM THIS BROWSER · ' + generatedPages.length + ' page' + (generatedPages.length === 1 ? '' : 's');
+    } else {
+      loadStarterSite();
+    }
+  })();
 
   // ---------- publish to GitHub ----------
   function base64EncodeUtf8(str) {

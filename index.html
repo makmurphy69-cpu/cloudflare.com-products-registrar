@@ -552,6 +552,8 @@
   .tool-hub-head p { margin:5px 0 0; color:rgba(237,234,224,.6); font-size:13px; }
   .tool-search { width:min(300px,100%); background:rgba(8,24,38,.72); border-color:var(--line-cyan-dim); color:var(--paper); }
   .tool-search::placeholder { color:rgba(237,234,224,.45); }
+  .tool-card.best-match { position:relative; box-shadow:0 0 0 2px rgba(111,209,224,.35); }
+  .tool-card.best-match::after { content:'↵ Enter'; position:absolute; right:10px; bottom:8px; font:600 10.5px 'IBM Plex Mono',monospace; color:var(--line-cyan); opacity:.8; }
   .tool-groups { display:grid; grid-template-columns:1fr; gap:10px; }
   .tool-group { background:rgba(8,24,38,.76); border:1px solid var(--line-cyan-dim); border-radius:var(--radius); padding:0; overflow:hidden; }
   .tool-group h3 { margin:0; font:600 12px 'IBM Plex Mono',monospace; color:var(--line-cyan); text-transform:uppercase; letter-spacing:.08em; }
@@ -617,7 +619,7 @@
 <section class="home-tour"><details><summary>Tour MigaBuilder — find the right tool in one minute</summary><p>Search by task, browse a category, or start with a popular tool. Your recently opened and favourite tools are stored only in this browser.</p></details></section>
 
 <section class="tool-hub" id="tools">
-  <div class="tool-hub-head"><div><h2>What do you want to make?</h2><p>Choose one task and start immediately.</p></div><input class="tool-search" id="toolSearch" type="search" placeholder="Search 54 tools…" aria-label="Find a tool"></div>
+  <div class="tool-hub-head"><div><h2>What do you want to make?</h2><p>Choose one task and start immediately.</p></div><input class="tool-search" id="toolSearch" type="search" placeholder="Search 54 tools…" aria-label="Find a tool" title="Press / to search from anywhere · Enter opens the best match"></div>
   <div class="hub-controls" aria-label="Tool categories">
     <button class="filter-chip active" data-filter="all">All tools</button>
     <button class="filter-chip" data-filter="create">Create</button>
@@ -746,10 +748,34 @@
   function apply(){
     const q=(search.value||'').trim().toLowerCase();
     const words=q.split(/\s+/).filter(Boolean);let total=0;
-    groups.forEach(g=>{const categoryOK=active==='all'||g.dataset.category===active;let shown=0;g.querySelectorAll('.tool-card').forEach(c=>{const text=(c.textContent+' '+(c.dataset.keywords||'')).toLowerCase();const ok=categoryOK&&words.every(w=>text.includes(w));c.hidden=!ok;if(ok)shown++});total+=shown;g.hidden=!shown;const expand=Boolean((q||active!=='all')&&shown);g.classList.toggle('search-open',expand);g.querySelector('.tool-group-toggle')?.setAttribute('aria-expanded',String(g.classList.contains('open')||expand))});
+    best=null;
+    groups.forEach(g=>{const categoryOK=active==='all'||g.dataset.category===active;let shown=0;g.querySelectorAll('.tool-card').forEach(c=>{const score=categoryOK?matchScore(c,words):0;const ok=score>0;c.hidden=!ok;c.classList.toggle('best-match',false);if(ok){shown++;if(words.length&&(!best||score>best.score))best={card:c,score}}});total+=shown;g.hidden=!shown;const expand=Boolean((q||active!=='all')&&shown);g.classList.toggle('search-open',expand);g.querySelector('.tool-group-toggle')?.setAttribute('aria-expanded',String(g.classList.contains('open')||expand))});
+    if(best)best.card.classList.add('best-match');
     document.getElementById('searchEmpty').hidden=total>0;
   }
+  // Fuzzy search: exact words score highest, then everyday synonyms ("site" → website,
+  // "resume" → CV), then prefixes, then small typos ("vidoe", "invocie").
+  const SYNONYMS={site:'website web page',homepage:'website',resume:'cv',résumé:'cv',photo:'image picture',pic:'image',picture:'image',movie:'video',film:'video',clip:'video',mp4:'video',mp3:'audio',sound:'audio music',song:'music',voice:'audio record talk',sign:'signature pdf',signature:'sign',scan:'ocr',text:'ocr writing',bill:'invoice',quote:'invoice',receipt:'invoice',deck:'slide powerpoint',presentation:'slide powerpoint',ppt:'slide powerpoint',pptx:'slide',word:'document docx',docx:'document',excel:'csv',spreadsheet:'csv',colour:'color palette',color:'palette',brand:'logo',font:'logo design',animation:'cartoon video',anime:'cartoon',chatbot:'bot',chat:'bot',faq:'bot',flashcards:'flashcard',study:'flashcard quiz learn',exam:'quiz test',test:'quiz',typing:'keyboard alphabet',language:'alphabet translate',translate:'clip grammar',spelling:'grammar',compress:'pdf image',shrink:'compress',diff:'compare',debug:'bug',code:'bug code',house:'cad',floorplan:'cad',plan:'cad',print:'3d model',map:'geography',country:'geography',car:'vehicle simulator',drive:'vehicle simulator',meeting:'meet',call:'meet',share:'screen',remote:'screen',form:'survey',survey:'form',cv:'resume'};
+  const tokenCache=new WeakMap();
+  function tokensOf(c){if(!tokenCache.has(c)){const text=(c.textContent+' '+(c.dataset.keywords||'')).toLowerCase();tokenCache.set(c,{text,title:(c.querySelector('strong')?.textContent||'').toLowerCase(),tokens:text.split(/[^\p{L}\p{N}+#]+/u).filter(Boolean)})}return tokenCache.get(c)}
+  function editDistance(a,b){const d=[];for(let i=0;i<=a.length;i++){d[i]=[i];for(let j=1;j<=b.length;j++)d[i][j]=i?Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1),i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]?d[i-2][j-2]+1:99):j}return d[a.length][b.length]}
+  function wordScore(w,t){
+    if(t.title.split(/\s+/).some(x=>x.startsWith(w)))return 10;
+    if(t.text.includes(w))return 6;
+    if((SYNONYMS[w]||'').split(' ').some(x=>x&&t.text.includes(x)))return 5;
+    if(w.length<3)return 0;
+    const max=w.length>=7?2:w.length>=4?1:0;
+    if(!max)return 0;
+    const near=x=>Math.abs(x.length-w.length)<=max&&editDistance(w,x)<=max||x.length>w.length&&editDistance(w,x.slice(0,w.length))<=max;
+    if(t.title.split(/\s+/).some(near))return 4;
+    if(t.tokens.some(near))return 3;
+    return 0;
+  }
+  function matchScore(c,words){if(!words.length)return 1;const t=tokensOf(c);let sum=0;for(const w of words){const s=wordScore(w,t);if(!s)return 0;sum+=s}return sum}
+  let best=null;
   search.addEventListener('input',apply);
+  search.addEventListener('keydown',e=>{if(e.key==='Enter'&&best){e.preventDefault();best.card.click()}else if(e.key==='Escape'){search.value='';apply()}});
+  document.addEventListener('keydown',e=>{if(e.key==='/'&&!e.ctrlKey&&!e.metaKey&&!/^(input|textarea|select)$/i.test(document.activeElement?.tagName||'')&&!document.activeElement?.isContentEditable){e.preventDefault();search.focus();search.select()}});
   document.querySelectorAll('.filter-chip').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter-chip').forEach(x=>x.classList.toggle('active',x===b));active=b.dataset.filter;apply()}));
   const key='migabuilder-tool-history',favKey='migabuilder-tool-favourites';
   const read=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return[]}};
