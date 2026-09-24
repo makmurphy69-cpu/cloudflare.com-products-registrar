@@ -1,3 +1,5 @@
+// Shared extras (privacy badge, dark mode, work auto-save) for every tool page.
+(function(){if(document.querySelector('script[src*="miga-extras.js"]'))return;const s=document.createElement('script');s.src='miga-extras.js';s.defer=true;document.head.appendChild(s)})();
 (function(){
   'use strict';
   const file=(location.pathname.split('/').pop()||'index.html').toLowerCase();
