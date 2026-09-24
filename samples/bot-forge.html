@@ -1,0 +1,172 @@
+<script>
+
+(function(){
+  "use strict";
+  var CFG = {
+    provider: "gemini",
+    apiKey: "YOUR-GEMINI-API-KEY",
+    bizName: "Sunrise Bakery",
+    bizDesc: "Neighbourhood bakery in Nairobi with fresh bread, cakes and coffee.",
+    knowledge: "Open Monday to Saturday 7:00 to 18:00, Sunday 8:00 to 14:00. Sourdough 350 KES, carrot cake 450 KES a slice. Free delivery within 3 km for orders over 1,000 KES. Children’s baking class on Saturdays at 10:00.",
+    title: "Ask us anything",
+    avatar: "💬",
+    welcome: "Hi! Ask me about our bread, hours or delivery.",
+    color: "#0e2a47",
+    position: "right",
+    dailyLimit: 30,
+    uiSend: "Send",
+    uiPlaceholder: "Type a message…",
+    uiLimitReached: "You've reached today's message limit for this chat — please contact us directly and we'll help right away.",
+    uiFallback: "Sorry, I didn't catch that.",
+    uiErrorPrefix: "Sorry, something went wrong: "
+  };
+  var SYSTEM_PROMPT = "You are a helpful assistant for " + (CFG.bizName || "this business") + ". " +
+    (CFG.bizDesc ? "About the business: " + CFG.bizDesc + " " : "") +
+    "Answer visitor questions using ONLY this information: " + CFG.knowledge + " " +
+    "If asked something you can't answer from that information, say you're not sure and suggest contacting the business directly. Keep answers short and friendly.";
+
+  var history = [];
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) { if (k === "style") e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k]); }
+    (children || []).forEach(function (c) { e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+
+  var side = CFG.position === "left" ? "left:20px;" : "right:20px;";
+  var root = el("div", { style: "position:fixed;bottom:20px;" + side + "z-index:999999;font-family:system-ui,sans-serif;" });
+
+  var styleTag = document.createElement("style");
+  styleTag.textContent =
+    ".mb-bf-panel{display:none;position:absolute;bottom:66px;" + (CFG.position === "left" ? "left:0;" : "right:0;") +
+    "width:320px;max-width:90vw;height:420px;background:#fff;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.3);flex-direction:column;overflow:hidden;}" +
+    "@media (max-width:480px){.mb-bf-panel{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0;}}";
+  document.head.appendChild(styleTag);
+
+  var bubble = el("button", {
+    style: "width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:" + CFG.color + ";color:#fff;font-size:24px;box-shadow:0 4px 16px rgba(0,0,0,0.25);"
+  }, [CFG.avatar]);
+
+  var panel = el("div", { class: "mb-bf-panel" });
+  var head = el("div", { style: "background:" + CFG.color + ";color:#fff;padding:14px 16px;font-weight:600;font-size:14px;" }, [CFG.title]);
+  var messages = el("div", { style: "flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;" });
+  var inputRow = el("div", { style: "display:flex;border-top:1px solid #eee;" });
+  var input = el("input", { type: "text", placeholder: CFG.uiPlaceholder, maxlength: "600", style: "flex:1;border:none;padding:12px;font-size:13.5px;outline:none;" });
+  var sendBtn = el("button", { style: "border:none;background:" + CFG.color + ";color:#fff;padding:0 16px;cursor:pointer;font-size:13.5px;" }, [CFG.uiSend]);
+  inputRow.appendChild(input); inputRow.appendChild(sendBtn);
+  panel.appendChild(head); panel.appendChild(messages); panel.appendChild(inputRow);
+  root.appendChild(panel); root.appendChild(bubble);
+  document.body.appendChild(root);
+
+  function addMessage(text, who) {
+    var bubbleEl = el("div", {
+      style: "max-width:82%;padding:8px 11px;border-radius:10px;line-height:1.4;" +
+        (who === "user" ? "align-self:flex-end;background:" + CFG.color + ";color:#fff;" : "align-self:flex-start;background:#f0f0f0;color:#222;")
+    }, [text]);
+    messages.appendChild(bubbleEl);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  var opened = false;
+  bubble.addEventListener("click", function () {
+    opened = !opened;
+    panel.style.display = opened ? "flex" : "none";
+    if (opened && !messages.childNodes.length) addMessage(CFG.welcome, "bot");
+  });
+
+  function stripFence(t) {
+    var m = t.trim().match(/^```(?:json|text)?\s*([\s\S]*?)\s*```$/i);
+    return (m ? m[1] : t).trim();
+  }
+
+  async function callGemini(userText) {
+    var url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + encodeURIComponent(CFG.apiKey);
+    var contents = history.concat([{ role: "user", parts: [{ text: userText }] }]);
+    var res = await fetch(url, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM_PROMPT }] }, contents: contents })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var cand = data.candidates && data.candidates[0];
+    var raw = cand && cand.content && cand.content.parts && cand.content.parts[0] ? cand.content.parts[0].text : "";
+    history.push({ role: "user", parts: [{ text: userText }] });
+    history.push({ role: "model", parts: [{ text: raw }] });
+    return stripFence(raw || CFG.uiFallback);
+  }
+
+  async function callOpenAI(userText) {
+    var msgs = [{ role: "system", content: SYSTEM_PROMPT }].concat(history, [{ role: "user", content: userText }]);
+    var res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + CFG.apiKey },
+      body: JSON.stringify({ model: "gpt-4o-mini", messages: msgs, temperature: 0.5 })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var raw = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : "";
+    history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
+    return stripFence(raw || CFG.uiFallback);
+  }
+
+  async function callAnthropic(userText) {
+    var msgs = history.concat([{ role: "user", content: userText }]);
+    var res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": CFG.apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-sonnet-5", max_tokens: 400, system: SYSTEM_PROMPT, messages: msgs })
+    });
+    if (!res.ok) { var e = await res.json().catch(function(){return null;}); throw new Error((e && e.error && e.error.message) || ("Request failed: " + res.status)); }
+    var data = await res.json();
+    var block = data.content && data.content.filter(function(b){return b.type === "text";})[0];
+    var raw = block ? block.text : "";
+    history.push({ role: "user", content: userText }); history.push({ role: "assistant", content: raw });
+    return stripFence(raw || CFG.uiFallback);
+  }
+
+  var USAGE_KEY = "migabuilder_bot_forge_usage";
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function getUsage() {
+    try {
+      var raw = JSON.parse(localStorage.getItem(USAGE_KEY) || "null");
+      if (raw && raw.date === todayStr()) return raw;
+    } catch (e) {}
+    return { date: todayStr(), count: 0 };
+  }
+  function bumpUsage() {
+    var usage = getUsage();
+    usage.count += 1;
+    try { localStorage.setItem(USAGE_KEY, JSON.stringify(usage)); } catch (e) {}
+    return usage.count;
+  }
+
+  async function handleSend() {
+    var text = input.value.trim().slice(0, 600);
+    if (!text) return;
+    if (CFG.dailyLimit > 0 && getUsage().count >= CFG.dailyLimit) {
+      addMessage(CFG.uiLimitReached, "bot");
+      return;
+    }
+    input.value = "";
+    addMessage(text, "user");
+    bumpUsage();
+    var thinking = el("div", { style: "align-self:flex-start;background:#f0f0f0;color:#888;padding:8px 11px;border-radius:10px;font-size:13px;" }, ["…"]);
+    messages.appendChild(thinking); messages.scrollTop = messages.scrollHeight;
+    try {
+      var reply;
+      if (CFG.provider === "openai") reply = await callOpenAI(text);
+      else if (CFG.provider === "anthropic") reply = await callAnthropic(text);
+      else reply = await callGemini(text);
+      thinking.remove();
+      addMessage(reply, "bot");
+    } catch (err) {
+      thinking.remove();
+      addMessage(CFG.uiErrorPrefix + err.message, "bot");
+    }
+  }
+  sendBtn.addEventListener("click", handleSend);
+  input.addEventListener("keydown", function (e) { if (e.key === "Enter") handleSend(); });
+})();
+
+</script>
+<!-- Generated by Bot Forge (migabuilder.com). Paste this right before </body>. -->

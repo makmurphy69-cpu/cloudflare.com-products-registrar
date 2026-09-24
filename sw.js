@@ -4,7 +4,7 @@
  * Styles, scripts and CDN libraries: served from cache and refreshed in the background.
  * Analytics, AI proxies and Wikipedia requests are never cached. */
 'use strict';
-const VERSION = 'miga-v1';
+const VERSION = 'miga-v2';
 const PAGES = VERSION + '-pages';
 const ASSETS = VERSION + '-assets';
 const CDN = VERSION + '-cdn';
@@ -63,7 +63,8 @@ self.addEventListener('fetch', event => {
   if (url.origin === self.location.origin) {
     if (request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
       event.respondWith(networkFirst(request));
-    } else if (!url.pathname.startsWith('/cloudflare-worker/')) {
+    } else if (!url.pathname.startsWith('/cloudflare-worker/') && !url.pathname.startsWith('/videos/') && !url.pathname.startsWith('/samples/')) {
+      // Videos and samples are large and use range requests, so they always come from the network.
       event.respondWith(staleWhileRevalidate(event, ASSETS));
     }
   } else if (CDN_HOSTS.includes(url.hostname)) {

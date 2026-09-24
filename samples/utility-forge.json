@@ -1,0 +1,17 @@
+[
+  {
+    "product": "Sourdough",
+    "price": "3.50",
+    "in_stock": "yes"
+  },
+  {
+    "product": "Rye",
+    "price": "3.20",
+    "in_stock": "yes"
+  },
+  {
+    "product": "Carrot cake",
+    "price": "4.50",
+    "in_stock": "no"
+  }
+]

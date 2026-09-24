@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baker's Triple Timer</title>
+    <style>
+        :root {
+            --bg-color: #fcfbf9;
+            --card-bg: #ffffff;
+            --text-color: #2c2522;
+            --accent-primary: #d97736;
+            --accent-hover: #c46328;
+            --danger: #c93b3b;
+            --danger-hover: #b22e2e;
+            --success: #388a51;
+            --border-color: #e6dfd5;
+            --shadow: 0 4px 12px rgba(44, 37, 34, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: var(--accent-primary);
+            margin-bottom: 4px;
+        }
+
+        p.subtitle {
+            color: #665c54;
+            font-size: 0.95rem;
+        }
+
+        .timers-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .timer-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .timer-card.running {
+            border-color: var(--accent-primary);
+        }
+
+        .timer-card.alarm {
+            border-color: var(--danger);
+            background-color: #fff5f5;
+            animation: pulse 0.8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.01); }
+        }
+
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .timer-name-input {
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            flex-grow: 1;
+        }
+
+        .timer-name-input:hover, .timer-name-input:focus {
+            border-color: var(--border-color);
+            background: #fff;
+            outline: none;
+        }
+
+        .display {
+            font-family: monospace;
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            color: var(--text-color);
+        }
+
+        .timer-card.alarm .display {
+            color: var(--danger);
+        }
+
+        .quick-add-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .btn-quick {
+            background: #f4efe6;
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .btn-quick:hover {
+            background: #e9e2d5;
+        }
+
+        .controls-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.05s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background: #e9e2d5;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #ded5c5;
+        }
+
+        /* Favorites Section */
+        .favorites-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .favorites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .favorites-header h2 {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .favorites-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .favorite-pill {
+            background: #f4efe6;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .favorite-pill:hover {
+            background: #e9e2d5;
+        }
+
+        .favorite-pill .load-action {
+            font-weight: bold;
+            color: var(--accent-primary);
+        }
+
+        .favorite-pill .delete-action {
+            color: #999;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 0 4px;
+        }
+
+        .favorite-pill .delete-action:hover {
+            color: var(--danger);
+            background: rgba(201, 59, 59, 0.1);
+        }
+
+        .add-favorite-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .add-favorite-form input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .add-favorite-form input[type="text"] {
+            flex-grow: 1;
+        }
+
+        .add-favorite-form input[type="number"] {
+            width: 90px;
+        }
+
+        .audio-unlock {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Baker's Triple Timer</h1>
+            <p class="subtitle">Precise timings for doughs, proofing, and bakes.</p>
+        </header>
+
+        <div class="audio-unlock" id="audioUnlockMsg">
+            🔊 Tap anywhere to enable alert sounds.
+        </div>
+
+        <!-- Timers Container -->
+        <div class="timers-grid" id="timersContainer">
+            <!-- Dynamically generated 3 timers -->
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="favorites-section">
+            <div class="favorites-header">
+                <h2>Saved Bake Times</h2>
+            </div>
+            <div class="favorites-list" id="favoritesList">
+                <!-- Dynamically populated favorites -->
+            </div>
+            <form class="add-favorite-form" id="addFavoriteForm">
+                <input type="text" id="favName" placeholder="Bake name (e.g. Sourdough Loaf)" required>
+                <input type="number" id="favMinutes" placeholder="Mins" min="0" max="999" required>
+                <button type="submit" class="btn btn-secondary" style="padding: 8px 16px;">Save Time</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- Audio Context for Alarm ---
+        let audioCtx = null;
+        let isAudioUnlocked = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            isAudioUnlocked = true;
+            document.getElementById('audioUnlockMsg').style.display = 'none';
+        }
+
+        window.addEventListener('click', initAudio, { once: false });
+
+        function playAlarmBeep() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+                osc.frequency.setValueAtTime(1320, audioCtx.currentTime + 0.1); // E6
+
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } catch (e) {
+                console.error("Audio playback error", e);
+            }
+        }
+
+        // --- App State & Storage ---
+        const DEFAULT_TIMERS = [
+            { id: 1, name: 'Sourdough Bulk Ferment', remaining: 3600, total: 3600, state: 'stopped' },
+            { id: 2, name: 'Baguette Oven Bake', remaining: 1200, total: 1200, state: 'stopped' },
+            { id: 3, name: 'Proofing Basket', remaining: 1800, total: 1800, state: 'stopped' }
+        ];
+
+        const DEFAULT_FAVORITES = [
+            { name: 'Sourdough Loaf (45m)', seconds: 2700 },
+            { name: 'Pizza Dough Rest (2h)', seconds: 7200 },
+            { name: 'Focaccia Proof (3h)', seconds: 10800 },
+            { name: 'Brioche Bake (30m)', seconds: 1800 },
+            { name: 'Croissant Proof (40m)', seconds: 2400 }
+        ];
+
+        let timers = JSON.parse(localStorage.getItem('baker_timers')) || DEFAULT_TIMERS;
+        let favorites = JSON.parse(localStorage.getItem('baker_favorites')) || DEFAULT_FAVORITES;
+
+        function saveTimers() {
+            localStorage.setItem('baker_timers', JSON.stringify(timers));
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('baker_favorites', JSON.stringify(favorites));
+        }
+
+        // --- Formatting Helper ---
+        function formatTime(totalSeconds) {
+            const hrs = Math.floor(totalSeconds / 3600);
+            const mins = Math.floor((totalSeconds % 3600) / 60);
+            const secs = totalSeconds % 60;
+
+            if (hrs > 0) {
+                return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // --- Rendering ---
+        const timersContainer = document.getElementById('timersContainer');
+        const favoritesList = document.getElementById('favoritesList');
+
+        function renderTimers() {
+            timersContainer.innerHTML = '';
+            timers.forEach((timer, index) => {
+                const card = document.createElement('div');
+                card.className = `timer-card ${timer.state === 'running' ? 'running' : ''} ${timer.state === 'alarm' ? 'alarm' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="timer-header">
+                        <input type="text" class="timer-name-input" value="${escapeHtml(timer.name)}" data-index="${index}" placeholder="Timer Name">
+                        <span style="font-size: 0.85rem; color: #665c54;">Timer ${index + 1}</span>
+                    </div>
+                    <div class="display">${formatTime(timer.remaining)}</div>
+                    <div class="quick-add-bar">
+                        <button class="btn-quick" onclick="adjustTime(${index}, 60)">+1m</button>
+                        <button class="btn-quick" onclick="adjustTime(${index}, 300)">+5m</button>
+                        <button class="btn-quick" onclick="adjustTime(${index}, 900)">+15m</button>
+                        <button class="btn-quick" onclick="adjustTime(${index}, 1800)">+30m</button>
+                    </div>
+                    <div class="controls-bar">
+                        ${
+                            timer.state === 'running' 
+                            ? `<button class="btn btn-secondary" onclick="pauseTimer(${index})">Pause</button>`
+                            : timer.state === 'alarm'
+                            ? `<button class="btn btn-danger" onclick="stopAlarm(${index})">Stop Alarm</button>`
+                            : `<button class="btn btn-primary" onclick="startTimer(${index})">Start</button>`
+                        }
+                        <button class="btn btn-secondary" onclick="resetTimer(${index})">Reset</button>
+                    </div>
+                `;
+                timersContainer.appendChild(card);
+            });
+
+            // Bind name update events
+            document.querySelectorAll('.timer-name-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = e.target.getAttribute('data-index');
+                    timers[idx].name = e.target.value;
+                    saveTimers();
+                });
+            });
+        }
+
+        function renderFavorites() {
+            favoritesList.innerHTML = '';
+            favorites.forEach((fav, index) => {
+                const pill = document.createElement('div');
+                pill.className = 'favorite-pill';
+                pill.innerHTML = `
+                    <span onclick="loadFavorite(${fav.seconds})" style="flex-grow:1;">${escapeHtml(fav.name)} <span class="load-action">(${formatTime(fav.seconds)})</span></span>
+                    <span class="delete-action" onclick="removeFavorite(event, ${index})" title="Delete favorite">&times;</span>
+                `;
+                favoritesList.appendChild(pill);
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        // --- Timer Logic ---
+        function startTimer(index) {
+            initAudio();
+            if (timers[index].remaining <= 0) {
+                timers[index].remaining = timers[index].total || 60;
+            }
+            timers[index].state = 'running';
+            saveTimers();
+            renderTimers();
+        }
+
+        function pauseTimer(index) {
+            timers[index].state = 'stopped';
+            saveTimers();
+            renderTimers();
+        }
+
+        function resetTimer(index) {
+            timers[index].state = 'stopped';
+            timers[index].remaining = timers[index].total;
+            saveTimers();
+            renderTimers();
+        }
+
+        function stopAlarm(index) {
+            timers[index].state = 'stopped';
+            timers[index].remaining = 0;
+            saveTimers();
+            renderTimers();
+        }
+
+        function adjustTime(index, seconds) {
+            if (timers[index].state === 'alarm') {
+                timers[index].state = 'stopped';
+            }
+            timers[index].remaining += seconds;
+            timers[index].total = timers[index].remaining;
+            saveTimers();
+            renderTimers();
+        }
+
+        // Global ticker interval
+        setInterval(() => {
+            let updated = false;
+            timers.forEach((timer, index) => {
+                if (timer.state === 'running') {
+                    if (timer.remaining > 0) {
+                        timer.remaining--;
+                        updated = true;
+                        if (timer.remaining === 0) {
+                            timer.state = 'alarm';
+                            playAlarmBeep();
+                        }
+                    }
+                } else if (timer.state === 'alarm') {
+                    playAlarmBeep();
+                }
+            });
+
+            if (updated || timers.some(t => t.state === 'alarm')) {
+                saveTimers();
+                renderTimers();
+            }
+        }, 1000);
+
+        // --- Favorite Actions ---
+        function loadFavorite(seconds) {
+            // Find the first stopped or reset timer to load into, or default to timer 0
+            let targetIndex = timers.findIndex(t => t.state === 'stopped' && t.remaining === 0);
+            if (targetIndex === -1) targetIndex = 0;
+
+            timers[targetIndex].remaining = seconds;
+            timers[targetIndex].total = seconds;
+            timers[targetIndex].state = 'stopped';
+            saveTimers();
+            renderTimers();
+        }
+
+        function removeFavorite(event, index) {
+            event.stopPropagation();
+            favorites.splice(index, 1);
+            saveFavorites();
+            renderFavorites();
+        }
+
+        document.getElementById('addFavoriteForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('favName').value.trim();
+            const mins = parseInt(document.getElementById('favMinutes').value, 10);
+
+            if (name && !isNaN(mins) && mins >= 0) {
+                const seconds = mins * 60;
+                favorites.push({ name, seconds });
+                saveFavorites();
+                renderFavorites();
+                document.getElementById('favName').value = '';
+                document.getElementById('favMinutes').value = '';
+            }
+        });
+
+        // Initial Load
+        renderTimers();
+        renderFavorites();
+    </script>
+</body>
+</html>

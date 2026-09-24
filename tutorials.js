@@ -95,4 +95,24 @@
   box.addEventListener('toggle',()=>{if(!box.open)stop()});render(false);
 
   if(file==='meet-forge.html'){const actions=document.querySelector('.meeting-actions');if(actions){const cal=document.createElement('button');cal.type='button';cal.className='secondary';cal.textContent='Add to calendar';cal.onclick=()=>{const now=new Date(),end=new Date(now.getTime()+3600000),stamp=d=>d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,''),title=(document.getElementById('roomHeading')?.textContent||'MigaBuilder meeting').replace(/[\n,;]/g,' '),ics=['BEGIN:VCALENDAR','VERSION:2.0','BEGIN:VEVENT','DTSTAMP:'+stamp(now),'DTSTART:'+stamp(now),'DTEND:'+stamp(end),'SUMMARY:'+title,'URL:'+location.href,'DESCRIPTION:'+location.href.replace(/,/g,'\\,'),'END:VEVENT','END:VCALENDAR'].join('\r\n'),a=document.createElement('a'),u=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.href=u;a.download='migabuilder-meeting.ics';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};actions.insertBefore(cal,document.getElementById('shareBtn'))}}
+
+  // Narrated video guide + the sample made in it (both produced by scripts/tutorial-videos).
+  fetch('videos/manifest.json').then(r=>r.ok?r.json():null).then(m=>{
+    const v=m&&m[file];if(!v||!v.video)return;
+    const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const mins=Math.floor((v.duration||0)/60)+':'+String((v.duration||0)%60).padStart(2,'0');
+    const sampleHref='sample-viewer.html?tool='+encodeURIComponent(file);
+    const sum=box.querySelector('summary');
+    sum.innerHTML='<span><b>VIDEO GUIDE · '+mins+'</b><span>Watch how '+esc(tool[0])+' works — with voice</span><span id="mt-title" hidden></span></span><span class="miga-sum-actions">'+(v.sample?'<a class="miga-sample-link" href="'+sampleHref+'">See the sample made in this video</a>':'')+'<span>▶ Watch</span></span>';
+    const sec=document.createElement('div');sec.className='miga-video';
+    sec.innerHTML='<video controls preload="none" playsinline poster="'+esc(v.poster)+'"><source src="'+esc(v.video)+'" type="video/mp4">Your browser cannot play this video.</video>'+
+      '<div class="miga-video-actions">'+(v.sample?'<a class="miga-sample-btn" href="'+sampleHref+'">👀 See the sample made in this video</a>':'')+'<a class="miga-video-dl" href="'+esc(v.video)+'" download>⬇ Download video</a></div>'+
+      (v.transcript&&v.transcript.length?'<details class="miga-transcript"><summary>Read the transcript</summary><p>'+v.transcript.map(esc).join('</p><p>')+'</p></details>':'')+
+      '<p class="miga-video-note">Prefer to follow along on this page? The interactive walkthrough below points to the real controls.</p>';
+    const body=box.querySelector('.miga-tutorial-body');body.parentNode.insertBefore(sec,body);
+    box.classList.add('has-video');
+    const video=sec.querySelector('video');
+    video.addEventListener('play',()=>{if(playing)stop()});
+    box.addEventListener('toggle',()=>{if(!box.open)video.pause()});
+  }).catch(()=>{});
 })();

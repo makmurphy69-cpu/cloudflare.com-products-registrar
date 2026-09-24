@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Samples — what each MigaBuilder tool makes | MigaBuilder</title>
+<meta name="description" content="See real results made with each MigaBuilder tool in its video guide: websites, games, invoices, PDFs, music, images and more.">
+<link rel="canonical" href="https://migabuilder.com/sample-viewer.html">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="local-tools.css">
+<style>
+main{max-width:1180px}
+.stage{background:#fff;border:1px solid rgba(22,32,43,.14);border-radius:6px;overflow:hidden}
+.stage img{display:block;max-width:100%;margin:0 auto;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 50%/20px 20px}
+.stage iframe{display:block;width:100%;height:78vh;border:0;background:#fff}
+.stage audio,.stage video{display:block;width:100%;max-width:900px;margin:18px auto}
+.stage pre{margin:0;padding:16px;max-height:70vh;overflow:auto;font:13px/1.5 'IBM Plex Mono',monospace;white-space:pre-wrap}
+.stage .dl{padding:40px 20px;text-align:center}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.gcard{background:#fff;border:1px solid rgba(22,32,43,.14);border-radius:6px;overflow:hidden;color:var(--ink);text-decoration:none}
+.gcard img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#0b1e30}
+.gcard b{display:block;padding:8px 10px 2px;font:700 14px 'Space Grotesk'}.gcard small{display:block;padding:0 10px 10px;color:rgba(22,32,43,.6)}
+.gcard.active{outline:3px solid var(--amber)}
+video.guide[hidden]{display:none}.bar a{text-decoration:none}
+video.guide{display:block;width:100%;max-width:960px;aspect-ratio:16/9;background:#000;border-radius:6px;margin:0 auto 12px}
+</style>
+</head>
+<body>
+<nav class="tool-nav"><a href="index.html">← All tools</a><span>Samples</span></nav>
+<header class="masthead"><div><h1 id="title">Samples</h1><p id="sub">Real results made in each tool’s video guide.</p></div></header>
+<main>
+<section class="panel" id="viewer" hidden>
+  <div class="bar"><a class="primary" id="openTool" href="#">Make your own →</a><a class="secondary" id="download" href="#" download>⬇ Download this sample</a><button class="secondary" id="watch">▶ Watch the video it was made in</button></div>
+  <video class="guide" id="guide" controls playsinline preload="none" hidden></video>
+  <div class="stage" id="stage"></div>
+  <p class="muted" id="note" style="margin-top:10px"></p>
+</section>
+<section class="panel">
+  <h2>All samples</h2>
+  <p>Each one was made in the tool’s video guide. Choose one to see it.</p>
+  <div class="gallery" id="gallery"></div>
+</section>
+</main>
+<footer>MigaBuilder samples · Websites and games run in a locked sandbox.</footer>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safePath=p=>typeof p==='string'&&/^(samples|videos)\/[\w.-]+$/.test(p);
+fetch('videos/manifest.json').then(r=>r.json()).then(m=>{
+  const list=Object.entries(m).filter(([,v])=>v.sample&&safePath(v.sample.file)).sort((a,b)=>a[1].title.localeCompare(b[1].title));
+  const want=new URLSearchParams(location.search).get('tool');
+  $('gallery').innerHTML=list.map(([f,v])=>'<a class="gcard'+(f===want?' active':'')+'" href="?tool='+encodeURIComponent(f)+'"><img loading="lazy" src="'+(safePath(v.poster)?v.poster:'')+'" alt=""><b>'+esc(v.title)+'</b><small>'+esc(v.sample.label)+'</small></a>').join('');
+  const entry=list.find(([f])=>f===want);
+  if(!entry){if(want)$('sub').textContent='That tool has no sample yet. Choose one below.';return}
+  const [file,v]=entry,s=v.sample;
+  document.title=v.title+' sample | MigaBuilder';$('title').textContent=v.title+' — sample';$('sub').textContent=s.label;
+  $('viewer').hidden=false;$('openTool').href=file;$('openTool').textContent='Make your own in '+v.title+' →';$('download').href=s.file;
+  const stage=$('stage');
+  if(s.kind==='image')stage.innerHTML='<img src="'+s.file+'" alt="'+esc(s.label)+'">';
+  else if(s.kind==='html'){
+    // The sandbox has no storage access, so give the page an in-memory localStorage/sessionStorage (games keep high scores there).
+    const shim='<script>(function(){function M(){var d={};return{getItem:function(k){return Object.prototype.hasOwnProperty.call(d,k)?d[k]:null},setItem:function(k,v){d[k]=String(v)},removeItem:function(k){delete d[k]},clear:function(){d={}},key:function(i){return Object.keys(d)[i]||null},get length(){return Object.keys(d).length}}}["localStorage","sessionStorage"].forEach(function(n){try{Object.defineProperty(window,n,{value:M(),configurable:true})}catch(e){}})})();<\/script>';
+    fetch(s.file).then(r=>r.text()).then(html=>{const f=document.createElement('iframe');f.setAttribute('sandbox','allow-scripts allow-forms allow-modals allow-pointer-lock');f.title=s.label;f.srcdoc=/<head[^>]*>/i.test(html)?html.replace(/<head[^>]*>/i,m=>m+shim):shim+html;stage.replaceChildren(f)});
+    $('note').textContent='This page was made by the tool and runs in a locked sandbox. Click inside it to use it (games: click first, then use the keyboard).';}
+  else if(s.kind==='pdf')stage.innerHTML='<iframe src="'+s.file+'" title="'+esc(s.label)+'"></iframe>';
+  else if(s.kind==='audio')stage.innerHTML='<audio controls src="'+s.file+'"></audio>';
+  else if(s.kind==='video')stage.innerHTML='<video controls playsinline src="'+s.file+'"></video>';
+  else if(s.kind==='text')fetch(s.file).then(r=>r.text()).then(t=>stage.innerHTML='<pre>'+esc(t.slice(0,200000))+'</pre>');
+  else stage.innerHTML='<div class="dl"><p>This sample is a <b>'+esc(s.file.split('.').pop().toUpperCase())+'</b> file'+(/pptx$/.test(s.file)?' — open it in PowerPoint, Google Slides or Keynote.':/zip$/.test(s.file)?' — unzip it to see every file.':/stl|obj$/.test(s.file)?' — open it in a 3D viewer or slicer.':/dxf$/.test(s.file)?' — open it in any CAD program.':'.')+'</p><a class="primary" href="'+s.file+'" download>⬇ Download the sample</a></div>';
+  $('watch').onclick=()=>{const g=$('guide');if(g.hidden){g.src=v.video;g.poster=v.poster;g.hidden=false}g.scrollIntoView({behavior:'smooth'});g.play().catch(()=>{})};
+}).catch(()=>{$('sub').textContent='Samples could not be loaded. Please try again.'});
+})();
+</script>
+</body>
+</html>
