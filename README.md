@@ -57,6 +57,9 @@ Every tool has a narrated **video guide** that shows it being used on a real exa
 - Focused tools that can be chained into complete workflows
 - Your work is auto-saved in the browser — restore it when you come back, or save it to a `.miga` file
 - An on-screen keyboard for 17 languages and alphabets on every tool, plus dark mode
+- No third-party analytics or trackers: the only measurement is an anonymous count of tool opens, skipped under Do Not Track / Global Privacy Control and switchable off from the 🔒 Private badge
+- AI-made websites, games, apps and widgets preview in a locked iframe sandbox, so their code cannot read the site, your drafts or your keys
+- Fields check themselves as you type, tool tabs have their own links (refresh and Back keep your place), and mistyped addresses like `/cv` or `/pdf-froge` find the right tool
 
 ## Feedback
 

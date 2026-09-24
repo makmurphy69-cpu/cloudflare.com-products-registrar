@@ -3,7 +3,13 @@
 
   // Count anonymous tool opens only. No cookies, identifiers, IP hashes,
   // customer content, answers, files, or device details are sent.
+  // Nothing is sent at all when the browser asks not to be tracked
+  // (Do Not Track or Global Privacy Control), or when the visitor turned
+  // counting off from the 🔒 Private badge (stored as migaNoCount here).
   try {
+    if (navigator.globalPrivacyControl || navigator.doNotTrack === "1" || window.doNotTrack === "1") return;
+    try { if (localStorage.getItem("migaNoCount") === "1") return; } catch (e) {}
+
     var endpoint = window.__VISITS_URL_OVERRIDE || "https://migabuilder-visits.makmurphy69.workers.dev";
     var page = location.pathname.split("/").pop() || "index.html";
     var body = JSON.stringify({ page: page });

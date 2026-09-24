@@ -2,20 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" /><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script>
-<script>
-(function () {
-  try {
-    var url = (typeof window !== 'undefined' && window.__VISITS_URL_OVERRIDE) || 'https://migabuilder-visits.makmurphy69.workers.dev';
-    var page = location.pathname.split('/').pop() || 'index.html';
-    var body = JSON.stringify({ page: page });
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(url + '/hit', new Blob([body], { type: 'application/json' }));
-    } else {
-      fetch(url + '/hit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
-    }
-  } catch (e) { /* visit counting must never break the page */ }
-})();
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MigaBuilder — 54 Free Private Browser Tools</title>
 <meta name="description" content="Create websites, videos and business assets, convert files, check grammar and extract text with 54 free browser tools. No signup, no watermark and no surprise paywall.">
@@ -47,17 +33,10 @@
 <script src="i18n.js"></script>
 
 <!--
-  OPTIONAL: to track how many people use MigaBuilder itself (not the sites it
-  generates), create a free property at https://analytics.google.com,
-  then uncomment these two tags and replace G-XXXXXXXXXX with your Measurement ID.
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX');
-  </script>
+  Privacy promise: no third-party analytics, trackers or cookies on MigaBuilder.
+  The only measurement is usage-counter.js — an anonymous count of tool opens
+  (page name only) that is skipped when the browser sends Do Not Track or
+  Global Privacy Control, or when the visitor turns counting off from the 🔒 Private badge.
 -->
 
 <style>

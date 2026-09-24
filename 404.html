@@ -5,4 +5,43 @@
 <a class="card" href="/image-studio.html"><strong>🪄 Image Studio</strong><small>Remove backgrounds, make collages, memes and thumbnails.</small></a>
 <a class="card" href="/cv-forge.html"><strong>📄 CV Forge</strong><small>Create a professional CV and download it as PDF.</small></a>
 <a class="card" href="/grammar-forge.html"><strong>✓ Grammar Forge</strong><small>Check writing privately in six languages.</small></a>
-</div><p style="margin-top:18px"><a href="/#tools" style="color:#0E2A47;font-weight:700">Browse all tools →</a></p></section></main><footer>Part of <a href="/">MigaBuilder</a>. Something should be here? <a href="/feedback.html">Tell us</a>.</footer></body></html>
+</div><p id="didYouMean" style="margin-top:18px" hidden></p><p style="margin-top:18px"><a href="/#tools" style="color:#0E2A47;font-weight:700">Browse all tools →</a></p></section></main><footer>Part of <a href="/">MigaBuilder</a>. Something should be here? <a href="/feedback.html">Tell us</a>.</footer><script>
+/* GitHub Pages shows this page for any unknown address. Before showing "not found",
+ * try to work out which tool was meant — /cv, /website-builder/, /Game-Forge.htm,
+ * a typo like /pdf-froge.html — and go there, keeping any #tab or ?query. */
+(function () {
+  'use strict';
+  var ALIASES = { cv: 'cv-forge', resume: 'cv-forge', website: 'website-builder', site: 'website-builder', builder: 'website-builder', game: 'game-forge', games: 'game-forge',
+    pdf: 'pdf-forge', sign: 'pdf-edit-forge', signature: 'pdf-edit-forge', invoice: 'invoice-forge', contract: 'contract-forge', logo: 'logo-forge', qr: 'qr-forge', slides: 'slide-forge',
+    ocr: 'ocr-forge', grammar: 'grammar-forge', cad: 'cad-forge', flashcards: 'flashcard-forge', alphabet: 'alphabet-forge', geography: 'geo-forge', simulator: 'sim-forge',
+    bugs: 'bug-scanner', cartoon: 'cartoon-forge', video: 'video-forge', music: 'music-forge', paint: 'paint-forge', meet: 'meet-forge', app: 'app-forge', bot: 'bot-forge', samples: 'sample-viewer' };
+  function dist(a, b) {
+    var d = [], i, j;
+    for (i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (j = 1; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) for (j = 1; j <= b.length; j++)
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    return d[a.length][b.length];
+  }
+  var slug = decodeURIComponent(location.pathname).toLowerCase().replace(/\/+$/, '').split('/').pop().replace(/\.(html?|php|aspx?)$/, '').replace(/[\s_]+/g, '-');
+  if (!slug) return;
+  var go = function (name) { location.replace('/' + name + '.html' + location.search + location.hash); };
+  if (ALIASES[slug]) return go(ALIASES[slug]);
+  fetch('/sitemap.xml').then(function (r) { return r.text(); }).then(function (xml) {
+    var pages = (xml.match(/<loc>[^<]*<\/loc>/g) || []).map(function (l) { return l.replace(/<\/?loc>/g, '').split('/').pop().replace(/\.html$/, ''); }).filter(Boolean);
+    if (pages.indexOf(slug) >= 0) return go(slug);
+    if (pages.indexOf(slug + '-forge') >= 0) return go(slug + '-forge');
+    var ranked = pages.map(function (p) { return { p: p, d: dist(slug, p) }; }).sort(function (x, y) { return x.d - y.d; });
+    if (ranked[0] && ranked[0].d <= 2 && (!ranked[1] || ranked[1].d > ranked[0].d)) return go(ranked[0].p);
+    var close = ranked.filter(function (x) { return x.d <= Math.max(3, slug.length / 2); }).slice(0, 3);
+    if (!close.length) return;
+    var el = document.getElementById('didYouMean');
+    el.textContent = 'Did you mean: ';
+    close.forEach(function (x, i) {
+      var a = document.createElement('a'); a.href = '/' + x.p + '.html' + location.search + location.hash; a.textContent = x.p.replace(/-/g, ' ');
+      a.style.cssText = 'color:#0E2A47;font-weight:700'; if (i) el.appendChild(document.createTextNode(' · ')); el.appendChild(a);
+    });
+    el.hidden = false;
+  }).catch(function () {});
+})();
+</script></body></html>
