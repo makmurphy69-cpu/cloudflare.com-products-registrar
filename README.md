@@ -26,14 +26,14 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 
 ## Featured tools
 
-- **Website Builder** — turn one business brief into a complete multi-page site, or start from a ready-made landing page; click any text to edit it with the code shown live beside it, and download a tidy `.zip` with `style.css` and an `images/` folder
+- **Website Builder** — turn one business brief into a complete multi-page site, or start from a ready-made landing page; click in ready-made responsive blocks (hero, pricing cards, FAQ, contact form, footer…), check the page at phone, tablet and desktop width, click any text to edit it with the code shown live beside it, paste a free Formspree or Formcarry ID so contact forms really send email, and download a tidy `.zip` with `style.css` and an `images/` folder
 - **Cartoon Forge** — create an animated story and record it as video
-- **Game Forge** — turn a prompt into a playable browser game, then tune gravity, jump height and speed with sliders, drop in your own player and background pictures, and copy one embed block to put the game on any site
+- **Game Forge** — turn a prompt into a playable browser game, then tune gravity, jump height and speed with sliders, drop in your own player and background pictures or a whole sprite sheet (cut into Idle, Walk and Jump animations), pick 8-bit sound effects generated with the Web Audio API, copy one embed block to put the game on any site, or download it as an installable offline app (`manifest.json`, icons and a service worker in one `.zip`)
 - **Video Forge** — animate drawings and images
 - **Paint Forge** — edit images with layers
 - **Slide Forge** — generate a downloadable PowerPoint
 - **Record Forge** — record your screen with narration
-- **CV Forge** — live A4 preview with dashed page-break guides, PDF download, and a `profile.json` you can save and drag back in to fill every field
+- **CV Forge** — live A4 preview with dashed page-break guides, auto-fit that shrinks the text until it fits on one page, “Improve wording” with a private on-device AI model (Transformers.js, WebGPU) or the free online AI, PDF download, and a `profile.json` you can save and drag back in to fill every field
 - **Sign Documents** — sign PDFs, Word files and photos with a drawn, typed or uploaded signature
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
 - **CAD Forge** — draw walls, doors and windows on a floor plan, then get a 3D house with roof and timber framing, plan and elevation drawings, a material list and DXF, OBJ and STL exports
@@ -42,6 +42,8 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Idea Atlas** — explore the history, key thinkers and connections of 37 philosophies and ideologies, then play a timed quiz game
 - **Flashcard Forge** — AI-made or pasted decks, an Anki-style (SM-2) scheduler, fill-in-the-blank and image cards, a matching game, listening and speaking tests, streaks and stats, and decks shared as a link
 - **Audio Forge** and **Text Compare** — edit audio and compare texts
+- **OCR Forge** — read text from photos and scans in 20 languages with Tesseract.js, then download it as text or as a searchable PDF
+- **Media Convert Forge** — trim, rotate, resize and compress video, or turn it into a GIF or MP3, with FFmpeg running in the browser
 - **Vehicle Simulator** — learn how a car, truck, motorcycle, boat, airplane or helicopter works, then practise guided missions with a live control panel, 3D flight, hazard scenarios, a narrator and a printable report card
 
 Explore all 54 tools at **[migabuilder.com](https://migabuilder.com/)**.
@@ -58,6 +60,8 @@ Every tool has a narrated **video guide** that shows it being used on a real exa
 - Focused tools that can be chained into complete workflows
 - Your work is auto-saved in the browser — restore it when you come back, or save it to a `.miga` file
 - An on-screen keyboard for 17 languages and alphabets on every tool, plus dark mode
+- Press **Ctrl+K** (⌘K on Mac) anywhere to jump to any tool
+- Install MigaBuilder as an app and save every tool for offline use
 
 ## Feedback
 

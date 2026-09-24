@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" /><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script>
+<meta charset="UTF-8" /><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script><script src="/miga-palette.js" defer></script>
 <script>
 (function () {
   try {
@@ -604,7 +604,7 @@
   <div>
     <h1>MigaBuilder</h1>
     <p class="hero-copy" data-i18n="heroSubtitle">Create websites, games, cartoons, videos, music and practical business assets with AI — directly in your browser.</p>
-    <div class="hero-actions"><a class="primary-link" href="website-builder.html">Build a website</a><a href="#tools">Explore all tools</a><a href="cartoon-forge.html">Try Cartoon Forge</a></div>
+    <div class="hero-actions"><a class="primary-link" href="website-builder.html">Build a website</a><a href="#tools">Explore all tools</a><a href="cartoon-forge.html">Try Cartoon Forge</a><a href="#" id="installApp" hidden title="Install MigaBuilder on this computer or phone — tools you have opened once then work offline">📲 Install the app</a></div>
     <div class="trust-row"><span>54 free tools</span><span>No signup</span><span>No watermark</span><span>No surprise paywall</span><span>Open source</span></div>
     <div data-i18n-switcher style="margin-top:10px;"></div>
   </div>
@@ -619,7 +619,7 @@
 <section class="home-tour"><details><summary>Tour MigaBuilder — find the right tool in one minute</summary><p>Search by task, browse a category, or start with a popular tool. Your recently opened and favourite tools are stored only in this browser.</p></details></section>
 
 <section class="tool-hub" id="tools">
-  <div class="tool-hub-head"><div><h2>What do you want to make?</h2><p>Choose one task and start immediately.</p></div><input class="tool-search" id="toolSearch" type="search" placeholder="Search 54 tools…" aria-label="Find a tool" title="Press / to search from anywhere · Enter opens the best match"></div>
+  <div class="tool-hub-head"><div><h2>What do you want to make?</h2><p>Choose one task and start immediately.</p></div><input class="tool-search" id="toolSearch" type="search" placeholder="Search 54 tools…" aria-label="Find a tool" title="Press / to search, or Ctrl+K (⌘K) on any page to jump straight to a tool · Enter opens the best match"></div>
   <div class="hub-controls" aria-label="Tool categories">
     <button class="filter-chip active" data-filter="all">All tools</button>
     <button class="filter-chip" data-filter="create">Create</button>
@@ -793,6 +793,10 @@
   }
   cards.forEach(c=>{const href=c.getAttribute('href');const star=document.createElement('span');star.className='fav-toggle';star.setAttribute('role','button');star.setAttribute('tabindex','0');star.setAttribute('aria-label','Add to favourites');const sync=()=>star.textContent=read(favKey).includes(href)?'★':'☆';const toggle=e=>{e.preventDefault();e.stopPropagation();let a=read(favKey);a=a.includes(href)?a.filter(x=>x!==href):[href,...a];write(favKey,a.slice(0,12));sync();render()};star.addEventListener('click',toggle);star.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){toggle(e)}});c.appendChild(star);sync();c.addEventListener('click',e=>{if(e.defaultPrevented)return;let a=read(key).filter(x=>x!==href);write(key,[href,...a].slice(0,8))})});
   render();apply();
+  // Offer "Install the app" once the browser says MigaBuilder can be installed (see miga-palette.js).
+  const installLink=document.getElementById('installApp');
+  installLink.addEventListener('click',e=>{e.preventDefault();window.MigaInstall&&window.MigaInstall.install()});
+  document.addEventListener('miga-installable',()=>{installLink.hidden=!(window.MigaInstall&&window.MigaInstall.available())});
 })();
 </script>
 <script>

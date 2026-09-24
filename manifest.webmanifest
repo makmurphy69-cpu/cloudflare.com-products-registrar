@@ -1,20 +1,26 @@
 {
+  "id": "/",
   "name": "MigaBuilder",
   "short_name": "MigaBuilder",
-  "description": "Free, private browser tools for websites, video, documents, PDFs, images and business assets.",
+  "description": "Free, private browser tools for websites, games, video, documents, PDFs, images and business assets — tools you have opened once keep working offline.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0E2A47",
   "theme_color": "#081826",
+  "categories": ["productivity", "utilities", "graphics", "education"],
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Website Builder", "url": "/website-builder.html" },
-    { "name": "PDF Forge", "url": "/pdf-forge.html" },
-    { "name": "Sign Documents", "url": "/pdf-edit-forge.html" },
-    { "name": "Geography Forge", "url": "/geo-forge.html" },
-    { "name": "Image Studio", "url": "/image-studio.html" }
+    { "name": "Website Builder", "url": "/website-builder.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Game Forge", "url": "/game-forge.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "CV Forge", "url": "/cv-forge.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "PDF Forge", "url": "/pdf-forge.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Sign Documents", "url": "/pdf-edit-forge.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Image Studio", "url": "/image-studio.html", "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }] }
   ]
 }
