@@ -26,13 +26,14 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 
 ## Featured tools
 
-- **Website Builder** — turn one business brief into a complete multi-page site
+- **Website Builder** — turn one business brief into a complete multi-page site, or start from a ready-made landing page; click any text to edit it with the code shown live beside it, and download a tidy `.zip` with `style.css` and an `images/` folder
 - **Cartoon Forge** — create an animated story and record it as video
-- **Game Forge** — turn a prompt into a playable browser game
+- **Game Forge** — turn a prompt into a playable browser game, then tune gravity, jump height and speed with sliders, drop in your own player and background pictures, and copy one embed block to put the game on any site
 - **Video Forge** — animate drawings and images
 - **Paint Forge** — edit images with layers
 - **Slide Forge** — generate a downloadable PowerPoint
 - **Record Forge** — record your screen with narration
+- **CV Forge** — live A4 preview with dashed page-break guides, PDF download, and a `profile.json` you can save and drag back in to fill every field
 - **Sign Documents** — sign PDFs, Word files and photos with a drawn, typed or uploaded signature
 - **Geography Forge** — click any country for its history, currency, languages, customs and government, then take a quiz
 - **CAD Forge** — draw walls, doors and windows on a floor plan, then get a 3D house with roof and timber framing, plan and elevation drawings, a material list and DXF, OBJ and STL exports
