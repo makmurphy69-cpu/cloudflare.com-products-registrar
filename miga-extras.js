@@ -2,7 +2,8 @@
  *  - 🔒 a badge that says the tool runs in the browser;
  *  - 🌙 a dark-mode toggle, remembered on this device;
  *  - 💾 auto-save of what you type, with “Restore your work?” when you come back,
- *    plus Save work to a .miga file / Open a .miga file — no account needed.
+ *    plus Save work to a .miga file / Open a .miga file — no account needed;
+ *  - 🔎 Ctrl/⌘+K jumps to any tool (miga-palette.js) and 📲 installs MigaBuilder as an app.
  * Tools that already keep their own drafts are skipped for the auto-save part.
  * Everything stays in this browser.
  */
@@ -60,6 +61,17 @@
     const sc = document.createElement('script'); sc.src = 'script-keyboard.js'; sc.onload = go; document.head.appendChild(sc);
   };
   bar.insertBefore(kbBtn, bar.children[1] || null);
+
+  // ---------- Ctrl+K tool search and "install as an app" ----------
+  if (!document.querySelector('script[src*="miga-palette.js"]')) { const ps = document.createElement('script'); ps.src = 'miga-palette.js'; document.head.appendChild(ps); }
+  const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  const findBtn = document.createElement('button'); findBtn.type = 'button'; findBtn.textContent = '🔎 ' + (mac ? '⌘K' : 'Ctrl K'); findBtn.title = 'Jump to any MigaBuilder tool (' + (mac ? '⌘K' : 'Ctrl+K') + ')';
+  findBtn.onclick = () => window.MigaPalette && window.MigaPalette.open();
+  bar.insertBefore(findBtn, kbBtn);
+  const installBtn = document.createElement('button'); installBtn.type = 'button'; installBtn.textContent = '📲 Install'; installBtn.title = 'Install MigaBuilder as an app — the tools you have used then work offline'; installBtn.hidden = true;
+  installBtn.onclick = () => window.MigaInstall && window.MigaInstall.install();
+  document.addEventListener('miga-installable', () => { installBtn.hidden = !(window.MigaInstall && window.MigaInstall.available()); });
+  bar.appendChild(installBtn);
 
   // ---------- dark mode ----------
   const themeBtn = bar.querySelector('.miga-theme') || document.createElement('button');

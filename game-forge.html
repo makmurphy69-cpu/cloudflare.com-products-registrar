@@ -160,6 +160,24 @@
   .tune-row output { font-family: 'IBM Plex Mono', monospace; color: var(--line-cyan); }
   .tune-row input[type=range] { width: 100%; accent-color: var(--amber); }
   .tune-empty { font-size: 13px; color: rgba(237, 234, 224, 0.7); }
+  .sfx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .sfx-item { display: flex; align-items: center; gap: 4px; border: 1px solid var(--line-cyan-dim); border-radius: 6px; padding: 4px; }
+  .sfx-item button { background: transparent; border: 0; color: var(--paper); cursor: pointer; font: inherit; font-size: 13px; padding: 6px; border-radius: 4px; }
+  .sfx-item button:hover { background: rgba(111, 209, 224, 0.12); }
+  .sfx-item .sfx-play { flex: 1; text-align: left; }
+  .sfx-item.changed { border-color: var(--line-cyan); }
+  .sprite-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; color: var(--paper); font-size: 12.5px; }
+  .sprite-controls .asset-drop { flex: 1 1 220px; }
+  .sprite-controls input[type=number] { width: 70px; margin-left: 4px; }
+  .sprite-work { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 12px; margin-top: 12px; }
+  .sprite-work[hidden] { display: none; }
+  .sheet-view { overflow: auto; max-height: 340px; background: repeating-conic-gradient(#2a3a4a 0 25%, #1d2b39 0 50%) 0 0 / 16px 16px; border-radius: 6px; }
+  .sheet-view canvas { display: block; image-rendering: pixelated; cursor: crosshair; }
+  .anim-list { display: grid; gap: 8px; align-content: start; }
+  .anim-row { display: grid; grid-template-columns: auto auto 1fr 72px; gap: 8px; align-items: center; color: var(--paper); font-size: 13px; }
+  .anim-row input[type=text] { min-width: 0; }
+  .anim-row canvas { width: 72px; height: 72px; image-rendering: pixelated; background: rgba(255,255,255,.06); border-radius: 4px; }
+  @media (max-width: 700px) { .sprite-work { grid-template-columns: 1fr; } }
   .asset-drops { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-top: 14px; }
   .asset-drop { display: flex; align-items: center; gap: 10px; border: 2px dashed var(--line-cyan-dim); border-radius: 6px; padding: 10px; cursor: pointer; color: var(--paper); font-size: 12.5px; min-height: 64px; transition: border-color .15s, background .15s; }
   .asset-drop:hover, .asset-drop.over { border-color: var(--line-cyan); background: rgba(111, 209, 224, 0.08); }
@@ -296,6 +314,41 @@
       <p class="tune-hint" id="tuneStatus" style="margin:10px 0 0;">Pictures are read on your device and baked into the game file — nothing is uploaded. The embed code is one self-contained block you can paste into any site that accepts HTML (WordPress, Wix, Blogger, Notion embeds…).</p>
     </div>
 
+    <div class="tune" id="sfxPanel">
+      <h3>🔊 Retro sound effects — no files needed</h3>
+      <p class="tune-hint">8-bit sounds made from pure code with the browser's AudioContext. Press ▶ to hear one, 🎲 for a new variation you like better. Every game gets them built in — the game plays them with <code>sfx("jump")</code>, <code>sfx("coin")</code> and so on.</p>
+      <div class="sfx-grid" id="sfxGrid"></div>
+      <div class="tune-actions">
+        <button type="button" class="chip-btn" id="sfxWireBtn" disabled>🤖 Make the game use these sounds</button>
+        <button type="button" class="chip-btn" id="sfxResetBtn">↺ Reset all sounds</button>
+      </div>
+    </div>
+
+    <div class="tune" id="spritePanel">
+      <h3>🧍 Sprite sheet animator</h3>
+      <p class="tune-hint">Drop one PNG with all your character's poses in a grid, say how big each frame is, and pick which frames are Idle, Walk and Jump. The player then animates by itself — walking while an arrow key is held, jumping on Space/Up.</p>
+      <div class="sprite-controls">
+        <label class="asset-drop" id="sheetDrop"><span class="thumb">🗂️</span><span><strong>Sprite sheet</strong><small>Drop a PNG here or click to choose</small></span><input type="file" id="sheetInput" accept="image/png,image/gif,image/webp" hidden></label>
+        <label>Frame width <input type="number" id="frameW" min="4" max="1024" value="32" data-no-autosave></label>
+        <label>Frame height <input type="number" id="frameH" min="4" max="1024" value="32" data-no-autosave></label>
+        <label>Speed (frames/s) <input type="number" id="frameFps" min="1" max="30" value="8" data-no-autosave></label>
+      </div>
+      <div class="sprite-work" id="spriteWork" hidden>
+        <div class="sheet-view"><canvas id="sheetCanvas" title="Click a frame to add it to the selected animation"></canvas></div>
+        <div class="anim-list">
+          <label class="anim-row"><input type="radio" name="animPick" value="idle" checked> <strong>Idle</strong> <input type="text" id="animIdle" placeholder="0-3" data-no-autosave><canvas width="72" height="72"></canvas></label>
+          <label class="anim-row"><input type="radio" name="animPick" value="walk"> <strong>Walk</strong> <input type="text" id="animWalk" placeholder="4-9" data-no-autosave><canvas width="72" height="72"></canvas></label>
+          <label class="anim-row"><input type="radio" name="animPick" value="jump"> <strong>Jump</strong> <input type="text" id="animJump" placeholder="10,11" data-no-autosave><canvas width="72" height="72"></canvas></label>
+          <p class="tune-hint" style="margin:6px 0 0;">Type frame numbers like <code>0-3</code> or <code>4,5,6</code>, or click frames on the sheet to add them to the selected animation.</p>
+        </div>
+      </div>
+      <div class="tune-actions">
+        <button type="button" class="chip-btn" id="useSheetBtn" disabled>✓ Use as the player</button>
+        <button type="button" class="chip-btn" id="clearSheetBtn" disabled>✕ Remove from game</button>
+      </div>
+      <p class="tune-hint" id="spriteStatus" style="margin:10px 0 0;"></p>
+    </div>
+
     <div class="field" style="margin-top:14px;">
       <label for="refineInput" data-i18n="refineLabel" style="color: var(--paper);">Refine this game</label>
       <div id="quickRefineChips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
@@ -306,6 +359,7 @@
     <div class="table-actions">
       <button type="button" id="viewSourceBtn" data-i18n="viewSourceLabel" disabled>View source</button>
       <button type="button" id="downloadBtn" data-i18n="downloadBtnLabel" disabled>Download as HTML</button>
+      <button type="button" id="pwaBtn" disabled title="A .zip with the game, a manifest.json, icons and a service worker — upload it to any https host and players can install it on their phone and play offline">📲 Download as installable app (.zip)</button>
     </div>
     <div class="source-view" id="sourceView" style="display:none;margin-top:14px;">
       <textarea id="sourceText" readonly style="width:100%;height:220px;font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--navy-deep);color:var(--paper);border:1px solid var(--line-cyan-dim);"></textarea>
@@ -693,8 +747,11 @@
     return html.slice(0, a) + html.slice(b + SPRITE_MARK_END.length);
   }
   function spriteBlock() {
-    return SPRITE_MARK_START + '\n<' + 'script>\nwindow.GAME_ASSETS = ' + JSON.stringify(gameAssets).replace(/</g, '\\u003c') + ';\n' +
-      '(function(){var cache={};window.gameImage=function(n){var s=(window.GAME_ASSETS||{})[n];if(!s)return null;var c=cache[n];if(!c||c.dataset.src!==s){c=cache[n]=new Image();c.dataset.src=s;c.src=s;}return c.complete&&c.naturalWidth?c:null;};})();\n' +
+    const json = v => JSON.stringify(v).replace(/</g, '\\u003c');
+    return SPRITE_MARK_START + '\n<' + 'script>\nwindow.GAME_ASSETS = ' + json(gameAssets) + ';\n' +
+      'window.GAME_SFX = ' + json(gameSfx) + ';\n(' + sfxRuntime.toString() + ')();\n' +
+      (gameSheet ? 'window.GAME_SPRITESHEET = ' + json(gameSheet) + ';\n(' + spriteRuntime.toString() + ')();\n' : '') +
+      '(function(){var cache={};window.gameImage=function(n){if(n==="player"&&window.gameSpriteFrame){var f=window.gameSpriteFrame();if(f)return f;}var s=(window.GAME_ASSETS||{})[n];if(!s)return null;var c=cache[n];if(!c||c.dataset.src!==s){c=cache[n]=new Image();c.dataset.src=s;c.src=s;}return c.complete&&c.naturalWidth?c:null;};})();\n' +
       '</' + 'script>\n' + SPRITE_MARK_END;
   }
   function injectSprites(html) {
@@ -792,7 +849,7 @@
     renderAssetDrops();
   }
   function renderAssetDrops() {
-    document.querySelectorAll('.asset-drop').forEach(function (zone) {
+    document.querySelectorAll('.asset-drop[data-asset]').forEach(function (zone) {
       const name = zone.dataset.asset, url = gameAssets[name], thumb = zone.querySelector('.thumb');
       thumb.style.backgroundImage = url ? 'url("' + url + '")' : '';
       thumb.textContent = url ? '' : (name === 'player' ? '🧍' : '🏞️');
@@ -811,7 +868,7 @@
     reader.onload = function () { setAsset(name, reader.result); tuneStatus.textContent = '✓ ' + file.name + ' is now the ' + name + ' picture.'; };
     reader.readAsDataURL(file);
   }
-  document.querySelectorAll('.asset-drop').forEach(function (zone) {
+  document.querySelectorAll('.asset-drop[data-asset]').forEach(function (zone) {
     const input = zone.querySelector('input');
     input.addEventListener('change', function () { readAssetFile(zone.dataset.asset, input.files[0]); input.value = ''; });
     ['dragenter', 'dragover'].forEach(function (ev) { zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('over'); }); });
@@ -836,7 +893,319 @@
     }
   });
 
-  const STARTER_GAME = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Sky Dash \u2014 a MigaBuilder starter game<\/title>\n<script id=\"game-config\">\nwindow.GAME_CONFIG = {\"gravity\": 2200, \"jumpPower\": 820, \"gameSpeed\": 330, \"speedUp\": 6, \"jumps\": 2, \"obstacleGap\": 1, \"coinChance\": 0.6};\nwindow.GAME_CONFIG_UI = {\"gravity\": {\"label\": \"Gravity\", \"min\": 400, \"max\": 5000, \"step\": 50}, \"jumpPower\": {\"label\": \"Jump height\", \"min\": 300, \"max\": 1600, \"step\": 10}, \"gameSpeed\": {\"label\": \"Game speed\", \"min\": 100, \"max\": 900, \"step\": 10}, \"speedUp\": {\"label\": \"Speed-up per second\", \"min\": 0, \"max\": 40, \"step\": 1}, \"jumps\": {\"label\": \"Jumps in the air\", \"min\": 1, \"max\": 4, \"step\": 1}, \"obstacleGap\": {\"label\": \"Space between obstacles\", \"min\": 0.5, \"max\": 2.5, \"step\": 0.05}, \"coinChance\": {\"label\": \"Coin chance\", \"min\": 0, \"max\": 1, \"step\": 0.05}};\n<\/script>\n<style>\n  html, body { margin: 0; height: 100%; background: #0b1d33; font-family: system-ui, sans-serif; color: #fff; overflow: hidden; }\n  #wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }\n  canvas { width: 100%; max-width: 960px; aspect-ratio: 8 / 5; max-height: 100%; display: block; border-radius: 8px; touch-action: manipulation; background: #87c7ef; }\n  #legend { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); font-size: 12px; opacity: .8; pointer-events: none; text-shadow: 0 1px 2px #000; white-space: nowrap; }\n<\/style>\n<\/head>\n<body>\n<div id=\"wrap\"><canvas id=\"game\" width=\"800\" height=\"500\" aria-label=\"Sky Dash game\"><\/canvas><div id=\"legend\">Space / \u2191 / tap to jump \u00b7 jump again in the air \u00b7 P to pause<\/div><\/div>\n<script>\n(function () {\n  'use strict';\n  var C = function () { return window.GAME_CONFIG; };\n  var img = function (name) { return window.gameImage ? window.gameImage(name) : null; };\n  var cv = document.getElementById('game'), ctx = cv.getContext('2d');\n  var W = 800, H = 500, GROUND = 430;\n  var best = 0; try { best = +localStorage.getItem('skyDashBest') || 0; } catch (e) {}\n  var audio = null;\n  function beep(freq, dur, type, vol) {\n    try {\n      audio = audio || new (window.AudioContext || window.webkitAudioContext)();\n      var o = audio.createOscillator(), g = audio.createGain();\n      o.type = type || 'square'; o.frequency.value = freq;\n      g.gain.setValueAtTime(vol || 0.08, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + dur);\n      o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + dur);\n    } catch (e) {}\n  }\n  var state, player, obstacles, coins, clouds, dist, score, speed, elapsed, coinsGot, nextObstacle, paused;\n  function reset() {\n    state = 'ready'; paused = false;\n    player = { x: 130, y: GROUND - 46, w: 46, h: 46, vy: 0, jumpsUsed: 0, onGround: true };\n    obstacles = []; coins = []; dist = 0; score = 0; elapsed = 0; coinsGot = 0; speed = C().gameSpeed; nextObstacle = 500;\n    clouds = [0, 1, 2, 3, 4].map(function (i) { return { x: i * 190 + Math.random() * 80, y: 40 + Math.random() * 140, s: 0.6 + Math.random() * 0.8 }; });\n  }\n  function jump() {\n    if (state === 'over') { reset(); return; }\n    if (state === 'ready') state = 'play';\n    if (paused) return;\n    var maxJumps = Math.max(1, Math.round(C().jumps));\n    if (player.onGround || player.jumpsUsed < maxJumps) {\n      player.vy = -C().jumpPower; player.onGround = false; player.jumpsUsed++;\n      beep(520 + player.jumpsUsed * 120, 0.12, 'square');\n    }\n  }\n  function spawn() {\n    var kind = Math.random();\n    var o;\n    if (kind < 0.45) o = { type: 'crate', w: 44, h: 44 };\n    else if (kind < 0.75) o = { type: 'spikes', w: 70, h: 26 };\n    else o = { type: 'tall', w: 38, h: 86 };\n    o.x = W + 20; o.y = GROUND - o.h; obstacles.push(o);\n    if (Math.random() < C().coinChance) {\n      var n = 3 + Math.floor(Math.random() * 3), cy = GROUND - o.h - 70 - Math.random() * 80;\n      for (var i = 0; i < n; i++) coins.push({ x: o.x - 30 + i * 34, y: cy - Math.sin(i / (n - 1) * Math.PI) * 40, r: 11, got: false });\n    }\n    nextObstacle = (320 + Math.random() * 360) * C().obstacleGap;\n  }\n  function hit(a, b) { return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }\n  function update(dt) {\n    var cfg = C();\n    clouds.forEach(function (c) { c.x -= (state === 'play' && !paused ? speed : C().gameSpeed * 0.4) * 0.15 * c.s * dt; if (c.x < -120) { c.x = W + 40; c.y = 40 + Math.random() * 140; } });\n    if (state !== 'play' || paused) return;\n    elapsed += dt; speed = Math.min(cfg.gameSpeed + cfg.speedUp * elapsed, 2000);\n    var dx = speed * dt; dist += dx; score = Math.floor(dist / 10) + coinsGot;\n    player.vy += cfg.gravity * dt; player.y += player.vy * dt;\n    if (player.y + player.h >= GROUND) { player.y = GROUND - player.h; player.vy = 0; player.onGround = true; player.jumpsUsed = 0; }\n    nextObstacle -= dx; if (nextObstacle <= 0) spawn();\n    obstacles.forEach(function (o) { o.x -= dx; });\n    obstacles = obstacles.filter(function (o) { return o.x + o.w > -10; });\n    coins.forEach(function (c) { c.x -= dx; if (!c.got && Math.hypot(c.x - (player.x + player.w / 2), c.y - (player.y + player.h / 2)) < c.r + player.w / 2) { c.got = true; coinsGot += 5; beep(990, 0.09, 'triangle', 0.1); } });\n    coins = coins.filter(function (c) { return c.x > -20 && !c.got; });\n    var box = { x: player.x + 6, y: player.y + 6, w: player.w - 12, h: player.h - 8 };\n    for (var i = 0; i < obstacles.length; i++) {\n      var o = obstacles[i], ob = o.type === 'spikes' ? { x: o.x + 6, y: o.y + 8, w: o.w - 12, h: o.h - 8 } : o;\n      if (hit(box, ob)) {\n        state = 'over'; beep(140, 0.45, 'sawtooth', 0.12);\n        if (score > best) { best = score; try { localStorage.setItem('skyDashBest', best); } catch (e) {} }\n        break;\n      }\n    }\n  }\n  function drawPlayer() {\n    var p = player, sprite = img('player');\n    if (sprite) { ctx.drawImage(sprite, p.x, p.y, p.w, p.h); return; }\n    ctx.save(); ctx.translate(p.x + p.w / 2, p.y + p.h / 2); ctx.rotate(p.onGround ? 0 : Math.min(0.5, p.vy / 2000));\n    ctx.fillStyle = '#ff8a3d'; ctx.beginPath(); ctx.roundRect(-p.w / 2, -p.h / 2, p.w, p.h, 10); ctx.fill();\n    ctx.fillStyle = '#fff'; ctx.fillRect(4, -10, 12, 12); ctx.fillStyle = '#16202b'; ctx.fillRect(10, -7, 5, 6);\n    ctx.fillStyle = '#c94f12'; ctx.fillRect(-p.w / 2, 6, p.w, 6);\n    ctx.restore();\n  }\n  function draw() {\n    var bg = img('background');\n    if (bg) ctx.drawImage(bg, 0, 0, W, H);\n    else {\n      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#6fb8ea'); g.addColorStop(1, '#cdeafc');\n      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);\n      ctx.fillStyle = 'rgba(255,255,255,.9)';\n      clouds.forEach(function (c) { ctx.beginPath(); ctx.ellipse(c.x, c.y, 46 * c.s, 18 * c.s, 0, 0, 7); ctx.ellipse(c.x + 26 * c.s, c.y - 10 * c.s, 30 * c.s, 16 * c.s, 0, 0, 7); ctx.fill(); });\n    }\n    ctx.fillStyle = '#4e9e53'; ctx.fillRect(0, GROUND, W, 12);\n    ctx.fillStyle = '#8b5a2b'; ctx.fillRect(0, GROUND + 12, W, H - GROUND);\n    ctx.fillStyle = 'rgba(0,0,0,.12)'; for (var s = -(dist % 40); s < W; s += 40) ctx.fillRect(s, GROUND + 22, 20, 6);\n    obstacles.forEach(function (o) {\n      if (o.type === 'spikes') {\n        ctx.fillStyle = '#6b7784';\n        for (var i = 0; i < o.w; i += 14) { ctx.beginPath(); ctx.moveTo(o.x + i, GROUND); ctx.lineTo(o.x + i + 7, o.y); ctx.lineTo(o.x + i + 14, GROUND); ctx.fill(); }\n      } else {\n        ctx.fillStyle = o.type === 'tall' ? '#5a3e8c' : '#b07a3a'; ctx.fillRect(o.x, o.y, o.w, o.h);\n        ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 3; ctx.strokeRect(o.x + 1.5, o.y + 1.5, o.w - 3, o.h - 3);\n        if (o.type === 'crate') { ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + o.w, o.y + o.h); ctx.stroke(); }\n      }\n    });\n    coins.forEach(function (c) { ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, 7); ctx.fill(); ctx.fillStyle = '#e0a800'; ctx.beginPath(); ctx.arc(c.x, c.y, c.r * 0.5, 0, 7); ctx.fill(); });\n    drawPlayer();\n    ctx.fillStyle = '#16202b'; ctx.font = 'bold 22px system-ui, sans-serif'; ctx.textAlign = 'left';\n    ctx.fillText('Score ' + score, 18, 34); ctx.font = '15px system-ui, sans-serif'; ctx.fillText('Best ' + best, 18, 56);\n    ctx.textAlign = 'center';\n    if (state !== 'play' || paused) {\n      ctx.fillStyle = 'rgba(8,24,38,.55)'; ctx.fillRect(0, 0, W, H);\n      ctx.fillStyle = '#fff'; ctx.font = 'bold 42px system-ui, sans-serif';\n      ctx.fillText(state === 'over' ? 'Game over' : paused ? 'Paused' : 'Sky Dash', W / 2, H / 2 - 20);\n      ctx.font = '18px system-ui, sans-serif';\n      ctx.fillText(state === 'over' ? 'Score ' + score + ' \u2014 press Space or tap to play again' : paused ? 'Press P to continue' : 'Press Space or tap to start', W / 2, H / 2 + 20);\n    }\n  }\n  var last = performance.now();\n  function loop(now) {\n    var dt = Math.min(0.033, (now - last) / 1000); last = now;\n    update(dt); draw(); requestAnimationFrame(loop);\n  }\n  addEventListener('keydown', function (e) {\n    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); if (!e.repeat) jump(); }\n    if (e.code === 'KeyP' && state === 'play') paused = !paused;\n  });\n  cv.addEventListener('pointerdown', function (e) { e.preventDefault(); jump(); });\n  reset(); requestAnimationFrame(loop);\n})();\n<\/script>\n<\/body>\n<\/html>\n";
+  // ---------- retro sound effects: 8-bit sounds generated by AudioContext, no files ----------
+  // sfxRuntime and spriteRuntime run inside the game (they are copied in with toString()),
+  // so they must not use anything from this page. sfxRuntime also runs here for the ▶ buttons.
+  function sfxRuntime() {
+    var ac = null;
+    function ctx() {
+      if (!ac) { var A = window.AudioContext || window.webkitAudioContext; if (!A) return null; ac = new A(); }
+      if (ac.state === 'suspended') ac.resume();
+      return ac;
+    }
+    window.sfxMuted = false;
+    window.sfxMute = function (on) { window.sfxMuted = on === undefined ? !window.sfxMuted : !!on; return window.sfxMuted; };
+    window.sfx = function (name) {
+      var p = (window.GAME_SFX || {})[name], a;
+      if (!p || window.sfxMuted || !(a = ctx())) return;
+      var t = a.currentTime + 0.01, d = p.d, g = a.createGain();
+      g.connect(a.destination);
+      g.gain.setValueAtTime(p.v, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + d);
+      if (p.w === 'noise') {
+        var len = Math.max(1, Math.floor(a.sampleRate * d)), buf = a.createBuffer(1, len, a.sampleRate), data = buf.getChannelData(0);
+        for (var i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+        var src = a.createBufferSource(), f = a.createBiquadFilter();
+        src.buffer = buf; f.type = 'lowpass';
+        f.frequency.setValueAtTime(p.f[0], t);
+        f.frequency.exponentialRampToValueAtTime(Math.max(40, p.f[1]), t + d);
+        src.connect(f); f.connect(g); src.start(t); src.stop(t + d);
+        return;
+      }
+      var o = a.createOscillator();
+      o.type = p.w;
+      o.frequency.setValueAtTime(p.f[0], t);
+      if (p.arp) p.arp.forEach(function (m, i) { o.frequency.setValueAtTime(p.f[0] * m, t + i * d / p.arp.length); });
+      else o.frequency.exponentialRampToValueAtTime(Math.max(20, p.f[1]), t + d);
+      o.connect(g); o.start(t); o.stop(t + d + 0.02);
+    };
+  }
+  const SFX_PRESETS = {
+    jump: { w: 'square', f: [260, 720], d: 0.18, v: 0.2 },
+    coin: { w: 'square', f: [988, 988], d: 0.18, v: 0.18, arp: [1, 1.335] },
+    shoot: { w: 'sawtooth', f: [900, 120], d: 0.14, v: 0.16 },
+    laser: { w: 'square', f: [1400, 180], d: 0.22, v: 0.14 },
+    explode: { w: 'noise', f: [3000, 60], d: 0.6, v: 0.5 },
+    hit: { w: 'noise', f: [1600, 200], d: 0.16, v: 0.4 },
+    powerup: { w: 'triangle', f: [330, 330], d: 0.42, v: 0.25, arp: [1, 1.25, 1.5, 2] },
+    win: { w: 'square', f: [523, 523], d: 0.7, v: 0.16, arp: [1, 1.26, 1.5, 2, 1.5, 2] },
+    lose: { w: 'triangle', f: [440, 90], d: 0.8, v: 0.3 },
+    blip: { w: 'square', f: [660, 660], d: 0.07, v: 0.15 }
+  };
+  const SFX_LABELS = { jump: '🦘 Jump', coin: '🪙 Coin', shoot: '🔫 Shoot', laser: '⚡ Laser', explode: '💥 Explosion', hit: '🤕 Hit', powerup: '⭐ Power-up', win: '🏆 Win', lose: '💀 Lose', blip: '🔘 Menu blip' };
+  const clone = o => JSON.parse(JSON.stringify(o));
+  let gameSfx = clone(SFX_PRESETS);
+  try { const saved = JSON.parse(localStorage.getItem('miga-game-sfx') || 'null'); if (saved) Object.keys(SFX_PRESETS).forEach(k => { if (saved[k] && saved[k].f) gameSfx[k] = saved[k]; }); } catch (e) {}
+  window.GAME_SFX = gameSfx;
+  sfxRuntime();
+  const sfxGrid = document.getElementById('sfxGrid');
+  function renderSfx() {
+    sfxGrid.innerHTML = Object.keys(SFX_PRESETS).map(k => '<div class="sfx-item' + (JSON.stringify(gameSfx[k]) !== JSON.stringify(SFX_PRESETS[k]) ? ' changed' : '') + '"><button type="button" class="sfx-play" data-sfx="' + k + '" title="Play — the game uses sfx(&quot;' + k + '&quot;)">▶ ' + SFX_LABELS[k] + '</button><button type="button" data-shuffle="' + k + '" title="New random variation">🎲</button></div>').join('');
+  }
+  function syncSfx() {
+    window.GAME_SFX = gameSfx;
+    try { localStorage.setItem('miga-game-sfx', JSON.stringify(gameSfx)); } catch (e) {}
+    const w = gameWindow();
+    if (w && w.GAME_SFX) Object.assign(w.GAME_SFX, clone(gameSfx));
+    if (currentGameHtml) { currentGameHtml = injectSprites(currentGameHtml); sourceText.value = currentGameHtml; }
+    renderSfx();
+  }
+  function mutate(p) {
+    const r = (a, b) => a + Math.random() * (b - a), q = clone(p);
+    const k = r(0.65, 1.5);
+    q.f = [Math.round(p.f[0] * k), Math.round(p.f[1] * k * r(0.8, 1.25))];
+    q.d = Math.round(p.d * r(0.75, 1.35) * 100) / 100;
+    if (q.w !== 'noise' && Math.random() < 0.35) q.w = ['square', 'sawtooth', 'triangle'][Math.floor(Math.random() * 3)];
+    return q;
+  }
+  sfxGrid.addEventListener('click', e => {
+    const play = e.target.closest('[data-sfx]'), shuffle = e.target.closest('[data-shuffle]');
+    if (play) window.sfx(play.dataset.sfx);
+    if (shuffle) { const k = shuffle.dataset.shuffle; gameSfx[k] = mutate(SFX_PRESETS[k]); syncSfx(); window.sfx(k); }
+  });
+  document.getElementById('sfxResetBtn').addEventListener('click', () => { gameSfx = clone(SFX_PRESETS); syncSfx(); });
+  const sfxWireBtn = document.getElementById('sfxWireBtn');
+  sfxWireBtn.addEventListener('click', () => {
+    refineInput.value = 'Use the built-in sound effects: the page already defines window.sfx(name) with the sounds ' + Object.keys(SFX_PRESETS).map(k => '"' + k + '"').join(', ') +
+      '. Call sfx(...) at the matching moments (jumping, collecting, shooting, getting hit, exploding, power-ups, winning, losing, menu clicks). Remove any other Web Audio sound code so there is one source of sound. Mute button: call window.sfxMute() to toggle. Do not change how the game plays otherwise.';
+    refineGame();
+  });
+  renderSfx();
+
+  // ---------- sprite sheet animator: cut frames out of one PNG and animate the player ----------
+  function spriteRuntime() {
+    var S = window.GAME_SPRITESHEET;
+    if (!S || !S.src) return;
+    var img = new Image(); img.src = S.src;
+    var cv = document.createElement('canvas'); cv.width = S.fw; cv.height = S.fh;
+    var cx = cv.getContext('2d'), keys = {}, jumpAt = -1e9, left = false, manual = null, t0 = performance.now();
+    addEventListener('keydown', function (e) {
+      keys[e.key] = true;
+      if (/^( |ArrowUp|w|W)$/.test(e.key)) jumpAt = performance.now();
+      if (/^(ArrowLeft|a|A)$/.test(e.key)) left = true;
+      if (/^(ArrowRight|d|D)$/.test(e.key)) left = false;
+    });
+    addEventListener('keyup', function (e) { delete keys[e.key]; });
+    addEventListener('pointerdown', function () { jumpAt = performance.now(); });
+    // Games can take over: gameSetAnim('walk'), gameSetAnim('jump', true) to face left, gameSetAnim(null) for automatic.
+    window.gameSetAnim = function (name, faceLeft) { manual = name; if (faceLeft !== undefined) left = !!faceLeft; };
+    function current() {
+      if (manual && S.anims[manual]) return manual;
+      if (performance.now() - jumpAt < 450 && S.anims.jump && S.anims.jump.length) return 'jump';
+      if ((keys.ArrowLeft || keys.ArrowRight || keys.a || keys.d || keys.A || keys.D) && S.anims.walk && S.anims.walk.length) return 'walk';
+      return 'idle';
+    }
+    window.gameSpriteFrame = function () {
+      if (!img.complete || !img.naturalWidth) return null;
+      var list = S.anims[current()] || S.anims.idle || [0];
+      if (!list.length) list = [0];
+      var i = list[Math.floor((performance.now() - t0) / 1000 * S.fps) % list.length];
+      var cols = Math.max(1, Math.floor(img.naturalWidth / S.fw));
+      cx.clearRect(0, 0, S.fw, S.fh);
+      cx.save();
+      if (left && S.flip !== false) { cx.translate(S.fw, 0); cx.scale(-1, 1); }
+      cx.drawImage(img, (i % cols) * S.fw, Math.floor(i / cols) * S.fh, S.fw, S.fh, 0, 0, S.fw, S.fh);
+      cx.restore();
+      return cv;
+    };
+  }
+  let gameSheet = null; // {src, fw, fh, fps, anims}
+  const sheetInput = document.getElementById('sheetInput'), sheetDrop = document.getElementById('sheetDrop');
+  const frameW = document.getElementById('frameW'), frameH = document.getElementById('frameH'), frameFps = document.getElementById('frameFps');
+  const sheetCanvas = document.getElementById('sheetCanvas'), spriteWork = document.getElementById('spriteWork'), spriteStatus = document.getElementById('spriteStatus');
+  const useSheetBtn = document.getElementById('useSheetBtn'), clearSheetBtn = document.getElementById('clearSheetBtn');
+  const animInputs = { idle: document.getElementById('animIdle'), walk: document.getElementById('animWalk'), jump: document.getElementById('animJump') };
+  let sheetImg = null, sheetSrc = '', sheetZoom = 1;
+  function parseFrames(text, max) {
+    const out = [];
+    String(text || '').split(/[\s,;]+/).forEach(part => {
+      const m = /^(\d+)(?:-(\d+))?$/.exec(part);
+      if (!m) return;
+      const a = +m[1], b = m[2] === undefined ? a : +m[2];
+      for (let i = a; a <= b ? i <= b : i >= b; i += a <= b ? 1 : -1) if (i < max && out.length < 64) out.push(i);
+    });
+    return out;
+  }
+  function sheetGrid() {
+    const fw = Math.max(1, +frameW.value || 32), fh = Math.max(1, +frameH.value || 32);
+    const cols = Math.max(1, Math.floor(sheetImg.naturalWidth / fw)), rows = Math.max(1, Math.floor(sheetImg.naturalHeight / fh));
+    return { fw, fh, cols, rows, count: cols * rows };
+  }
+  function currentAnims() {
+    const g = sheetGrid(), a = {};
+    Object.keys(animInputs).forEach(k => { a[k] = parseFrames(animInputs[k].value, g.count); });
+    if (!a.idle.length) a.idle = [0];
+    return a;
+  }
+  function drawSheet() {
+    if (!sheetImg) return;
+    const g = sheetGrid();
+    sheetZoom = Math.max(1, Math.min(4, Math.floor(420 / sheetImg.naturalWidth) || 1));
+    sheetCanvas.width = sheetImg.naturalWidth * sheetZoom; sheetCanvas.height = sheetImg.naturalHeight * sheetZoom;
+    const c = sheetCanvas.getContext('2d');
+    c.imageSmoothingEnabled = false;
+    c.drawImage(sheetImg, 0, 0, sheetCanvas.width, sheetCanvas.height);
+    const used = currentAnims(), pick = (document.querySelector('input[name=animPick]:checked') || {}).value;
+    c.font = Math.max(9, Math.min(13, g.fw * sheetZoom / 3)) + 'px monospace';
+    for (let i = 0; i < g.count; i++) {
+      const x = (i % g.cols) * g.fw * sheetZoom, y = Math.floor(i / g.cols) * g.fh * sheetZoom;
+      if ((used[pick] || []).includes(i)) { c.fillStyle = 'rgba(226,166,59,.28)'; c.fillRect(x, y, g.fw * sheetZoom, g.fh * sheetZoom); }
+      c.strokeStyle = 'rgba(111,209,224,.75)'; c.strokeRect(x + .5, y + .5, g.fw * sheetZoom - 1, g.fh * sheetZoom - 1);
+      c.fillStyle = '#fff'; c.strokeStyle = '#000'; c.lineWidth = 3; c.strokeText(i, x + 3, y + 12); c.fillText(i, x + 3, y + 12); c.lineWidth = 1;
+    }
+  }
+  // Guess sensible animations: one row per animation if there are several rows, otherwise split the single row.
+  function guessAnims() {
+    const g = sheetGrid(), row = r => r * g.cols + '-' + (r * g.cols + g.cols - 1);
+    if (g.rows >= 2) { animInputs.idle.value = row(0); animInputs.walk.value = row(1); animInputs.jump.value = g.rows >= 3 ? row(2) : String(g.cols); }
+    else { animInputs.idle.value = '0'; animInputs.walk.value = g.count > 1 ? '0-' + (g.count - 1) : '0'; animInputs.jump.value = String(g.count - 1); }
+  }
+  function loadSheet(file) {
+    if (!file || !/^image\//.test(file.type)) { spriteStatus.textContent = 'Use a PNG, GIF or WebP sprite sheet.'; return; }
+    if (file.size > 3 * 1024 * 1024) { spriteStatus.textContent = 'That sheet is over 3 MB — shrink it first so the game stays quick to load.'; return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        sheetImg = img; sheetSrc = reader.result;
+        // A square-frame strip is the most common layout: guess frame size = the sheet height.
+        if (img.naturalWidth > img.naturalHeight && img.naturalWidth % img.naturalHeight === 0) { frameW.value = frameH.value = img.naturalHeight; }
+        spriteWork.hidden = false; useSheetBtn.disabled = false;
+        sheetDrop.querySelector('.thumb').style.backgroundImage = 'url("' + sheetSrc + '")'; sheetDrop.querySelector('.thumb').textContent = '';
+        guessAnims(); drawSheet();
+        const g = sheetGrid();
+        spriteStatus.textContent = '✓ ' + file.name + ' — ' + img.naturalWidth + '×' + img.naturalHeight + ' px, ' + g.cols + ' × ' + g.rows + ' frames. Check the frame size, then click “Use as the player”.';
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  sheetInput.addEventListener('change', () => { loadSheet(sheetInput.files[0]); sheetInput.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => sheetDrop.addEventListener(ev, e => { e.preventDefault(); sheetDrop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => sheetDrop.addEventListener(ev, () => sheetDrop.classList.remove('over')));
+  sheetDrop.addEventListener('drop', e => { e.preventDefault(); loadSheet((e.dataTransfer.files || [])[0]); });
+  [frameW, frameH].forEach(el => el.addEventListener('change', () => { if (sheetImg) { guessAnims(); drawSheet(); } }));
+  Object.values(animInputs).forEach(el => {
+    el.addEventListener('input', drawSheet);
+    el.addEventListener('focus', () => { el.closest('.anim-row').querySelector('input[type=radio]').checked = true; drawSheet(); });
+  });
+  document.querySelectorAll('input[name=animPick]').forEach(r => r.addEventListener('change', drawSheet));
+  sheetCanvas.addEventListener('click', e => {
+    if (!sheetImg) return;
+    const g = sheetGrid(), r = sheetCanvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) * sheetCanvas.width / r.width / sheetZoom, y = (e.clientY - r.top) * sheetCanvas.height / r.height / sheetZoom;
+    const i = Math.floor(y / g.fh) * g.cols + Math.floor(x / g.fw);
+    if (i < 0 || i >= g.count) return;
+    const pick = (document.querySelector('input[name=animPick]:checked') || {}).value || 'idle', box = animInputs[pick];
+    box.value = (box.value.trim() ? box.value.trim() + ', ' : '') + i;
+    drawSheet();
+  });
+  // Little looping previews next to each animation.
+  (function animatePreviews() {
+    if (sheetImg && !spriteWork.hidden) {
+      const g = sheetGrid(), anims = currentAnims(), fps = Math.max(1, +frameFps.value || 8);
+      Object.keys(animInputs).forEach(k => {
+        const cv = animInputs[k].parentNode.querySelector('canvas'), c = cv.getContext('2d'), list = anims[k].length ? anims[k] : [0];
+        const i = list[Math.floor(performance.now() / 1000 * fps) % list.length], s = Math.min(cv.width / g.fw, cv.height / g.fh);
+        c.clearRect(0, 0, cv.width, cv.height); c.imageSmoothingEnabled = false;
+        c.drawImage(sheetImg, (i % g.cols) * g.fw, Math.floor(i / g.cols) * g.fh, g.fw, g.fh, (cv.width - g.fw * s) / 2, (cv.height - g.fh * s) / 2, g.fw * s, g.fh * s);
+      });
+    }
+    requestAnimationFrame(animatePreviews);
+  })();
+  function applySheet(sheet) {
+    gameSheet = sheet;
+    clearSheetBtn.disabled = !sheet;
+    if (currentGameHtml) { currentGameHtml = injectSprites(currentGameHtml); sourceText.value = currentGameHtml; preview.srcdoc = currentGameHtml; }
+  }
+  useSheetBtn.addEventListener('click', () => {
+    if (!sheetImg) return;
+    const g = sheetGrid();
+    applySheet({ src: sheetSrc, fw: g.fw, fh: g.fh, fps: Math.max(1, Math.min(30, +frameFps.value || 8)), anims: currentAnims() });
+    spriteStatus.textContent = '✓ The player now animates in the game. If it still shows the old shape, click “✨ Add sliders & picture slots” above so the game draws gameImage("player").';
+  });
+  clearSheetBtn.addEventListener('click', () => { applySheet(null); spriteStatus.textContent = 'Sprite sheet removed from the game.'; });
+
+  // ---------- installable offline game: .zip with manifest.json, icons and a service worker ----------
+  const pwaBtn = document.getElementById('pwaBtn');
+  function loadJsZip() {
+    if (window.JSZip) return Promise.resolve(window.JSZip);
+    return new Promise((resolve, reject) => {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      sc.onload = () => resolve(window.JSZip); sc.onerror = () => reject(new Error('The zip library could not load — check your connection.'));
+      document.head.appendChild(sc);
+    });
+  }
+  function drawIcon(size, title) {
+    const c = document.createElement('canvas'); c.width = c.height = size;
+    const x = c.getContext('2d'), grad = x.createLinearGradient(0, 0, size, size);
+    grad.addColorStop(0, '#1f3b73'); grad.addColorStop(1, '#6a2c91');
+    x.fillStyle = grad; x.fillRect(0, 0, size, size);
+    const pic = (gameSheet && sheetImg) ? null : gameAssets.player;
+    return new Promise(resolve => {
+      const finish = () => resolve(new Promise(r => c.toBlob(r, 'image/png')));
+      const drawCentered = (img, sx, sy, sw, sh) => { const s = size * 0.62 / Math.max(sw, sh); x.imageSmoothingEnabled = sw > 64; x.drawImage(img, sx, sy, sw, sh, (size - sw * s) / 2, (size - sh * s) / 2, sw * s, sh * s); };
+      if (gameSheet && sheetImg) { drawCentered(sheetImg, 0, 0, gameSheet.fw, gameSheet.fh); return finish(); }
+      if (pic) { const im = new Image(); im.onload = () => { drawCentered(im, 0, 0, im.naturalWidth, im.naturalHeight); finish(); }; im.onerror = finish; im.src = pic; return; }
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = Math.round(size * 0.42) + 'px system-ui, sans-serif';
+      x.fillText('🎮', size / 2, size * 0.44);
+      x.fillStyle = '#fff'; x.font = '700 ' + Math.round(size * 0.14) + 'px system-ui, sans-serif';
+      x.fillText(title.slice(0, 12), size / 2, size * 0.82);
+      finish();
+    });
+  }
+  pwaBtn.addEventListener('click', async () => {
+    if (!currentGameHtml) return;
+    pwaBtn.disabled = true; const label = pwaBtn.textContent; pwaBtn.textContent = 'Packing…';
+    try {
+      const Zip = await loadJsZip(), zip = new Zip();
+      const raw = (/<title>([^<]*)<\/title>/i.exec(currentGameHtml) || [])[1] || 'My game';
+      const title = raw.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+[—–|-]\s+.*$/, '').trim() || 'My game';
+      const short = title.length > 12 ? title.slice(0, 12).trim() : title;
+      const head = '<link rel="manifest" href="manifest.json">\n<meta name="theme-color" content="#1f3b73">\n<link rel="icon" href="icon-192.png">\n<link rel="apple-touch-icon" href="icon-192.png">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n';
+      const reg = '<script>if ("serviceWorker" in navigator) addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });</' + 'script>\n';
+      let html = currentGameHtml;
+      html = /<\/head>/i.test(html) ? html.replace(/<\/head>/i, head + '</head>') : head + html;
+      html = /<\/body>/i.test(html) ? html.replace(/<\/body>(?![\s\S]*<\/body>)/i, reg + '</body>') : html + reg;
+      zip.file('index.html', html);
+      zip.file('manifest.json', JSON.stringify({
+        name: title, short_name: short, description: 'A game made with MigaBuilder Game Forge. Plays offline.',
+        start_url: './', scope: './', display: 'fullscreen', orientation: 'any', background_color: '#000000', theme_color: '#1f3b73',
+        icons: [{ src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' }, { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }]
+      }, null, 2));
+      zip.file('sw.js', "// Offline support: everything the game needs is cached on first visit.\nconst CACHE = 'game-" + Date.now().toString(36) + "';\nconst FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];\n" +
+        "self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });\n" +
+        "self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });\n" +
+        "self.addEventListener('fetch', e => { if (e.request.method !== 'GET') return; e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request).catch(() => caches.match('./index.html')))); });\n");
+      zip.file('icon-192.png', await drawIcon(192, short));
+      zip.file('icon-512.png', await drawIcon(512, short));
+      zip.file('README.txt', title + ' — installable offline game\n\n' +
+        '1. Upload this whole folder to any https web host: drag it onto app.netlify.com/drop, or push it to a GitHub repo and turn on GitHub Pages.\n' +
+        '2. Open the link on your phone. Chrome/Android: menu → "Install app" or "Add to Home screen". iPhone Safari: Share → "Add to Home Screen".\n' +
+        '3. The game now has its own icon and plays offline, even in flight mode.\n\n' +
+        'Opening index.html straight from your computer works too, but installing needs https (browsers only allow service workers on secure sites).\n');
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '-app.zip' || 'game-app.zip';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+      tuneStatus.textContent = '✓ App .zip downloaded. Upload the folder to Netlify Drop or GitHub Pages, open it on your phone and choose “Add to Home screen” — it then plays offline.';
+    } catch (err) {
+      tuneStatus.textContent = 'Could not build the app .zip: ' + err.message;
+    } finally { pwaBtn.disabled = false; pwaBtn.textContent = label; }
+  });
+
+  const STARTER_GAME = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<title>Sky Dash \u2014 a MigaBuilder starter game<\/title>\n<script id=\"game-config\">\nwindow.GAME_CONFIG = {\"gravity\": 2200, \"jumpPower\": 820, \"gameSpeed\": 330, \"speedUp\": 6, \"jumps\": 2, \"obstacleGap\": 1, \"coinChance\": 0.6};\nwindow.GAME_CONFIG_UI = {\"gravity\": {\"label\": \"Gravity\", \"min\": 400, \"max\": 5000, \"step\": 50}, \"jumpPower\": {\"label\": \"Jump height\", \"min\": 300, \"max\": 1600, \"step\": 10}, \"gameSpeed\": {\"label\": \"Game speed\", \"min\": 100, \"max\": 900, \"step\": 10}, \"speedUp\": {\"label\": \"Speed-up per second\", \"min\": 0, \"max\": 40, \"step\": 1}, \"jumps\": {\"label\": \"Jumps in the air\", \"min\": 1, \"max\": 4, \"step\": 1}, \"obstacleGap\": {\"label\": \"Space between obstacles\", \"min\": 0.5, \"max\": 2.5, \"step\": 0.05}, \"coinChance\": {\"label\": \"Coin chance\", \"min\": 0, \"max\": 1, \"step\": 0.05}};\n<\/script>\n<style>\n  html, body { margin: 0; height: 100%; background: #0b1d33; font-family: system-ui, sans-serif; color: #fff; overflow: hidden; }\n  #wrap { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }\n  canvas { width: 100%; max-width: 960px; aspect-ratio: 8 / 5; max-height: 100%; display: block; border-radius: 8px; touch-action: manipulation; background: #87c7ef; }\n  #legend { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); font-size: 12px; opacity: .8; pointer-events: none; text-shadow: 0 1px 2px #000; white-space: nowrap; }\n<\/style>\n<\/head>\n<body>\n<div id=\"wrap\"><canvas id=\"game\" width=\"800\" height=\"500\" aria-label=\"Sky Dash game\"><\/canvas><div id=\"legend\">Space / \u2191 / tap to jump \u00b7 jump again in the air \u00b7 P to pause<\/div><\/div>\n<script>\n(function () {\n  'use strict';\n  var C = function () { return window.GAME_CONFIG; };\n  var img = function (name) { return window.gameImage ? window.gameImage(name) : null; };\n  var cv = document.getElementById('game'), ctx = cv.getContext('2d');\n  var W = 800, H = 500, GROUND = 430;\n  var best = 0; try { best = +localStorage.getItem('skyDashBest') || 0; } catch (e) {}\n  var audio = null;\n  function beep(freq, dur, type, vol) {\n    try {\n      audio = audio || new (window.AudioContext || window.webkitAudioContext)();\n      var o = audio.createOscillator(), g = audio.createGain();\n      o.type = type || 'square'; o.frequency.value = freq;\n      g.gain.setValueAtTime(vol || 0.08, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + dur);\n      o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + dur);\n    } catch (e) {}\n  }\n  var state, player, obstacles, coins, clouds, dist, score, speed, elapsed, coinsGot, nextObstacle, paused;\n  function reset() {\n    state = 'ready'; paused = false;\n    player = { x: 130, y: GROUND - 46, w: 46, h: 46, vy: 0, jumpsUsed: 0, onGround: true };\n    obstacles = []; coins = []; dist = 0; score = 0; elapsed = 0; coinsGot = 0; speed = C().gameSpeed; nextObstacle = 500;\n    clouds = [0, 1, 2, 3, 4].map(function (i) { return { x: i * 190 + Math.random() * 80, y: 40 + Math.random() * 140, s: 0.6 + Math.random() * 0.8 }; });\n  }\n  function jump() {\n    if (state === 'over') { reset(); return; }\n    if (state === 'ready') state = 'play';\n    if (paused) return;\n    var maxJumps = Math.max(1, Math.round(C().jumps));\n    if (player.onGround || player.jumpsUsed < maxJumps) {\n      player.vy = -C().jumpPower; player.onGround = false; player.jumpsUsed++;\n      if (window.sfx) sfx('jump'); else beep(520 + player.jumpsUsed * 120, 0.12, 'square');\n    }\n  }\n  function spawn() {\n    var kind = Math.random();\n    var o;\n    if (kind < 0.45) o = { type: 'crate', w: 44, h: 44 };\n    else if (kind < 0.75) o = { type: 'spikes', w: 70, h: 26 };\n    else o = { type: 'tall', w: 38, h: 86 };\n    o.x = W + 20; o.y = GROUND - o.h; obstacles.push(o);\n    if (Math.random() < C().coinChance) {\n      var n = 3 + Math.floor(Math.random() * 3), cy = GROUND - o.h - 70 - Math.random() * 80;\n      for (var i = 0; i < n; i++) coins.push({ x: o.x - 30 + i * 34, y: cy - Math.sin(i / (n - 1) * Math.PI) * 40, r: 11, got: false });\n    }\n    nextObstacle = (320 + Math.random() * 360) * C().obstacleGap;\n  }\n  function hit(a, b) { return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y; }\n  function update(dt) {\n    var cfg = C();\n    clouds.forEach(function (c) { c.x -= (state === 'play' && !paused ? speed : C().gameSpeed * 0.4) * 0.15 * c.s * dt; if (c.x < -120) { c.x = W + 40; c.y = 40 + Math.random() * 140; } });\n    if (state !== 'play' || paused) return;\n    elapsed += dt; speed = Math.min(cfg.gameSpeed + cfg.speedUp * elapsed, 2000);\n    var dx = speed * dt; dist += dx; score = Math.floor(dist / 10) + coinsGot;\n    player.vy += cfg.gravity * dt; player.y += player.vy * dt;\n    if (player.y + player.h >= GROUND) { player.y = GROUND - player.h; player.vy = 0; player.onGround = true; player.jumpsUsed = 0; }\n    nextObstacle -= dx; if (nextObstacle <= 0) spawn();\n    obstacles.forEach(function (o) { o.x -= dx; });\n    obstacles = obstacles.filter(function (o) { return o.x + o.w > -10; });\n    coins.forEach(function (c) { c.x -= dx; if (!c.got && Math.hypot(c.x - (player.x + player.w / 2), c.y - (player.y + player.h / 2)) < c.r + player.w / 2) { c.got = true; coinsGot += 5; if (window.sfx) sfx('coin'); else beep(990, 0.09, 'triangle', 0.1); } });\n    coins = coins.filter(function (c) { return c.x > -20 && !c.got; });\n    var box = { x: player.x + 6, y: player.y + 6, w: player.w - 12, h: player.h - 8 };\n    for (var i = 0; i < obstacles.length; i++) {\n      var o = obstacles[i], ob = o.type === 'spikes' ? { x: o.x + 6, y: o.y + 8, w: o.w - 12, h: o.h - 8 } : o;\n      if (hit(box, ob)) {\n        state = 'over'; if (window.sfx) sfx('lose'); else beep(140, 0.45, 'sawtooth', 0.12);\n        if (score > best) { best = score; try { localStorage.setItem('skyDashBest', best); } catch (e) {} }\n        break;\n      }\n    }\n  }\n  function drawPlayer() {\n    var p = player, sprite = img('player');\n    if (sprite) { ctx.drawImage(sprite, p.x, p.y, p.w, p.h); return; }\n    ctx.save(); ctx.translate(p.x + p.w / 2, p.y + p.h / 2); ctx.rotate(p.onGround ? 0 : Math.min(0.5, p.vy / 2000));\n    ctx.fillStyle = '#ff8a3d'; ctx.beginPath(); ctx.roundRect(-p.w / 2, -p.h / 2, p.w, p.h, 10); ctx.fill();\n    ctx.fillStyle = '#fff'; ctx.fillRect(4, -10, 12, 12); ctx.fillStyle = '#16202b'; ctx.fillRect(10, -7, 5, 6);\n    ctx.fillStyle = '#c94f12'; ctx.fillRect(-p.w / 2, 6, p.w, 6);\n    ctx.restore();\n  }\n  function draw() {\n    var bg = img('background');\n    if (bg) ctx.drawImage(bg, 0, 0, W, H);\n    else {\n      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#6fb8ea'); g.addColorStop(1, '#cdeafc');\n      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);\n      ctx.fillStyle = 'rgba(255,255,255,.9)';\n      clouds.forEach(function (c) { ctx.beginPath(); ctx.ellipse(c.x, c.y, 46 * c.s, 18 * c.s, 0, 0, 7); ctx.ellipse(c.x + 26 * c.s, c.y - 10 * c.s, 30 * c.s, 16 * c.s, 0, 0, 7); ctx.fill(); });\n    }\n    ctx.fillStyle = '#4e9e53'; ctx.fillRect(0, GROUND, W, 12);\n    ctx.fillStyle = '#8b5a2b'; ctx.fillRect(0, GROUND + 12, W, H - GROUND);\n    ctx.fillStyle = 'rgba(0,0,0,.12)'; for (var s = -(dist % 40); s < W; s += 40) ctx.fillRect(s, GROUND + 22, 20, 6);\n    obstacles.forEach(function (o) {\n      if (o.type === 'spikes') {\n        ctx.fillStyle = '#6b7784';\n        for (var i = 0; i < o.w; i += 14) { ctx.beginPath(); ctx.moveTo(o.x + i, GROUND); ctx.lineTo(o.x + i + 7, o.y); ctx.lineTo(o.x + i + 14, GROUND); ctx.fill(); }\n      } else {\n        ctx.fillStyle = o.type === 'tall' ? '#5a3e8c' : '#b07a3a'; ctx.fillRect(o.x, o.y, o.w, o.h);\n        ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 3; ctx.strokeRect(o.x + 1.5, o.y + 1.5, o.w - 3, o.h - 3);\n        if (o.type === 'crate') { ctx.beginPath(); ctx.moveTo(o.x, o.y); ctx.lineTo(o.x + o.w, o.y + o.h); ctx.stroke(); }\n      }\n    });\n    coins.forEach(function (c) { ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, 7); ctx.fill(); ctx.fillStyle = '#e0a800'; ctx.beginPath(); ctx.arc(c.x, c.y, c.r * 0.5, 0, 7); ctx.fill(); });\n    drawPlayer();\n    ctx.fillStyle = '#16202b'; ctx.font = 'bold 22px system-ui, sans-serif'; ctx.textAlign = 'left';\n    ctx.fillText('Score ' + score, 18, 34); ctx.font = '15px system-ui, sans-serif'; ctx.fillText('Best ' + best, 18, 56);\n    ctx.textAlign = 'center';\n    if (state !== 'play' || paused) {\n      ctx.fillStyle = 'rgba(8,24,38,.55)'; ctx.fillRect(0, 0, W, H);\n      ctx.fillStyle = '#fff'; ctx.font = 'bold 42px system-ui, sans-serif';\n      ctx.fillText(state === 'over' ? 'Game over' : paused ? 'Paused' : 'Sky Dash', W / 2, H / 2 - 20);\n      ctx.font = '18px system-ui, sans-serif';\n      ctx.fillText(state === 'over' ? 'Score ' + score + ' \u2014 press Space or tap to play again' : paused ? 'Press P to continue' : 'Press Space or tap to start', W / 2, H / 2 + 20);\n    }\n  }\n  var last = performance.now();\n  function loop(now) {\n    var dt = Math.min(0.033, (now - last) / 1000); last = now;\n    update(dt); draw(); requestAnimationFrame(loop);\n  }\n  addEventListener('keydown', function (e) {\n    if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') { e.preventDefault(); if (!e.repeat) jump(); }\n    if (e.code === 'KeyP' && state === 'play') paused = !paused;\n  });\n  cv.addEventListener('pointerdown', function (e) { e.preventDefault(); jump(); });\n  reset(); requestAnimationFrame(loop);\n})();\n<\/script>\n<\/body>\n<\/html>\n";
   starterBtn.addEventListener('click', function () {
     if (currentGameHtml && currentGameHtml.indexOf('<title>Sky Dash') === -1 && !confirm('Replace the current game with the starter game?')) return;
     showGame(injectSprites(STARTER_GAME));
@@ -855,6 +1224,8 @@
     downloadBtn.disabled = false;
     refineBtn.disabled = false;
     setQuickRefineChipsEnabled(true);
+    pwaBtn.disabled = false;
+    sfxWireBtn.disabled = false;
   }
 
   // Every game exposes its balance numbers and two picture slots so the sliders and
@@ -940,7 +1311,7 @@
     const rules = [];
     if (featSound.checked) {
       rules.push([
-        'FEATURE — Sound effects: use the Web Audio API (new (window.AudioContext || window.webkitAudioContext)()) to generate short procedural sound effects with oscillators/gain envelopes — no audio files. Add distinct sounds for at least: the main action, taking damage/losing, and winning/scoring, for any of these not already covered by one of the player\'s own custom clips (listed separately below, if any). Include a mute/unmute button.'
+        'FEATURE — Sound effects: the page already defines window.sfx(name), which plays a retro 8-bit sound made with the Web Audio API — no audio files. Available names: jump, coin, shoot, laser, explode, hit, powerup, win, lose, blip. Call it as (window.sfx && sfx("jump")) at the matching moments: at least the main action, taking damage/losing, and winning/scoring, for any of these not already covered by one of the player\'s own custom clips (listed separately below, if any). Never define sfx or GAME_SFX yourself and do not write other Web Audio code. Include a mute/unmute button that calls window.sfxMute() (it toggles and returns true when muted).'
       ].join(''));
     }
     if (featTouch.checked) {
