@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script><script src="usage-counter.js" defer></script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flashcard Forge — make flashcards and study with spaced repetition | MigaBuilder</title>
+<meta name="description" content="Create flashcard decks by typing, pasting a list or letting AI turn your notes into cards. Study with spaced repetition, multiple-choice tests and typed answers, hear cards read aloud, and export to CSV. Free, private, no signup.">
+<link rel="canonical" href="https://migabuilder.com/flashcard-forge.html">
+<meta property="og:title" content="Flashcard Forge — free flashcards with spaced repetition | MigaBuilder">
+<meta property="og:description" content="Turn notes into flashcards with AI, then study smarter with spaced repetition and tests.">
+<meta property="og:url" content="https://migabuilder.com/flashcard-forge.html"><meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="local-tools.css"><link rel="stylesheet" href="tutorials.css">
+<script src="ai-client.js"></script>
+<style>
+.decks{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.deck{background:#fff;border:2px solid rgba(22,32,43,.12);border-radius:6px;padding:12px;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.deck.active{border-color:var(--amber);background:#fff7e6}.deck b{display:block;font:700 15px 'Space Grotesk'}.deck small{color:rgba(22,32,43,.6)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:2px solid rgba(22,32,43,.15);margin:10px 0 14px}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:700;cursor:pointer;color:rgba(22,32,43,.65);border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.active{color:var(--ink);border-bottom-color:var(--amber)}
+.card-list .item textarea{width:100%;min-height:44px;padding:8px;border:1px solid rgba(22,32,43,.2);border-radius:3px;font:inherit;resize:vertical}
+.card-list .item{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:start}
+.flash{perspective:1200px;max-width:640px;margin:0 auto}
+.flash-inner{position:relative;min-height:260px;transition:transform .45s;transform-style:preserve-3d;cursor:pointer}
+.flash.flipped .flash-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;background:#fff;border:1px solid rgba(22,32,43,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;padding:26px;text-align:center;font:600 24px/1.35 'Space Grotesk';box-shadow:0 8px 24px rgba(8,24,38,.12);white-space:pre-wrap;overflow:auto}
+.face.back{transform:rotateY(180deg);font:500 19px/1.5 'IBM Plex Sans';background:#fbfaf6}
+.face small{position:absolute;top:10px;left:14px;font:600 11px 'IBM Plex Sans';color:rgba(22,32,43,.45);text-transform:uppercase;letter-spacing:.06em}
+.grade{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:640px;margin:14px auto 0}
+.grade button{padding:12px 6px;border-radius:6px;border:0;font-weight:700;cursor:pointer;color:#fff}
+.g1{background:#D8604A}.g2{background:#b7831d}.g3{background:#4E9E73}.g4{background:#2a8fa3}
+.grade small{display:block;font-weight:400;opacity:.85;font-size:11px}
+.bar{height:8px;background:rgba(22,32,43,.12);border-radius:4px;overflow:hidden;display:flex;margin:6px 0}.bar i{display:block;height:100%}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:640px;margin:12px auto}.opt{padding:12px;border:1px solid rgba(22,32,43,.25);background:#fff;border-radius:4px;cursor:pointer;text-align:left;font-size:15px}
+.opt.right{background:#dff1e6;border-color:#4E9E73}.opt.wrong{background:#f8dcd6;border-color:#D8604A}
+.center{text-align:center}.big{font:700 22px 'Space Grotesk'}
+.hidden{display:none!important}
+@media(max-width:700px){.card-list .item{grid-template-columns:1fr}.opts,.grade{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav class="tool-nav"><a href="index.html">← All tools</a><span>Flashcard Forge</span></nav>
+<header class="masthead"><div><h1>Flashcard Forge</h1><p>Make flashcards in seconds, then remember them for good with spaced repetition.</p></div></header>
+<main>
+<section class="panel">
+  <h2>Your decks</h2>
+  <div class="decks" id="decks"></div>
+  <div class="actions" style="margin-top:10px"><button class="primary" id="newDeck">+ New deck</button><label class="secondary" style="cursor:pointer"><input type="file" id="importFile" accept=".csv,.txt,.tsv,.json" hidden>⬆ Import CSV / backup</label></div>
+  <p class="privacy" style="margin-top:12px">Decks are saved only in this browser. Export a backup to move them to another device.</p>
+</section>
+
+<section class="panel hidden" id="deckPanel">
+  <div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input id="deckName" style="flex:1;min-width:200px;font:700 20px 'Space Grotesk';padding:8px;border:1px solid rgba(22,32,43,.2);border-radius:3px" aria-label="Deck name">
+    <select id="lang" aria-label="Language for reading cards aloud" style="padding:9px"><option value="">🔊 Read aloud: off</option></select></div>
+  <div class="bar" id="bar"></div><p class="muted" id="deckStats" style="margin:0"></p>
+  <div class="tabs"><button class="active" data-tab="study">🧠 Study</button><button data-tab="test">✅ Test</button><button data-tab="edit">✏️ Cards</button><button data-tab="ai">🤖 Make cards with AI</button><button data-tab="share">⬇ Export</button></div>
+
+  <div data-pane="study">
+    <div id="studyArea"></div>
+  </div>
+  <div data-pane="test" class="hidden">
+    <div class="actions"><button class="primary" id="mcTest">Multiple choice</button><button class="secondary" id="typeTest">Type the answer</button><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="reverseTest"> Show the back, answer with the front</label></div>
+    <div id="testArea" style="margin-top:12px"></div>
+  </div>
+  <div data-pane="edit" class="hidden">
+    <div class="card-list" id="cardList"></div>
+    <div class="actions" style="margin-top:10px"><button class="secondary" id="addCard">+ Add card</button></div>
+    <details style="margin-top:14px"><summary style="cursor:pointer;font-weight:700">Paste many cards at once</summary>
+      <p class="muted">One card per line: <code>front - back</code>, <code>front ; back</code>, <code>front,back</code> or tab-separated (e.g. copied from a spreadsheet).</p>
+      <textarea id="bulk" style="width:100%;min-height:120px;padding:10px" placeholder="bonjour - hello&#10;merci - thank you"></textarea><button class="secondary" id="bulkAdd">Add these cards</button></details>
+  </div>
+  <div data-pane="ai" class="hidden">
+    <p>Paste your notes, a textbook paragraph or a word list — or just type a topic — and the AI writes question-and-answer cards.</p>
+    <div class="field"><label for="aiText">Notes or topic</label><textarea id="aiText" placeholder="e.g. The causes of World War I… or: 30 common Swahili verbs"></textarea></div>
+    <div class="grid"><div class="field"><label for="aiCount">Number of cards</label><select id="aiCount"><option>10</option><option selected>20</option><option>30</option><option>50</option></select></div>
+      <div class="field"><label for="aiStyle">Card style</label><select id="aiStyle"><option value="qa">Question → answer</option><option value="term">Term → definition</option><option value="vocab">Word → translation (languages)</option><option value="cloze">Fill in the blank</option></select></div></div>
+    <div id="aiBox"></div><button class="primary" id="aiGo">Make cards</button><p class="status" id="aiStatus"></p>
+  </div>
+  <div data-pane="share" class="hidden">
+    <div class="actions"><button class="secondary" id="expCsv">⬇ CSV (Anki, Quizlet, Excel)</button><button class="secondary" id="expJson">⬇ Full backup of all decks</button><button class="secondary" id="printCards">🖨 Printable cards</button><button class="danger" id="delDeck">Delete this deck</button></div>
+  </div>
+</section>
+</main>
+<footer>Flashcard Forge · MigaBuilder · Spaced repetition based on the Leitner box method.</footer>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+MigaAI.mount($('aiBox'));
+const KEY='flashcardDecks';
+let decks=[];try{decks=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}
+if(!decks.length)decks=[{id:'demo',name:'Example: world capitals',lang:'en-US',cards:[['Kenya','Nairobi'],['Japan','Tokyo'],['Brazil','Brasília'],['Canada','Ottawa'],['Australia','Canberra'],['Egypt','Cairo'],['Thailand','Bangkok'],['Sweden','Stockholm']].map(([f,b])=>card(f,b))}];
+let cur=decks[0];
+function card(f,b){return {f,b,box:0,due:0,seen:0,right:0}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(decks))}catch(e){alert('Could not save — browser storage is full or disabled.')}}
+const DAY=864e5,INTERVAL=[0,1,3,7,16,35];// Leitner boxes 0..5, days until the card comes back
+const now=()=>Date.now();
+function dueCards(){return cur.cards.filter(c=>c.due<=now())}
+// ---------- decks ----------
+function renderDecks(){$('decks').innerHTML=decks.map((d,i)=>{const due=d.cards.filter(c=>c.due<=now()).length,m=d.cards.filter(c=>c.box>=4).length;return '<button class="deck'+(d===cur?' active':'')+'" data-d="'+i+'"><b>'+esc(d.name)+'</b><small>'+d.cards.length+' cards · '+due+' due · '+m+' mastered</small></button>'}).join('');
+  $('decks').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{cur=decks[+b.dataset.d];openDeck()})}
+function openDeck(){renderDecks();$('deckPanel').classList.remove('hidden');$('deckName').value=cur.name;$('lang').value=cur.lang||'';renderStats();renderCards();startStudy()}
+$('newDeck').onclick=()=>{const d={id:String(now()),name:'New deck',lang:'',cards:[]};decks.push(d);cur=d;save();openDeck();tab('ai');$('deckName').select()};
+$('deckName').oninput=()=>{cur.name=$('deckName').value||'Untitled';save();renderDecks()};
+const LANGS=[['en-US','English'],['es-ES','Spanish'],['fr-FR','French'],['de-DE','German'],['it-IT','Italian'],['pt-BR','Portuguese'],['sw-KE','Swahili'],['ar-SA','Arabic'],['zh-CN','Mandarin'],['ja-JP','Japanese'],['ko-KR','Korean'],['th-TH','Thai'],['hi-IN','Hindi'],['ru-RU','Russian'],['sv-SE','Swedish'],['nl-NL','Dutch'],['tr-TR','Turkish']];
+$('lang').innerHTML+=LANGS.map(([v,l])=>'<option value="'+v+'">🔊 Read the front in '+l+'</option>').join('');
+$('lang').onchange=()=>{cur.lang=$('lang').value;save()};
+function say(t){if(!cur.lang||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=cur.lang;u.rate=.9;speechSynthesis.speak(u)}
+function renderStats(){const n=cur.cards.length||1,b=[0,0,0,0,0,0];cur.cards.forEach(c=>b[c.box]++);
+  const col=['#c9ced4','#D8604A','#E2A63B','#b7c34a','#4E9E73','#2a8fa3'];$('bar').innerHTML=b.map((v,i)=>'<i style="width:'+(v/n*100)+'%;background:'+col[i]+'" title="Box '+i+': '+v+'"></i>').join('');
+  $('deckStats').textContent=cur.cards.length+' cards · '+dueCards().length+' due now · '+(b[4]+b[5])+' mastered · '+b[0]+' new';}
+function tab(t){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));document.querySelectorAll('[data-pane]').forEach(p=>p.classList.toggle('hidden',p.dataset.pane!==t));if(t==='study')startStudy()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
+// ---------- edit ----------
+function renderCards(){$('cardList').innerHTML=cur.cards.length?cur.cards.map((c,i)=>'<div class="item"><textarea data-i="'+i+'" data-k="f" aria-label="Front">'+esc(c.f)+'</textarea><textarea data-i="'+i+'" data-k="b" aria-label="Back">'+esc(c.b)+'</textarea><button class="danger" data-rm="'+i+'" aria-label="Delete card">✕</button></div>').join(''):'<p class="muted">No cards yet. Add some, paste a list, or use the AI tab.</p>';
+  $('cardList').querySelectorAll('textarea').forEach(t=>t.oninput=()=>{cur.cards[+t.dataset.i][t.dataset.k]=t.value;save()});
+  $('cardList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{cur.cards.splice(+b.dataset.rm,1);save();renderCards();renderStats();renderDecks()})}
+$('addCard').onclick=()=>{cur.cards.push(card('',''));save();renderCards();const t=$('cardList').querySelectorAll('textarea');t[t.length-2].focus()};
+function parseLines(text){return text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{const m=l.split('\t').length>1?l.split('\t'):l.includes(' - ')?l.split(' - '):l.includes(';')?l.split(';'):l.split(',');return m.length>=2?[m[0].trim().replace(/^"|"$/g,''),m.slice(1).join(', ').trim().replace(/^"|"$/g,'')]:null}).filter(Boolean)}
+$('bulkAdd').onclick=()=>{const p=parseLines($('bulk').value);if(!p.length)return alert('No cards found. Use one card per line, like: front - back');p.forEach(([f,b])=>cur.cards.push(card(f,b)));$('bulk').value='';save();renderCards();renderStats();renderDecks()};
+// ---------- study (spaced repetition) ----------
+let queue=[],flipped=false;
+function startStudy(){queue=dueCards().sort((a,b)=>a.box-b.box||a.due-b.due);showStudy()}
+function showStudy(){renderStats();const a=$('studyArea');
+  if(!cur.cards.length){a.innerHTML='<p class="center muted">This deck is empty — add cards first.</p>';return}
+  if(!queue.length){const next=Math.min(...cur.cards.map(c=>c.due));a.innerHTML='<div class="center"><p class="big">🎉 All done for now!</p><p class="muted">Next card is due '+(next<=now()?'now':new Date(next).toLocaleString())+'. Spaced repetition works best a little every day.</p><button class="secondary" id="cram">Study all cards anyway</button></div>';$('cram').onclick=()=>{queue=cur.cards.slice().sort(()=>Math.random()-.5);showStudy()};return}
+  const c=queue[0];flipped=false;
+  a.innerHTML='<p class="center muted">'+queue.length+' card(s) left in this session</p><div class="flash" id="flash"><div class="flash-inner"><div class="face front"><small>Front</small>'+esc(c.f)+'</div><div class="face back"><small>Back</small>'+esc(c.b)+'</div></div></div>'+
+   '<p class="center muted" id="hint">Tap the card (or press Space) to see the answer</p><div class="grade hidden" id="grade"><button class="g1" data-g="0">Again<small>forgot</small></button><button class="g2" data-g="1">Hard<small>'+label(Math.max(1,c.box))+'</small></button><button class="g3" data-g="2">Good<small>'+label(c.box+1)+'</small></button><button class="g4" data-g="3">Easy<small>'+label(c.box+2)+'</small></button></div>';
+  $('flash').onclick=flip;a.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>grade(+b.dataset.g));say(c.f)}
+const label=b=>{const d=INTERVAL[Math.min(5,b)];return d?'in '+d+' day'+(d>1?'s':''):'today'};
+function flip(){flipped=!flipped;$('flash').classList.toggle('flipped',flipped);$('grade').classList.toggle('hidden',!flipped);$('hint').classList.toggle('hidden',flipped)}
+function grade(g){const c=queue.shift();c.seen++;if(g>0)c.right++;
+  c.box=g===0?0:g===1?Math.max(1,c.box):g===2?Math.min(5,c.box+1):Math.min(5,c.box+2);
+  c.due=g===0?now():now()+INTERVAL[c.box]*DAY;if(g===0)queue.push(c);save();renderDecks();showStudy()}
+document.addEventListener('keydown',e=>{if($('deckPanel').classList.contains('hidden')||document.querySelector('[data-pane="study"]').classList.contains('hidden')||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+  if(e.key===' '&&$('flash')){e.preventDefault();flip()}else if(flipped&&'1234'.includes(e.key))grade(+e.key-1)});
+// ---------- tests ----------
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+let test=null;
+function runTest(kind){const cards=cur.cards.filter(c=>c.f.trim()&&c.b.trim());if(cards.length<(kind==='mc'?4:1))return alert(kind==='mc'?'Multiple choice needs at least 4 cards.':'Add cards first.');
+  test={kind,rev:$('reverseTest').checked,qs:shuffle(cards.slice()).slice(0,20),i:0,score:0,miss:[]};showTest()}
+const Q=c=>test.rev?c.b:c.f,A=c=>test.rev?c.f:c.b;
+function showTest(){const a=$('testArea'),c=test.qs[test.i];if(!c)return endTest();
+  const head='<p class="muted">Question '+(test.i+1)+' of '+test.qs.length+' · score '+test.score+'</p><div class="flash"><div class="flash-inner" style="cursor:default"><div class="face">'+esc(Q(c))+'</div></div></div>';
+  if(test.kind==='mc'){const pool=shuffle(cur.cards.filter(x=>A(x)!==A(c)&&A(x).trim()).map(A));const opts=shuffle([A(c),...[...new Set(pool)].slice(0,3)]);
+    a.innerHTML=head+'<div class="opts">'+opts.map((o,i)=>'<button class="opt" data-o="'+i+'">'+esc(o)+'</button>').join('')+'</div>';
+    a.querySelectorAll('.opt').forEach(b=>b.onclick=()=>check(opts[+b.dataset.o]===A(c),b,opts))}
+  else{a.innerHTML=head+'<div style="max-width:640px;margin:12px auto;display:flex;gap:8px"><input id="typed" style="flex:1;padding:12px;font-size:16px;border:1px solid rgba(22,32,43,.3);border-radius:4px" placeholder="Type your answer" autocomplete="off"><button class="primary" id="chk">Check</button></div><div id="fb" class="center"></div>';
+    const go=()=>{const v=$('typed').value;check(close(v,A(c)))};$('chk').onclick=go;$('typed').onkeydown=e=>{if(e.key==='Enter')go()};$('typed').focus()}
+  if(!test.rev)say(c.f)}
+function simplify(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim()}
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length]}
+function close(v,ans){const x=simplify(v),y=simplify(ans);if(!x)return false;return x===y||lev(x,y)<=Math.floor(y.length/8)||ans.split(/[,;/]| or /).some(p=>simplify(p)===x)}
+function check(ok,btn,opts){const c=test.qs[test.i];if(test.done)return;test.done=true;if(ok)test.score++;else test.miss.push(c);c.seen++;if(ok)c.right++;save();
+  const a=$('testArea');if(opts)a.querySelectorAll('.opt').forEach(b=>{b.disabled=true;if(b.textContent===A(c))b.classList.add('right');else if(b===btn)b.classList.add('wrong')});
+  else $('fb').innerHTML=ok?'<p class="big" style="color:#2f6b49">✅ Correct</p><p class="muted">Answer: '+esc(A(c))+'</p>':'<p class="big" style="color:#9b3322">❌ Not quite</p><p>Answer: <b>'+esc(A(c))+'</b></p>';
+  const n=document.createElement('div');n.className='center';n.innerHTML='<button class="primary">'+(test.i<test.qs.length-1?'Next →':'See results')+'</button>';a.appendChild(n);const nb=n.firstChild;nb.onclick=()=>{test.done=false;test.i++;showTest()};nb.focus()}
+function endTest(){const p=Math.round(test.score/test.qs.length*100);$('testArea').innerHTML='<div class="center"><p class="big">'+test.score+' / '+test.qs.length+' ('+p+'%) '+(p>=90?'🏆':p>=70?'🎉':'📚')+'</p>'+(test.miss.length?'<p>Review these:</p><ul style="display:inline-block;text-align:left">'+test.miss.map(c=>'<li><b>'+esc(Q(c))+'</b> — '+esc(A(c))+'</li>').join('')+'</ul>':'')+'</div>'}
+$('mcTest').onclick=()=>runTest('mc');$('typeTest').onclick=()=>runTest('type');
+// ---------- AI ----------
+$('aiGo').onclick=async()=>{const text=$('aiText').value.trim();if(!text)return $('aiText').focus();const st=$('aiStatus');st.classList.add('show');st.textContent='Writing your cards…';$('aiGo').disabled=true;
+  const style={qa:'a clear question on the front and a short, complete answer on the back',term:'a key term on the front and a one-sentence definition on the back',vocab:'a word or short phrase in the target language on the front and its English translation on the back',cloze:'a sentence with one key word replaced by ____ on the front and the missing word on the back'}[$('aiStyle').value];
+  try{const d=MigaAI.json(await MigaAI.ask('You create accurate, concise study flashcards. Reply with ONE JSON array only.','Create '+$('aiCount').value+' flashcards with '+style+'. Cover the most important facts; each card tests one thing. Keep backs under 25 words.\nFormat: [{"front":"...","back":"..."}]\nSource notes or topic:\n'+text.slice(0,30000)));
+    const cards=(Array.isArray(d)?d:d.cards||[]).filter(c=>c&&c.front&&c.back);if(!cards.length)throw new Error('No cards came back. Try again.');
+    cards.forEach(c=>cur.cards.push(card(String(c.front),String(c.back))));if(cur.name==='New deck')cur.name=text.split('\n')[0].slice(0,40);save();openDeck();st.textContent='Added '+cards.length+' cards. Check them in the Cards tab — AI can make mistakes.';tab('study')}
+  catch(e){st.textContent='Could not make cards: '+e.message}$('aiGo').disabled=false};
+// ---------- import / export ----------
+function download(name,text,type){const a=document.createElement('a'),u=URL.createObjectURL(new Blob([text],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+const csvCell=s=>'"'+String(s).replace(/"/g,'""')+'"';
+$('expCsv').onclick=()=>download(cur.name.replace(/[^\w-]+/g,'-')+'.csv','﻿'+cur.cards.map(c=>csvCell(c.f)+','+csvCell(c.b)).join('\n'),'text/csv');
+$('expJson').onclick=()=>download('flashcard-decks-backup.json',JSON.stringify({app:'MigaBuilder Flashcard Forge',decks},null,1),'application/json');
+$('printCards').onclick=()=>{const w=window.open('','_blank');if(!w)return alert('Allow pop-ups to print.');w.document.write('<!doctype html><title>'+esc(cur.name)+'</title><style>body{font:15px sans-serif}table{border-collapse:collapse;width:100%}td{border:1px dashed #999;width:50%;height:120px;text-align:center;padding:10px}</style><h2>'+esc(cur.name)+'</h2><p>Cut along the dashed lines and fold each row in half.</p><table>'+cur.cards.map(c=>'<tr><td>'+esc(c.f)+'</td><td>'+esc(c.b)+'</td></tr>').join('')+'</table>');w.document.close();w.print()};
+$('delDeck').onclick=()=>{if(!confirm('Delete the deck “'+cur.name+'” and all its cards?'))return;decks=decks.filter(d=>d!==cur);save();cur=decks[0]||null;if(cur)openDeck();else{$('deckPanel').classList.add('hidden');renderDecks()}};
+$('importFile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const t=await f.text();
+  try{if(/\.json$/i.test(f.name)){const d=JSON.parse(t);(d.decks||[]).forEach(x=>{x.id=String(now()+Math.random());decks.push(x)});cur=decks[decks.length-1]}
+    else{const rows=t.replace(/^﻿/,'').split(/\r?\n/).filter(Boolean).map(l=>l.includes('\t')?l.split('\t'):parseCsv(l)).filter(r=>r.length>=2&&r[0].trim());
+      cur={id:String(now()),name:f.name.replace(/\.\w+$/,''),lang:'',cards:rows.map(r=>card(r[0],r[1]))};decks.push(cur)}
+    save();openDeck()}catch(err){alert('Could not import this file: '+err.message)}};
+function parseCsv(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'&&line[i+1]==='"'){cur+='"';i++}else if(ch==='"')q=false;else cur+=ch}else if(ch==='"')q=true;else if(ch===','||ch===';'){out.push(cur);cur=''}else cur+=ch}out.push(cur);return out}
+openDeck();
+})();
+</script>
+<script src="tutorials.js" defer></script>
+</body>
+</html>
