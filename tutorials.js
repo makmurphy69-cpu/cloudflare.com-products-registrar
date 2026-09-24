@@ -53,7 +53,7 @@
     'audio-forge.html':['Audio Forge','open an audio or video file, or record from your microphone','Keep selection','drag across the waveform to select a part, apply fades, volume or speed, then download MP3 or WAV'],
     'text-compare.html':['Text Compare','paste the original text on the left and the changed version on the right','Compare','review the highlighted additions, removals and changes, then download the report'],
     'flashcard-forge.html':['Flashcard Forge','create a deck and add cards by typing, pasting a list or letting AI write them from your notes','Make cards','study the due cards, grade how well you remembered each one, then take a test'],
-    '3d-cartoon.html':['3D Cartoon','press play to start the cel-shaded 3D cartoon scene','PLAY 3D CARTOON','watch the scene, then create your own story in Cartoon Forge'],
+    '3d-cartoon.html':['3D Cartoon','write the script, one line per character, like Roxie: Hello! (wave)','Play cartoon','watch your characters act it out, then record it as a video or download the HTML'],
     'background-forge.html':['Background Forge','choose a photo with a clear subject','Remove background','check the cut-out edges and download the transparent PNG'],
     'big-five.html':['Big Five Personality','read how the private 50-question test works','Start private test','answer honestly, then read your report across the five dimensions'],
     'design-forge.html':['Design Forge','choose a thumbnail, meme or collage and add your images and text','Create design','check the preview and download the PNG'],

@@ -823,13 +823,15 @@ S('sim-forge.html', {
 });
 
 S('3d-cartoon.html', {
-  title: '3D Cartoon', subtitle: 'A cel-shaded 3D cartoon scene',
-  intro: 'Welcome to 3D Cartoon, a short cel shaded cartoon scene that plays right in your browser.',
+  title: '3D Cartoon', subtitle: 'Make your own cel-shaded 3D cartoon',
+  intro: 'Welcome to 3D Cartoon. Write a short script, and your characters act it out in 3D, right in your browser.',
   async run(h) {
-    await h.step('Press play to start the scene.', () => h.click('#startBtn'));
-    await h.step('Sit back and watch. Everything is drawn live in 3D, in your browser.', () => h.wait(8000));
-    await h.sampleShot('body', 'Scene from this video');
-    await h.step('Want to make your own story? Try Cartoon Forge, which animates any idea you describe.', () => h.wait(500));
+    await h.step('Write one line per character, like Roxie colon hello, and add an action in brackets such as wave, jump or dance.', () => h.point('#script'));
+    await h.step('Every name in the script becomes a character. Pick their body, skin and hair colours here.', () => h.point('#cast'));
+    await h.step('Choose the scene and the format, then press Play cartoon.', () => h.click('#playBtn'));
+    await h.step('Sit back and watch. The camera follows whoever is talking.', () => h.wait(8000));
+    await h.sampleShot('#screen', 'Scene from this video');
+    await h.step('When you like it, record it as a video or download it as a web page to share.', () => h.point('#recordBtn'));
   }
 });
 

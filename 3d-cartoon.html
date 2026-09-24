@@ -1,202 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#081826"><script src="/sw-register.js" defer></script><link rel="canonical" href="https://migabuilder.com/3d-cartoon.html">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Saturday Morning Romance - 3D Cartoon</title>
+<title>3D Cartoon — make your own cel-shaded 3D cartoon</title>
+<meta name="description" content="Write a short script and watch your own characters act it out as a cel-shaded 3D cartoon. Record it as a video or download it as a web page.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #111;
-    font-family: 'Comic Sans MS', sans-serif;
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    overflow: hidden;
-  }
-  .cartoon-container {
-    position: relative;
-    width: 100%;
-    max-width: 960px;
-    background: #000;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  #webglCanvas {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-  }
-  .overlay-screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    transition: opacity 0.3s;
-  }
-  .overlay-screen.hidden { opacity: 0; pointer-events: none; }
-  .start-btn {
-    background: #ff3366;
-    color: white;
-    border: none;
-    padding: 16px 40px;
-    font-size: 24px;
-    font-weight: bold;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 6px 0 #b3002d;
-  }
-  .back-link {
-    position: fixed; top: 12px; left: 16px; z-index: 20;
-    color: #fff; text-decoration: none; font-family: sans-serif; font-size: 15px;
-    background: rgba(255,255,255,0.12); padding: 8px 14px; border-radius: 20px;
-  }
-  .caption-box {
-    position: absolute;
-    bottom: 8%;
-    width: 100%;
-    text-align: center;
-    font-size: clamp(15px, 3.5vw, 26px);
-    font-weight: bold;
-    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
-    pointer-events: none;
-    z-index: 5;
-  }
+  :root{--navy:#0E2A47;--deep:#081826;--paper:#EDEAE0;--ink:#16202B;--cyan:#6FD1E0;--cyan-dim:rgba(111,209,224,.28);--amber:#E2A63B;--error:#D8604A}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:var(--navy);color:var(--paper);font-family:'IBM Plex Sans',system-ui,sans-serif}
+  body{background-image:linear-gradient(var(--cyan-dim) 1px,transparent 1px),linear-gradient(90deg,var(--cyan-dim) 1px,transparent 1px);background-size:28px 28px}
+  a{color:var(--cyan)}button,input,textarea,select{font:inherit}:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+  .topnav{max-width:1180px;margin:16px auto 0;padding:0 20px}.topnav a{font-weight:700;text-decoration:none}
+  .masthead{display:flex;align-items:center;gap:16px;padding:22px clamp(16px,4vw,48px) 20px;border-bottom:1px dashed var(--cyan-dim)}
+  .masthead .logo{font-size:34px;line-height:1}.masthead h1{font:700 24px 'Space Grotesk',system-ui;margin:0}.masthead p{margin:3px 0 0;color:rgba(237,234,224,.64);font-size:14px}
+  main{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:24px;padding:24px clamp(16px,4vw,48px) 56px;align-items:start;max-width:1400px;margin:0 auto}
+  .panel{background:var(--paper);color:var(--ink);padding:20px;border-radius:4px}
+  .section-title{font:600 12px 'Space Grotesk',system-ui;text-transform:uppercase;letter-spacing:.08em;color:rgba(22,32,43,.55);margin:20px 0 10px;padding-top:16px;border-top:1px solid rgba(22,32,43,.12)}
+  .section-title:first-child{margin-top:0;padding-top:0;border-top:0}
+  .field{margin-bottom:12px}.field label{display:block;font-weight:600;font-size:13px;margin-bottom:5px}
+  .field input[type=text],.field textarea,.field select{width:100%;padding:9px 10px;border:1px solid rgba(22,32,43,.25);border-radius:3px;background:#fff;color:var(--ink)}
+  textarea#script{min-height:230px;font:13px/1.55 'IBM Plex Mono',monospace;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hint,.muted{font-size:12px;color:rgba(22,32,43,.62);line-height:1.45;margin:5px 0 0}
+  .hint code{background:rgba(22,32,43,.08);padding:1px 4px;border-radius:3px}
+  .check{display:flex;gap:8px;align-items:center;font-size:13px;margin:4px 0}
+  .primary{width:100%;padding:13px;border:0;border-radius:3px;background:var(--amber);color:#4A3410;font-weight:700;cursor:pointer;font-size:15px}
+  .secondary{width:100%;padding:10px;border:1px solid rgba(22,32,43,.3);border-radius:3px;background:transparent;color:var(--ink);font-weight:600;cursor:pointer;margin-top:8px}
+  .primary:disabled,.secondary:disabled,.action:disabled{opacity:.45;cursor:not-allowed}
+  .error{display:none;margin-top:10px;padding:10px;background:rgba(216,96,74,.15);border:1px solid rgba(216,96,74,.4);color:#6E2418;font-size:13px}.error.show{display:block}
+  .cast-list{display:grid;gap:6px}.cast-row{display:grid;grid-template-columns:1fr repeat(3,34px);gap:6px;align-items:center;font-size:13px;font-weight:600}
+  .cast-row input[type=color]{width:34px;height:30px;padding:0;border:1px solid rgba(22,32,43,.25);border-radius:3px;background:#fff;cursor:pointer}
+  .cast-head{font-size:11px;font-weight:500;color:rgba(22,32,43,.55)}
+  details.ai{margin-top:6px;border:1px solid rgba(22,32,43,.18);border-radius:3px;padding:8px 10px;background:#fff}
+  details.ai summary{cursor:pointer;font-weight:600;font-size:14px}
+  details.ai .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  details.ai input,details.ai select{width:100%;padding:8px;border:1px solid rgba(22,32,43,.25);border-radius:3px}
+  .stage{background:var(--deep);border:1px solid var(--cyan-dim);padding:16px;position:sticky;top:12px}
+  .status{font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;color:rgba(111,209,224,.8);padding-bottom:10px;border-bottom:1px solid var(--cyan-dim);margin-bottom:12px;text-transform:uppercase}
+  .screen{position:relative;margin:0 auto;background:#000;border-radius:8px;overflow:hidden;max-height:72vh}
+  .screen canvas{display:block;width:100%;height:100%}
+  .caption{position:absolute;left:4%;right:4%;bottom:6%;text-align:center;font:700 clamp(14px,2.6vw,26px)/1.3 'Space Grotesk',system-ui;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000;pointer-events:none}
+  .caption b{color:#ffd23f}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .action{padding:9px 13px;border:1px solid var(--cyan-dim);border-radius:3px;background:transparent;color:var(--paper);cursor:pointer;font-weight:600}
+  .action.main{background:var(--amber);border-color:var(--amber);color:#4A3410}
+  .note{font-size:12px;color:rgba(237,234,224,.6);margin:10px 0 0;line-height:1.5}
+  footer{padding:22px clamp(16px,4vw,48px) 38px;color:rgba(237,234,224,.52);font-size:12px;border-top:1px solid var(--cyan-dim)}
+  @media(max-width:880px){main{grid-template-columns:1fr;padding-inline:16px}.stage{position:static;padding:10px;order:-1}.row{grid-template-columns:1fr}}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="ai-client.js"></script>
 <link rel="stylesheet" href="tutorials.css">
 <script src="usage-counter.js" defer></script>
 </head>
 <body>
-<a class="back-link" href="index.html#tools">← All tools</a>
+<nav class="topnav" aria-label="Tool navigation"><a href="index.html#tools">← All tools</a></nav>
+<header class="masthead">
+  <span class="logo" aria-hidden="true">🧸</span>
+  <div><h1>3D Cartoon</h1><p>Write a script. Your characters act it out in cel-shaded 3D — then record it or download it.</p></div>
+</header>
+<main>
+  <section class="panel">
+    <div class="section-title">Your story</div>
+    <div class="field"><label for="title">Title</label><input id="title" type="text" value="Saturday Morning Party"></div>
+    <div class="field">
+      <label for="script">Script</label>
+      <textarea id="script" spellcheck="false"></textarea>
+      <p class="hint">One line each: <code>Name: what they say (action)</code>. Actions: <code>jump</code> <code>spin</code> <code>wave</code> <code>dance</code> <code>bow</code> <code>shake</code> <code>nod</code>. Use <code>Narrator:</code> for captions, <code>Everyone:</code> for the whole cast, and a line like <code>[night]</code> to change the scene (party, day, sunset, night, space, beach, snow). Up to 6 characters.</p>
+    </div>
+    <details class="ai">
+      <summary>✨ Let AI write the script</summary>
+      <div id="aiBox"></div>
+      <div class="field"><label for="idea">Story idea</label><input id="idea" type="text" placeholder="Two robots learn to bake a cake on the moon"></div>
+      <button class="secondary" id="aiBtn" type="button">Write script</button>
+    </details>
 
-<div class="cartoon-container">
-  <div id="overlay" class="overlay-screen">
-    <button class="start-btn" id="startBtn">▶ PLAY 3D CARTOON</button>
-  </div>
+    <div class="section-title">Characters</div>
+    <div class="cast-list" id="cast"></div>
 
-  <div id="caption" class="caption-box">OH LA LA! Look who walked into the party!</div>
-  <canvas id="webglCanvas"></canvas>
-</div>
+    <div class="section-title">Look &amp; sound</div>
+    <div class="row">
+      <div class="field"><label for="mood">Starting scene</label><select id="mood"><option value="party">Party</option><option value="day">Sunny day</option><option value="sunset">Sunset</option><option value="night">Night</option><option value="space">Space</option><option value="beach">Beach</option><option value="snow">Snow</option></select></div>
+      <div class="field"><label for="format">Format</label><select id="format"><option value="landscape">Landscape 16:9</option><option value="portrait">Portrait 9:16 (Shorts/Reels)</option><option value="square">Square 1:1</option></select></div>
+    </div>
+    <div class="field"><label for="pace">Slowest line pace: <span id="paceOut">2.5</span> s</label><input id="pace" type="range" min="1.5" max="6" step="0.5" value="2.5" style="width:100%"></div>
+    <label class="check"><input id="voice" type="checkbox" checked> Speak the lines with the browser voice</label>
+    <label class="check"><input id="captions" type="checkbox" checked> Show captions</label>
+    <button class="primary" id="playBtn" type="button" style="margin-top:14px">▶ Play cartoon</button>
+    <div class="error" id="error" role="alert"></div>
+  </section>
+
+  <section class="stage">
+    <div class="status" id="status">3D Cartoon — edit the script, then press Play</div>
+    <div class="screen" id="screen"><canvas id="preview" aria-label="3D cartoon preview"></canvas><div class="caption" id="caption"></div></div>
+    <div class="actions">
+      <button class="action main" id="stagePlayBtn" type="button">▶ Play</button>
+      <button class="action" id="pauseBtn" type="button" disabled>Pause</button>
+      <button class="action" id="recordBtn" type="button">● Record video</button>
+      <button class="action" id="downloadBtn" type="button">Download HTML</button>
+    </div>
+    <p class="note" id="recNote">Recording saves the picture and captions as a video file. Browser voices can't be captured in the recording.</p>
+  </section>
+</main>
+<footer>Part of <a href="index.html">MigaBuilder</a>. Everything is drawn live in your browser with three.js — nothing is uploaded. Want a hand-drawn 2D story instead? Try <a href="cartoon-forge.html">Cartoon Forge</a>. <a href="feedback.html">Send feedback →</a></footer>
 
 <script>
-const canvas = document.getElementById('webglCanvas');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x12021a);
-
-const camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 1000);
-camera.position.set(0, 3, 12);
-
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(960, 540, false);
-
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-scene.add(ambientLight);
-
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-dirLight.position.set(5, 10, 7);
-scene.add(dirLight);
-
-function createToonMaterial(color) {
-  return new THREE.MeshToonMaterial({ color: color });
-}
-
-function addOutline(mesh, thickness = 0.04) {
-  const outlineMaterial = new THREE.MeshBasicMaterial({
-    color: 0x000000,
-    side: THREE.BackSide
-  });
-  const outlineMesh = new THREE.Mesh(mesh.geometry, outlineMaterial);
-  outlineMesh.scale.multiplyScalar(1 + thickness);
-  mesh.add(outlineMesh);
-}
-
-function buildCharacter(bodyColor, headColor) {
-  const group = new THREE.Group();
-
-  const headGeo = new THREE.SphereGeometry(0.8, 32, 32);
-  const headMat = createToonMaterial(headColor);
-  const head = new THREE.Mesh(headGeo, headMat);
-  head.position.y = 2.2;
-  addOutline(head);
-  group.add(head);
-
-  const bodyGeo = new THREE.ConeGeometry(0.9, 2.2, 32);
-  const bodyMat = createToonMaterial(bodyColor);
-  const body = new THREE.Mesh(bodyGeo, bodyMat);
-  body.position.y = 0.8;
-  addOutline(body);
-  group.add(body);
-
-  return group;
-}
-
-const roxie = buildCharacter(0xff3366, 0xffcc80);
-roxie.position.set(-2.5, 0, 0);
-scene.add(roxie);
-
-const lexi = buildCharacter(0x33ccff, 0xffcc80);
-lexi.position.set(2.5, 0, 0);
-scene.add(lexi);
-
-const brad = buildCharacter(0x3366cc, 0xffe0b2);
-brad.position.set(0, 0, -1);
-scene.add(brad);
-
-const floorGeo = new THREE.PlaneGeometry(20, 20);
-const floorMat = createToonMaterial(0x2b0933);
-const floor = new THREE.Mesh(floorGeo, floorMat);
-floor.rotation.x = -Math.PI / 2;
-scene.add(floor);
-
-let clock = new THREE.Clock();
-let isPlaying = false;
-
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('overlay').classList.add('hidden');
-  isPlaying = true;
-  clock.start();
-});
-
-function animate() {
-  requestAnimationFrame(animate);
-
-  if (isPlaying) {
-    const t = clock.getElapsedTime();
-
-    roxie.position.y = Math.sin(t * 4) * 0.15;
-    roxie.rotation.y = Math.sin(t * 2) * 0.2;
-
-    lexi.position.y = Math.cos(t * 4) * 0.15;
-    lexi.rotation.y = -Math.sin(t * 2) * 0.2;
-
-    brad.rotation.y = t * 0.5;
-
-    camera.position.x = Math.sin(t * 0.5) * 3;
-    camera.position.z = 10 + Math.cos(t * 0.5) * 2;
-    camera.lookAt(0, 1.5, 0);
-
-    const captionBox = document.getElementById('caption');
-    if (t > 15.0) {
-      captionBox.textContent = "💥 BAM! 3D CELL-SHADED ACTION! 💥";
-    } else if (t > 7.0) {
-      captionBox.textContent = "BRAD BROUGHT HIS LEGENDARY BIG ENERGY!";
+// The whole player lives in this one function so the downloaded HTML can reuse it as-is
+// (it is copied with Function.prototype.toString), so it must not touch anything outside itself.
+function createCartoon(canvas, data, hooks) {
+  'use strict';
+  hooks = hooks || {};
+  var T = window.THREE;
+  var W = data.format === 'portrait' ? 720 : data.format === 'square' ? 900 : 1280;
+  var H = data.format === 'portrait' ? 1280 : data.format === 'square' ? 900 : 720;
+  var camK = W < H ? 1.9 : W === H ? 1.3 : 1;
+  var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(1);
+  renderer.setSize(W, H, false);
+  var scene = new T.Scene();
+  var camera = new T.PerspectiveCamera(45, W / H, 0.1, 200);
+  var ambient = new T.AmbientLight(0xffffff, 0.5);
+  var sun = new T.DirectionalLight(0xffffff, 0.6);
+  sun.position.set(5, 10, 7);
+  scene.add(ambient, sun);
+  var MOODS = {
+    party: { sky: 0x1a0526, floor: 0x3b0f4a, amb: 0.4, sun: 0xffd6f5, props: 'disco' },
+    day: { sky: 0x8fd3ff, floor: 0x6cc16a, amb: 0.7, sun: 0xffffff, props: 'trees' },
+    sunset: { sky: 0xff9a6b, floor: 0xb86f45, amb: 0.6, sun: 0xffc38a, props: 'trees' },
+    night: { sky: 0x0b1233, floor: 0x1f2d4f, amb: 0.35, sun: 0x9fb4ff, props: 'stars' },
+    space: { sky: 0x02020a, floor: 0x44435a, amb: 0.45, sun: 0xffffff, props: 'stars' },
+    beach: { sky: 0x7fd6ff, floor: 0xf1d9a0, amb: 0.7, sun: 0xffffff, props: 'palms' },
+    snow: { sky: 0xcfe3f5, floor: 0xffffff, amb: 0.65, sun: 0xffffff, props: 'pines' }
+  };
+  var outlineMat = new T.MeshBasicMaterial({ color: 0x000000, side: T.BackSide });
+  function toon(c) { return new T.MeshToonMaterial({ color: c }); }
+  function part(geo, color, parent, x, y, z, outline) {
+    var m = new T.Mesh(geo, toon(color));
+    m.position.set(x, y, z);
+    if (outline !== false) { var o = new T.Mesh(geo, outlineMat); o.scale.setScalar(1.06); m.add(o); }
+    parent.add(m);
+    return m;
+  }
+  var floor = new T.Mesh(new T.CircleGeometry(60, 48), toon(0x333333));
+  floor.rotation.x = -Math.PI / 2;
+  scene.add(floor);
+  var props = new T.Group(), discoLights = [];
+  scene.add(props);
+  var moodName = '';
+  function setMood(name) {
+    var m = MOODS[name] || MOODS.party;
+    if (name === moodName) return;
+    moodName = name;
+    scene.background = new T.Color(m.sky);
+    scene.fog = new T.Fog(m.sky, 22, 60);
+    floor.material.color.setHex(m.floor);
+    ambient.intensity = m.amb;
+    sun.color.setHex(m.sun);
+    while (props.children.length) props.remove(props.children[0]);
+    discoLights = [];
+    if (m.props === 'stars') {
+      var pts = [];
+      for (var i = 0; i < 400; i++) {
+        var a = Math.random() * Math.PI * 2, e = Math.random() * 1.2 + 0.1, r = 55;
+        pts.push(Math.cos(a) * Math.cos(e) * r, Math.sin(e) * r, Math.sin(a) * Math.cos(e) * r - 10);
+      }
+      var g = new T.BufferGeometry();
+      g.setAttribute('position', new T.Float32BufferAttribute(pts, 3));
+      props.add(new T.Points(g, new T.PointsMaterial({ color: 0xffffff, size: 0.35, fog: false })));
+      if (name === 'space') part(new T.SphereGeometry(4, 32, 24), 0xd9a0ff, props, -14, 12, -30, false);
+      else part(new T.SphereGeometry(2, 32, 24), 0xfff5c0, props, 12, 14, -30, false);
+    } else if (m.props === 'disco') {
+      var ball = part(new T.SphereGeometry(0.8, 16, 12), 0xdddddd, props, 0, 7, -1);
+      ball.userData.spin = true;
+      [0xff3399, 0x33ccff, 0xffee33].forEach(function (c, k) {
+        var l = new T.PointLight(c, 0.7, 14);
+        l.userData.phase = k * 2.1;
+        props.add(l);
+        discoLights.push(l);
+      });
+    } else {
+      for (var t = 0; t < 12; t++) {
+        var ang = Math.PI * (0.1 + 0.8 * t / 11), rad = 13 + (t % 3) * 3;
+        var x = Math.cos(ang) * rad, z = -Math.sin(ang) * rad;
+        var tree = new T.Group();
+        tree.position.set(x, 0, z);
+        if (m.props === 'palms') {
+          part(new T.CylinderGeometry(0.2, 0.3, 4, 8), 0x8b5a2b, tree, 0, 2, 0);
+          part(new T.SphereGeometry(1.3, 12, 8), 0x2fa84f, tree, 0, 4.3, 0).scale.set(1.4, 0.45, 1.4);
+        } else {
+          part(new T.CylinderGeometry(0.25, 0.3, 1.4, 8), 0x7a4a24, tree, 0, 0.7, 0);
+          part(new T.ConeGeometry(1.3, 3, 12), m.props === 'pines' ? 0x2e6b4f : 0x3f9d4a, tree, 0, 2.8, 0);
+          if (m.props === 'pines') part(new T.ConeGeometry(0.75, 1, 12), 0xffffff, tree, 0, 4.05, 0, false);
+        }
+        props.add(tree);
+      }
+      if (m.props !== 'pines') part(new T.SphereGeometry(2, 32, 24), m.props === 'palms' || name === 'day' ? 0xfff3a0 : 0xff6a3d, props, 10, 13, -35, false);
     }
   }
 
-  renderer.render(scene, camera);
-}
+  // ---- cast
+  var cast = (data.cast || []).slice(0, 6), n = cast.length;
+  var actors = cast.map(function (c, i) {
+    var g = new T.Group();
+    var x = (i - (n - 1) / 2) * 2.6, z = -Math.abs(i - (n - 1) / 2) * 0.7;
+    g.position.set(x, 0, z);
+    g.userData.home = new T.Vector3(x, 0, z);
+    part(new T.ConeGeometry(0.9, 2.2, 32), c.body, g, 0, 0.8, 0);
+    var head = new T.Group();
+    head.position.y = 2.2;
+    g.add(head);
+    part(new T.SphereGeometry(0.8, 32, 24), c.skin, head, 0, 0, 0);
+    var hair = part(new T.SphereGeometry(0.86, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.42), c.hair, head, 0, 0.02, -0.04, false);
+    hair.rotation.x = -0.35;
+    part(new T.SphereGeometry(0.1, 12, 8), 0x111111, head, -0.28, 0.12, 0.72, false);
+    part(new T.SphereGeometry(0.1, 12, 8), 0x111111, head, 0.28, 0.12, 0.72, false);
+    var mouth = part(new T.SphereGeometry(0.2, 16, 8), 0x5a1020, head, 0, -0.25, 0.72, false);
+    mouth.scale.set(1, 0.25, 0.4);
+    var arms = [-1, 1].map(function (s) {
+      var pivot = new T.Group();
+      pivot.position.set(0.5 * s, 1.45, 0);
+      part(new T.CylinderGeometry(0.1, 0.1, 1, 10), c.body, pivot, 0, -0.5, 0);
+      part(new T.SphereGeometry(0.16, 12, 8), c.skin, pivot, 0, -1.02, 0);
+      pivot.rotation.z = 0.35 * s;
+      g.add(pivot);
+      return pivot;
+    });
+    scene.add(g);
+    return { g: g, head: head, mouth: mouth, arms: arms, name: c.name, key: c.name.toLowerCase() };
+  });
+  function actorFor(who) {
+    var k = String(who || '').toLowerCase();
+    for (var i = 0; i < actors.length; i++) if (actors[i].key === k) return actors[i];
+    return null;
+  }
 
-animate();
+  // ---- timeline
+  var beats = [], time = 0, mood = data.mood || 'party';
+  (data.lines || []).forEach(function (l) {
+    if (l.mood) { mood = l.mood; return; }
+    var words = String(l.text || '').split(/\s+/).filter(Boolean).length;
+    var talk = words * 0.36 + 0.6;
+    var dur = Math.max(+data.pace || 2.5, talk + 0.9);
+    beats.push({ who: l.who, text: l.text, action: l.action, mood: mood, start: time, dur: dur, talk: talk });
+    time += dur;
+  });
+  var total = time + 1.8;
+
+  var synth = window.speechSynthesis;
+  function speak(beat) {
+    if (!data.voice || !synth || !window.SpeechSynthesisUtterance) return;
+    try {
+      synth.cancel();
+      var clean = String(beat.text).replace(/[\u{1F000}-\u{1FFFF}☀-➿]/gu, '').trim();
+      if (!clean) return;
+      var u = new SpeechSynthesisUtterance(clean);
+      var idx = actors.indexOf(actorFor(beat.who));
+      u.pitch = idx < 0 ? 1 : [1.35, 0.8, 1.6, 0.6, 1.15, 1.9][idx % 6];
+      u.rate = 1.05;
+      synth.speak(u);
+    } catch (e) {}
+  }
+
+  var t = 0, playing = false, ended = false, current = -1, last = performance.now(), raf = 0, dead = false;
+  var camPos = new T.Vector3(0, 3.2, 12 * camK), camLook = new T.Vector3(0, 1.4, 0), tmp = new T.Vector3();
+  camera.position.copy(camPos);
+  setMood(beats.length ? beats[0].mood : mood);
+  function caption(text, who) { if (hooks.caption) hooks.caption(text, who); }
+  caption(data.title || '', '');
+
+  function tick(now) {
+    if (dead) return;
+    raf = requestAnimationFrame(tick);
+    var dt = Math.min(0.1, (now - last) / 1000);
+    last = now;
+    if (playing) t += dt;
+    var idx = -1;
+    for (var i = 0; i < beats.length; i++) if (t >= beats[i].start && t < beats[i].start + beats[i].dur) idx = i;
+    if (playing && idx !== current) {
+      current = idx;
+      if (idx >= 0) {
+        var b = beats[idx];
+        setMood(b.mood);
+        caption(b.text, /^(narrator)$/i.test(b.who) ? '' : b.who);
+        speak(b);
+      }
+    }
+    if (playing && t >= total - 1.8 && !ended && idx < 0) { caption('The End', ''); ended = true; }
+    if (playing && t >= total) { playing = false; if (hooks.end) hooks.end(); }
+    var beat = playing && idx >= 0 ? beats[idx] : null;
+    var lt = beat ? t - beat.start : 0;
+    var all = beat && /^(everyone|all)$/i.test(beat.who);
+    var speaker = beat && !all ? actorFor(beat.who) : null;
+    var clock = now / 1000;
+    actors.forEach(function (a, i) {
+      var g = a.g, home = g.userData.home, active = all || a === speaker;
+      var act = active && beat ? beat.action : '';
+      g.position.set(home.x, 0, home.z);
+      g.rotation.set(0, 0, 0);
+      a.head.rotation.set(0, 0, 0);
+      a.arms[0].rotation.z = -0.35; a.arms[1].rotation.z = 0.35;
+      a.arms[0].rotation.x = 0; a.arms[1].rotation.x = 0;
+      g.position.y = Math.sin(clock * 2 + i) * 0.04;
+      if (speaker && !active) {
+        var dx = speaker.g.position.x - home.x, dz = speaker.g.position.z - home.z + 4;
+        g.rotation.y = Math.atan2(dx, dz) * 0.7;
+      }
+      if (active) {
+        var talking = lt < beat.talk;
+        a.mouth.scale.y = talking ? 0.25 + Math.abs(Math.sin(lt * 14)) * 0.9 : 0.25;
+        g.position.y += Math.abs(Math.sin(lt * 5)) * 0.08;
+        a.head.rotation.z = Math.sin(lt * 3) * 0.08;
+        if (act === 'jump') g.position.y = Math.abs(Math.sin(lt * 4.5)) * 1.1;
+        if (act === 'spin') g.rotation.y = Math.min(lt * 5, Math.PI * 4);
+        if (act === 'wave') a.arms[1].rotation.z = 2.5 + Math.sin(lt * 10) * 0.35;
+        if (act === 'dance') {
+          g.rotation.z = Math.sin(lt * 6) * 0.18;
+          g.position.y = Math.abs(Math.sin(lt * 6)) * 0.35;
+          a.arms[0].rotation.z = -2.2 - Math.sin(lt * 6) * 0.5;
+          a.arms[1].rotation.z = 2.2 - Math.sin(lt * 6) * 0.5;
+        }
+        if (act === 'bow') g.rotation.x = Math.min(lt * 2, 1) * 0.55 * (lt < beat.dur - 0.6 ? 1 : 0);
+        if (act === 'shake') { g.position.x = home.x + Math.sin(lt * 40) * 0.07; a.arms[0].rotation.x = a.arms[1].rotation.x = -1.2; }
+        if (act === 'nod') a.head.rotation.x = Math.abs(Math.sin(lt * 6)) * 0.35;
+      } else {
+        a.mouth.scale.y = 0.25;
+      }
+    });
+    props.children.forEach(function (p) { if (p.userData.spin) p.rotation.y = clock; });
+    discoLights.forEach(function (l) { var ph = clock * 0.9 + l.userData.phase; l.position.set(Math.cos(ph) * 6, 4, Math.sin(ph) * 4 + 1); });
+
+    var spread = Math.max(0, n - 1) * 2.6;
+    if (speaker) {
+      tmp.copy(speaker.g.userData.home);
+      camPos.lerp(new T.Vector3(tmp.x * 0.6, 2.9, tmp.z + 9 * camK), 1 - Math.exp(-dt * 2.2));
+      camLook.lerp(new T.Vector3(tmp.x, 1.6, tmp.z), 1 - Math.exp(-dt * 3));
+    } else {
+      var dist = Math.max(11, spread * 1.3 + 6) * camK;
+      var sway = playing ? Math.sin(t * 0.35) * 2 : 0;
+      camPos.lerp(new T.Vector3(sway, 3.4, dist), 1 - Math.exp(-dt * 1.6));
+      camLook.lerp(new T.Vector3(0, 1.5, 0), 1 - Math.exp(-dt * 2));
+    }
+    camera.position.copy(camPos);
+    camera.lookAt(camLook);
+    renderer.render(scene, camera);
+    if (hooks.frame) hooks.frame();
+  }
+  raf = requestAnimationFrame(tick);
+
+  return {
+    width: W, height: H,
+    play: function () { if (ended || t >= total) this.replay(); else { playing = true; last = performance.now(); } },
+    pause: function () { playing = false; try { if (synth) synth.cancel(); } catch (e) {} },
+    replay: function () { t = 0; current = -1; ended = false; playing = true; last = performance.now(); },
+    isPlaying: function () { return playing; },
+    getDuration: function () { return total; },
+    getCanvas: function () { return canvas; },
+    destroy: function () { dead = true; cancelAnimationFrame(raf); try { if (synth) synth.cancel(); } catch (e) {} renderer.dispose(); }
+  };
+}
+</script>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var ACTIONS = ['jump', 'spin', 'wave', 'dance', 'bow', 'shake', 'nod'];
+  var MOOD_NAMES = ['party', 'day', 'sunset', 'night', 'space', 'beach', 'snow'];
+  var PALETTE = [['#ff3366', '#ffcc80', '#ffd23f'], ['#33ccff', '#ffcc80', '#6b3e1f'], ['#3366cc', '#ffe0b2', '#2b1a10'], ['#4e9e53', '#c68642', '#111111'], ['#9b59b6', '#ffdbac', '#e67e22'], ['#ff8a3d', '#8d5524', '#1a1a1a']];
+  var DEFAULT_SCRIPT = [
+    '[party]',
+    'Roxie: Oh la la! Look who walked into the party! (wave)',
+    'Lexi: Is that... Brad? (jump)',
+    'Brad: Hey everyone! I brought my legendary big energy! (dance)',
+    'Roxie: Show us your moves, Brad!',
+    'Brad: Watch this! (spin)',
+    'Narrator: 💥 BAM! 3D cel-shaded action! 💥',
+    '[night]',
+    'Lexi: Best. Party. Ever. (nod)',
+    'Everyone: Hooray! (jump)'
+  ].join('\n');
+  var STORE = 'miga3dCartoon';
+  var castColors = {}, engine = null, recorder = null, rebuildTimer = 0;
+  var el = { script: $('script'), title: $('title'), mood: $('mood'), format: $('format'), pace: $('pace'), voice: $('voice'), captions: $('captions'), cast: $('cast'), error: $('error'), status: $('status'), caption: $('caption'), canvas: $('preview'), screen: $('screen') };
+
+  function fail(msg) { el.error.textContent = msg; el.error.classList.add('show'); }
+  function clearError() { el.error.classList.remove('show'); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function parseScript(text) {
+    var lines = [], names = [];
+    String(text).split(/\r?\n/).forEach(function (raw) {
+      var line = raw.trim();
+      if (!line) return;
+      var scene = line.match(/^\[(?:scene\s*:\s*)?([a-z]+)\s*\]$/i);
+      if (scene) { var m = scene[1].toLowerCase(); if (MOOD_NAMES.indexOf(m) >= 0) lines.push({ mood: m }); return; }
+      var who = 'Narrator', say = line, parts = line.match(/^([^:]{1,24}):\s*(.*)$/);
+      if (parts) { who = parts[1].trim(); say = parts[2]; }
+      var action = '';
+      say = say.replace(/[(*]\s*([a-z]+)s?\s*[)*]/gi, function (all, word) {
+        var w = word.toLowerCase();
+        if (ACTIONS.indexOf(w) >= 0) { if (!action) action = w; return ''; }
+        return all;
+      }).replace(/\s{2,}/g, ' ').trim();
+      if (!say && !action) return;
+      if (!/^(narrator|everyone|all)$/i.test(who)) {
+        var found = names.find(function (x) { return x.toLowerCase() === who.toLowerCase(); });
+        if (found) who = found; else if (names.length < 6) names.push(who); else who = 'Narrator';
+      }
+      lines.push({ who: who, text: say, action: action });
+    });
+    return { lines: lines, names: names };
+  }
+
+  function renderCast(names) {
+    var sig = names.join('|');
+    if (el.cast.dataset.names === sig && el.cast.children.length) return;
+    el.cast.dataset.names = sig;
+    el.cast.innerHTML = names.length ? '<div class="cast-row cast-head"><span>Name</span><span>Body</span><span>Skin</span><span>Hair</span></div>' : '<p class="hint">Characters appear here as soon as the script has lines like <code>Roxie: Hello!</code></p>';
+    names.forEach(function (name, i) {
+      var key = name.toLowerCase();
+      var c = castColors[key] || (castColors[key] = PALETTE[i % PALETTE.length].slice());
+      var row = document.createElement('div');
+      row.className = 'cast-row';
+      row.innerHTML = '<span>' + esc(name) + '</span>' + ['Body', 'Skin', 'Hair'].map(function (label, k) {
+        return '<input type="color" aria-label="' + esc(name) + ' ' + label.toLowerCase() + ' color" data-k="' + k + '" value="' + c[k] + '">';
+      }).join('');
+      row.querySelectorAll('input').forEach(function (inp) {
+        inp.addEventListener('input', function () { c[+inp.dataset.k] = inp.value; scheduleRebuild(); });
+      });
+      el.cast.appendChild(row);
+    });
+  }
+
+  function buildData() {
+    var parsed = parseScript(el.script.value);
+    return {
+      title: el.title.value.trim() || '3D Cartoon',
+      mood: el.mood.value,
+      format: el.format.value,
+      pace: +el.pace.value,
+      voice: el.voice.checked,
+      captions: el.captions.checked,
+      cast: parsed.names.map(function (name) {
+        var c = castColors[name.toLowerCase()] || PALETTE[0];
+        return { name: name, body: parseInt(c[0].slice(1), 16), skin: parseInt(c[1].slice(1), 16), hair: parseInt(c[2].slice(1), 16) };
+      }),
+      lines: parsed.lines
+    };
+  }
+
+  function setCaption(text, who) {
+    if (!el.captions.checked) { el.caption.textContent = ''; el.caption.dataset.text = ''; return; }
+    el.caption.innerHTML = (who ? '<b>' + esc(who) + ':</b> ' : '') + esc(text);
+    el.caption.dataset.text = (who ? who + ': ' : '') + text;
+  }
+
+  function sizeScreen(w, h) {
+    el.screen.style.aspectRatio = w + ' / ' + h;
+    el.screen.style.maxWidth = w < h ? 'min(100%, calc(72vh * ' + (w / h).toFixed(4) + '))' : '100%';
+  }
+
+  function build() {
+    clearError();
+    if (!window.THREE) { fail('The 3D engine could not load. Check your internet connection and reload the page.'); return false; }
+    var data = buildData();
+    renderCast(data.cast.map(function (c) { return c.name; }));
+    if (engine) engine.destroy();
+    engine = null;
+    try {
+      engine = createCartoon(el.canvas, data, { caption: setCaption, end: onEnd, frame: onFrame });
+    } catch (e) {
+      fail('Your browser could not start 3D graphics (WebGL). Try another browser or turn on hardware acceleration.');
+      return false;
+    }
+    sizeScreen(engine.width, engine.height);
+    save();
+    return true;
+  }
+  function scheduleRebuild() {
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(function () {
+      if (recorder && recorder.state === 'recording') { save(); return; }
+      build();
+      $('pauseBtn').disabled = true;
+      el.status.textContent = '3D Cartoon — updated. Press Play to watch';
+    }, 500);
+  }
+
+  function play() {
+    if (!build()) return;
+    if (!parseScript(el.script.value).lines.some(function (l) { return !l.mood; })) { fail('Write at least one line, like  Roxie: Hello!'); return; }
+    engine.replay();
+    el.status.textContent = '3D Cartoon — playing (' + Math.round(engine.getDuration()) + ' s)';
+    $('pauseBtn').disabled = false;
+    $('pauseBtn').textContent = 'Pause';
+  }
+  function onEnd() {
+    el.status.textContent = '3D Cartoon — finished. Press Play to watch again';
+    $('pauseBtn').disabled = true;
+    if (recorder && recorder.state === 'recording') recorder.stop();
+  }
+  $('playBtn').onclick = play;
+  $('stagePlayBtn').onclick = play;
+  $('pauseBtn').onclick = function () {
+    if (!engine) return;
+    if (engine.isPlaying()) { engine.pause(); this.textContent = 'Resume'; el.status.textContent = '3D Cartoon — paused'; }
+    else { engine.play(); this.textContent = 'Pause'; el.status.textContent = '3D Cartoon — playing'; }
+  };
+
+  // ---- recording: composite the 3D picture and the caption onto a 2D canvas, then record that
+  var recCanvas = null, recCtx = null;
+  function wrap(ctx, text, maxW) {
+    var words = text.split(/\s+/), out = [], line = '';
+    words.forEach(function (w) { var test = line ? line + ' ' + w : w; if (ctx.measureText(test).width > maxW && line) { out.push(line); line = w; } else line = test; });
+    if (line) out.push(line);
+    return out;
+  }
+  function onFrame() {
+    if (!recCtx || !recorder || recorder.state !== 'recording') return;
+    var w = recCanvas.width, h = recCanvas.height;
+    recCtx.drawImage(el.canvas, 0, 0, w, h);
+    var text = el.caption.dataset.text || '';
+    if (!text) return;
+    var size = Math.round(Math.min(w, h) * 0.05);
+    recCtx.font = '700 ' + size + 'px "Space Grotesk", system-ui, sans-serif';
+    recCtx.textAlign = 'center';
+    recCtx.lineJoin = 'round';
+    recCtx.lineWidth = Math.max(4, size / 5);
+    recCtx.strokeStyle = '#000';
+    recCtx.fillStyle = '#fff';
+    var lines = wrap(recCtx, text, w * 0.9);
+    lines.forEach(function (l, i) {
+      var y = h * 0.93 - (lines.length - 1 - i) * size * 1.25;
+      recCtx.strokeText(l, w / 2, y);
+      recCtx.fillText(l, w / 2, y);
+    });
+  }
+  $('recordBtn').onclick = function () {
+    clearError();
+    if (recorder && recorder.state === 'recording') { recorder.stop(); return; }
+    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { fail('This browser cannot record video. Try Chrome, Edge or Firefox.'); return; }
+    if (!build()) return;
+    recCanvas = document.createElement('canvas');
+    recCanvas.width = engine.width; recCanvas.height = engine.height;
+    recCtx = recCanvas.getContext('2d');
+    var types = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'];
+    var type = types.find(function (x) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(x); }) || '';
+    var chunks = [], btn = this;
+    try { recorder = new MediaRecorder(recCanvas.captureStream(30), type ? { mimeType: type, videoBitsPerSecond: 6e6 } : undefined); }
+    catch (e) { fail('Recording could not start in this browser.'); return; }
+    recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = function () {
+      btn.textContent = '● Record video';
+      var blob = new Blob(chunks, { type: recorder.mimeType || type || 'video/webm' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (el.title.value.trim() || '3d-cartoon').replace(/[^\w-]+/g, '-').toLowerCase() + (/mp4/.test(blob.type) ? '.mp4' : '.webm');
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      el.status.textContent = '3D Cartoon — video saved';
+      recorder = null;
+    };
+    recorder.start(250);
+    btn.textContent = '■ Stop recording';
+    engine.replay();
+    $('pauseBtn').disabled = true;
+    el.status.textContent = '3D Cartoon — recording… it stops by itself at the end';
+  };
+
+  // ---- download a standalone page that plays this cartoon
+  $('downloadBtn').onclick = function () {
+    var data = buildData();
+    if (!data.lines.some(function (l) { return !l.mood; })) { fail('Write at least one line first.'); return; }
+    var json = JSON.stringify(data).replace(/</g, '\\u003c');
+    var ratio = data.format === 'portrait' ? '9 / 16' : data.format === 'square' ? '1 / 1' : '16 / 9';
+    var html = '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>' + esc(data.title) + '</title>\n' +
+      '<style>html,body{margin:0;height:100%;background:#111;color:#fff;font-family:system-ui,sans-serif}#wrap{position:relative;margin:0 auto;max-width:100%;max-height:100vh;aspect-ratio:' + ratio + '}canvas{display:block;width:100%;height:100%}' +
+      '#cap{position:absolute;left:4%;right:4%;bottom:6%;text-align:center;font-weight:700;font-size:clamp(14px,3vw,28px);text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000;pointer-events:none}#cap b{color:#ffd23f}' +
+      '#play{position:absolute;inset:0;margin:auto;width:max-content;height:max-content;padding:16px 36px;font-size:22px;font-weight:700;border:0;border-radius:40px;background:#ff3366;color:#fff;cursor:pointer;box-shadow:0 6px 0 #b3002d}#play[hidden]{display:none}</style>\n' +
+      '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>\n</head>\n<body>\n' +
+      '<div id="wrap"><canvas id="c"></canvas><div id="cap"></div><button id="play">▶ Play</button></div>\n<script>\nvar DATA = ' + json + ';\n' + createCartoon.toString() + '\n' +
+      '(function(){var cap=document.getElementById("cap"),btn=document.getElementById("play");function e(s){return String(s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c]})}' +
+      'var c=createCartoon(document.getElementById("c"),DATA,{caption:function(t,w){if(DATA.captions===false)return;cap.innerHTML=(w?"<b>"+e(w)+":</b> ":"")+e(t)},end:function(){btn.textContent="↻ Watch again";btn.hidden=false}});' +
+      'btn.onclick=function(){btn.hidden=true;c.replay()};})();\n<\/script>\n</body>\n</html>\n';
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    a.download = data.title.replace(/[^\w-]+/g, '-').toLowerCase() + '.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  };
+
+  // ---- AI script writer (optional; free Gemini by default)
+  if (window.MigaAI) MigaAI.mount($('aiBox'));
+  $('aiBtn').onclick = async function () {
+    clearError();
+    var idea = $('idea').value.trim();
+    if (!idea) { fail('Type a story idea for the AI first.'); return; }
+    if (!window.MigaAI) { fail('The AI helper could not load. You can still write the script yourself.'); return; }
+    var btn = this;
+    btn.disabled = true; btn.textContent = 'Writing…';
+    try {
+      var system = [
+        'You write short, funny, family-friendly scripts for a 3D cartoon player.',
+        'Return ONLY JSON: {"title": string, "mood": one of "party","day","sunset","night","space","beach","snow", "lines": [string]}.',
+        'Each line is exactly "Name: dialogue" optionally followed by one action in brackets from: (jump) (spin) (wave) (dance) (bow) (shake) (nod).',
+        'Use 2 to 5 characters with short one-word names. Use "Narrator: ..." for narration and "Everyone: ..." when the whole cast speaks.',
+        'You may change the scene with a line that is only "[night]" (or another mood name). Write 8 to 16 lines, each under 90 characters, with a clear beginning, middle and happy ending.'
+      ].join('\n');
+      var out = MigaAI.json(await MigaAI.ask(system, 'Story idea: ' + idea));
+      if (!out || !Array.isArray(out.lines) || !out.lines.length) throw new Error('The AI did not send a script. Please try again.');
+      if (out.title) el.title.value = String(out.title).slice(0, 80);
+      if (MOOD_NAMES.indexOf(out.mood) >= 0) el.mood.value = out.mood;
+      el.script.value = out.lines.map(String).join('\n');
+      build();
+      el.status.textContent = '3D Cartoon — script ready. Press Play';
+    } catch (e) {
+      fail(e.message || 'The AI could not write a script. Please try again.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Write script';
+    }
+  };
+
+  // ---- remember the draft in this browser
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify({ title: el.title.value, script: el.script.value, mood: el.mood.value, format: el.format.value, pace: el.pace.value, voice: el.voice.checked, captions: el.captions.checked, colors: castColors })); } catch (e) {}
+  }
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (saved) {
+      el.title.value = saved.title || el.title.value;
+      el.script.value = saved.script || '';
+      if (saved.mood) el.mood.value = saved.mood;
+      if (saved.format) el.format.value = saved.format;
+      if (saved.pace) el.pace.value = saved.pace;
+      el.voice.checked = saved.voice !== false;
+      el.captions.checked = saved.captions !== false;
+      castColors = saved.colors || {};
+    }
+  } catch (e) {}
+  if (!el.script.value.trim()) el.script.value = DEFAULT_SCRIPT;
+  $('paceOut').textContent = el.pace.value;
+  el.pace.addEventListener('input', function () { $('paceOut').textContent = el.pace.value; });
+  [el.script, el.title].forEach(function (x) { x.addEventListener('input', scheduleRebuild); });
+  [el.mood, el.format, el.pace, el.voice, el.captions].forEach(function (x) { x.addEventListener('change', scheduleRebuild); });
+  build();
+})();
 </script>
 <script src="tutorials.js" defer></script>
 </body>
