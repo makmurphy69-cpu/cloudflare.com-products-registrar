@@ -152,6 +152,14 @@ anywhere on the site — bookmark the URL yourself).
    step 4 to see real numbers as they come in.
 9. Commit and push.
 
+**Adding new tools needs no Cloudflare changes.** The Worker counts any page
+name it receives, and `visits.html` reads the tool list straight from the
+homepage (`#toolGroups` in `index.html`) every time it loads. So once a new
+tool page includes `usage-counter.js` (or the inline visit snippet) and has a
+card on the homepage, it shows up in the dashboard automatically — no
+redeploy of the Worker and no edit to `visits.html`. Counted pages that are
+not on the homepage are still listed, marked "(not on homepage)".
+
 This runs entirely on Cloudflare's free plan. Privacy notes: no cookies, no
 fingerprinting, unique-person tracking, or customer-content storage. The
 Worker never reads or hashes IP addresses. Counts are approximate and are
