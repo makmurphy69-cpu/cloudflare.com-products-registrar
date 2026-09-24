@@ -152,6 +152,25 @@ anywhere on the site — bookmark the URL yourself).
    step 4 to see real numbers as they come in.
 9. Commit and push.
 
+### Deploying from GitHub instead of pasting code
+
+`visits/wrangler.jsonc` lets Cloudflare deploy this Worker straight from the
+repo, so there's nothing to paste. (Pasting `visits.html` into the editor is
+what causes `Uncaught SyntaxError: Unexpected token '<' at worker.js:1` —
+the editor only takes the JavaScript in `visits-counter.js`.)
+
+1. Open the `migabuilder-visits` Worker → **Settings** → **Build** →
+   **Connect** and pick this repo, branch `main`.
+2. Set **Root directory** to `cloudflare-worker/visits`. Leave the build
+   command empty and the deploy command as `npx wrangler deploy`.
+3. Save and let it build. The first deploy creates the `VISITS_KV`
+   namespace for you.
+4. Under **Settings → Variables and Secrets**, add `STATS_KEY` as a
+   **secret** so it's kept on every deploy.
+
+After that, any change to `visits-counter.js` merged to `main` goes live
+by itself.
+
 **Adding new tools needs no Cloudflare changes.** The Worker counts any page
 name it receives, and `visits.html` reads the tool list straight from the
 homepage (`#toolGroups` in `index.html`) every time it loads. So once a new

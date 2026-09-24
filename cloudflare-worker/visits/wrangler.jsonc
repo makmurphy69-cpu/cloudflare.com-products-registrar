@@ -1,0 +1,17 @@
+// Deploy config for the visit counter Worker (migabuilder-visits).
+// Connect the migabuilder-visits Worker to this repo with root directory
+// "cloudflare-worker/visits" — see cloudflare-worker/README.md.
+{
+  "name": "migabuilder-visits",
+  "main": "../visits-counter.js",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  // Keeps STATS_KEY if it was set in the dashboard as a plain variable.
+  "keep_vars": true,
+  "kv_namespaces": [
+    // No id: Wrangler creates the namespace on first deploy and reuses it
+    // after that. If you already made one, paste its id here.
+    { "binding": "VISITS_KV" }
+  ]
+}
