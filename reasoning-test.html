@@ -39,6 +39,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}select{widt
 @media(max-width:650px){.setup-grid,.category-grid{grid-template-columns:1fr}.result-hero{grid-template-columns:1fr}.score-ring{margin:auto}.stats{grid-template-columns:1fr 1fr}.brand small{display:none}}
 @media print{header,.no-print{display:none}.card{box-shadow:none}.review{break-inside:avoid}body{background:white}.wrap{width:100%}}
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 <header><div class="wrap brand"><a href="/">MigaBuilder</a><small>Free tools · no signup · private by design</small></div></header>
@@ -265,5 +266,6 @@ function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return {"
 el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};buildBank();loadCommunityAverage();
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body>
 </html>

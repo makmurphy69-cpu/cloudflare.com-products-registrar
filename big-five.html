@@ -19,7 +19,8 @@ main{padding:34px 0 60px}.card{background:var(--paper);color:var(--ink);border-r
 .trait{border:1px solid #c9c8bf;border-radius:4px;margin:14px 0;overflow:hidden}.trait-head{background:#fff;padding:16px;display:grid;grid-template-columns:1fr 190px auto;gap:14px;align-items:center}.trait-head h3{margin:0}.meter{height:8px;background:#d9d8d1;border-radius:10px;overflow:hidden}.meter i{display:block;height:100%;background:var(--cyan)}.trait-body{padding:16px;line-height:1.55}.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}.tip{background:#eaf6f7;padding:12px;border-radius:4px}.watch{background:#fff8df;padding:12px;border-radius:4px}.score-note{font-size:12px;color:#68727a}
 @media(max-width:700px){.facts,.columns{grid-template-columns:1fr}.choices{grid-template-columns:1fr}.choice{min-height:48px}.trait-head{grid-template-columns:1fr}.brand small{display:none}}
 @media print{header,.no-print{display:none}body{background:white}.card{box-shadow:none}.trait{break-inside:avoid}.wrap{width:100%}}
-</style></head><body>
+</style><link rel="stylesheet" href="tutorials.css">
+</head><body>
 <header><div class="wrap brand"><a href="/">MigaBuilder</a><small>Free tools · no signup · private by design</small></div></header>
 <main class="wrap">
 <section class="card" id="start"><p class="bank">PUBLIC-DOMAIN PERSONALITY FRAMEWORK</p><h1>See your personality across five dimensions.</h1>
@@ -65,4 +66,5 @@ function finish(){var sums={O:0,C:0,E:0,A:0,S:0},counts={O:0,C:0,E:0,A:0,S:0};or
  el("traits").innerHTML="";results.forEach(function(x){var level=x.pct>=67?"Higher expression":x.pct<=33?"Lower expression":"Middle range",d=document.createElement("article");d.className="trait";d.innerHTML="<div class='trait-head'><h3>"+x.data.name+"</h3><div class='meter'><i style='width:"+x.pct+"%'></i></div><strong>"+x.pct+"%</strong></div><div class='trait-body'><p><strong>"+level+".</strong> "+(x.pct>=50?x.data.high:x.data.low)+"</p><div class='columns'><div class='tip'><strong>Use it well</strong><br>"+x.data.use+"</div><div class='watch'><strong>Watch for imbalance</strong><br>"+x.data.watch+"</div></div></div>";el("traits").appendChild(d)});show("results");scrollTo(0,0)}
 el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};
 })();
-</script></body></html>
+</script><script src="tutorials.js" defer></script>
+</body></html>

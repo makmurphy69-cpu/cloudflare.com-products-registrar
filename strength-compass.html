@@ -26,6 +26,7 @@ h1,h2,h3{font-family:"Space Grotesk";margin-top:0}h1{font-size:clamp(32px,6vw,54
 @media(max-width:700px){.facts{grid-template-columns:1fr}.pair,.columns{grid-template-columns:1fr}.scale{grid-template-columns:1fr}.choice{min-height:48px}.top-grid{grid-template-columns:repeat(2,1fr)}.meter{width:90px}}
 @media print{header,.no-print{display:none}body{background:white}.card{box-shadow:none}.strength{break-inside:avoid}.wrap{width:100%}}
 </style>
+<link rel="stylesheet" href="tutorials.css">
 </head>
 <body>
 <header><div class="wrap brand"><a href="/">MigaBuilder</a><small>Free tools · no signup · private by design</small></div></header>
@@ -99,4 +100,5 @@ function finish(){
 el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};
 })();
 </script>
+<script src="tutorials.js" defer></script>
 </body></html>

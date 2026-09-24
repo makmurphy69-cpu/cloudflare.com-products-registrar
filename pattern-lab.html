@@ -18,7 +18,8 @@ h1,h2,h3{font-family:"Space Grotesk";margin-top:0}h1{font-size:clamp(32px,6vw,52
 .breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.metric{background:#fff;border:1px solid #d2d1c9;padding:14px;border-radius:4px}.metric strong{font:700 24px "Space Grotesk";display:block}.metric span{font-size:12px;color:#657078}.review{border:1px solid #cac9c1;border-radius:4px;margin:12px 0;overflow:hidden}.review summary{padding:14px;background:#fff;cursor:pointer;font-weight:600}.review.wrong summary{border-left:5px solid var(--red)}.review.right summary{border-left:5px solid var(--green)}.review-body{padding:16px;line-height:1.55}.method{background:#eaf6f7;padding:12px;border-radius:4px}.privacy{font-size:12px;color:#68727a;margin-top:22px}
 @media(max-width:650px){.setup,.stats,.breakdown,.answers{grid-template-columns:1fr}.brand small{display:none}}
 @media print{header,.no-print{display:none}body{background:white}.card{box-shadow:none}.review{break-inside:avoid}.wrap{width:100%}}
-</style></head><body>
+</style><link rel="stylesheet" href="tutorials.css">
+</head><body>
 <header><div class="wrap brand"><a href="/">MigaBuilder</a><small>Free tools · no signup · private by design</small></div></header>
 <main class="wrap">
 <section class="card" id="start"><p class="bank">EMPLOYER-STYLE APTITUDE PRACTICE</p><h1>Work Pattern Test</h1>
@@ -82,4 +83,5 @@ function finish(){clearInterval(timerId);var correct=0,stats={};categories.forEa
  var rows=session.map(function(q,i){return {q:q,i:i,ok:responses[i]===q.correct}}).sort(function(a,b){return Number(a.ok)-Number(b.ok)});el("reviews").innerHTML="";rows.forEach(function(row){var d=document.createElement("details");d.className="review "+(row.ok?"right":"wrong");d.innerHTML="<summary>"+(row.ok?"✓ Correct":"✗ Learn this rule")+" · "+row.q.category+"</summary><div class='review-body'><p><strong>Question:</strong><br>"+escapeHtml(row.q.text).replace(/\n/g,"<br>")+"</p><p><strong>Your answer:</strong> "+escapeHtml(responses[row.i])+"</p><p><strong>Correct answer:</strong> "+escapeHtml(row.q.correct)+"</p><p><strong>Hidden rule:</strong> "+escapeHtml(row.q.rule)+"</p><div class='method'><strong>How to think:</strong> "+escapeHtml(row.q.method)+"</div></div>";el("reviews").appendChild(d)});show("results");scrollTo(0,0)}
 el("startBtn").onclick=start;el("restartBtn").onclick=function(){show("start");scrollTo(0,0)};buildBank();
 })();
-</script></body></html>
+</script><script src="tutorials.js" defer></script>
+</body></html>
