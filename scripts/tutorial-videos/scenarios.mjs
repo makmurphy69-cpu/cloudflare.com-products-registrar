@@ -292,6 +292,64 @@ S('idea-atlas.html', {
   }
 });
 
+S('exam-checker.html', {
+  title: 'Exam Checker', subtitle: 'Mark exams from photos of answer sheets',
+  intro: 'Welcome to Exam Checker. Build an exam, print bubble answer sheets, take a photo of each student\u2019s paper, and download everyone\u2019s marks.',
+  async run(h, page) {
+    await h.step('Start by building the exam. Press Load demo exam to see a finished example.', () => h.click('#demoExam'));
+    // Written-answer OCR loads Tesseract from a CDN; keep the recording offline and quick.
+    await page.evaluate(() => { const o = document.querySelector('#ocrOn'); o.checked = false; o.dispatchEvent(new Event('input', { bubbles: true })); });
+    await h.step('Each question has a type: multiple choice, choose all that apply, true or false, a short answer, or an open answer. Set the points for each one.', () => h.point('.qcard >> nth=0'));
+    await h.step('Short answers list the accepted answers. Open answers get key words and a model answer, and you give the points.', () => h.point('.qcard >> nth=9'));
+    await h.step('Add more questions with these buttons, or add ten at once.', () => h.point('[data-add=mc]'));
+    await h.step('Step two is the answer key. Tap the correct bubble for each question, or read the key from a photo of a filled-in sheet.', () => h.click('[data-tab=key]'));
+    await h.step('Step three: print the answer sheets. The four black squares let the camera find the page, even when the photo is taken at an angle.', () => h.click('[data-tab=sheet]'));
+    await h.step('With student ID bubbles, names are filled in from your class list.', () => h.point('#sheetPrev svg >> nth=0'));
+    await h.step('Step four tests the reader. Take a photo of a sheet with the correct answers, and the checker compares every answer with your key. Here we use a generated test photo.', async () => { await h.click('[data-tab=check]'); await h.click('#checkDemo'); await page.waitForSelector('#checkOut .tile', { timeout: 60000 }); });
+    await h.step('All the answers match, and the photo shows each mark it read. If light pencil marks are missed, move the sensitivity slider.', () => h.point('#checkOut .tile >> nth=0'));
+    await h.step('Step five: mark the students. Add a photo of each student\u2019s answer sheet. Here we add six demo students.', async () => { await h.click('[data-tab=students]'); await h.click('#stuDemo'); });
+    await h.skip('Reading the answer sheets', () => page.waitForFunction(() => /Done/.test(document.querySelector('#stuProg').textContent), null, { timeout: 180000 }));
+    await h.step('Every student gets a score. Open one to see the photo with correct answers in green and wrong ones in red.', () => h.click('.stu >> nth=0'));
+    await h.step('Tap a bubble to fix an answer. Written answers are shown as pictures, so you can type what the student wrote and give points. Unclear marks are flagged for you.', () => h.point('#rvAns .ans >> nth=9'));
+    await h.step('Type the answer to question ten, and it is marked automatically.', async () => { await h.type('#rvAns [data-sq][data-sf=text] >> nth=0', 'H2O'); await h.wait(1200); });
+    await h.step('Step six shows the results: the average, the spread of scores, and every student\u2019s answers.', () => h.click('[data-tab=results]'));
+    await h.step('Question analysis shows which questions most students missed, and warns you when a key might be wrong.', () => h.point('#resOut h3 >> nth=2', { block: 'start' }));
+    await h.step('Finally, download everyone\u2019s answers as Excel or CSV, a class report, or printable result slips for each student.', () => h.point('#dlXlsx'));
+    await h.sampleDownload('#dlCsv', 'Class results spreadsheet made in this video');
+  }
+});
+
+S('body-map.html', {
+  title: 'Body Map', subtitle: 'How every part of the body works',
+  intro: 'Welcome to Body Map. Learn how every organ, bone, muscle and layer of skin works, what can go wrong with it, and how to keep it healthy.',
+  async run(h, page) {
+    await h.step('The map shows the main organs and body parts. Hover over one to see its name, and click to open it. Let us open the heart.', () => h.click('#p-heart'));
+    await h.step('You see what it does, where it is, and how it works, step by step.', () => h.scroll('#info .sect >> nth=0', 'center'));
+    await h.step('Connections show how it works with other parts of the body. The connected parts light up on the map.', () => h.point('#info .conn >> nth=0'));
+    await h.step('Every part lists its common illnesses. Open one to see the signs, the best way to treat it, and how to prevent it. Possible emergencies are clearly marked.', () => h.click('#info details.ill >> nth=0 >> summary'));
+    await h.step('Below that are the best ways to keep it healthy, and some surprising facts.', () => h.scroll('#info .tip-list', 'center'));
+    await h.step('Use the coloured buttons to show one body system, like digestion, then click any organ in it, like the liver.', async () => { await h.click('[data-sys=digestive]'); await h.click('#p-liver'); });
+    await h.step('The connections map shows how every part works together with the others.', async () => { await h.click('[data-sys=""]'); await h.click('[data-view=net]'); });
+    await h.wait(1500);
+    await h.step('The layer buttons switch between organs, the skeleton, muscles and tendons, and a cut-through view of the skin. Here is the skeleton. Let us open the spine.', async () => { await h.click('[data-view=body]'); await h.click('[data-layer=skeleton]'); await h.point('#p-spine'); await page.locator('#p-spine').dispatchEvent('click'); });
+    await h.step('Muscles and tendons have a front and a back view. Muscles are red and tendons are white, like the Achilles tendon at the back of the ankle.', async () => { await h.click('[data-layer=muscles]'); await h.click('#flip'); await h.point('#p-achilles'); await page.locator('#p-achilles').dispatchEvent('click'); });
+    await h.step('The skin layers view shows the outer skin, the dermis and the fat layer, with hair, oil glands and sweat glands. Tap any of them.', async () => { await h.click('[data-layer=skin]'); await h.point('#p-sweat'); await page.locator('#p-sweat').dispatchEvent('click'); });
+    await h.step('Now, what happens when we eat? Open Eating and drinking. The dot follows a meal through the body.', async () => { await h.click('[data-view=body]'); await h.click('[data-tab=food]'); for (let i = 0; i < 4; i++) { await h.click('#nextStep', { after: 700 }); } });
+    await h.step('The stomach churns the food with acid, the pancreas and gallbladder add their juices, and the small intestine absorbs the nutrients into the blood.', async () => { for (let i = 0; i < 3; i++) { await h.click('#nextStep', { after: 1400 }); } });
+    await h.step('Switch to a drink to see how water reaches the blood, the kidneys and the bladder.', async () => { await h.click('[data-journey=drink]'); for (let i = 0; i < 6; i++) { await h.click('#nextStep', { after: 500 }); } });
+    await h.step('Tap a card to see which organs handle carbohydrates, fats, caffeine or alcohol.', () => h.click('.ncard >> nth=7'));
+    await h.step('The Fasting tab shows what happens hour by hour after your last meal. Drag the slider, or pick a fast like sixteen hours.', async () => { await h.click('[data-tab=fast]'); await h.click('[data-h="16"]'); });
+    await h.step('After about a day, the liver has used up its stored sugar. The body burns more fat and makes ketones, and the bar shows where the energy comes from.', async () => { await h.click('[data-h="24"]'); await h.point('#fuel'); });
+    await h.step('Safety notes explain why you must keep drinking water, and who should not fast without a doctor.', () => h.scroll('#fastNotes', 'center'));
+    await h.step('Now test yourself. Choose the whole body, one body system or one body part, and press Generate quiz.', async () => { await h.scroll('#quizPanel'); await h.select('#qSource', 'sys:circulatory'); await h.click('#makeQuiz'); });
+    await h.step('Pick an answer. You get an explanation every time, and your best score is saved.', () => h.click('#qOpts .opt >> nth=0'));
+    await h.step('You can also make your own quiz. Give it a title, choose a body part, and add suggested questions. Then edit them, or write your own.', async () => { await h.click('[data-qtab=make]'); await h.type('#mkTitle', 'The heart quiz'); await h.select('#mkPart', 'heart'); await h.click('#mkSuggest'); });
+    await h.step('Play it, save it, print it with an answer key, or copy a link to share it with a class or a friend.', () => h.point('#mkShare'));
+    await h.sampleDownload('#mkPrint', 'Printable quiz made in this video');
+    await h.step('Finally, the daily checklist shows which healthy habits help which parts of your body.', async () => { await h.scroll('#habitPanel'); await h.click('#habits .habit >> nth=0'); });
+  }
+});
+
 S('alphabet-forge.html', {
   title: 'Alphabet Forge', subtitle: 'Hear, learn and write the world’s alphabets',
   intro: 'Welcome to Alphabet Forge. Learn to read, say and write alphabets from around the world.',

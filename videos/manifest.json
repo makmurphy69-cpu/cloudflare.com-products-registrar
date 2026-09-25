@@ -116,6 +116,43 @@
    "kind": "image"
   }
  },
+ "body-map.html": {
+  "title": "Body Map",
+  "video": "videos/body-map.mp4",
+  "poster": "videos/body-map.jpg",
+  "duration": 189,
+  "transcript": [
+   "Welcome to Body Map. Learn how every organ, bone, muscle and layer of skin works, what can go wrong with it, and how to keep it healthy.",
+   "The map shows the main organs and body parts. Hover over one to see its name, and click to open it. Let us open the heart.",
+   "You see what it does, where it is, and how it works, step by step.",
+   "Connections show how it works with other parts of the body. The connected parts light up on the map.",
+   "Every part lists its common illnesses. Open one to see the signs, the best way to treat it, and how to prevent it. Possible emergencies are clearly marked.",
+   "Below that are the best ways to keep it healthy, and some surprising facts.",
+   "Use the coloured buttons to show one body system, like digestion, then click any organ in it, like the liver.",
+   "The connections map shows how every part works together with the others.",
+   "The layer buttons switch between organs, the skeleton, muscles and tendons, and a cut-through view of the skin. Here is the skeleton. Let us open the spine.",
+   "Muscles and tendons have a front and a back view. Muscles are red and tendons are white, like the Achilles tendon at the back of the ankle.",
+   "The skin layers view shows the outer skin, the dermis and the fat layer, with hair, oil glands and sweat glands. Tap any of them.",
+   "Now, what happens when we eat? Open Eating and drinking. The dot follows a meal through the body.",
+   "The stomach churns the food with acid, the pancreas and gallbladder add their juices, and the small intestine absorbs the nutrients into the blood.",
+   "Switch to a drink to see how water reaches the blood, the kidneys and the bladder.",
+   "Tap a card to see which organs handle carbohydrates, fats, caffeine or alcohol.",
+   "The Fasting tab shows what happens hour by hour after your last meal. Drag the slider, or pick a fast like sixteen hours.",
+   "After about a day, the liver has used up its stored sugar. The body burns more fat and makes ketones, and the bar shows where the energy comes from.",
+   "Safety notes explain why you must keep drinking water, and who should not fast without a doctor.",
+   "Now test yourself. Choose the whole body, one body system or one body part, and press Generate quiz.",
+   "Pick an answer. You get an explanation every time, and your best score is saved.",
+   "You can also make your own quiz. Give it a title, choose a body part, and add suggested questions. Then edit them, or write your own.",
+   "Play it, save it, print it with an answer key, or copy a link to share it with a class or a friend.",
+   "Finally, the daily checklist shows which healthy habits help which parts of your body.",
+   "Now it is your turn. Open Body Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/body-map.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
  "bot-forge.html": {
   "title": "Bot Forge",
   "video": "videos/bot-forge.mp4",
@@ -331,6 +368,37 @@
    "file": "samples/everyday-forge.png",
    "label": "Chart made in this video",
    "kind": "image"
+  }
+ },
+ "exam-checker.html": {
+  "title": "Exam Checker",
+  "video": "videos/exam-checker.mp4",
+  "poster": "videos/exam-checker.jpg",
+  "duration": 132,
+  "transcript": [
+   "Welcome to Exam Checker. Build an exam, print bubble answer sheets, take a photo of each student’s paper, and download everyone’s marks.",
+   "Start by building the exam. Press Load demo exam to see a finished example.",
+   "Each question has a type: multiple choice, choose all that apply, true or false, a short answer, or an open answer. Set the points for each one.",
+   "Short answers list the accepted answers. Open answers get key words and a model answer, and you give the points.",
+   "Add more questions with these buttons, or add ten at once.",
+   "Step two is the answer key. Tap the correct bubble for each question, or read the key from a photo of a filled-in sheet.",
+   "Step three: print the answer sheets. The four black squares let the camera find the page, even when the photo is taken at an angle.",
+   "With student ID bubbles, names are filled in from your class list.",
+   "Step four tests the reader. Take a photo of a sheet with the correct answers, and the checker compares every answer with your key. Here we use a generated test photo.",
+   "All the answers match, and the photo shows each mark it read. If light pencil marks are missed, move the sensitivity slider.",
+   "Step five: mark the students. Add a photo of each student’s answer sheet. Here we add six demo students.",
+   "Every student gets a score. Open one to see the photo with correct answers in green and wrong ones in red.",
+   "Tap a bubble to fix an answer. Written answers are shown as pictures, so you can type what the student wrote and give points. Unclear marks are flagged for you.",
+   "Type the answer to question ten, and it is marked automatically.",
+   "Step six shows the results: the average, the spread of scores, and every student’s answers.",
+   "Question analysis shows which questions most students missed, and warns you when a key might be wrong.",
+   "Finally, download everyone’s answers as Excel or CSV, a class report, or printable result slips for each student.",
+   "Now it is your turn. Open Exam Checker on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/exam-checker.csv",
+   "label": "Class results spreadsheet made in this video",
+   "kind": "text"
   }
  },
  "file-forge.html": {
