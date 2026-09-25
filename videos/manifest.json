@@ -370,6 +370,37 @@
    "kind": "image"
   }
  },
+ "exam-checker.html": {
+  "title": "Exam Checker",
+  "video": "videos/exam-checker.mp4",
+  "poster": "videos/exam-checker.jpg",
+  "duration": 132,
+  "transcript": [
+   "Welcome to Exam Checker. Build an exam, print bubble answer sheets, take a photo of each student’s paper, and download everyone’s marks.",
+   "Start by building the exam. Press Load demo exam to see a finished example.",
+   "Each question has a type: multiple choice, choose all that apply, true or false, a short answer, or an open answer. Set the points for each one.",
+   "Short answers list the accepted answers. Open answers get key words and a model answer, and you give the points.",
+   "Add more questions with these buttons, or add ten at once.",
+   "Step two is the answer key. Tap the correct bubble for each question, or read the key from a photo of a filled-in sheet.",
+   "Step three: print the answer sheets. The four black squares let the camera find the page, even when the photo is taken at an angle.",
+   "With student ID bubbles, names are filled in from your class list.",
+   "Step four tests the reader. Take a photo of a sheet with the correct answers, and the checker compares every answer with your key. Here we use a generated test photo.",
+   "All the answers match, and the photo shows each mark it read. If light pencil marks are missed, move the sensitivity slider.",
+   "Step five: mark the students. Add a photo of each student’s answer sheet. Here we add six demo students.",
+   "Every student gets a score. Open one to see the photo with correct answers in green and wrong ones in red.",
+   "Tap a bubble to fix an answer. Written answers are shown as pictures, so you can type what the student wrote and give points. Unclear marks are flagged for you.",
+   "Type the answer to question ten, and it is marked automatically.",
+   "Step six shows the results: the average, the spread of scores, and every student’s answers.",
+   "Question analysis shows which questions most students missed, and warns you when a key might be wrong.",
+   "Finally, download everyone’s answers as Excel or CSV, a class report, or printable result slips for each student.",
+   "Now it is your turn. Open Exam Checker on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/exam-checker.csv",
+   "label": "Class results spreadsheet made in this video",
+   "kind": "text"
+  }
+ },
  "file-forge.html": {
   "title": "Image Forge",
   "video": "videos/file-forge.mp4",

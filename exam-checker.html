@@ -598,7 +598,7 @@ async function addSheet(ex,L,cv,ctx){const r=analyze(cv);let st;
   for(const qid in rd.ans){const q=qOf(qid);if(!q)continue;const a=st.ans[qid]=Object.assign({},rd.ans[qid]);if(a.fills){const d=decide(q,a.fills,ex.thr);a.sel=d.sel;a.flag=d.flag;a.man=false}}
   if(rd.sid){st.sid=rd.sid;const nm=rosterMap(ex).m.get(rd.sid);if(nm)st.name=nm}
   if(ex.ocr){const P=L.pages[r.page];
-    for(const b of P.boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading '+st.name+"'s answer to question "+(ex.questions.findIndex(q=>q.id===b.q)+1)+'…');const q=qOf(b.q);a.text=await ocr(cropCanvas(r.S,b),q.type==='short').catch(()=>'');a.ocr=true}}
+    for(const b of P.boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading '+st.name+"'s answer to question "+(ex.questions.findIndex(q=>q.id===b.q)+1)+'…');const q=qOf(b.q);a.text=await ocr(cropCanvas(r.S,b),q.type==='short').catch(()=>'');a.ocr=!!a.text}}
     if(P.name&&!rosterMap(ex).m.get(st.sid)){ctx.prog('Reading the name…');const t=(await ocr(cropCanvas(r.S,P.name,6,1.2),true).catch(()=>'')).replace(/[^\p{L}\s'.-]/gu,'').trim();if(t.length>=3){st.name=t;st.nameOcr=true}}}
   save();return st}
 async function addPhotos(files){if(busy)return toast('Still reading the last photos…');const ex=E();if(!ex.questions.length)return toast('Build the exam first (step 1).');busy=true;const L=layout(ex),ctx={last:null,prog:t=>$('stuProg').textContent=t};
@@ -663,7 +663,7 @@ $('review').addEventListener('change',async e=>{const el=e.target;if(el.dataset.
 async function addSheetInto(ex,L,cv,r,st,ctx){const key='p_'+st.id+'_'+Date.now().toString(36);await idb.put(key,await toBlob(cv));st.pages.push({key,H:r.S.H,page:r.page});st.pages.sort((a,b)=>a.page-b.page);st.problem='';const rd=readPage(ex,L,r.page,r.S);
   for(const qid in rd.ans){const q=qOf(qid);if(!q)continue;const a=st.ans[qid]=Object.assign({},rd.ans[qid]);if(a.fills){const d=decide(q,a.fills,ex.thr);a.sel=d.sel;a.flag=d.flag;a.man=false}}
   if(rd.sid){st.sid=rd.sid;const nm=rosterMap(ex).m.get(rd.sid);if(nm)st.name=nm}
-  if(ex.ocr)for(const b of L.pages[r.page].boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading written answers…');a.text=await ocr(cropCanvas(r.S,b),qOf(b.q).type==='short').catch(()=>'');a.ocr=true}}ctx.prog('')}
+  if(ex.ocr)for(const b of L.pages[r.page].boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading written answers…');a.text=await ocr(cropCanvas(r.S,b),qOf(b.q).type==='short').catch(()=>'');a.ocr=!!a.text}}ctx.prog('')}
 function applyFreeText(ex,st,txt){let n=0;txt.split(/\n|(?=\s\d{1,3}\s*[.):-]\s)/).forEach(line=>{const m=line.match(/^\s*(?:q(?:uestion)?\s*)?(\d{1,3})\s*[.):\-]?\s+(.+?)\s*$/i);if(!m)return;const q=ex.questions[+m[1]-1];if(!q)return;const v=m[2].trim(),a=st.ans[q.id]=st.ans[q.id]||{};
     if(q.type==='tf'){if(/^(t|true|kweli|ndiyo|v|verdadero|vrai)\b/i.test(v)){a.sel=[0];n++}else if(/^(f|false|uongo|falso|faux)\b/i.test(v)){a.sel=[1];n++}}
     else if(isBub(q)){const L2=(v.toUpperCase().match(/\b[A-H]\b/g)||v.toUpperCase().slice(0,1).match(/[A-H]/g)||[]).map(c=>LET.indexOf(c)).filter(i=>i>=0&&i<nOpt(q));if(L2.length){a.sel=q.type==='multi'?[...new Set(L2)].sort():[L2[0]];n++}}

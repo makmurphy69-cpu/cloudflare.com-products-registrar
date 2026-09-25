@@ -56,3 +56,8 @@ Each `h.step(text, action)` speaks and captions `text` while running
 `sampleDownload`, `sampleShot` (screenshot of an element) and `sampleFile`.
 Then run the script for that tool, and commit the new files in `videos/` and
 `samples/`.
+
+**Every new tool must have a video.** `node scripts/check-tool-videos.mjs`
+fails when a tool card on the homepage has no scenario, manifest entry, video
+or poster, and the *Tool explanation videos* GitHub check runs it on every
+pull request.

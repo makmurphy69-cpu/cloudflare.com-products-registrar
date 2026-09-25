@@ -292,6 +292,33 @@ S('idea-atlas.html', {
   }
 });
 
+S('exam-checker.html', {
+  title: 'Exam Checker', subtitle: 'Mark exams from photos of answer sheets',
+  intro: 'Welcome to Exam Checker. Build an exam, print bubble answer sheets, take a photo of each student\u2019s paper, and download everyone\u2019s marks.',
+  async run(h, page) {
+    await h.step('Start by building the exam. Press Load demo exam to see a finished example.', () => h.click('#demoExam'));
+    // Written-answer OCR loads Tesseract from a CDN; keep the recording offline and quick.
+    await page.evaluate(() => { const o = document.querySelector('#ocrOn'); o.checked = false; o.dispatchEvent(new Event('input', { bubbles: true })); });
+    await h.step('Each question has a type: multiple choice, choose all that apply, true or false, a short answer, or an open answer. Set the points for each one.', () => h.point('.qcard >> nth=0'));
+    await h.step('Short answers list the accepted answers. Open answers get key words and a model answer, and you give the points.', () => h.point('.qcard >> nth=9'));
+    await h.step('Add more questions with these buttons, or add ten at once.', () => h.point('[data-add=mc]'));
+    await h.step('Step two is the answer key. Tap the correct bubble for each question, or read the key from a photo of a filled-in sheet.', () => h.click('[data-tab=key]'));
+    await h.step('Step three: print the answer sheets. The four black squares let the camera find the page, even when the photo is taken at an angle.', () => h.click('[data-tab=sheet]'));
+    await h.step('With student ID bubbles, names are filled in from your class list.', () => h.point('#sheetPrev svg >> nth=0'));
+    await h.step('Step four tests the reader. Take a photo of a sheet with the correct answers, and the checker compares every answer with your key. Here we use a generated test photo.', async () => { await h.click('[data-tab=check]'); await h.click('#checkDemo'); await page.waitForSelector('#checkOut .tile', { timeout: 60000 }); });
+    await h.step('All the answers match, and the photo shows each mark it read. If light pencil marks are missed, move the sensitivity slider.', () => h.point('#checkOut .tile >> nth=0'));
+    await h.step('Step five: mark the students. Add a photo of each student\u2019s answer sheet. Here we add six demo students.', async () => { await h.click('[data-tab=students]'); await h.click('#stuDemo'); });
+    await h.skip('Reading the answer sheets', () => page.waitForFunction(() => /Done/.test(document.querySelector('#stuProg').textContent), null, { timeout: 180000 }));
+    await h.step('Every student gets a score. Open one to see the photo with correct answers in green and wrong ones in red.', () => h.click('.stu >> nth=0'));
+    await h.step('Tap a bubble to fix an answer. Written answers are shown as pictures, so you can type what the student wrote and give points. Unclear marks are flagged for you.', () => h.point('#rvAns .ans >> nth=9'));
+    await h.step('Type the answer to question ten, and it is marked automatically.', async () => { await h.type('#rvAns [data-sq][data-sf=text] >> nth=0', 'H2O'); await h.wait(1200); });
+    await h.step('Step six shows the results: the average, the spread of scores, and every student\u2019s answers.', () => h.click('[data-tab=results]'));
+    await h.step('Question analysis shows which questions most students missed, and warns you when a key might be wrong.', () => h.point('#resOut h3 >> nth=2', { block: 'start' }));
+    await h.step('Finally, download everyone\u2019s answers as Excel or CSV, a class report, or printable result slips for each student.', () => h.point('#dlXlsx'));
+    await h.sampleDownload('#dlCsv', 'Class results spreadsheet made in this video');
+  }
+});
+
 S('body-map.html', {
   title: 'Body Map', subtitle: 'How every part of the body works',
   intro: 'Welcome to Body Map. Learn how every organ, bone, muscle and layer of skin works, what can go wrong with it, and how to keep it healthy.',
