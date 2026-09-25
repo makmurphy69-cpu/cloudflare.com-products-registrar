@@ -164,3 +164,19 @@ This runs entirely on Cloudflare's free plan. Privacy notes: no cookies, no
 fingerprinting, unique-person tracking, or customer-content storage. The
 Worker never reads or hashes IP addresses. Counts are approximate and are
 intended for product prioritisation, not billing or security decisions.
+
+## Per-visitor rate limits (Gemini proxy and feedback relay)
+
+The Origin check stops other websites from using these Workers, but a script
+can fake the Origin header. Both Workers therefore check an optional
+`RATE_LIMITER` binding (Workers rate limiting, free) keyed on the visitor's IP
+and answer 429 once it's exceeded. Without the binding they behave as before.
+
+Add it in the dashboard (Worker → Settings → Bindings → Add → Rate limiting),
+or deploy through the API with this in the upload metadata:
+
+- `migabuilder-gemini`: `{"type":"ratelimit","name":"RATE_LIMITER","namespace_id":"1001","simple":{"limit":20,"period":60}}`
+- `migabuilder-feedback`: `{"type":"ratelimit","name":"RATE_LIMITER","namespace_id":"1002","simple":{"limit":5,"period":60}}`
+
+Keep `"keep_bindings":["secret_text","plain_text","kv_namespace"]` in the
+metadata so the existing secrets and KV bindings survive the upload.

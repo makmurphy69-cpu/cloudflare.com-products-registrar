@@ -90,6 +90,14 @@ export default {
       return json({ error: 'Method not allowed' }, 405, origin);
     }
 
+    if (env.RATE_LIMITER) {
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return json({ error: 'Too many submissions. Wait a minute and try again.' }, 429, origin);
+      }
+    }
+
     let payload;
     try {
       payload = await request.json();

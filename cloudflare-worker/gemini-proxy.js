@@ -10,6 +10,9 @@
  * limit: each request picks a random starting key and, if that one comes
  * back rate-limited, automatically retries the next one before giving up.
  *
+ * Optional RATE_LIMITER binding (Workers rate limiting) caps requests per
+ * visitor IP, since the Origin check alone can be faked outside a browser.
+ *
  * Deploy steps are in cloudflare-worker/README.md.
  */
 
@@ -68,6 +71,13 @@ export default {
     }
     if (!ALLOWED_ORIGINS.includes(origin)) {
       return json({ error: 'Origin not allowed' }, 403, origin);
+    }
+    if (env.RATE_LIMITER) {
+      const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      if (!success) {
+        return json({ error: 'Too many AI requests in a short time. Wait a minute and try again.' }, 429, origin);
+      }
     }
     const apiKeys = parseApiKeys(env.GEMINI_API_KEY);
     if (!apiKeys.length) {
