@@ -292,6 +292,37 @@ S('idea-atlas.html', {
   }
 });
 
+S('body-map.html', {
+  title: 'Body Map', subtitle: 'How every part of the body works',
+  intro: 'Welcome to Body Map. Learn how every organ, bone, muscle and layer of skin works, what can go wrong with it, and how to keep it healthy.',
+  async run(h, page) {
+    await h.step('The map shows the main organs and body parts. Hover over one to see its name, and click to open it. Let us open the heart.', () => h.click('#p-heart'));
+    await h.step('You see what it does, where it is, and how it works, step by step.', () => h.scroll('#info .sect >> nth=0', 'center'));
+    await h.step('Connections show how it works with other parts of the body. The connected parts light up on the map.', () => h.point('#info .conn >> nth=0'));
+    await h.step('Every part lists its common illnesses. Open one to see the signs, the best way to treat it, and how to prevent it. Possible emergencies are clearly marked.', () => h.click('#info details.ill >> nth=0 >> summary'));
+    await h.step('Below that are the best ways to keep it healthy, and some surprising facts.', () => h.scroll('#info .tip-list', 'center'));
+    await h.step('Use the coloured buttons to show one body system, like digestion, then click any organ in it, like the liver.', async () => { await h.click('[data-sys=digestive]'); await h.click('#p-liver'); });
+    await h.step('The connections map shows how every part works together with the others.', async () => { await h.click('[data-sys=""]'); await h.click('[data-view=net]'); });
+    await h.wait(1500);
+    await h.step('The layer buttons switch between organs, the skeleton, muscles and tendons, and a cut-through view of the skin. Here is the skeleton. Let us open the spine.', async () => { await h.click('[data-view=body]'); await h.click('[data-layer=skeleton]'); await h.point('#p-spine'); await page.locator('#p-spine').dispatchEvent('click'); });
+    await h.step('Muscles and tendons have a front and a back view. Muscles are red and tendons are white, like the Achilles tendon at the back of the ankle.', async () => { await h.click('[data-layer=muscles]'); await h.click('#flip'); await h.point('#p-achilles'); await page.locator('#p-achilles').dispatchEvent('click'); });
+    await h.step('The skin layers view shows the outer skin, the dermis and the fat layer, with hair, oil glands and sweat glands. Tap any of them.', async () => { await h.click('[data-layer=skin]'); await h.point('#p-sweat'); await page.locator('#p-sweat').dispatchEvent('click'); });
+    await h.step('Now, what happens when we eat? Open Eating and drinking. The dot follows a meal through the body.', async () => { await h.click('[data-view=body]'); await h.click('[data-tab=food]'); for (let i = 0; i < 4; i++) { await h.click('#nextStep', { after: 700 }); } });
+    await h.step('The stomach churns the food with acid, the pancreas and gallbladder add their juices, and the small intestine absorbs the nutrients into the blood.', async () => { for (let i = 0; i < 3; i++) { await h.click('#nextStep', { after: 1400 }); } });
+    await h.step('Switch to a drink to see how water reaches the blood, the kidneys and the bladder.', async () => { await h.click('[data-journey=drink]'); for (let i = 0; i < 6; i++) { await h.click('#nextStep', { after: 500 }); } });
+    await h.step('Tap a card to see which organs handle carbohydrates, fats, caffeine or alcohol.', () => h.click('.ncard >> nth=7'));
+    await h.step('The Fasting tab shows what happens hour by hour after your last meal. Drag the slider, or pick a fast like sixteen hours.', async () => { await h.click('[data-tab=fast]'); await h.click('[data-h="16"]'); });
+    await h.step('After about a day, the liver has used up its stored sugar. The body burns more fat and makes ketones, and the bar shows where the energy comes from.', async () => { await h.click('[data-h="24"]'); await h.point('#fuel'); });
+    await h.step('Safety notes explain why you must keep drinking water, and who should not fast without a doctor.', () => h.scroll('#fastNotes', 'center'));
+    await h.step('Now test yourself. Choose the whole body, one body system or one body part, and press Generate quiz.', async () => { await h.scroll('#quizPanel'); await h.select('#qSource', 'sys:circulatory'); await h.click('#makeQuiz'); });
+    await h.step('Pick an answer. You get an explanation every time, and your best score is saved.', () => h.click('#qOpts .opt >> nth=0'));
+    await h.step('You can also make your own quiz. Give it a title, choose a body part, and add suggested questions. Then edit them, or write your own.', async () => { await h.click('[data-qtab=make]'); await h.type('#mkTitle', 'The heart quiz'); await h.select('#mkPart', 'heart'); await h.click('#mkSuggest'); });
+    await h.step('Play it, save it, print it with an answer key, or copy a link to share it with a class or a friend.', () => h.point('#mkShare'));
+    await h.sampleDownload('#mkPrint', 'Printable quiz made in this video');
+    await h.step('Finally, the daily checklist shows which healthy habits help which parts of your body.', async () => { await h.scroll('#habitPanel'); await h.click('#habits .habit >> nth=0'); });
+  }
+});
+
 S('alphabet-forge.html', {
   title: 'Alphabet Forge', subtitle: 'Hear, learn and write the world’s alphabets',
   intro: 'Welcome to Alphabet Forge. Learn to read, say and write alphabets from around the world.',

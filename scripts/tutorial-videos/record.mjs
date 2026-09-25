@@ -287,7 +287,7 @@ if (!list.length) { console.log('No matching scenarios. Available:', Object.keys
 await ensureVoice();
 const { chromium } = await loadPlaywright();
 const exe = process.env.CHROMIUM || (fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') ? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' : undefined);
-const browser = await chromium.launch({ executablePath: exe, args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required', '--ignore-gpu-blocklist', '--enable-unsafe-swiftshader', ...(process.env.IGNORE_CERTS ? ['--ignore-certificate-errors'] : [])] });
+const browser = await chromium.launch({ executablePath: exe, args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required', '--ignore-gpu-blocklist', '--enable-unsafe-swiftshader', ...(process.env.IGNORE_CERTS ? ['--ignore-certificate-errors'] : []), ...(process.env.BROWSER_PROXY ? ['--proxy-server=' + process.env.BROWSER_PROXY] : [])] });
 const srv = await serve();
 const baseUrl = 'http://127.0.0.1:' + srv.address().port;
 await ensureAssets(browser, FFMPEG, path.join(HERE, 'assets'));
