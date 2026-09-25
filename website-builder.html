@@ -918,7 +918,7 @@ Total output lines: 2100
         <strong>Nothing on the table yet.</strong>
         Add your API key and a brief, then draft the site — it'll render here, page by page.
       </div>
-      <iframe id="preview" style="display:none;" title="Generated website preview"></iframe>
+      <iframe id="preview" sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals" style="display:none;" title="Generated website preview"></iframe>
       <textarea class="code-pane" id="codePane" readonly spellcheck="false" aria-label="HTML code of this page (read-only)" data-no-autosave></textarea>
     </div>
 
@@ -933,7 +933,7 @@ Total output lines: 2100
       <input type="password" id="ghToken" placeholder="GitHub personal access token" autocomplete="off" style="margin-bottom:8px;">
       <input type="text" id="ghRepo" placeholder="your-username/repo-name" style="margin-bottom:8px;">
       <button type="button" class="draft-btn" id="publishBtn" disabled>Push all pages &amp; enable hosting</button>
-      <p class="hint" style="color: rgba(237,234,224,0.55);">Creates the repo if it doesn't exist, commits every page, and turns on GitHub Pages so you get a real public URL. Once it's in GitHub, tools like Claude Code can clone that same repo and keep editing it directly. Needs a token with "repo" access — create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>.</p>
+      <p class="hint" style="color: rgba(237,234,224,0.55);">Creates the repo if it doesn't exist, commits every page, and turns on GitHub Pages so you get a real public URL. Once it's in GitHub, tools like Claude Code can clone that same repo and keep editing it directly. Safest token: create the repo on GitHub first, then make a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a> for that one repo with Contents and Pages set to "Read and write". (A classic token with "repo" access also works and lets this create the repo for you.) The token goes only to GitHub and is never saved — it is gone when you close this tab.</p>
       <div class="error-box" id="publishStatus" style="color: var(--success); background: rgba(78,158,115,0.14); border-color: rgba(78,158,115,0.4);"></div>
     </div>
 
@@ -1698,7 +1698,13 @@ Total output lines: 2100
     if (!page) return;
     sheetEmpty.style.display = 'none';
     preview.style.display = 'block';
-    preview.srcdoc = page.html;
+    // Outside edit mode the preview runs sandboxed without same-origin access, so the parent
+    // can't reach into it; a new block is scrolled into view by a script appended to the preview only.
+    const scrollScript = scrollToBlock && !editMode
+      ? '<script>(function(){var el=document.querySelector(\'[data-mb-block="' + scrollToBlock + '"]\');if(el)el.scrollIntoView({block:"start"});})()<\/script>'
+      : '';
+    if (scrollScript) scrollToBlock = '';
+    preview.srcdoc = page.html + scrollScript;
     sourceText.value = page.html;
     codePane.value = page.html;
     editModeBtn.disabled = false;
@@ -2041,14 +2047,15 @@ Total output lines: 2100
     clearTimeout(editSyncTimer);
     editSyncTimer = setTimeout(flushEdits, 300);
   }
+  const PREVIEW_SANDBOX = preview.getAttribute('sandbox');
   preview.addEventListener('load', function () { if (editMode) enableEditing(); });
   function setEditMode(on) {
     if (!on) flushEdits();
     editMode = on;
     editModeBtn.setAttribute('aria-pressed', String(on));
     editModeBtn.textContent = on ? '✓ Done editing' : '✏️ Edit text on the page';
-    if (on) preview.setAttribute('sandbox', 'allow-same-origin');
-    else preview.removeAttribute('sandbox');
+    // Generated and imported pages are untrusted: they never get scripts and same-origin access together.
+    preview.setAttribute('sandbox', on ? 'allow-same-origin' : PREVIEW_SANDBOX);
     canvasNote.textContent = on ? 'Click any text in the preview and type. Animations and menus are paused while editing.' : '';
     showActivePage();
   }
