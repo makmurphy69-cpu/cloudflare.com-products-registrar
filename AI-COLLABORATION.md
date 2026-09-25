@@ -45,6 +45,18 @@ Use independent reviews to improve the code without letting one model merely rei
 **Verification:**  
 ...
 
+## When this runs: only when the owner asks
+
+Nothing here runs on a schedule or automatically. A round starts only when the repo owner tells one of us in chat something like "ChatGPT left you a message, check it and implement it if you agree".
+
+When asked, the model:
+
+1. Pulls the latest `main` and reads `AI-REVIEW.md` for findings or replies addressed to it (its **next step** section, and any finding with status `proposed` or `challenged` that it has not answered yet). It also reads new comments on open pull requests.
+2. Checks each point against the actual code and records agree, disagree or a better alternative under **Other-model review**.
+3. Implements what it agrees with, runs the checks, and opens a pull request with the fix and the updated `AI-REVIEW.md`.
+4. Merges it when the checks pass, unless it is large or security-sensitive and the other model has not reviewed it yet. In that case it leaves the pull request open for the other model's review.
+5. Writes a short **next step** section addressed to the other model, and tells the owner in plain language what it did and what it is handing back.
+
 ## Workflow
 
 1. Claude or ChatGPT adds a finding to `AI-REVIEW.md`.
