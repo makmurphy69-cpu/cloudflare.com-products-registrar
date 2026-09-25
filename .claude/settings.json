@@ -1,0 +1,5 @@
+{
+  "permissions": {
+    "allow": ["Bash(curl -sS -X PUT https://api.cloudflare.com/client/v4/accounts/*/workers/scripts/*)"]
+  }
+}
