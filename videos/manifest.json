@@ -116,6 +116,40 @@
    "kind": "image"
   }
  },
+ "body-map.html": {
+  "title": "Body Map",
+  "video": "videos/body-map.mp4",
+  "poster": "videos/body-map.jpg",
+  "duration": 158,
+  "transcript": [
+   "Welcome to Body Map. Learn how every part of your body works, what can go wrong with it, and how to keep it healthy.",
+   "The map shows the main organs and body parts. Hover over one to see its name, and click to open it. Let us open the heart.",
+   "You see what it does, where it is, and how it works, step by step.",
+   "Connections show how it works with other parts of the body. The connected parts light up on the map.",
+   "Every part lists its common illnesses. Open one to see the signs, the best way to treat it, and how to prevent it. Possible emergencies are clearly marked.",
+   "Below that are the best ways to keep it healthy, and some surprising facts.",
+   "Use the coloured buttons to show one body system, like digestion, then click any organ in it, like the liver.",
+   "The connections map shows how every part works together with the others.",
+   "Now, what happens when we eat? Open Eating and drinking. The dot follows a meal through the body.",
+   "The stomach churns the food with acid, the pancreas and gallbladder add their juices, and the small intestine absorbs the nutrients into the blood.",
+   "Switch to a drink to see how water reaches the blood, the kidneys and the bladder.",
+   "Tap a card to see which organs handle carbohydrates, fats, caffeine or alcohol.",
+   "The Fasting tab shows what happens hour by hour after your last meal. Drag the slider, or pick a fast like sixteen hours.",
+   "After about a day, the liver has used up its stored sugar. The body burns more fat and makes ketones, and the bar shows where the energy comes from.",
+   "Safety notes explain why you must keep drinking water, and who should not fast without a doctor.",
+   "Now test yourself. Choose the whole body, one body system or one body part, and press Generate quiz.",
+   "Pick an answer. You get an explanation every time, and your best score is saved.",
+   "You can also make your own quiz. Give it a title, choose a body part, and add suggested questions. Then edit them, or write your own.",
+   "Play it, save it, print it with an answer key, or copy a link to share it with a class or a friend.",
+   "Finally, the daily checklist shows which healthy habits help which parts of your body.",
+   "Now it is your turn. Open Body Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/body-map.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
  "bot-forge.html": {
   "title": "Bot Forge",
   "video": "videos/bot-forge.mp4",

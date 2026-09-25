@@ -47,6 +47,7 @@
     ["code-forge.html", "🧑‍💻", "Code Forge", "Learn Python and JavaScript.", ""],
     ["alphabet-forge.html", "🔤", "Alphabet Forge", "Hear, learn, write and type the world’s alphabets — with an on-screen keyboard.", "alphabet letters writing script language learn thai arabic chinese mandarin japanese hiragana katakana korean hangul greek russian cyrillic hebrew hindi devanagari georgian pronunciation keyboard typing on-screen keyboard"],
     ["idea-atlas.html", "🏛️", "Idea Atlas", "Explore philosophies and ideologies, their thinkers and connections, then play the quiz.", "philosophy politics ideology history thinkers quiz game liberalism socialism conservatism stoicism marxism feminism"],
+    ["body-map.html", "🫀", "Body Map", "Click any body part to learn how it works, its illnesses and care, follow a meal through the body, then quiz yourself.", "human body anatomy organs biology health illness disease symptoms treatment heart brain lungs liver digestion fasting nutrition quiz"],
     ["flashcard-forge.html", "🗂️", "Flashcard Forge", "AI flashcards, Anki-style spaced repetition, games, stats and share links.", "flashcards flash cards study spaced repetition memorize revise quiz anki quizlet vocabulary cloze matching game stats share"],
     ["paint-forge.html", "🖌️", "Paint Forge", "Edit images with layers in the browser.", ""],
     ["file-forge.html", "🖼️", "Image Forge", "Batch-convert, resize, compress and clean image metadata.", ""],
