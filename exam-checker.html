@@ -88,6 +88,12 @@ details.box{background:#fff;border:1px solid rgba(22,32,43,.14);border-radius:4p
 details.box summary{cursor:pointer;font-weight:700}
 .note{font-size:13px;color:rgba(22,32,43,.72);line-height:1.5}
 .hidden{display:none!important}
+.chip{display:inline-block;margin:3px 4px 0 0;padding:3px 9px;border-radius:999px;border:1px solid rgba(22,32,43,.25);background:#fff;color:var(--ink);font:600 12px 'IBM Plex Sans',sans-serif;cursor:pointer}
+.chip.off{cursor:default;background:#f1f1f1;color:#555}
+.classbox{background:#fff;border:1px solid rgba(22,32,43,.14);border-left:4px solid #6FD1E0;border-radius:4px;padding:10px 12px;margin-top:10px;display:grid;gap:4px}
+#stuTools input,#stuTools select{padding:7px;border:1px solid rgba(22,32,43,.28);border-radius:3px;background:#fff}
+.howto ol{margin:8px 0 0;padding-left:22px;line-height:1.6}.howto li{margin-bottom:4px}
+.howto .best{background:#fff8ea;border-left:3px solid var(--amber);padding:8px 12px;margin-top:10px;font-size:14px;line-height:1.55}
 #toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#16202b;color:#fff;padding:10px 14px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9999;max-width:calc(100vw - 24px);font-size:14px}
 #toast.show{opacity:1}
 #print{display:none}
@@ -119,6 +125,20 @@ details.box summary{cursor:pointer;font-weight:700}
   </div>
   <p class="privacy" style="margin:12px 0 0">Everything stays on this device: the exam, the photos and the marks are saved in this browser only. Use Backup to move an exam to another device.</p>
 </section>
+
+<details class="panel howto" id="howto">
+  <summary style="cursor:pointer;font:700 18px 'Space Grotesk'">How to use Exam Checker</summary>
+  <ol>
+    <li><b>Build the exam</b> — add each question in the same order as your paper and choose its type and points. Paste your <b>class list</b> (one student per line: <code>ID, Name</code>).</li>
+    <li><b>Answer key</b> — tap the correct bubble for each question, or photograph a sheet filled in with the correct answers.</li>
+    <li><b>Print sheets</b> — press <b>Print one sheet per student</b>. Every sheet has the student's name and a code printed on it.</li>
+    <li><b>Test the reader</b> — photograph a sheet with the correct answers. When it says 100%, you are ready.</li>
+    <li><b>Mark students</b> — photograph every sheet and drop <b>all the photos at once</b>, in any order. Each page is matched to its student automatically. Then press <b>Next answer to check</b> to see only the answers that need you.</li>
+    <li><b>Results</b> — check the class list for missing students, then download Excel or CSV, the class report or result slips.</li>
+  </ol>
+  <p class="best"><b>Best way for a big class:</b> printed-per-student sheets (step 3) mean you never type names, pages can be photographed in any order, and a sheet photographed twice is counted once. No class list? Use <b>Student ID bubbles</b> (step 1) — or keep each student's pages together, since the name is then only read from handwriting.</p>
+  <p class="note" style="margin:8px 0 0">Tip: press <b>Load demo exam</b>, then try steps 4–6 with the demo buttons to see it all work in a minute.</p>
+</details>
 
 <div class="steps" role="tablist">
   <button role="tab" data-tab="build" aria-selected="true">1. Build exam<small>Question types &amp; points</small></button>
@@ -192,12 +212,17 @@ details.box summary{cursor:pointer;font-weight:700}
   <p>Give each student one answer sheet. The four black squares let the camera find the page, so the photo can be taken at an angle, on a desk, from a phone.</p>
   <div class="row">
     <label>Paper <select id="paper" class="inline"><option value="a4">A4</option><option value="letter">US Letter</option></select></label>
-    <button class="primary" id="printSheets">🖨 Print answer sheets</button>
+    <button class="primary" id="printPersonal">🖨 Print one sheet per student</button>
+    <button class="secondary" id="printSheets">🖨 Print blank answer sheets</button>
     <button class="secondary" id="printKey">Print filled answer key</button>
     <button class="secondary" id="printPaper">Print question paper</button>
     <button class="secondary" id="dlSample">⬇ Sample filled sheet (PNG)</button>
   </div>
+  <p class="note" id="personalNote"></p>
+  <label class="note">Preview <select id="prevWhich" class="inline"><option value="blank">Blank sheet</option><option value="personal">Sheet for the first student on the class list</option></select></label>
   <ul class="tips">
+    <li><b>One sheet per student</b> (from the class list in step 1) prints each student's name and a code along the bottom edge, so photos can be added in any order and never need a name typed.</li>
+    <li><b>Blank sheets</b> work too: students write their name, and fill in the Student ID bubbles if you turned them on.</li>
     <li>Print at 100% (actual size) if you can — but the reader still works if the printer shrinks the page.</li>
     <li>Students fill bubbles completely with a dark pen or pencil and write short answers clearly inside the boxes.</li>
     <li>To mark, lay the sheet flat in good light and take the photo so all four black squares are visible.</li>
@@ -231,7 +256,7 @@ details.box summary{cursor:pointer;font-weight:700}
 <section class="panel tab" id="t-students" hidden>
   <h2>Mark students</h2>
   <div class="drop" id="stuDrop">
-    <p style="margin:0 0 10px"><b>Drop photos of the students' answer sheets here</b> — one photo per page. Pages after the first are added to the student before them.</p>
+    <p style="margin:0 0 10px"><b>Drop photos of the students' answer sheets here</b> — one photo per page, all at once, in any order.</p>
     <div class="actions" style="justify-content:center">
       <label class="primary" style="display:inline-block">Add photos<input type="file" id="stuFiles" accept="image/*" multiple></label>
       <label class="secondary" style="display:inline-block">📷 Take photo<input type="file" id="stuCam" accept="image/*" capture="environment"></label>
@@ -243,8 +268,15 @@ details.box summary{cursor:pointer;font-weight:700}
     <label><input type="checkbox" id="ocrOn" data-ex="ocr"> Read written answers and names (OCR — slower, check the results)</label>
     <label>Language <select id="ocrLang" class="inline" data-ex="ocrLang"><option value="eng">English</option><option value="swa">Kiswahili</option><option value="spa">Spanish</option><option value="fra">French</option><option value="por">Portuguese</option><option value="deu">German</option><option value="ara">Arabic</option><option value="chi_sim">Chinese</option></select></label>
   </div>
+  <p class="note" style="margin:8px 0 0">Drop all the photos at once, in any order. Sheets printed per student (and sheets with Student ID bubbles) are matched to the right student automatically; a sheet photographed twice is only counted once.</p>
   <div class="progress" id="stuProg"></div>
-  <div class="row" style="margin-top:6px"><span class="note" id="stuSummary"></span><button class="secondary" id="stuFlagged" style="margin-left:auto">Next answer to check →</button><button class="danger" id="stuClear">Remove all students</button></div>
+  <div id="classCheck"></div>
+  <div class="row" style="margin-top:6px"><span class="note" id="stuSummary"></span><button class="primary" id="stuFlagged" style="margin-left:auto">Next answer to check →</button><button class="danger" id="stuClear">Remove all students</button></div>
+  <div class="row" id="stuTools" style="margin-top:8px" hidden>
+    <input id="stuSearch" type="search" placeholder="Find a student" aria-label="Find a student">
+    <select id="stuFilter" aria-label="Show"><option value="all">All students</option><option value="check">Needs checking</option><option value="problem">Photo or name problems</option><option value="done">Done</option></select>
+    <select id="stuSort" aria-label="Sort"><option value="order">Order added</option><option value="name">Name A–Z</option><option value="high">Score: high to low</option><option value="low">Score: low to high</option><option value="check">Most to check first</option></select>
+  </div>
   <div class="stu-list" id="stuList"></div>
   <div id="review"></div>
   <details class="box"><summary>AI marking help for open answers (optional)</summary><p class="note">Suggests points for a typed or OCR-read open answer using your model answer and key words. You always make the final call.</p><div id="aiBox"></div></details>
@@ -333,15 +365,19 @@ const FLAG_TXT={blank:'blank',faint:'faint mark',multiple:'2+ bubbles','erased?'
 /* ---------- sheet layout (all in mm on an A4 page) ---------- */
 const MK=[[12,12],[198,12],[198,285],[12,285]],ORI=[24,12],CODE=[[34,12],[40,12],[46,12]];
 const X0=14,X1=196,YMAX=277,BR=2.2,SP=6,RH=6.6;
+// Sheets printed for one student carry a 16-square code on the bottom edge: 12 bits of the
+// student's code number and 4 check bits, so a misread square is caught instead of misfiled.
+const SCX=i=>30+i*5,SCY=285,SCS=3.4;
+const codeCheck=v=>(v^(v>>4)^(v>>8))&15;
+const codeBits=v=>range(16).map(i=>i<12?(v>>i)&1:(codeCheck(v)>>(i-12))&1);
 function layout(ex){
   const qs=ex.questions,num=new Map(qs.map((q,i)=>[q.id,i+1])),pages=[];let P,y;
   const np=()=>{P={n:pages.length,bub:[],ids:[],boxes:[],txt:[],rects:[],name:null};pages.push(P);
-    if(P.n===0){const d=+ex.idDigits||0,x0=X1-d*5.4;
-      P.txt.push({x:X0,y:25.5,s:2.7,t:'Fill each bubble completely with a dark pen or pencil. Write answers inside the boxes. Keep the black squares clean.',c:'#333'});
-      P.txt.push({x:X0,y:31,s:2.6,t:'Name',b:1});P.name={x:X0,y:32.5,w:d?Math.min(120,x0-X0-8):120,h:11};
-      P.txt.push({x:X0,y:50,s:2.8,t:'Class: ______________________   Date: ______________'});y=57;
-      if(d){P.txt.push({x:x0,y:31,s:2.6,t:'Student ID',b:1});for(let c=0;c<d;c++){const cx=x0+c*5.4+2.7;P.rects.push({x:cx-2.4,y:32.5,w:4.8,h:5.5});for(let v=0;v<10;v++)P.ids.push({c,v,x:cx,y:42+v*4.7,r:1.85,l:String(v)})}y=Math.max(y,42+9*4.7+7)}
-    }else{P.txt.push({x:X0,y:25.5,s:2.8,t:'Name: ________________________________'});y=32}};
+    const d=+ex.idDigits||0,x0=X1-d*5.4;
+    P.txt.push({x:X0,y:25.5,s:2.7,t:P.n===0?'Fill each bubble completely with a dark pen or pencil. Write answers inside the boxes. Keep the black squares clean.':'Page '+(P.n+1)+': write your name'+(d?' and fill in your Student ID':'')+' on this page too.',c:'#333'});
+    P.txt.push({x:X0,y:31,s:2.6,t:'Name',b:1});P.name={x:X0,y:32.5,w:d?Math.min(120,x0-X0-8):120,h:11};
+    if(P.n===0){P.txt.push({x:X0,y:50,s:2.8,t:'Class: ______________________   Date: ______________'});y=57}else y=50;
+    if(d){P.txt.push({x:x0,y:31,s:2.6,t:'Student ID',b:1});for(let c=0;c<d;c++){const cx=x0+c*5.4+2.7;P.rects.push({x:cx-2.4,y:32.5,w:4.8,h:5.5});for(let v=0;v<10;v++)P.ids.push({c,v,x:cx,y:42+v*4.7,r:1.85,l:String(v)})}y=Math.max(y,42+9*4.7+7)}};
   np();
   const bq=qs.filter(isBub);
   if(bq.length){const mo=Math.max(...bq.map(nOpt)),lab=9,cw=lab+mo*SP+4,cols=Math.max(1,Math.floor((X1-X0+4)/cw));let i=0;
@@ -372,8 +408,10 @@ function svgPage(ex,L,pi,o){o=o||{};const P=L.pages[pi],N=L.pages.length;
   const jit=()=>o.rough?{dx:(Math.random()-.5)*.5,dy:(Math.random()-.5)*.5,k:.82+Math.random()*.15,c:['#1a1a1a','#2b2b35','#3a3a44'][Math.random()*3|0]}:{};
   P.bub.forEach(b=>s+=bubble(b,o.fill&&(o.fill[b.q]||[]).includes(b.o)?jit():null));
   P.ids.forEach(b=>s+=bubble(b,o.sid&&o.sid[b.c]===b.l?jit():null));
-  if(o.sid)P.rects.forEach((r,c)=>{if(o.sid[c])s+=`<text x="${r.x+r.w/2}" y="${r.y+4.4}" font-size="4.2" text-anchor="middle" font-family="${HAND}" fill="#1b2a8a">${esc(o.sid[c])}</text>`});
-  if(o.name&&P.name)s+=`<text x="${P.name.x+4}" y="${P.name.y+8}" font-size="6" font-family="${HAND}" fill="#1b2a8a">${esc(o.name)}</text>`;
+  const font=o.typed?'Arial,Helvetica,sans-serif':HAND,ink=o.typed?'#111':'#1b2a8a';
+  if(o.sid)P.rects.forEach((r,c)=>{if(o.sid[c])s+=`<text x="${r.x+r.w/2}" y="${r.y+4.4}" font-size="4.2" text-anchor="middle" font-family="${font}" fill="${ink}">${esc(o.sid[c])}</text>`});
+  if(o.name&&P.name)s+=`<text x="${P.name.x+3}" y="${P.name.y+7.8}" font-size="${o.typed?4.8:6}" font-family="${font}"${o.typed?' font-weight="700"':''} fill="${ink}">${esc(trunc(o.name,34))}</text>`;
+  if(o.code){codeBits(o.code).forEach((b,i)=>{if(b)s+=`<rect x="${SCX(i)-SCS/2}" y="${SCY-SCS/2}" width="${SCS}" height="${SCS}" fill="#000"/>`});s+=`<text x="112" y="286.2" font-size="2.6" fill="#444">Printed for ${esc(trunc(o.name||'',40))} · sheet code ${o.code}</text>`}
   if(o.texts)P.boxes.forEach(b=>{const t=o.texts[b.q];if(t)s+=`<text x="${b.x+4}" y="${b.y+Math.min(b.h-3.5,8.5)}" font-size="5.4" font-family="${HAND}" fill="#1b2a8a">${esc(trunc(t,70))}</text>`});
   s+=`<text x="105" y="293.5" font-size="2.4" text-anchor="middle" fill="#666">MigaBuilder Exam Checker · keep all four black squares in the photo</text>`;
   return s+'</svg>'}
@@ -424,7 +462,9 @@ function analyze(cv){
   for(let r=0;r<4;r++){const H=homog(MK,[0,1,2,3].map(i=>pts[(i+r)%4]));if(!H)continue;S.H=H;const v=darkAt(S,ORI[0],ORI[1],2);if(!best||v>best.v)best={v,H}}
   if(!best||best.v<0.3)return {ok:false,why:'orientation'};
   S.H=best.H;const page=CODE.reduce((n,[x,y],b)=>n|(darkAt(S,x,y,2)>0.45?1<<b:0),0);
-  return {ok:true,S,page}}
+  const bits=range(16).map(i=>darkAt(S,SCX(i),SCY,SCS/2)>0.45?1:0);let v=0,c=0;for(let i=0;i<12;i++)v|=bits[i]<<i;for(let i=0;i<4;i++)c|=bits[12+i]<<i;
+  const code=bits.some(Boolean)?(v>0&&codeCheck(v)===c?v:-1):0;
+  return {ok:true,S,page,code}}
 function readPage(ex,L,pi,S){const P=L.pages[pi],ans={},by={};
   P.bub.forEach(b=>(by[b.q]=by[b.q]||[]).push(b));
   for(const q in by)ans[q]={fills:by[q].sort((a,b)=>a.o-b.o).map(b=>r2(darkAt(S,b.x,b.y,b.r)))};
@@ -491,7 +531,7 @@ $('demoExam').onclick=()=>{const ex=newExam('Science quiz (demo)');ex.subject='G
   add('short','What is the chemical symbol for water?',[],{accepted:['H2O'],points:2});
   add('short','How many days does Earth take to orbit the Sun?',[],{accepted:['365','365.25'],tol:1,points:2});
   add('open','Explain why we have day and night.',[],{points:5,lines:4,keywords:'Earth, rotates, axis, sun, faces',model:'The Earth rotates on its axis once every 24 hours; the side facing the Sun has day and the other side has night.'});
-  S.exams.push(ex);S.cur=ex.id;save();renderAll();showTab('build');toast('Demo exam loaded — try "Test the reader" and "Add 6 demo students".')};
+  S.exams.push(ex);S.cur=ex.id;save();renderAll();showTab('build');toast('Demo exam loaded with a class of 6 — try steps 3 to 6.')};
 
 /* ---------- 1. build ---------- */
 function keyCtl(q){if(isBub(q))return '<span class="bubbles">'+range(nOpt(q)).map(i=>`<button type="button" class="bub${q.correct.includes(i)?' on':''}" data-kq="${q.id}" data-o="${i}" aria-pressed="${q.correct.includes(i)}" title="Mark ${oLab(q,i)} as correct">${oLab(q,i)}</button>`).join('')+'</span>';
@@ -546,7 +586,13 @@ $('keyPhoto').onchange=async e=>{const files=[...e.target.files];e.target.value=
   $('keyProg').textContent=set?'Filled '+set+' answers from the photo. Check them below.':'No answers were read.';save();renderKey()};
 
 /* ---------- 3. sheets & printing ---------- */
-function renderSheet(){const ex=E(),L=layout(ex);$('sheetPrev').innerHTML=L.pages.map((_,i)=>svgPage(ex,L,i)).join('');$('printPaper').disabled=!ex.questions.some(q=>q.text)}
+function personalOpts(ex,c){return {code:c.c,sid:idFor(ex,c.sid),name:c.name,typed:1}}
+function renderSheet(){const ex=E(),L=layout(ex),ents=rosterEntries(ex),c=$('prevWhich').value==='personal'&&ents.length?ensureCodes(ex)[0]:null;
+  $('sheetPrev').innerHTML=L.pages.map((_,i)=>svgPage(ex,L,i,c?personalOpts(ex,c):null)).join('');$('printPaper').disabled=!ex.questions.some(q=>q.text);
+  $('personalNote').innerHTML=ents.length?`Class list: <b>${ents.length} students</b> → ${ents.length*L.pages.length} page${ents.length*L.pages.length>1?'s':''} to print.`:'Add a class list in step 1 (Build exam → Class list) to print one sheet per student.';$('printPersonal').disabled=!ents.length}
+$('prevWhich').onchange=renderSheet;
+$('printPersonal').onclick=()=>{const ex=E();if(!ex.questions.length)return toast('Add questions first.');const codes=ensureCodes(ex);if(!codes.length)return toast('Add a class list in step 1 first.');save(true);const L=layout(ex);
+  doPrint(codes.map(c=>L.pages.map((_,i)=>'<div class="pg">'+svgPage(ex,L,i,personalOpts(ex,c))+'</div>').join('')).join(''),true)};
 function doPrint(html,sheet){const pr=$('print'),letter=$('paper').value==='letter';pr.innerHTML=html;pr.style.setProperty('--ph',letter?'277mm':'296mm');
   const st=document.createElement('style');st.id='pageSize';st.textContent='@page{size:'+(letter?'letter':'A4')+';margin:'+(sheet?'0':'12mm')+'}';document.head.appendChild(st);document.body.classList.add('printing');
   const done=()=>{document.body.classList.remove('printing');st.remove();pr.innerHTML='';window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);setTimeout(()=>window.print(),60)}
@@ -557,14 +603,14 @@ $('printPaper').onclick=()=>{const ex=E();let h='<div class="doc"><h1 style="fon
     if(q.type==='mc'||q.type==='multi')h+=(q.type==='multi'?' <b>Choose all that apply.</b>':'')+'<div>'+range(nOpt(q)).map(i=>'<b>'+LET[i]+'.</b> '+esc(ot[i]||'')).join('&emsp; ')+'</div>';
     else if(q.type==='tf')h+='<div><b>T</b> True &emsp; <b>F</b> False</div>';h+='</li>'});
   doPrint(h+'</ol><p style="font-size:10pt">Mark your answers on the separate answer sheet.</p></div>',false)};
-$('dlSample').onclick=async()=>{const ex=E();if(!ex.questions.length)return toast('Add questions first.');const L=layout(ex),d=demoAnswers(ex,0.75),sid=ex.idDigits?range(ex.idDigits).map(()=>String(Math.random()*10|0)).join(''):'';const c=await synthPhoto(ex,L,0,{fill:d.fill,texts:d.texts,sid,name:'Sample Student'});c.toBlob(b=>download(slug(ex.title)+'-sample-photo.png',b),'image/png')};
+$('dlSample').onclick=async()=>{const ex=E();if(!ex.questions.length)return toast('Add questions first.');const L=layout(ex),d=demoAnswers(ex,0.75),first=ensureCodes(ex)[0],sid=ex.idDigits?range(ex.idDigits).map(()=>String(Math.random()*10|0)).join(''):'';save();const c=await synthPhoto(ex,L,0,Object.assign({fill:d.fill,texts:d.texts},first?personalOpts(ex,first):{sid,name:'Sample Student'}));c.toBlob(b=>download(slug(ex.title)+'-sample-photo.png',b),'image/png')};
 
 /* ---------- 4. reader check ---------- */
 let checkRes=null;
 async function runCheck(cv){const ex=E(),L=layout(ex);$('checkProg').textContent='Reading the photo…';await new Promise(r=>setTimeout(r,30));
   const r=analyze(cv);if(!r.ok){checkRes=null;$('checkProg').textContent='';$('checkOut').innerHTML='<p class="flag red">Could not find the four black corner squares.</p><p class="note">Make sure the whole sheet is in the photo, lying flat, in even light, without shadows over the corners. Photos straight from the phone camera work best.</p>';return}
   if(r.page>=L.pages.length){$('checkOut').innerHTML='<p class="flag red">This sheet has more pages than the current exam. Was it printed for another exam?</p>';return}
-  const rd=readPage(ex,L,r.page,r.S);checkRes={cv,H:r.S.H,page:r.page,rd,texts:{}};
+  const rd=readPage(ex,L,r.page,r.S);checkRes={cv,H:r.S.H,page:r.page,rd,texts:{},code:r.code};
   if(ex.ocr){for(const b of L.pages[r.page].boxes){const q=qOf(b.q);if(q.type==='short'&&rd.ans[b.q].ink){$('checkProg').textContent='Reading written answer '+(ex.questions.indexOf(q)+1)+'…';checkRes.texts[b.q]=await ocr(cropCanvas(r.S,b),true).catch(()=>'')}}}
   $('checkProg').textContent='';renderCheck()}
 function renderCheck(){const ex=E();if(!checkRes){if(!$('checkOut').innerHTML)$('checkOut').innerHTML='<p class="note">No photo checked yet.</p>';return}
@@ -575,7 +621,7 @@ function renderCheck(){const ex=E();if(!checkRes){if(!$('checkOut').innerHTML)$(
     else{const t=checkRes.texts[q.id],m=q.type==='short'&&t!=null?shortMatch(q,t,ex):null;
       rows+=`<tr><td>${i+1}</td><td>${TYPES[q.type]}</td><td>${esc(keyStr(q))}</td><td class="wrap">${q.type==='short'?(t?esc(t):a.ink?'<i>writing found</i>':'<i>empty box</i>'):a.ink?'<i>writing found</i>':'<i>empty box</i>'}</td><td>ink ${Math.round((a.ink||0)*1000)/10}%</td><td class="${m==null?'nokey':m?'ok':'bad'}">${m==null?(q.type==='open'?'teacher marks':'—'):m?'✓ match':'✗ check'}</td></tr>`}});
   const pct=n?Math.round(ok/n*100):0;
-  $('checkOut').innerHTML=`<div class="tiles"><div class="tile"><span>Bubble answers read correctly</span><b class="big" style="color:${pct===100?'#1f5a3a':pct>=90?'#6b4a0c':'#7b281d'}">${n?pct+'%':'—'}</b><span>${ok} of ${n} match the key · page ${checkRes.page+1}</span></div>
+  $('checkOut').innerHTML=`<div class="tiles"><div class="tile"><span>Bubble answers read correctly</span><b class="big" style="color:${pct===100?'#1f5a3a':pct>=90?'#6b4a0c':'#7b281d'}">${n?pct+'%':'—'}</b><span>${ok} of ${n} match the key · page ${checkRes.page+1}${checkRes.code>0?' · printed for '+esc(((E().codes||[]).find(c=>c.c===checkRes.code)||{name:'code '+checkRes.code}).name):checkRes.code<0?' · sheet code unreadable':''}</span></div>
     <div class="tile" style="grid-column:span 2"><span>What next?</span><p class="note" style="margin:6px 0 0">${!n?'Set the answer key in step 2 first, then this checker can compare.':pct===100?'The reader matches your key. You can mark the class with confidence.':'Look at the red rows: if the bubble was filled lightly, move the sensitivity slider left; if empty bubbles are counted, move it right. Retake blurry or shadowed photos.'}</p></div></div>
     <div class="review"><div id="checkImg">${LEGEND}</div><div class="tw"><table class="res"><thead><tr><th>#</th><th>Type</th><th>Key</th><th>Read from photo</th><th>How dark each bubble is</th><th>Result</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   $('checkImg').appendChild(annotate(checkRes.cv,checkRes.H,L,checkRes.page,ans,true))}
@@ -587,19 +633,36 @@ function dropZone(id,fn){const z=$(id);z.addEventListener('dragover',e=>{e.preve
 
 /* ---------- 5. students ---------- */
 let review=null,busy=false;
-function rosterMap(ex){const m=new Map(),list=[];String(ex.roster||'').split('\n').forEach(l=>{const t=l.trim();if(!t)return;const x=t.match(/^(\S+?)\s*[,;\t]\s*(.+)$/)||t.match(/^(\d+)\s+(.+)$/);if(x){m.set(x[1],x[2].trim());list.push(x[2].trim())}else list.push(t)});return {m,list}}
-async function addSheet(ex,L,cv,ctx){const r=analyze(cv);let st;
-  if(r.ok&&r.page>0&&r.page<L.pages.length&&ctx.last&&!ctx.last.pages.some(p=>p.page===r.page))st=ctx.last;
-  else{st={id:uid(),name:'Student '+(ex.students.length+1),sid:'',pages:[],ans:{},problem:''};ex.students.push(st)}
-  const key='p_'+st.id+'_'+st.pages.length+'_'+Date.now().toString(36);await idb.put(key,await toBlob(cv));
-  if(!r.ok||r.page>=L.pages.length){st.pages.push({key,H:null,page:-1});st.problem=r.ok?'This photo is from a page the exam does not have — was the exam changed after printing?':'The four black corner squares were not found. Retake the photo flat and in good light, or type the answers below.';save();return st}
-  st.pages.push({key,H:r.S.H,page:r.page});st.problem='';
-  const rd=readPage(ex,L,r.page,r.S);
+function rosterEntries(ex){return String(ex.roster||'').split('\n').map(l=>{const t=l.trim();if(!t)return null;const x=t.match(/^(\S+?)\s*[,;\t]\s*(.+)$/)||t.match(/^(\d+)\s+(.+)$/);return x?{sid:x[1],name:x[2].trim()}:{sid:'',name:t}}).filter(Boolean)}
+function rosterMap(ex){const ents=rosterEntries(ex),m=new Map();ents.forEach(e=>{if(e.sid)m.set(e.sid,e.name)});return {m,list:ents.map(e=>e.name)}}
+// Give every student on the class list a stable sheet code (kept even if the list is re-ordered later).
+function ensureCodes(ex){ex.codes=ex.codes||[];let next=ex.codes.reduce((m,c)=>Math.max(m,c.c),0)+1;
+  return rosterEntries(ex).map(e=>{let c=ex.codes.find(x=>e.sid?x.sid===e.sid:(!x.sid&&norm(x.name)===norm(e.name)));if(!c){c={c:next++,sid:e.sid,name:e.name};ex.codes.push(c)}else c.name=e.name;return c}).filter(c=>c.c<4096)}
+const idFor=(ex,sid)=>/^\d+$/.test(sid||'')&&String(sid).length===+ex.idDigits?String(sid):'';
+function sigOf(st){const v=[];Object.keys(st.ans).sort().forEach(k=>{const a=st.ans[k];if(a&&a.fills)v.push(...a.fills)});return v}
+function sameSheet(a,b){if(a.length<8||a.length!==b.length)return false;for(let i=0;i<a.length;i++)if(Math.abs(a[i]-b[i])>0.05)return false;return true}
+async function addSheet(ex,L,cv,ctx){const r=analyze(cv),ok=r.ok&&r.page<L.pages.length,rd=ok?readPage(ex,L,r.page,r.S):null;
+  // Who is this? 1) the code printed on a per-student sheet, 2) the Student ID bubbles, 3) the page before it.
+  let key='',info=null,warn='';
+  if(ok&&r.code>0){info=(ex.codes||[]).find(c=>c.c===r.code)||null;key='c:'+r.code}
+  else if(rd&&rd.sid&&!rd.sid.includes('?'))key='id:'+rd.sid;
+  let st=key?ex.students.find(s=>s.key===key):null;
+  if(!st&&!key&&ok&&r.page>0){if(ctx.last&&!ctx.last.key&&!ctx.last.pages.some(p=>p.page===r.page))st=ctx.last;else warn='Could not tell whose page '+(r.page+1)+' this is (no printed code or Student ID). Check the name.'}
+  const isNew=!st;
+  if(isNew){st={id:uid(),name:'Student '+(ex.students.length+1),sid:'',pages:[],ans:{},problem:'',key};ex.students.push(st)}
+  if(ok){const old=st.pages.findIndex(p=>p.page===r.page);if(old>=0){idb.del(st.pages[old].key);st.pages.splice(old,1);st.twice=true}}
+  const pk='p_'+st.id+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);await idb.put(pk,await toBlob(cv));
+  if(!ok){st.pages.push({key:pk,H:null,page:-1});st.problem=r.ok?'This photo is from a page the exam does not have — was the exam changed after printing?':'The four black corner squares were not found. Retake the photo flat and in good light, or type the answers below.';save();return st}
+  st.pages.push({key:pk,H:r.S.H,page:r.page});st.pages.sort((a,b)=>a.page-b.page);if(st.pages.every(p=>p.H))st.problem='';
+  if(warn)st.warn=warn;else if(r.code<0&&!st.key)st.warn='The printed sheet code could not be read — check the name.';
   for(const qid in rd.ans){const q=qOf(qid);if(!q)continue;const a=st.ans[qid]=Object.assign({},rd.ans[qid]);if(a.fills){const d=decide(q,a.fills,ex.thr);a.sel=d.sel;a.flag=d.flag;a.man=false}}
-  if(rd.sid){st.sid=rd.sid;const nm=rosterMap(ex).m.get(rd.sid);if(nm)st.name=nm}
+  if(info){st.name=info.name;if(info.sid)st.sid=info.sid;st.nameOcr=false}
+  else if(rd.sid&&!rd.sid.includes('?')){st.sid=rd.sid;const nm=rosterMap(ex).m.get(rd.sid);if(nm)st.name=nm}
   if(ex.ocr){const P=L.pages[r.page];
     for(const b of P.boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading '+st.name+"'s answer to question "+(ex.questions.findIndex(q=>q.id===b.q)+1)+'…');const q=qOf(b.q);a.text=await ocr(cropCanvas(r.S,b),q.type==='short').catch(()=>'');a.ocr=!!a.text}}
-    if(P.name&&!rosterMap(ex).m.get(st.sid)){ctx.prog('Reading the name…');const t=(await ocr(cropCanvas(r.S,P.name,6,1.2),true).catch(()=>'')).replace(/[^\p{L}\s'.-]/gu,'').trim();if(t.length>=3){st.name=t;st.nameOcr=true}}}
+    if(P.name&&!info&&!rosterMap(ex).m.get(st.sid)&&(isNew||/^Student \d+$/.test(st.name))){ctx.prog('Reading the name…');const t=(await ocr(cropCanvas(r.S,P.name,6,1.2),true).catch(()=>'')).replace(/[^\p{L}\s'.-]/gu,'').trim();if(t.length>=3){st.name=t;st.nameOcr=true}}}
+  // Without a code or ID, the same sheet photographed twice would count twice: compare how dark every bubble is.
+  if(!st.key){const sig=sigOf(st),dup=ex.students.find(o=>o!==st&&sameSheet(sig,sigOf(o)));if(dup)st.warn='Looks like the same sheet as '+dup.name+' — photographed twice? Delete one of them.'}
   save();return st}
 async function addPhotos(files){if(busy)return toast('Still reading the last photos…');const ex=E();if(!ex.questions.length)return toast('Build the exam first (step 1).');busy=true;const L=layout(ex),ctx={last:null,prog:t=>$('stuProg').textContent=t};
   try{for(const [i,f] of files.entries()){ctx.prog('Reading photo '+(i+1)+' of '+files.length+'…');await new Promise(r=>setTimeout(r,20));
@@ -609,21 +672,45 @@ async function addPhotos(files){if(busy)return toast('Still reading the last pho
   finally{busy=false;save(true);renderStudents()}}
 $('stuFiles').onchange=$('stuCam').onchange=e=>{const f=[...e.target.files];e.target.value='';if(f.length)addPhotos(f)};
 dropZone('stuDrop',files=>addPhotos(files));
-$('stuManual').onclick=()=>{const ex=E();if(!ex.questions.length)return toast('Build the exam first.');const ros=rosterMap(ex).list,st={id:uid(),name:ros[ex.students.length]||'Student '+(ex.students.length+1),sid:'',pages:[],ans:{},problem:''};ex.students.push(st);save();openReview(st.id)};
+$('stuManual').onclick=()=>{const ex=E();if(!ex.questions.length)return toast('Build the exam first.');const missing=classCheck(ex).missing[0],st={id:uid(),name:missing?missing.name:'Student '+(ex.students.length+1),sid:missing?missing.sid:'',pages:[],ans:{},problem:''};ex.students.push(st);save();openReview(st.id)};
 $('stuDemo').onclick=async()=>{const ex=E();if(!ex.questions.length)return toast('Load the demo exam or build one first.');if(ex.questions.some(q=>!hasKey(q)&&q.type!=='open'))toast('Tip: set the answer key first so the demo students can get some right.');
-  const L=layout(ex),ros=rosterMap(ex),ids=[...ros.m.keys()],names=ros.list.length?ros.list:['Amina Hassan','Brian Otieno','Chen Wei','Diana Mwangi','Elijah Kamau','Fatuma Ali'],cvs=[];
+  const L=layout(ex),codes=ensureCodes(ex),cvs=[],skill=[0.95,0.8,0.7,0.6,0.45,0.85];save();
   $('stuProg').textContent='Drawing demo answer sheets…';
-  for(let i=0;i<6;i++){const d=demoAnswers(ex,[0.95,0.8,0.7,0.6,0.45,0.85][i]),sid=ex.idDigits?(ids[i]&&ids[i].length===+ex.idDigits?ids[i]:range(ex.idDigits).map(()=>String(Math.random()*10|0)).join('')):'';
-    for(let p=0;p<L.pages.length;p++)cvs.push(await synthPhoto(ex,L,p,{fill:d.fill,texts:d.texts,sid,name:names[i%names.length]}))}
+  if(codes.length){// sheets printed per student: leave one student out, photograph one sheet twice, and shuffle the photos
+    const pick=codes.filter((_,i)=>i!==3).slice(0,6);let again=null;
+    for(const [i,c] of pick.entries()){const d=demoAnswers(ex,skill[i%6]),o={fill:d.fill,texts:d.texts,code:c.c,sid:idFor(ex,c.sid),name:c.name,typed:1};for(let p=0;p<L.pages.length;p++)cvs.push(await synthPhoto(ex,L,p,o));if(i===1)again=o}
+    if(again)cvs.push(await synthPhoto(ex,L,0,again));
+    for(let i=cvs.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[cvs[i],cvs[j]]=[cvs[j],cvs[i]]}}
+  else{const names=['Amina Hassan','Brian Otieno','Chen Wei','Diana Mwangi','Elijah Kamau','Fatuma Ali'];
+    for(let i=0;i<6;i++){const d=demoAnswers(ex,skill[i]),sid=ex.idDigits?range(ex.idDigits).map(()=>String(Math.random()*10|0)).join(''):'';for(let p=0;p<L.pages.length;p++)cvs.push(await synthPhoto(ex,L,p,{fill:d.fill,texts:d.texts,sid,name:names[i]}))}}
   addPhotos(cvs)};
 $('stuClear').onclick=()=>{const ex=E();if(!ex.students.length||!confirm('Remove all '+ex.students.length+' students and their photos?'))return;ex.students.forEach(s=>s.pages.forEach(p=>idb.del(p.key)));ex.students=[];review=null;save(true);renderStudents()};
-function needs(st,ex){let n=0;ex.questions.forEach(q=>{const a=st.ans[q.id]||{},r=score(q,a,ex);if(r.st==='todo'||(a.flag&&a.flag!=='blank'&&!a.man))n++});return n+(st.problem?1:0)}
+function needs(st,ex){let n=0;ex.questions.forEach(q=>{const a=st.ans[q.id]||{},r=score(q,a,ex);if(r.st==='todo'||(a.flag&&a.flag!=='blank'&&!a.man))n++});return n+(st.problem?1:0)+(st.warn?1:0)}
+function classCheck(ex){const ents=rosterEntries(ex),sts=ex.students,match=(s,e)=>(e.sid&&s.sid===e.sid)||norm(s.name)===norm(e.name);
+  const by=new Map();sts.forEach(s=>{const k=s.sid?'id:'+s.sid:'n:'+norm(s.name);if(/^n:(student \d+)?$/.test(k))return;if(!by.has(k))by.set(k,[]);by.get(k).push(s)});
+  return {ents,missing:ents.filter(e=>!sts.some(s=>match(s,e))),extra:ents.length?sts.filter(s=>!ents.some(e=>match(s,e))):[],dups:[...by.values()].filter(a=>a.length>1),twice:sts.filter(s=>s.warn&&/same sheet/.test(s.warn))}}
+const chip=s=>`<button class="chip" data-open="${s.id}">${esc(s.name)}${s.sid?' · '+esc(s.sid):''}</button>`;
+function renderClassCheck(ex){const c=classCheck(ex),el=$('classCheck');
+  if(!c.ents.length){el.innerHTML=ex.students.length>1?'<p class="note">Tip: add a class list in step 1 to see who is missing, and print one sheet per student so photos can be added in any order.</p>'+(c.dups.length||c.twice.length?renderIssues(c):''):'';return}
+  const marked=c.ents.length-c.missing.length;
+  el.innerHTML=`<div class="classbox"><b>Class list: ${marked} of ${c.ents.length} marked</b>${!c.missing.length&&!c.extra.length&&!c.dups.length&&!c.twice.length?' <span class="flag green">everyone is here</span>':''}
+    ${c.missing.length?`<div><span class="note">Not marked yet:</span> ${c.missing.map(e=>`<span class="chip off">${esc(e.name)}${e.sid?' · '+esc(e.sid):''}</span>`).join('')}</div>`:''}
+    ${c.extra.length?`<div><span class="note">Not on the class list (check the name or ID):</span> ${c.extra.map(chip).join('')}</div>`:''}${renderIssues(c)}</div>`}
+function renderIssues(c){return (c.dups.length?`<div><span class="note">Same student more than once:</span> ${c.dups.map(a=>a.map(chip).join('')).join(' · ')}</div>`:'')+(c.twice.length?`<div><span class="note">Possibly the same sheet photographed twice:</span> ${c.twice.map(chip).join('')}</div>`:'')}
+let stuFilter='all',stuSort='order',stuFind='';
 function renderStudents(){const ex=E(),list=ex.students;
   $('stuSummary').textContent=list.length?list.length+' student'+(list.length>1?'s':'')+' · average '+Math.round(list.reduce((t,s)=>t+total(s,ex).pct,0)/list.length)+'%':'No students yet.';
-  $('stuList').innerHTML=list.map((s,i)=>{const t=total(s,ex),n=needs(s,ex);return `<button class="stu${review===s.id?' sel':''}" data-open="${s.id}"><span class="note">#${i+1}${s.sid?' · ID '+esc(s.sid):''}</span><strong>${esc(s.name)}</strong><span class="sc">${t.p} / ${t.m}</span> <span class="note">${Math.round(t.pct)}% · ${esc(gradeOf(ex,t.pct))}</span><br>${s.problem?'<span class="flag red">photo problem</span>':n?'<span class="flag">'+n+' to check</span>':'<span class="flag green">done</span>'}</button>`}).join('');
+  renderClassCheck(ex);$('stuTools').hidden=list.length<2;
+  let view=list.map((s,i)=>({s,i,t:total(s,ex),n:needs(s,ex)}));const f=norm(stuFind);
+  if(f)view=view.filter(v=>norm(v.s.name+' '+v.s.sid).includes(f));
+  if(stuFilter==='check')view=view.filter(v=>v.n&&!v.s.problem);else if(stuFilter==='problem')view=view.filter(v=>v.s.problem||v.s.warn);else if(stuFilter==='done')view=view.filter(v=>!v.n);
+  const cmp={name:(a,b)=>a.s.name.localeCompare(b.s.name),high:(a,b)=>b.t.pct-a.t.pct,low:(a,b)=>a.t.pct-b.t.pct,check:(a,b)=>b.n-a.n}[stuSort];if(cmp)view.sort(cmp);
+  $('stuList').innerHTML=view.map(({s,i,t,n})=>`<button class="stu${review===s.id?' sel':''}" data-open="${s.id}"><span class="note">#${i+1}${s.sid?' · ID '+esc(s.sid):''}${s.key&&s.key[0]==='c'?' · printed sheet':''}</span><strong>${esc(s.name)}</strong><span class="sc">${t.p} / ${t.m}</span> <span class="note">${Math.round(t.pct)}% · ${esc(gradeOf(ex,t.pct))}</span><br>${s.problem?'<span class="flag red">photo problem</span>':s.warn?'<span class="flag red">'+(/same sheet/.test(s.warn)?'possible duplicate':'check name')+'</span>':''}${!s.problem&&n-(s.warn?1:0)?'<span class="flag">'+(n-(s.warn?1:0))+' to check</span>':''}${!n?'<span class="flag green">done</span>':''}${s.twice?'<span class="flag">photographed twice</span>':''}</button>`).join('')||(list.length?'<p class="note">No students match.</p>':'');
   const o=$('examPick').selectedOptions[0];if(o)o.textContent=(ex.title||'Untitled exam')+' ('+ex.questions.length+' q · '+list.length+' students)';
   if(review&&!list.some(s=>s.id===review))review=null;if(review)renderReview();else $('review').innerHTML=''}
 $('stuList').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openReview(b.dataset.open)});
+$('classCheck').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b)openReview(b.dataset.open)});
+$('stuSearch').oninput=e=>{stuFind=e.target.value;renderStudents()};$('stuFilter').onchange=e=>{stuFilter=e.target.value;renderStudents()};$('stuSort').onchange=e=>{stuSort=e.target.value;renderStudents()};
 $('stuFlagged').onclick=()=>{const ex=E(),list=ex.students,start=Math.max(0,list.findIndex(s=>s.id===review)),o=list.slice(start+1).concat(list.slice(0,start+1)).find(s=>needs(s,ex));if(o)openReview(o.id);else toast('Nothing left to check. 🎉')};
 function openReview(id){review=id;renderStudents();$('review').scrollIntoView({behavior:'smooth',block:'start'})}
 let pageCache={id:null,pages:[]};
@@ -632,7 +719,7 @@ async function renderReview(){const ex=E(),st=ex.students.find(s=>s.id===review)
   let h=`<div class="panel" style="background:#f7f5ee;margin-top:14px;padding:16px"><div class="row"><h2 style="margin:0">#${idx+1}</h2>
     <label class="note">Name <input class="inline" data-st="name" value="${esc(st.name)}"></label><label class="note">Student ID <input class="inline" style="width:110px" data-st="sid" value="${esc(st.sid)}"></label>
     <span class="big" style="font-size:28px;margin-left:auto">${t.p} / ${t.m} <span class="note">${Math.round(t.pct)}% · ${esc(gradeOf(ex,t.pct))}</span></span></div>
-    ${st.problem?'<p class="flag red" style="display:inline-block;margin:8px 0">'+esc(st.problem)+'</p>':''}${st.nameOcr?'<p class="note">The name was read by OCR — check it against the picture.</p>':''}
+    ${st.problem?'<p class="flag red" style="display:inline-block;margin:8px 0">'+esc(st.problem)+'</p>':''}${st.warn?'<p class="flag red" style="display:inline-block;margin:8px 0">'+esc(st.warn)+' <button class="secondary" data-rv="okname" style="padding:2px 8px;margin-left:6px">It is correct</button></p>':''}${st.twice?'<p class="note">This sheet was photographed more than once — the newest photo is used.</p>':''}${st.nameOcr?'<p class="note">The name was read by OCR — check it against the picture.</p>':''}
     <div class="actions" style="margin:8px 0"><button class="secondary" data-rv="prev">← Previous</button><button class="secondary" data-rv="next">Next →</button><label class="secondary" style="display:inline-block">Replace / add page photo<input type="file" accept="image/*" data-rv="photo" hidden></label>${st.problem&&st.pages.length?'<button class="secondary" data-rv="freeocr">Read a plain answer list with OCR</button>':''}<button class="danger" data-rv="del">Delete student</button></div>
     <div class="review"><div id="rvImgs">${st.pages.length?LEGEND:'<p class="note">No photo — type or tap the answers on the right.</p>'}</div><div id="rvAns">`;
   ex.questions.forEach((q,i)=>{const a=st.ans[q.id]||{},r=score(q,a,ex);
@@ -653,6 +740,7 @@ $('review').addEventListener('click',async e=>{const b=e.target.closest('button'
     try{const r=MigaAI.json(await MigaAI.ask('You are a fair, careful teacher marking one exam answer. Reply with ONE JSON object only.','Question: '+(q.text||'(not given)')+'\nMaximum points: '+q.points+'\nModel answer / marking notes: '+(q.model||'(none)')+'\nKey words: '+(q.keywords||'(none)')+'\nStudent answer (may contain OCR errors): '+a.text+'\nReturn {"points": number between 0 and '+q.points+' in steps of 0.5, "reason":"one short sentence for the teacher"}'));
       const p=clamp(Math.round((+r.points||0)*2)/2,0,+q.points);b.outerHTML=`<span class="note">AI: ${p} pts — ${esc(r.reason||'')}</span><button class="secondary" data-use="${q.id}" data-v="${p}">Use ${p}</button>`}catch(err){toast(err.message);b.disabled=false;b.textContent='✨ AI suggest'}return}
   const rv=b.dataset.rv;if(!rv)return;const i=ex.students.indexOf(st);
+  if(rv==='okname'){st.warn='';save();refreshReview();return}
   if(rv==='prev'||rv==='next'){const n=ex.students[(i+(rv==='next'?1:-1)+ex.students.length)%ex.students.length];openReview(n.id)}
   else if(rv==='del'){if(!confirm('Delete '+st.name+'?'))return;st.pages.forEach(p=>idb.del(p.key));ex.students.splice(i,1);review=null;save(true);renderStudents()}
   else if(rv==='freeocr'){b.disabled=true;b.textContent='Reading…';try{const pages=await loadPages(st),pg=pages.find(Boolean);if(!pg)throw new Error('No photo stored.');const txt=await ocr(fit(pg.cv,1800),false),n=applyFreeText(ex,st,txt);toast(n?'Filled '+n+' answers from lines like "1. B". Check them.':'Could not find lines like "1. B" or "2) Paris" in the photo.');save();refreshReview()}catch(err){toast(err.message)}finally{b.disabled=false}}});
@@ -660,7 +748,7 @@ $('review').addEventListener('change',async e=>{const el=e.target;if(el.dataset.
   if(!r.ok){toast('Could not find the four black squares in that photo.');return}const old=st.pages.findIndex(p=>p.page===r.page||p.page===-1);if(old>=0){idb.del(st.pages[old].key);st.pages.splice(old,1)}
   if(r.page>=L.pages.length){toast('That photo is from a page this exam does not have.');return}
   await addSheetInto(ex,L,cv,r,st,{prog:t=>$('stuProg').textContent=t});save(true);pageCache.id=null;renderStudents()});
-async function addSheetInto(ex,L,cv,r,st,ctx){const key='p_'+st.id+'_'+Date.now().toString(36);await idb.put(key,await toBlob(cv));st.pages.push({key,H:r.S.H,page:r.page});st.pages.sort((a,b)=>a.page-b.page);st.problem='';const rd=readPage(ex,L,r.page,r.S);
+async function addSheetInto(ex,L,cv,r,st,ctx){const key='p_'+st.id+'_'+Date.now().toString(36);await idb.put(key,await toBlob(cv));st.pages.push({key,H:r.S.H,page:r.page});st.pages.sort((a,b)=>a.page-b.page);st.problem='';st.warn='';const rd=readPage(ex,L,r.page,r.S);
   for(const qid in rd.ans){const q=qOf(qid);if(!q)continue;const a=st.ans[qid]=Object.assign({},rd.ans[qid]);if(a.fills){const d=decide(q,a.fills,ex.thr);a.sel=d.sel;a.flag=d.flag;a.man=false}}
   if(rd.sid){st.sid=rd.sid;const nm=rosterMap(ex).m.get(rd.sid);if(nm)st.name=nm}
   if(ex.ocr)for(const b of L.pages[r.page].boxes){const a=st.ans[b.q];if(a&&a.ink){ctx.prog('Reading written answers…');a.text=await ocr(cropCanvas(r.S,b),qOf(b.q).type==='short').catch(()=>'');a.ocr=!!a.text}}ctx.prog('')}
@@ -670,7 +758,7 @@ function applyFreeText(ex,st,txt){let n=0;txt.split(/\n|(?=\s\d{1,3}\s*[.):-]\s)
     else{a.text=v;a.ocr=true;n++}a.man=true});return n}
 function refreshReview(){renderStudents()}
 $('review').addEventListener('input',e=>{const el=e.target,ex=E(),st=ex.students.find(s=>s.id===review);if(!st)return;
-  if(el.dataset.st){st[el.dataset.st]=el.value;if(el.dataset.st==='sid'){const nm=rosterMap(ex).m.get(el.value.trim());if(nm){st.name=nm;const n=document.querySelector('[data-st="name"]');if(n)n.value=nm}}if(el.dataset.st==='name')st.nameOcr=false;save();const card=document.querySelector('[data-open="'+st.id+'"] strong');if(card)card.textContent=st.name;return}
+  if(el.dataset.st){st[el.dataset.st]=el.value;if(el.dataset.st==='sid'){const nm=rosterMap(ex).m.get(el.value.trim());if(nm){st.name=nm;const n=document.querySelector('[data-st="name"]');if(n)n.value=nm}}if(el.dataset.st==='name')st.nameOcr=false;if(st.warn&&!/same sheet/.test(st.warn))st.warn='';save();const card=document.querySelector('[data-open="'+st.id+'"] strong');if(card)card.textContent=st.name;return}
   if(el.dataset.sq&&el.dataset.sf){const a=st.ans[el.dataset.sq]=st.ans[el.dataset.sq]||{};a[el.dataset.sf]=el.dataset.sf==='pts'?(el.value===''?null:+el.value):el.value;if(el.dataset.sf==='text')a.ocr=false;save();clearTimeout(refreshReview.t);refreshReview.t=setTimeout(()=>{const f=document.activeElement,sel=f&&f.dataset&&f.dataset.sq?'[data-sq="'+f.dataset.sq+'"][data-sf="'+f.dataset.sf+'"]':null,pos=f&&f.selectionStart;renderStudents();if(sel)setTimeout(()=>{const n=document.querySelector(sel);if(n){n.focus();try{n.setSelectionRange(pos,pos)}catch(_){}}},0)},900)}});
 
 /* ---------- 6. results ---------- */
@@ -712,6 +800,7 @@ $('dlReport').onclick=()=>{const ex=E();if(!ex.students.length)return toast('No 
 
 /* ---------- start ---------- */
 try{MigaAI.mount($('aiBox'))}catch(e){}
+try{const h=$('howto');h.open=localStorage.getItem('migaExamHowto')!=='closed';h.addEventListener('toggle',()=>{try{localStorage.setItem('migaExamHowto',h.open?'open':'closed')}catch(_){}})}catch(e){$('howto').open=true}
 window.addEventListener('beforeunload',()=>save(true));
 renderAll();
 })();
