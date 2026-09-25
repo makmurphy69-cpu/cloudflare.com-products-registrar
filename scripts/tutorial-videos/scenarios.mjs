@@ -350,6 +350,58 @@ S('body-map.html', {
   }
 });
 
+S('biology-map.html', {
+  title: 'Biology Map', subtitle: 'The tree of life, DNA and evolution',
+  intro: 'Welcome to Biology Map. See how humans are related to other living things, how much DNA we share, and how DNA, genes, mutations and evolution work.',
+  async run(h, page) {
+    await h.step('The tree of life shows forty-three living things, from bacteria to humans. Every branch point is a common ancestor. Let us open the chimpanzee.', () => h.click('[data-l=chimp]'));
+    await h.step('Chimpanzees share about ninety-nine percent of our DNA letters, and our lines split about six and a half million years ago. The gold and blue lines show both paths back to that ancestor.', () => h.point('#info .simbar'));
+    await h.step('You also see what we both inherited, and what evolved on each line since the split.', () => h.scroll('#info .inn', 'center'));
+    await h.step('Now a distant relative: the banana. We shared an ancestor over one and a half billion years ago.', async () => { await h.scroll('#tree'); await h.click('[data-l=banana]'); });
+    await h.step('Sixty percent of banana genes have a human counterpart — but that does not mean sixty percent of our DNA letters match. The tool always says what each number measures.', () => h.point('#info .sect >> nth=0'));
+    await h.step('The ranking compares all the figures side by side.', () => h.click('[data-tv=rank]'));
+    await h.step('Tap any branch point to see what evolved there, like the first mammals, with hair and milk.', async () => { await h.click('[data-tv=tree]'); await h.click('[data-n=mammals]'); });
+    await h.step('Drag the time slider to travel back and see the key events in the history of life.', async () => { await h.point('#time'); await page.locator('#time').evaluate(e => { e.value = 620; e.dispatchEvent(new Event('input')); }); await h.point('#timeEv'); });
+    await h.step('What DNA is: a double helix written with four letters, A, T, G and C. Tap each level to zoom from your body down to a single letter.', async () => { await h.click('[data-tab=dna]'); await h.click('.lvl >> nth=2'); await h.click('.lvl >> nth=5'); });
+    await h.step('Type letters to build a DNA strand. The matching strand appears, because A always pairs with T, and G with C.', () => h.type('#strandIn', 'ATGGCTAGCTTAG'));
+    await h.step('Gene expression shows, step by step, how a gene is copied into RNA and translated into a protein.', async () => { await h.click('[data-tab=expr]'); await h.click('#eNext', { after: 900 }); await h.click('#eNext', { after: 900 }); await h.click('#eNext', { after: 900 }); await h.click('#eNext', { after: 900 }); });
+    await h.step('The codon translator reads real DNA three letters at a time. Here is the start of the insulin gene.', () => h.click('[data-code^=ATGGCCCTG]'));
+    await h.step('In the mutation lab you can change a real human gene. Try the sickle cell mutation: one letter changes, and one amino acid in haemoglobin changes with it.', async () => { await h.click('[data-tab=mut]'); await h.click('[data-mp="0"]'); await h.point('#mOut .verdict'); });
+    await h.step('Delete a single letter and the whole reading frame shifts — a frameshift that breaks the protein.', async () => { await h.click('[data-mp="3"]'); await h.point('#mOut .verdict'); });
+    await h.step('The evolution simulator shows natural selection. On dark bark, dark moths are hidden from birds, and in a few dozen generations they take over.', async () => { await h.click('[data-tab=evo]'); await h.click('#simRun'); await h.wait(6500); await h.point('#chart'); });
+    await h.step('Human diversity follows our ancestors out of Africa to every continent.', async () => { await h.click('[data-tab=div]'); await h.click('#playMig'); await h.wait(7000); });
+    await h.step('Tap a pin to see how a population adapted, like Tibetans living at high altitude with a gene they got from Denisovans.', async () => { await h.click('#showAll'); await h.click('[data-pin="0"]'); });
+    await h.step('The facts explain that any two people share about 99.9 percent of their DNA, and that most variation is found within groups, not between them.', () => h.scroll('#divFacts', 'center'));
+    await h.step('Finally, test yourself. Choose a topic and press Generate quiz.', async () => { await h.scroll('#quizPanel'); await h.select('#qSource', 'tree'); await h.click('#makeQuiz'); });
+    await h.step('Pick an answer to see the explanation. You can also print a quiz with an answer key.', () => h.click('#qOpts .opt >> nth=0'));
+    await h.sampleDownload('#printQuiz', 'Printable quiz made in this video');
+  }
+});
+
+S('chemistry-map.html', {
+  title: 'Chemistry Map', subtitle: 'The periodic table and what elements make',
+  intro: 'Welcome to Chemistry Map. Explore all one hundred and eighteen elements, see how they combine, and discover what materials they make.',
+  async run(h, page) {
+    await h.step('Every element has its own square, coloured by its family. Hover over one for a quick summary.', async () => { await h.point('#el-Na'); await h.point('#el-Fe'); });
+    await h.step('Open an element, like carbon. You see its atom, with protons and neutrons in the nucleus and electrons in shells.', async () => { await page.locator('#addMode').setChecked(false); await h.click('#el-C'); await h.point('#atom'); });
+    await h.step('Then where it is found, what it is used for, and its different forms — carbon can be diamond, graphite or graphene.', () => h.scroll('#info .sect >> nth=2', 'center'));
+    await h.step('It lists the compounds it makes and the materials made with it.', () => h.scroll('#info .cpd >> nth=0', 'center'));
+    await h.step('The colour buttons show patterns. Solid, liquid or gas shows each element at the temperature you choose. At room temperature only mercury and bromine are liquid.', async () => { await h.scroll('#modes'); await h.click('[data-mode=state]'); await h.point('#el-Hg'); });
+    await h.step('Heat it to the surface of the Sun, and almost everything boils.', async () => { await h.click('[data-t="5500"]'); await h.wait(800); });
+    await h.step('Electronegativity shows which atoms pull electrons hardest — fluorine, at the top right.', async () => { await h.click('[data-mode=en]'); await h.point('#el-F'); });
+    await h.step('Now mix elements. With this box ticked, tapping the table puts elements in the bowl. Add sodium and chlorine.', async () => { await h.click('[data-mode=family]'); await page.locator('#addMode').setChecked(true); await h.click('#el-Na'); await h.click('#el-Cl'); });
+    await h.step('The mixer explains the bond — sodium gives an electron to chlorine, an ionic bond — predicts the formula, NaCl, and shows the real compound: table salt.', () => h.point('#labOut .ccard >> nth=1'));
+    await h.step('Try a classic like calcium, carbon and oxygen, which make limestone, chalk and seashells.', async () => { await h.click('[data-p="6"]'); await h.point('#labOut .ccard >> nth=1'); });
+    await h.step('Materials shows what the elements build. Tap one, like a lithium-ion battery, and its elements light up in the table.', async () => { await h.click('[data-tab=mat]'); await h.click('[data-m=liion]'); await h.scroll('#ptable', 'center'); await h.wait(1200); });
+    await h.step('The formula calculator works out molar mass and what share each element makes up. Here is glucose.', async () => { await h.click('[data-tab=calc]'); await h.type('#formula', 'C6H12O6'); await h.point('#calcOut'); });
+    await h.step('How atoms bond explains atoms, shells, and ionic, covalent and metallic bonds with diagrams.', () => h.click('[data-tab=learn]'));
+    await h.step('Search for any use, like battery, to light up every element that is used in batteries.', async () => { await h.type('#search', 'battery'); await page.locator('#search').dispatchEvent('change'); await h.scroll('#ptable', 'center'); await h.wait(1200); });
+    await h.step('Finally, test yourself. Choose the elements and question types, then press Generate quiz.', async () => { await h.scroll('#quizPanel'); await h.select('#qSource', 'first20'); await h.click('#makeQuiz'); });
+    await h.step('Pick an answer and you get an explanation, with a link to open that element.', () => h.click('#qOpts .opt >> nth=0'));
+    await h.sampleDownload('#printQuiz', 'Printable quiz made in this video');
+  }
+});
+
 S('alphabet-forge.html', {
   title: 'Alphabet Forge', subtitle: 'Hear, learn and write the world’s alphabets',
   intro: 'Welcome to Alphabet Forge. Learn to read, say and write alphabets from around the world.',

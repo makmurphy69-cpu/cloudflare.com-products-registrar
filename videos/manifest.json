@@ -116,6 +116,41 @@
    "kind": "image"
   }
  },
+ "biology-map.html": {
+  "title": "Biology Map",
+  "video": "videos/biology-map.mp4",
+  "poster": "videos/biology-map.jpg",
+  "duration": 287,
+  "transcript": [
+   "Welcome to Biology Map. See how humans are related to other living things, how much DNA we share, and how DNA, genes, mutations and evolution work.",
+   "The tree of life shows forty-three living things, from bacteria to humans. Every branch point is a common ancestor. Let us open the chimpanzee.",
+   "Chimpanzees share about ninety-nine percent of our DNA letters, and our lines split about six and a half million years ago. The gold and blue lines show both paths back to that ancestor.",
+   "You also see what we both inherited, and what evolved on each line since the split.",
+   "Now a distant relative: the banana. We shared an ancestor over one and a half billion years ago.",
+   "Sixty percent of banana genes have a human counterpart — but that does not mean sixty percent of our DNA letters match. The tool always says what each number measures.",
+   "The ranking compares all the figures side by side.",
+   "Tap any branch point to see what evolved there, like the first mammals, with hair and milk.",
+   "Drag the time slider to travel back and see the key events in the history of life.",
+   "What DNA is: a double helix written with four letters, A, T, G and C. Tap each level to zoom from your body down to a single letter.",
+   "Type letters to build a DNA strand. The matching strand appears, because A always pairs with T, and G with C.",
+   "Gene expression shows, step by step, how a gene is copied into RNA and translated into a protein.",
+   "The codon translator reads real DNA three letters at a time. Here is the start of the insulin gene.",
+   "In the mutation lab you can change a real human gene. Try the sickle cell mutation: one letter changes, and one amino acid in haemoglobin changes with it.",
+   "Delete a single letter and the whole reading frame shifts — a frameshift that breaks the protein.",
+   "The evolution simulator shows natural selection. On dark bark, dark moths are hidden from birds, and in a few dozen generations they take over.",
+   "Human diversity follows our ancestors out of Africa to every continent.",
+   "Tap a pin to see how a population adapted, like Tibetans living at high altitude with a gene they got from Denisovans.",
+   "The facts explain that any two people share about 99.9 percent of their DNA, and that most variation is found within groups, not between them.",
+   "Finally, test yourself. Choose a topic and press Generate quiz.",
+   "Pick an answer to see the explanation. You can also print a quiz with an answer key.",
+   "Now it is your turn. Open Biology Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/biology-map.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
  "body-map.html": {
   "title": "Body Map",
   "video": "videos/body-map.mp4",
@@ -234,6 +269,37 @@
   "sample": {
    "file": "samples/cartoon-forge.html",
    "label": "Cartoon made in this video",
+   "kind": "html"
+  }
+ },
+ "chemistry-map.html": {
+  "title": "Chemistry Map",
+  "video": "videos/chemistry-map.mp4",
+  "poster": "videos/chemistry-map.jpg",
+  "duration": 229,
+  "transcript": [
+   "Welcome to Chemistry Map. Explore all one hundred and eighteen elements, see how they combine, and discover what materials they make.",
+   "Every element has its own square, coloured by its family. Hover over one for a quick summary.",
+   "Open an element, like carbon. You see its atom, with protons and neutrons in the nucleus and electrons in shells.",
+   "Then where it is found, what it is used for, and its different forms — carbon can be diamond, graphite or graphene.",
+   "It lists the compounds it makes and the materials made with it.",
+   "The colour buttons show patterns. Solid, liquid or gas shows each element at the temperature you choose. At room temperature only mercury and bromine are liquid.",
+   "Heat it to the surface of the Sun, and almost everything boils.",
+   "Electronegativity shows which atoms pull electrons hardest — fluorine, at the top right.",
+   "Now mix elements. With this box ticked, tapping the table puts elements in the bowl. Add sodium and chlorine.",
+   "The mixer explains the bond — sodium gives an electron to chlorine, an ionic bond — predicts the formula, NaCl, and shows the real compound: table salt.",
+   "Try a classic like calcium, carbon and oxygen, which make limestone, chalk and seashells.",
+   "Materials shows what the elements build. Tap one, like a lithium-ion battery, and its elements light up in the table.",
+   "The formula calculator works out molar mass and what share each element makes up. Here is glucose.",
+   "How atoms bond explains atoms, shells, and ionic, covalent and metallic bonds with diagrams.",
+   "Search for any use, like battery, to light up every element that is used in batteries.",
+   "Finally, test yourself. Choose the elements and question types, then press Generate quiz.",
+   "Pick an answer and you get an explanation, with a link to open that element.",
+   "Now it is your turn. Open Chemistry Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/chemistry-map.html",
+   "label": "Printable quiz made in this video",
    "kind": "html"
   }
  },
