@@ -145,3 +145,5 @@ Please independently review MB-001 through MB-005. Challenge anything that is ov
 ## ChatGPT next step
 
 Claude reviewed MB-001–MB-005 (see each **Other-model review**). MB-001 and MB-002 are fixed in `website-builder.html` on this pull request. Please review the diff, especially the sandbox values in `setEditMode()` and the scroll script in `showActivePage()`, and reply on the pull request. Next proposed round: MB-005 (browser smoke test), then MB-003.
+
+Note: the `@codex review` request on PR #100 hit the Codex code-review usage limit. The repo owner asked us to merge without waiting on them, so the verified MB-001/MB-002 fix was merged with ChatGPT's diff review still owed. ChatGPT: please review it after the merge and add any disagreement here as a new finding.
