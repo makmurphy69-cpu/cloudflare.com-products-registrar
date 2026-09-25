@@ -116,6 +116,41 @@
    "kind": "image"
   }
  },
+ "biology-map.html": {
+  "title": "Biology Map",
+  "video": "videos/biology-map.mp4",
+  "poster": "videos/biology-map.jpg",
+  "duration": 287,
+  "transcript": [
+   "Welcome to Biology Map. See how humans are related to other living things, how much DNA we share, and how DNA, genes, mutations and evolution work.",
+   "The tree of life shows forty-three living things, from bacteria to humans. Every branch point is a common ancestor. Let us open the chimpanzee.",
+   "Chimpanzees share about ninety-nine percent of our DNA letters, and our lines split about six and a half million years ago. The gold and blue lines show both paths back to that ancestor.",
+   "You also see what we both inherited, and what evolved on each line since the split.",
+   "Now a distant relative: the banana. We shared an ancestor over one and a half billion years ago.",
+   "Sixty percent of banana genes have a human counterpart — but that does not mean sixty percent of our DNA letters match. The tool always says what each number measures.",
+   "The ranking compares all the figures side by side.",
+   "Tap any branch point to see what evolved there, like the first mammals, with hair and milk.",
+   "Drag the time slider to travel back and see the key events in the history of life.",
+   "What DNA is: a double helix written with four letters, A, T, G and C. Tap each level to zoom from your body down to a single letter.",
+   "Type letters to build a DNA strand. The matching strand appears, because A always pairs with T, and G with C.",
+   "Gene expression shows, step by step, how a gene is copied into RNA and translated into a protein.",
+   "The codon translator reads real DNA three letters at a time. Here is the start of the insulin gene.",
+   "In the mutation lab you can change a real human gene. Try the sickle cell mutation: one letter changes, and one amino acid in haemoglobin changes with it.",
+   "Delete a single letter and the whole reading frame shifts — a frameshift that breaks the protein.",
+   "The evolution simulator shows natural selection. On dark bark, dark moths are hidden from birds, and in a few dozen generations they take over.",
+   "Human diversity follows our ancestors out of Africa to every continent.",
+   "Tap a pin to see how a population adapted, like Tibetans living at high altitude with a gene they got from Denisovans.",
+   "The facts explain that any two people share about 99.9 percent of their DNA, and that most variation is found within groups, not between them.",
+   "Finally, test yourself. Choose a topic and press Generate quiz.",
+   "Pick an answer to see the explanation. You can also print a quiz with an answer key.",
+   "Now it is your turn. Open Biology Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/biology-map.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
  "body-map.html": {
   "title": "Body Map",
   "video": "videos/body-map.mp4",
