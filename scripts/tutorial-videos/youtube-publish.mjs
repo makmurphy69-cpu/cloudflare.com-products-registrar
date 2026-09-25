@@ -123,7 +123,17 @@ async function auth() {
     q.get('code') ? resolve(q.get('code')) : reject(new Error(q.get('error')));
   }));
   const tok = await tokenRequest({ code, redirect_uri: redirect, grant_type: 'authorization_code' });
+  const name = await channelName(tok.access_token);
+  if (!name) throw new Error('This Google account has no YouTube channel. Run auth again and pick the MigaBuilder channel.');
+  console.log(`\nConnected to the YouTube channel "${name}".`);
   console.log('\nYT_REFRESH_TOKEN=' + tok.refresh_token + '\n\nKeep this secret. Add it as a GitHub Actions secret to post from GitHub.');
+}
+
+async function channelName(token) {
+  const r = await googleJson(await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true', {
+    headers: { Authorization: 'Bearer ' + token }
+  }));
+  return r.items?.[0]?.snippet?.title;
 }
 
 async function uploadOne(token, post, privacy) {
@@ -172,6 +182,7 @@ async function upload() {
   const todo = selectedTools().filter(f => !state[f]).slice(0, limit);
   if (!todo.length) { console.log('Nothing to upload: every selected video is already on YouTube.'); return; }
   const { access_token } = await tokenRequest({ refresh_token: env('YT_REFRESH_TOKEN'), grant_type: 'refresh_token' });
+  console.log(`Posting to the YouTube channel "${await channelName(access_token)}".`);
   for (const file of todo) {
     const post = buildPost(file);
     console.log(`Uploading ${file} …`);

@@ -82,8 +82,10 @@ node scripts/tutorial-videos/youtube-publish.mjs upload qr-forge --privacy=unlis
    ```bash
    YT_CLIENT_ID=… YT_CLIENT_SECRET=… node scripts/tutorial-videos/youtube-publish.mjs auth
    ```
-   Open the link, sign in with the Google account that owns the channel,
-   and copy the `YT_REFRESH_TOKEN` it prints.
+   Open the link and sign in with the Google account that owns or manages
+   the MigaBuilder channel. If it asks you to choose an account or channel,
+   pick **MigaBuilder**. The script prints the channel it connected to;
+   check that it says MigaBuilder, then copy the `YT_REFRESH_TOKEN`.
 5. In GitHub: **Settings → Secrets and variables → Actions**, add the secrets
    `YT_CLIENT_ID`, `YT_CLIENT_SECRET` and `YT_REFRESH_TOKEN`. Optionally add
    a variable `YT_PLAYLIST` with a playlist ID to collect the videos.
