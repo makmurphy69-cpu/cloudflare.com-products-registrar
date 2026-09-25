@@ -1,0 +1,57 @@
+# Posts the tool tutorial videos to YouTube a few per day (the YouTube API's
+# daily quota allows about six uploads) and records them in videos/youtube.json.
+# Needs the YT_CLIENT_ID, YT_CLIENT_SECRET and YT_REFRESH_TOKEN repository
+# secrets; see scripts/tutorial-videos/README.md, "Posting to YouTube".
+name: Post videos to YouTube
+
+on:
+  schedule:
+    - cron: '17 14 * * *'
+  workflow_dispatch:
+    inputs:
+      tools:
+        description: 'Only these tools, space-separated (e.g. "qr-forge bug-scanner"). Empty = all not yet posted.'
+        required: false
+      privacy:
+        description: 'public, unlisted or private'
+        required: false
+        default: 'public'
+      limit:
+        description: 'Max uploads this run'
+        required: false
+        default: '6'
+
+permissions:
+  contents: write
+
+concurrency: youtube-publish
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Upload
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_PLAYLIST: ${{ vars.YT_PLAYLIST }}
+          TOOLS: ${{ inputs.tools }}
+          PRIVACY: ${{ inputs.privacy || 'public' }}
+          LIMIT: ${{ inputs.limit || '6' }}
+        run: |
+          node scripts/tutorial-videos/youtube-publish.mjs upload $TOOLS \
+            --privacy="$PRIVACY" --limit="$LIMIT" ${YT_PLAYLIST:+--playlist="$YT_PLAYLIST"}
+      - name: Save posted video links
+        if: always()
+        run: |
+          git add videos/youtube.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898699+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record videos posted to YouTube"
+          git push

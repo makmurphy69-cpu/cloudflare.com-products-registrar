@@ -54,3 +54,45 @@ Each `h.step(text, action)` speaks and captions `text` while running
 `sampleDownload`, `sampleShot` (screenshot of an element) and `sampleFile`.
 Then run the script for that tool, and commit the new files in `videos/` and
 `samples/`.
+
+## Posting to YouTube
+
+`youtube-publish.mjs` posts each tool's video to your YouTube channel. The
+title and description come from `manifest.json` and the scenario subtitle:
+what the tool does, a link to it on migabuilder.com, and the steps shown in
+the video. The poster frame is used as the thumbnail. Posted videos are
+recorded in `videos/youtube.json`, so nothing is posted twice.
+
+```bash
+node scripts/tutorial-videos/youtube-publish.mjs preview        # see every post in videos/youtube-posts.md
+node scripts/tutorial-videos/youtube-publish.mjs upload         # post the next 6 not yet posted
+node scripts/tutorial-videos/youtube-publish.mjs upload qr-forge --privacy=unlisted
+```
+
+### One-time setup
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), create a
+   project and enable **YouTube Data API v3**.
+2. **APIs & Services → OAuth consent screen**: choose *External*, fill in the
+   app name and your email, add yourself as a *Test user*, then **Publish
+   app** (in testing mode the refresh token expires after 7 days).
+3. **Credentials → Create credentials → OAuth client ID → Desktop app**.
+   Copy the client ID and secret.
+4. On your own computer, in this repository:
+   ```bash
+   YT_CLIENT_ID=… YT_CLIENT_SECRET=… node scripts/tutorial-videos/youtube-publish.mjs auth
+   ```
+   Open the link, sign in with the Google account that owns the channel,
+   and copy the `YT_REFRESH_TOKEN` it prints.
+5. In GitHub: **Settings → Secrets and variables → Actions**, add the secrets
+   `YT_CLIENT_ID`, `YT_CLIENT_SECRET` and `YT_REFRESH_TOKEN`. Optionally add
+   a variable `YT_PLAYLIST` with a playlist ID to collect the videos.
+
+The **Post videos to YouTube** workflow then posts up to 6 videos a day until
+all of them are up (run it by hand from the Actions tab to start now).
+
+**Limits.** The API's default quota allows about 6 uploads a day. Videos
+uploaded by an API project that Google has not audited are locked to
+*private*: make them public in YouTube Studio, or request an audit with the
+[YouTube API audit form](https://support.google.com/youtube/contact/yt_api_form).
+Custom thumbnails need a phone-verified channel.
