@@ -31,3 +31,11 @@ A tool is not finished until **all** of these are done, in the same pull request
 
 When a tool changes in a way that makes its video wrong, update the scenario
 and record the video again.
+
+## Working with ChatGPT
+
+Claude and ChatGPT review each other's work through `AI-COLLABORATION.md` and
+`AI-REVIEW.md`. This only happens when the owner asks in chat (for example
+"ChatGPT left you a message, check it and implement it if you agree"); there
+is no scheduled or automatic run. When asked, follow the "When this runs"
+steps in `AI-COLLABORATION.md`.
