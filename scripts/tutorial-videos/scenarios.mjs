@@ -294,7 +294,7 @@ S('idea-atlas.html', {
 
 S('body-map.html', {
   title: 'Body Map', subtitle: 'How every part of the body works',
-  intro: 'Welcome to Body Map. Learn how every part of your body works, what can go wrong with it, and how to keep it healthy.',
+  intro: 'Welcome to Body Map. Learn how every organ, bone, muscle and layer of skin works, what can go wrong with it, and how to keep it healthy.',
   async run(h, page) {
     await h.step('The map shows the main organs and body parts. Hover over one to see its name, and click to open it. Let us open the heart.', () => h.click('#p-heart'));
     await h.step('You see what it does, where it is, and how it works, step by step.', () => h.scroll('#info .sect >> nth=0', 'center'));
@@ -304,6 +304,9 @@ S('body-map.html', {
     await h.step('Use the coloured buttons to show one body system, like digestion, then click any organ in it, like the liver.', async () => { await h.click('[data-sys=digestive]'); await h.click('#p-liver'); });
     await h.step('The connections map shows how every part works together with the others.', async () => { await h.click('[data-sys=""]'); await h.click('[data-view=net]'); });
     await h.wait(1500);
+    await h.step('The layer buttons switch between organs, the skeleton, muscles and tendons, and a cut-through view of the skin. Here is the skeleton. Let us open the spine.', async () => { await h.click('[data-view=body]'); await h.click('[data-layer=skeleton]'); await h.point('#p-spine'); await page.locator('#p-spine').dispatchEvent('click'); });
+    await h.step('Muscles and tendons have a front and a back view. Muscles are red and tendons are white, like the Achilles tendon at the back of the ankle.', async () => { await h.click('[data-layer=muscles]'); await h.click('#flip'); await h.point('#p-achilles'); await page.locator('#p-achilles').dispatchEvent('click'); });
+    await h.step('The skin layers view shows the outer skin, the dermis and the fat layer, with hair, oil glands and sweat glands. Tap any of them.', async () => { await h.click('[data-layer=skin]'); await h.point('#p-sweat'); await page.locator('#p-sweat').dispatchEvent('click'); });
     await h.step('Now, what happens when we eat? Open Eating and drinking. The dot follows a meal through the body.', async () => { await h.click('[data-view=body]'); await h.click('[data-tab=food]'); for (let i = 0; i < 4; i++) { await h.click('#nextStep', { after: 700 }); } });
     await h.step('The stomach churns the food with acid, the pancreas and gallbladder add their juices, and the small intestine absorbs the nutrients into the blood.', async () => { for (let i = 0; i < 3; i++) { await h.click('#nextStep', { after: 1400 }); } });
     await h.step('Switch to a drink to see how water reaches the blood, the kidneys and the bladder.', async () => { await h.click('[data-journey=drink]'); for (let i = 0; i < 6; i++) { await h.click('#nextStep', { after: 500 }); } });

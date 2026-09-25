@@ -22,7 +22,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - 3D models and beginner coding projects
 - Code bug reports with plain-language fixes and live previews
 - Alphabet lessons with sounds and writing practice, and a philosophy & politics quiz game
-- An interactive human body map with illnesses, treatments, digestion, fasting and quizzes
+- An interactive human body map — organs, skeleton, muscles, tendons and skin — with illnesses, treatments, digestion, fasting and quizzes
 - Audio edits, text comparisons and flashcard decks
 
 ## Featured tools
@@ -41,7 +41,7 @@ MigaBuilder is a practical creation suite that runs directly in the browser. The
 - **Bug Scanner** — paste code or drop a whole project in 30+ languages to see what it builds, what is wrong and exactly how to fix it
 - **Alphabet Forge** — tap any Thai, Arabic, Mandarin, Japanese, Korean, Greek, Russian, Hebrew, Hindi or Georgian symbol to hear it, learn a word and why it sounds that way, then practise writing it — and type it with the built-in on-screen keyboard (Korean syllables join as you type, Japanese from romaji, Mandarin from pinyin), plus a typing challenge
 - **Idea Atlas** — explore the history, key thinkers and connections of 37 philosophies and ideologies, then play a timed quiz game
-- **Body Map** — click any organ or body part to learn how it works, how it connects to the rest of the body, its common illnesses with the best treatment and prevention, and how to keep it healthy; follow a meal or a drink through the body step by step, drag a slider to see what happens hour by hour when you fast, then play a scored quiz or make and share your own
+- **Body Map** — switch between organs, the skeleton, muscles and tendons (front and back), and a cut-through view of the skin, then click any part to learn how it works, how it connects to the rest of the body, its common illnesses with the best treatment and prevention, and how to keep it healthy; follow a meal or a drink through the body step by step, drag a slider to see what happens hour by hour when you fast, then play a scored quiz or make and share your own
 - **Flashcard Forge** — AI-made or pasted decks, an Anki-style (SM-2) scheduler, fill-in-the-blank and image cards, a matching game, listening and speaking tests, streaks and stats, and decks shared as a link
 - **Audio Forge** and **Text Compare** — edit audio and compare texts
 - **OCR Forge** — read text from photos and scans in 20 languages with Tesseract.js, then download it as text or as a searchable PDF

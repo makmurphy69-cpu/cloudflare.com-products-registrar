@@ -677,3 +677,546 @@ window.BODY_HABITS = [
   ['🚭', 'No smoking or vaping', ['lungs', 'heart', 'vessels', 'mouth', 'skin']],
   ['🧘', 'Took time to relax or connect with people', ['brain', 'adrenals', 'heart']]
 ];
+
+/* ---------------------------------------------------------------------------
+ * Skeleton, muscles & tendons, and skin layers. `layer` tells body-map.html
+ * which diagram the part is drawn on (parts without one are organs).
+ */
+window.BODY_PARTS.push(
+// ----------------------------------------------------------------- skeleton
+{ id: 'skull', layer: 'skeleton', name: 'Skull & jaw', systems: ['skeletal'], where: 'The head',
+  job: 'Protects the brain and sense organs, shapes the face and holds the teeth.',
+  summary: 'The skull has 22 bones. Eight flat bones form the cranium, a helmet around the brain, joined by wavy seams called sutures. Fourteen facial bones shape the eye sockets, nose, cheeks and jaws. The lower jaw (mandible) is the only skull bone that moves, at the temporomandibular joint (TMJ) in front of each ear.',
+  how: [
+    'The cranium is a strong, rounded shell that spreads out the force of a knock.',
+    'Sutures stay flexible in babies — the soft spots (fontanelles) let the head squeeze through birth and the brain grow — then slowly fuse.',
+    'The jaw hinges and slides at the TMJ for biting, chewing and talking.',
+    'Holes in the skull let nerves and blood vessels through; the biggest, the foramen magnum, is where the spinal cord leaves.'],
+  facts: ['A baby’s soft spots usually close by about 18 months to 2 years.', 'The mandible is the largest and strongest bone of the face.', 'The three tiny ear bones sit inside the skull’s temporal bones.'],
+  links: [['brain', 'Surrounds and protects the brain.'], ['eyes', 'The eye sockets (orbits) protect the eyes.'], ['ears', 'The temporal bones hold the middle and inner ear.'], ['mouth', 'The upper and lower jaws hold the teeth.'], ['face', 'Face and jaw muscles attach to the skull.'], ['spine', 'Rests on the top vertebra (the atlas), which lets you nod.']],
+  health: ['Wear a helmet for cycling, skating, climbing and building sites.', 'Always wear a seat belt.', 'Don’t chew pens, ice or very hard foods if your jaw clicks or hurts.', 'Get calcium and vitamin D for strong bones.'],
+  ills: [
+    ['Skull fracture', 'A break in a skull bone after a heavy blow.', 'Pain, swelling, bruising behind the ear or around the eyes, clear fluid from the nose or ear, drowsiness or confusion.', 'Emergency: call an ambulance. Scans check the brain underneath; many heal by themselves, some need surgery.', 'Helmets, seat belts and fall prevention.', true],
+    ['TMJ disorder', 'Pain and stiffness in the jaw joint and the muscles around it.', 'Jaw pain, clicking or locking, headaches, pain when chewing.', 'Soft foods for a while, warm packs, gentle jaw exercises, pain relief; a dentist can make a night guard. Most cases improve in weeks.', 'Avoid clenching and grinding, manage stress, don’t chew gum constantly.'],
+    ['Broken jaw', 'A break in the lower jaw, usually from a punch, fall or accident.', 'Pain, swelling, teeth that no longer meet properly, trouble opening the mouth.', 'Go to hospital. Treated by wiring or plating the jaw; soft or liquid diet while it heals (about 6 weeks).', 'Mouth guards in contact sports, seat belts.'],
+    ['Craniosynostosis', 'In a baby, one or more sutures close too early, changing the head shape.', 'An unusually shaped head, a missing soft spot.', 'Mild cases may just be watched; others have an operation, usually in the first year.', 'Cannot be prevented; regular baby checks spot it early.']] },
+
+{ id: 'spine', layer: 'skeleton', name: 'Spine (backbone)', systems: ['skeletal'], where: 'Down the middle of the back, from the skull to the pelvis',
+  job: 'Holds you upright, lets you bend and twist, and protects the spinal cord.',
+  summary: 'A column of 33 vertebrae: 7 in the neck (cervical), 12 in the upper back (thoracic, each carrying a pair of ribs), 5 in the lower back (lumbar), 5 fused into the sacrum and about 4 fused into the tailbone (coccyx). Rubbery discs between them absorb shock. Seen from the side it has a gentle S-shape.',
+  how: [
+    'Each vertebra has a solid body in front to carry weight and a bony ring behind that shields the spinal cord.',
+    'Discs — a tough outer ring with a jelly-like centre — cushion every step and jump.',
+    'The S-curve works like a spring, spreading out the load.',
+    'Small joints, ligaments and back muscles control movement; the neck turns most, the upper back least.'],
+  facts: ['You are about 1 cm taller in the morning, because the discs refill with water overnight.', 'A giraffe has the same number of neck vertebrae as you: seven.', 'The lumbar vertebrae are the biggest because they carry the most weight.'],
+  links: [['nerves', 'Protects the spinal cord and lets spinal nerves out between the vertebrae.'], ['skull', 'Carries the skull on the top vertebra.'], ['ribs', 'The 12 thoracic vertebrae anchor the ribs.'], ['pelvis', 'The sacrum joins the spine to the pelvis.'], ['backm', 'Back muscles hold the spine upright and move it.'], ['core', 'Core muscles brace the spine like a corset.']],
+  health: ['Keep moving — backs are built to move; long sitting stiffens them.', 'Strengthen your back and core muscles.', 'Lift with bent knees, keeping the load close.', 'Set screens at eye level and take breaks.', 'Keep a healthy weight and don’t smoke (it harms discs).'],
+  ills: [
+    ['Lower back pain', 'Very common pain from strained muscles, ligaments, discs or joints — usually not serious.', 'Aching or stiffness in the lower back, sometimes spasms.', 'Keep gently active rather than resting in bed, heat, simple pain relief and exercises; most improve within 6 weeks. Get urgent help for numbness around the bottom, trouble peeing, weak legs or fever.', 'Regular exercise, core strength, good lifting and breaks from sitting.'],
+    ['Neck pain (cervical spondylosis)', 'Wear and stiffness in the neck discs and joints, often with age or poor posture.', 'Stiff, aching neck, headaches, sometimes pins and needles in the arm.', 'Gentle neck exercises, heat, pain relief, physiotherapy.', 'Screen at eye level, regular breaks, a supportive pillow.'],
+    ['Spinal stenosis', 'The space for the nerves in the spine becomes narrow, usually with age.', 'Pain, heaviness or numbness in the legs when walking or standing, eased by sitting or bending forward.', 'Exercise and physiotherapy, pain relief, injections; surgery if severe.', 'Staying active and a healthy weight help.'],
+    ['Ankylosing spondylitis', 'An inflammatory arthritis that mainly affects the spine, often starting in young adults.', 'Back pain and stiffness that is worse in the morning and better with exercise.', 'Daily exercise, anti-inflammatory medicines and biologic medicines; early treatment keeps the spine flexible.', 'Cannot be prevented; see a doctor for back pain that lasts over 3 months and improves with movement.'],
+    ['Vertebral fracture', 'A break in a vertebra, from an accident or from osteoporosis in older people.', 'Sudden back pain, loss of height, a stooped back.', 'Pain relief, bone-strengthening medicine, sometimes a brace or procedure. After an accident, keep the person still and call an ambulance.', 'Strong bones (exercise, calcium, vitamin D), fall prevention, seat belts.', true]] },
+
+{ id: 'ribs', layer: 'skeleton', name: 'Ribcage & breastbone', systems: ['skeletal', 'respiratory'], where: 'Around the chest',
+  job: 'A flexible cage that protects the heart and lungs and moves with every breath.',
+  summary: 'Twelve pairs of ribs curve from the spine to the front. The top seven pairs (“true ribs”) join the breastbone (sternum) with cartilage; pairs 8–10 join the cartilage above; pairs 11–12 “float”, attached only at the back.',
+  how: [
+    'The ribs and breastbone shield the heart, lungs, liver and spleen.',
+    'Cartilage at the front lets the cage spring and flex instead of snapping.',
+    'Muscles between the ribs (intercostals) lift the cage outwards when you breathe in.',
+    'The breastbone contains red bone marrow that makes blood cells.'],
+  facts: ['Men and women have the same number of ribs — 12 pairs.', 'About 1 in 200 people has an extra “cervical rib” in the neck.', 'The ribcage moves about 20,000 times a day as you breathe.'],
+  links: [['lungs', 'Protects the lungs and expands to let them fill.'], ['heart', 'Protects the heart behind the breastbone.'], ['spine', 'Every rib joins a thoracic vertebra.'], ['chest', 'The chest muscles lie on top of the ribs.'], ['bones', 'The breastbone makes blood cells in its marrow.']],
+  health: ['Use seat belts and body protection in contact sports.', 'Keep breathing deeply after a rib injury to avoid chest infections.', 'Build strong bones with exercise, calcium and vitamin D.'],
+  ills: [
+    ['Broken or bruised ribs', 'A crack or bruise after a fall, blow or severe coughing.', 'Sharp chest pain when breathing, coughing or moving.', 'Pain relief so you can breathe deeply, and gentle movement; they heal in about 3–6 weeks. Get urgent help for breathlessness or coughing blood.', 'Seat belts and protective gear.'],
+    ['Costochondritis', 'Inflammation of the cartilage joining ribs to the breastbone.', 'Sharp chest pain that is tender to press and worse with movement.', 'Rest, heat and anti-inflammatory pain relief; it usually settles in weeks. Chest pain with breathlessness, sweating or arm pain needs emergency help in case it is the heart.', 'Avoid overdoing new upper-body exercise.'],
+    ['Flail chest', 'Several ribs broken in more than one place, so part of the chest wall moves the wrong way.', 'Severe pain, a section of chest that sinks in when breathing in, breathlessness.', 'Emergency: call an ambulance. Hospital care supports breathing; sometimes surgery.', 'Seat belts and road safety.', true],
+    ['Pectus excavatum (sunken chest)', 'The breastbone grows sunken inwards.', 'A dip in the middle of the chest; sometimes breathlessness on exercise.', 'Often no treatment; exercise, a suction device, or surgery for severe cases.', 'Cannot be prevented.']] },
+
+{ id: 'shoulder', layer: 'skeleton', name: 'Collarbone & shoulder blade', systems: ['skeletal'], where: 'Top of the chest and upper back',
+  job: 'Connects the arm to the body and gives the shoulder its huge range of movement.',
+  summary: 'The collarbone (clavicle) is a strut between the breastbone and the shoulder. The flat, triangular shoulder blade (scapula) glides over the back of the ribs. Its shallow socket holds the ball at the top of the arm bone — a design that trades stability for movement.',
+  how: [
+    'The collarbone holds the shoulder out to the side so the arm can swing freely.',
+    'The shoulder blade slides and tilts on the ribcage to help you reach up.',
+    'The ball of the upper arm bone sits in a socket only about a quarter of its size, held by the rotator cuff.',
+    'Seventeen muscles attach to the shoulder blade.'],
+  facts: ['The collarbone is the most commonly broken bone in children.', 'The shoulder is the most mobile joint in the body — and the most often dislocated.', 'The collarbone is one of the first bones to start forming before birth and one of the last to finish growing.'],
+  links: [['armbones', 'Holds the upper arm bone in the shoulder socket.'], ['rotator', 'The rotator cuff tendons keep the ball in its socket.'], ['deltoid', 'The deltoid muscles cover the shoulder and lift the arm.'], ['ribs', 'The collarbone joins the breastbone; the shoulder blade glides over the ribs.'], ['neckm', 'The trapezius lifts and steadies the shoulder blade.']],
+  health: ['Strengthen the muscles around the shoulder blade (rows, band pull-aparts).', 'Break falls with a bent arm rather than a stiff, straight one.', 'Keep the shoulder moving after an injury as advised, to prevent stiffness.'],
+  ills: [
+    ['Broken collarbone', 'A break, usually from a fall onto the shoulder or outstretched hand.', 'Pain, a bump or sag at the shoulder, not being able to lift the arm.', 'A sling for a few weeks and pain relief; most heal well without surgery.', 'Protective gear in cycling and contact sports.'],
+    ['Dislocated shoulder', 'The ball of the arm bone pops out of the socket.', 'Severe pain, a squared-off shoulder, the arm can’t move.', 'Go to hospital to have it put back; then a sling and physiotherapy. Don’t try to force it back yourself.', 'Shoulder-strengthening exercises, especially after a first dislocation.'],
+    ['Frozen shoulder', 'The joint capsule thickens and tightens.', 'Pain then severe stiffness, lasting months to years.', 'Pain relief, gentle exercises, steroid injections, physiotherapy; it slowly gets better.', 'Keep the shoulder moving after injury or surgery; control diabetes.'],
+    ['AC joint injury', 'A sprain or separation where the collarbone meets the shoulder blade.', 'Pain and a bump on top of the shoulder after a fall.', 'Sling, ice, pain relief and rehabilitation; surgery only for severe cases.', 'Learn to fall safely; shoulder protection in sport.']] },
+
+{ id: 'armbones', layer: 'skeleton', name: 'Arm bones', systems: ['skeletal'], where: 'The arms: humerus above the elbow, radius and ulna below',
+  job: 'Levers that let you reach, lift, throw and turn your hand over.',
+  summary: 'The humerus runs from the shoulder to the elbow. Below the elbow, two bones sit side by side: the radius on the thumb side and the ulna on the little-finger side. The radius can roll around the ulna, turning the palm up or down.',
+  how: [
+    'Muscles attached to the humerus bend and straighten the elbow like a hinge.',
+    'The radius rotates around the ulna to turn a key or a doorknob.',
+    'The “funny bone” is not a bone: it is the ulnar nerve, which runs over the back of the elbow with little padding.',
+    'Growth plates near the ends of the bones let children’s arms grow longer.'],
+  facts: ['The humerus is the longest bone in the arm.', 'A broken wrist is usually a break of the end of the radius.', 'Your arm span is roughly the same as your height.'],
+  links: [['shoulder', 'The top of the humerus fits in the shoulder socket.'], ['hand', 'The radius and ulna meet the wrist bones.'], ['upperarm', 'Biceps and triceps pull on these bones to move the elbow.'], ['forearm', 'Forearm muscles start on these bones.'], ['nerves', 'The ulnar nerve (funny bone) runs along the elbow.']],
+  health: ['Do weight-bearing and strength exercise for strong bones.', 'Wear wrist guards for skating and snowboarding.', 'Never pull a small child up by the hands or swing them by the arms.'],
+  ills: [
+    ['Broken wrist (distal radius fracture)', 'A break at the end of the radius, often from falling on an outstretched hand.', 'Pain, swelling, a bent-looking wrist.', 'Go to hospital: a cast for about 6 weeks, sometimes surgery, then exercises.', 'Wrist guards, fall prevention, strong bones.'],
+    ['Broken upper arm', 'A break in the humerus.', 'Pain, swelling, bruising, not being able to move the arm.', 'A sling or brace, sometimes surgery; physiotherapy afterwards.', 'Fall prevention and strong bones.'],
+    ['Pulled elbow', 'In young children, a bone slips out of the ligament that holds it at the elbow.', 'The child suddenly won’t use the arm after it was pulled.', 'A doctor or nurse can usually slip it back in seconds.', 'Don’t lift or swing children by their hands or arms.'],
+    ['Dislocated elbow', 'The bones of the elbow are forced out of place.', 'Severe pain, an obvious deformity, the arm can’t bend.', 'Emergency department to put it back; then movement exercises.', 'Safe falling, protective gear.', true]] },
+
+{ id: 'hand', layer: 'skeleton', name: 'Hand & wrist bones', systems: ['skeletal'], where: 'The hands',
+  job: 'Twenty-seven small bones that give the hand its strength and precision.',
+  summary: 'Each hand has 8 small wrist bones (carpals) in two rows, 5 long palm bones (metacarpals) and 14 finger bones (phalanges) — three in each finger and two in the thumb. The thumb’s saddle-shaped base joint lets it touch every fingertip.',
+  how: [
+    'The wrist bones slide against each other so the wrist can bend and tilt.',
+    'The opposable thumb lets you pinch and grip — the key to using tools.',
+    'There are no muscles in the fingers: long tendons from the forearm pull them.',
+    'Small hand muscles make fine movements like writing.'],
+  facts: ['Your two hands contain 54 bones — about a quarter of your skeleton.', 'The scaphoid, a wrist bone, has a poor blood supply, so breaks can heal slowly.', 'Fingernails grow faster on your dominant hand.'],
+  links: [['armbones', 'Connects to the radius and ulna at the wrist.'], ['wristtendons', 'Tendons from the forearm move the finger bones.'], ['forearm', 'Forearm muscles power the grip.'], ['nails', 'Nails protect the fingertips.'], ['joints', 'Hand joints are common places for arthritis.']],
+  health: ['Wear gloves for rough work and wrist guards for skating.', 'Don’t punch hard objects.', 'Keep hands moving — gentle exercises help stiff joints.'],
+  ills: [
+    ['Scaphoid fracture', 'A break of a small wrist bone after falling on the hand.', 'Pain at the base of the thumb, often mistaken for a sprain.', 'A cast for several weeks, sometimes surgery; a repeat X-ray may be needed. Get a painful wrist after a fall checked.', 'Wrist guards, safe falling.'],
+    ['Boxer’s fracture', 'A break in the palm bone below the little finger, usually from punching.', 'Pain, swelling, a sunken knuckle.', 'Splint or strapping for a few weeks; surgery if badly bent.', 'Don’t punch walls or people.'],
+    ['Hand osteoarthritis', 'Wear of the cartilage in finger and thumb joints.', 'Stiff, knobbly, aching finger joints; pain at the thumb base.', 'Hand exercises, splints, heat, pain relief gels; surgery rarely.', 'Protect joints, stay active.'],
+    ['Broken finger', 'A break in a finger bone.', 'Pain, swelling, a crooked finger.', 'Buddy-strapping or a splint; see a doctor if it looks bent or rotated.', 'Care with doors, sports and machines.']] },
+
+{ id: 'pelvis', layer: 'skeleton', name: 'Pelvis & hip bones', systems: ['skeletal'], where: 'Between the spine and the legs',
+  job: 'A strong bony ring that carries the upper body’s weight to the legs and protects the pelvic organs.',
+  summary: 'The pelvis is made of two hip bones (each formed from the ilium, ischium and pubis, fused together) and the sacrum at the back. Each hip bone has a deep socket where the ball of the thigh bone sits — the hip joint.',
+  how: [
+    'The weight of the upper body passes from the spine through the sacrum and around the ring to the hips.',
+    'The deep hip socket makes the hip very stable, unlike the shoulder.',
+    'Strong muscles of the buttocks, belly and thighs attach to it.',
+    'The female pelvis is usually wider with a rounder opening, for childbirth.'],
+  facts: ['The bones you sit on are the ischial tuberosities (“sit bones”).', 'The hip joint can carry several times your body weight when running.', 'Scientists can often tell sex and age from a pelvis bone.'],
+  links: [['spine', 'The sacrum is part of both the spine and the pelvic ring.'], ['femur', 'The thigh bone’s ball sits in the hip socket.'], ['bladder', 'Protects the bladder.'], ['reproductive', 'Protects the reproductive organs; its shape matters for childbirth.'], ['glutes', 'The buttock muscles attach to it.'], ['core', 'Abdominal muscles attach to the front of the pelvis.']],
+  health: ['Strength and balance exercise lowers the risk of falls and hip fractures.', 'Keep hips mobile with walking, stretching and squats.', 'Look after bone density later in life.'],
+  ills: [
+    ['Hip fracture', 'A break at the top of the thigh bone near the hip, mostly in older people after a fall.', 'Pain in the hip or groin after a fall, can’t stand, the leg may look shorter and turned out.', 'Call an ambulance; most are repaired with surgery within a day or two, then early walking and rehabilitation.', 'Strong bones, strength and balance exercises, safer homes (lighting, no loose rugs).', true],
+    ['Hip osteoarthritis', 'Wear of the hip joint cartilage.', 'Groin or hip pain, stiffness, trouble putting on socks.', 'Exercise and physiotherapy, weight loss, pain relief; hip replacement for severe cases works very well.', 'Healthy weight and regular exercise.'],
+    ['Developmental hip dysplasia', 'In babies, the hip socket is too shallow and the hip is loose.', 'Found at baby checks; later a limp or uneven leg creases.', 'A soft harness for a few months in babies; surgery if found late.', 'Don’t swaddle babies with legs held straight; attend baby checks.'],
+    ['Pelvic fracture', 'A break in the pelvic ring, usually from a major accident.', 'Severe pain, not able to walk, sometimes shock from bleeding.', 'Emergency hospital care; surgery or bed rest depending on the break.', 'Road safety.', true]] },
+
+{ id: 'femur', layer: 'skeleton', name: 'Thigh bone (femur) & kneecap', systems: ['skeletal'], where: 'The thigh and front of the knee',
+  job: 'The longest, strongest bone, carrying your weight from hip to knee; the kneecap boosts the thigh muscles’ pull.',
+  summary: 'The femur is about a quarter of your height. Its rounded head fits in the hip socket and its angled neck sets the leg under the body. At the knee it meets the shin bone. The kneecap (patella) is a small bone inside the tendon of the thigh muscles.',
+  how: [
+    'The femur’s tube shape makes it light but extremely strong.',
+    'Its marrow makes blood cells.',
+    'The kneecap acts like a pulley, increasing the leverage of the quadriceps when straightening the knee.',
+    'Cartilage behind the kneecap lets it glide in a groove of the femur.'],
+  facts: ['The femur can support many times your body weight.', 'Your height can be estimated from the length of your femur.', 'Babies are born with a kneecap made of cartilage; it turns to bone at about 3–5 years old.'],
+  links: [['pelvis', 'The femur’s head sits in the hip socket.'], ['shin', 'Meets the tibia at the knee joint.'], ['thigh', 'The quadriceps and hamstrings wrap around it.'], ['patellar', 'The kneecap sits inside the quadriceps and patellar tendons.'], ['joints', 'Forms the knee, the body’s biggest joint.']],
+  health: ['Strong thigh muscles protect the knee.', 'Build up running distance slowly.', 'Keep bones strong with impact exercise and good nutrition.'],
+  ills: [
+    ['Broken thigh bone', 'A break in the femur, usually from a high-energy accident.', 'Severe pain, the leg can’t bear weight and may look deformed.', 'Call an ambulance; almost always repaired with surgery (a rod or plate), then rehabilitation.', 'Road and sport safety.', true],
+    ['Dislocated kneecap', 'The kneecap slips out of its groove, usually to the outside.', 'A sudden twist, pop and the kneecap visibly out of place.', 'Emergency department to put it back, then a brace and physiotherapy to strengthen the thigh.', 'Strong quadriceps and hip muscles.'],
+    ['Runner’s knee (patellofemoral pain)', 'Pain around or behind the kneecap from overload.', 'Aching at the front of the knee, worse on stairs, squatting or after sitting.', 'Reduce the painful activity for a while, then strengthen hips and thighs; it usually improves in weeks to months.', 'Increase training gradually, strengthen hips and thighs.']] },
+
+{ id: 'shin', layer: 'skeleton', name: 'Shin bones (tibia & fibula)', systems: ['skeletal'], where: 'The lower leg, between knee and ankle',
+  job: 'Carry your weight from the knee to the ankle and anchor the lower-leg muscles.',
+  summary: 'The tibia (shin bone) is the thick bone you can feel at the front of your leg; it carries most of the weight. The thin fibula on the outside mainly anchors muscles and forms the outer ankle bone.',
+  how: [
+    'The top of the tibia forms the lower half of the knee joint.',
+    'The bottom of the tibia and fibula clasp the talus bone to make the ankle joint.',
+    'The front of the tibia has almost no padding — that’s why knocks there hurt so much.',
+    'Repeated impact makes these bones remodel and get stronger — if you build up slowly.'],
+  facts: ['The tibia is the second-longest bone in the body.', 'The bumps on either side of your ankle are the ends of the tibia (inside) and fibula (outside).', 'The tibia is one of the most commonly broken long bones.'],
+  links: [['femur', 'The tibia meets the femur at the knee.'], ['foot', 'Both bones form the ankle with the foot bones.'], ['calf', 'Calf and shin muscles attach to them.'], ['patellar', 'The patellar tendon attaches to the top of the tibia.']],
+  health: ['Build up running and jumping gradually (about 10% a week).', 'Wear supportive shoes and run on softer surfaces sometimes.', 'Eat enough energy, calcium and vitamin D — under-eating raises the risk of stress fractures.', 'Wear shin guards in football and hockey.'],
+  ills: [
+    ['Shin splints', 'Pain along the inner edge of the tibia from overload.', 'Aching along the shin during and after exercise.', 'Rest from running for a few weeks, ice, then build up slowly; swimming and cycling keep you fit.', 'Increase training slowly, good shoes, strong calves.'],
+    ['Stress fracture', 'A tiny crack from repeated impact.', 'Pain in one small spot that gets worse with activity and is tender to press.', 'Rest from impact for 6–8 weeks, sometimes a boot; check energy intake and vitamin D.', 'Gradual training, enough food and rest days.'],
+    ['Broken leg (tibia fracture)', 'A break in the shin bone.', 'Severe pain, swelling, can’t walk, sometimes bone through the skin.', 'Emergency care: cast, or surgery with a rod or plate. An open wound over the break is an emergency.', 'Shin guards, road and sport safety.', true]] },
+
+{ id: 'foot', layer: 'skeleton', name: 'Foot & ankle bones', systems: ['skeletal'], where: 'The feet',
+  job: 'Twenty-six bones arranged in springy arches that carry your weight and push you forward.',
+  summary: 'Each foot has 7 ankle and heel bones (tarsals, including the talus and the heel bone, or calcaneus), 5 long bones (metatarsals) and 14 toe bones. Ligaments and muscles hold them in arches that absorb shock and act like a spring.',
+  how: [
+    'The ankle joint lets the foot point up and down; joints below it let it tilt in and out on uneven ground.',
+    'The arches flatten slightly when you land and spring back when you push off.',
+    'A thick band under the foot, the plantar fascia, ties the arch like a bowstring.',
+    'The big toe gives the final push when walking.'],
+  facts: ['Your feet together have 52 bones — about a quarter of your skeleton.', 'The heel bone is the largest bone in the foot.', 'Most babies look flat-footed; arches develop during childhood.'],
+  links: [['shin', 'The tibia and fibula form the ankle with the talus.'], ['achilles', 'The Achilles tendon attaches to the heel bone.'], ['calf', 'Calf muscles lift the heel.'], ['joints', 'Ankle sprains are the most common joint injury.'], ['nails', 'Toenails protect the toe tips.']],
+  health: ['Wear shoes that fit, with room for the toes.', 'Check feet daily if you have diabetes.', 'Strengthen feet and ankles with balance exercises.', 'Change running shoes when worn out.'],
+  ills: [
+    ['Broken ankle', 'A break in the ankle bones, often from a twist.', 'Pain, swelling, bruising, can’t bear weight.', 'X-ray; a boot or cast, sometimes surgery. If you can’t take four steps, get it checked.', 'Balance training, good footwear.'],
+    ['Plantar fasciitis (heel pain)', 'Irritation of the band under the foot where it attaches to the heel.', 'Sharp heel pain with the first steps in the morning.', 'Calf and foot stretches, supportive shoes, insoles, pain relief; most improve within a year.', 'Healthy weight, supportive shoes, gradual training.'],
+    ['Bunions', 'The big toe leans towards the other toes and a bony bump forms.', 'A painful bump at the base of the big toe.', 'Wide shoes, pads, pain relief; surgery if very painful.', 'Avoid tight, pointed shoes and high heels.'],
+    ['Flat feet', 'Low or no arches.', 'Often none; sometimes tired or aching feet.', 'Usually no treatment; insoles and foot exercises if painful.', 'Foot-strengthening exercises; many flat feet are normal.']] },
+
+// ----------------------------------------------------------------- muscles
+{ id: 'face', layer: 'muscles', name: 'Face & jaw muscles', systems: ['muscular'], where: 'Under the skin of the face and at the sides of the jaw',
+  job: 'Make every facial expression, close the eyes and lips, and chew.',
+  summary: 'About 40 small muscles attach to the skin rather than to bone, so they can move it into smiles, frowns and raised eyebrows. Ring-shaped muscles close the eyes and lips. The powerful masseter and temporalis muscles close the jaw for chewing.',
+  how: [
+    'The facial nerve (one on each side) controls the expression muscles.',
+    'Pulling on the skin creates expressions — and over years, wrinkles along the same lines.',
+    'The masseter, which you can feel bulge when you clench, is one of the strongest muscles for its size.',
+    'The tongue and cheek muscles keep food between the teeth.'],
+  facts: ['The masseter is often called the strongest muscle in the body relative to its size.', 'People around the world recognise the same basic expressions like happiness and fear.', 'Blinking uses the orbicularis oculi, a ring-shaped muscle.'],
+  links: [['skull', 'Attach to the skull and jaw bones.'], ['skin', 'Expression muscles pull on the skin.'], ['nerves', 'The facial nerve controls them.'], ['mouth', 'Help chew, speak and keep food in the mouth.'], ['eyes', 'Close and protect the eyes.']],
+  health: ['Relax your jaw — teeth apart, lips together, tongue resting.', 'Protect the face in contact sports.', 'Treat stress, which often shows up as jaw clenching.'],
+  ills: [
+    ['Bell’s palsy', 'Sudden weakness of one side of the face from inflammation of the facial nerve.', 'One side of the face droops; can’t close the eye or smile evenly. Face drooping with arm weakness or slurred speech may be a stroke — call an ambulance.', 'See a doctor within 72 hours for steroid tablets; protect the eye with drops and tape at night. Most recover within months.', 'No sure prevention.'],
+    ['Teeth grinding (bruxism)', 'Clenching or grinding, often at night or under stress.', 'Jaw ache, headaches, worn teeth.', 'A night guard from a dentist, stress management, jaw relaxation.', 'Manage stress, limit caffeine and alcohol in the evening.'],
+    ['Jaw muscle pain', 'Tight, sore chewing muscles, often with TMJ problems.', 'Aching cheeks or temples, tender spots.', 'Warm packs, massage, soft foods, jaw exercises.', 'Avoid constant gum chewing and nail biting.']] },
+
+{ id: 'neckm', layer: 'muscles', name: 'Neck & trapezius muscles', systems: ['muscular'], where: 'Neck, tops of the shoulders and upper back',
+  job: 'Hold up and turn the head, and lift and steady the shoulders.',
+  summary: 'The sternocleidomastoid runs from behind each ear to the breastbone and turns the head. The diamond-shaped trapezius spreads over the upper back and shoulders. Many small deep muscles hold the neck steady.',
+  how: [
+    'Your head weighs about 5 kg; neck muscles work all day to balance it.',
+    'Looking down at a phone makes the load on the neck several times heavier.',
+    'The trapezius shrugs, pulls back and rotates the shoulder blades.',
+    'When stressed, many people tense these muscles without noticing.'],
+  facts: ['Tilting your head forward about 60° can multiply the load on your neck roughly five times.', 'The trapezius is named after its trapezium shape.', 'The sternocleidomastoid is named after the three places it attaches: sternum, clavicle and mastoid.'],
+  links: [['spine', 'Move and support the neck vertebrae.'], ['shoulder', 'The trapezius moves the shoulder blades.'], ['skull', 'Attach to the base of the skull.'], ['deltoid', 'Work with the deltoids to lift the arms.']],
+  health: ['Hold your phone up closer to eye level.', 'Do neck and shoulder stretches during screen breaks.', 'Strengthen the upper back with rows.', 'Sleep with a pillow that keeps your neck straight.'],
+  ills: [
+    ['Wry neck (torticollis)', 'A painful spasm that twists the neck, often after sleeping awkwardly.', 'The head is stuck tilted, painful to turn.', 'Heat, gentle movement and pain relief; usually better within a week. Stiff neck with fever and headache needs urgent help (meningitis).', 'Good pillow, avoid sleeping on a sofa arm.'],
+    ['Tension neck and shoulder pain', 'Tight, overworked muscles from posture and stress.', 'Aching neck and shoulders, headaches starting at the back of the head.', 'Movement, stretches, heat, massage, fixing your desk set-up.', 'Regular breaks, posture, exercise, stress management.'],
+    ['Muscle knots (trigger points)', 'Tender, tight spots in a muscle.', 'A sore lump that can send pain elsewhere.', 'Massage, stretching, heat, and strengthening.', 'Regular movement and exercise.']] },
+
+{ id: 'deltoid', layer: 'muscles', name: 'Shoulder muscles (deltoids)', systems: ['muscular'], where: 'Rounded caps over each shoulder',
+  job: 'Lift the arm forwards, sideways and backwards.',
+  summary: 'The deltoid is a triangular muscle (named after the Greek letter delta) with three parts: front, middle and back. It gives the shoulder its rounded shape and works with the rotator cuff underneath.',
+  how: [
+    'The front part lifts the arm forwards, the middle part to the side, the back part backwards.',
+    'The rotator cuff holds the ball in the socket while the deltoid lifts.',
+    'It is a common place for vaccine injections because it is large and easy to reach.'],
+  facts: ['It is named after the triangle-shaped Greek letter Δ.', 'Most vaccines are given into the deltoid.', 'It helps you carry things with your arm held out.'],
+  links: [['rotator', 'Works with the rotator cuff to raise the arm.'], ['armbones', 'Attaches to the upper arm bone.'], ['shoulder', 'Starts on the collarbone and shoulder blade.'], ['neckm', 'Works with the trapezius when lifting the arm overhead.']],
+  health: ['Train all three parts: front raises, side raises and rear-shoulder exercises.', 'Warm up before throwing or overhead sports.', 'Move the arm gently after a vaccine to ease soreness.'],
+  ills: [
+    ['Deltoid strain', 'Overstretched or torn fibres from lifting or throwing.', 'Pain and weakness when lifting the arm.', 'Rest, ice, then gradual strengthening.', 'Warm up and build up weights gradually.'],
+    ['Shoulder bursitis', 'Inflammation of the fluid sac under the shoulder’s bony roof.', 'Pain on the outside of the shoulder, worse lifting the arm or lying on it.', 'Rest from overhead activity, ice, pain relief, physiotherapy; sometimes an injection.', 'Good technique and shoulder strength.'],
+    ['Sore arm after an injection', 'Normal, short-lived soreness where a vaccine was given.', 'Ache and tenderness for a day or two.', 'Keep moving the arm, cool pack, simple pain relief if needed.', 'Relax the arm during the injection.']] },
+
+{ id: 'chest', layer: 'muscles', name: 'Chest muscles (pectorals)', systems: ['muscular'], where: 'Front of the chest',
+  job: 'Push, hug and pull the arms across the body; help with deep breaths.',
+  summary: 'The fan-shaped pectoralis major covers the upper chest and attaches to the upper arm bone. The smaller pectoralis minor lies underneath and steadies the shoulder blade. Muscles between the ribs (intercostals) help breathing.',
+  how: [
+    'The pectoralis major pulls the arm forwards and across the body — pushing a door or doing a push-up.',
+    'When breathing very hard, it helps lift the ribs.',
+    'Tight chest muscles can pull the shoulders forward into a rounded posture.'],
+  facts: ['Push-ups and presses are the classic chest exercises.', 'The breast tissue lies on top of the pectoralis major.', 'Intercostal muscles make every breath.'],
+  links: [['ribs', 'Lie over the ribs and breastbone.'], ['armbones', 'Attach to the upper arm bone.'], ['lungs', 'Help lift the ribs for deep breaths.'], ['deltoid', 'Work with the front deltoid to push.'], ['backm', 'Balanced by the back muscles for good posture.']],
+  health: ['Balance pushing exercises with pulling exercises (rows) for good posture.', 'Stretch the chest in a doorway.', 'Warm up before heavy lifting.'],
+  ills: [
+    ['Pectoral strain or tear', 'Injury to the chest muscle or its tendon, often during heavy bench pressing.', 'Sudden pain, bruising, weakness pushing.', 'Rest, ice and rehabilitation for strains; a full tendon tear often needs surgery.', 'Warm up, don’t lift too heavy too soon, use a spotter.'],
+    ['Chest wall muscle strain', 'Strain of the muscles between or over the ribs, e.g. from coughing or twisting.', 'Chest pain that is worse with movement or pressing. Sudden chest pain with breathlessness, sweating or arm pain needs an ambulance.', 'Rest, heat and pain relief.', 'Warm up, gradual training.'],
+    ['Rounded shoulders', 'Tight chest and weak upper-back muscles pull the shoulders forward.', 'Hunched posture, neck and shoulder ache.', 'Chest stretches and upper-back strengthening.', 'Screen breaks and balanced training.']] },
+
+{ id: 'upperarm', layer: 'muscles', name: 'Upper arm muscles (biceps & triceps)', systems: ['muscular'], where: 'Front (biceps) and back (triceps) of the upper arm',
+  job: 'Bend and straighten the elbow — a classic pair of opposing muscles.',
+  summary: 'Muscles can only pull, so they work in pairs. The biceps on the front bends the elbow and turns the palm up. The triceps on the back straightens it. When one contracts, the other relaxes.',
+  how: [
+    'The biceps has two heads that start on the shoulder blade and join onto the radius.',
+    'The triceps has three heads and is actually the bigger muscle.',
+    'Nerve signals switch the pair on and off in turn for smooth movement.',
+    'Lifting the load slowly (lowering phase) builds strength especially well.'],
+  facts: ['The triceps makes up about two-thirds of the upper arm’s muscle.', '“Biceps” means “two heads”; “triceps” means “three heads”.', 'The biceps is strongest at turning the palm up — like a corkscrew.'],
+  links: [['armbones', 'Pull on the arm bones to move the elbow.'], ['shoulder', 'The biceps and triceps start on the shoulder blade.'], ['forearm', 'Work with the forearm muscles to lift and grip.'], ['nerves', 'Motor nerves switch them on in turn.']],
+  health: ['Strength-train 2 or more days a week.', 'Lift with control and good form.', 'Rest sore muscles 48 hours before training them hard again.'],
+  ills: [
+    ['Biceps tendon rupture', 'The biceps tendon tears at the shoulder or elbow.', 'A pop, pain, bruising and a bulge in the arm (the “Popeye” sign).', 'See a doctor promptly; tears at the elbow are often repaired surgically within weeks.', 'Warm up, avoid sudden heavy loads, don’t smoke.'],
+    ['Triceps strain', 'Overstretched or torn triceps fibres.', 'Pain at the back of the upper arm when straightening.', 'Rest, ice, gradual strengthening.', 'Build up training gradually.'],
+    ['Delayed onset muscle soreness (DOMS)', 'Normal soreness 1–3 days after new or hard exercise.', 'Stiff, tender muscles.', 'Gentle movement, time; it goes away by itself.', 'Increase exercise gradually.']] },
+
+{ id: 'forearm', layer: 'muscles', name: 'Forearm muscles', systems: ['muscular'], where: 'Between elbow and wrist',
+  job: 'Power the grip and move the wrist and fingers.',
+  summary: 'About 20 muscles are packed in each forearm. Flexors on the palm side curl the fingers and bend the wrist; extensors on the back straighten them. Their long tendons cross the wrist to the fingers, keeping the hand slim.',
+  how: [
+    'Most flexors start at the inner elbow bump; most extensors at the outer bump.',
+    'Gripping and typing use them constantly.',
+    'Turning the forearm is done by the pronator and supinator muscles.',
+    'Overuse at their elbow attachments causes tennis and golfer’s elbow.'],
+  facts: ['Grip strength is a good sign of overall health in older age.', 'You can see the tendons move in your wrist when you wiggle your fingers.', 'Some people have a palmaris longus tendon and some don’t — check by touching thumb to little finger.'],
+  links: [['armbones', 'Attach to the humerus, radius and ulna.'], ['wristtendons', 'Their tendons pass through the wrist to the fingers.'], ['hand', 'Move the hand and finger bones.'], ['upperarm', 'Work with the biceps to lift.']],
+  health: ['Take typing and tool breaks; stretch wrists and fingers.', 'Use tools with thicker handles and a relaxed grip.', 'Train grip strength gradually.'],
+  ills: [
+    ['Tennis elbow', 'Overloaded extensor tendons at the outer elbow.', 'Pain on the outside of the elbow when gripping or lifting.', 'Reduce the aggravating activity, strengthening exercises, a forearm strap; improves over months.', 'Good technique, lighter tools, breaks.'],
+    ['Golfer’s elbow', 'Overloaded flexor tendons at the inner elbow.', 'Pain on the inside of the elbow when gripping.', 'Rest from the cause, ice, strengthening exercises.', 'Warm up, gradual training.'],
+    ['Repetitive strain injury (RSI)', 'Pain from repeating the same movements, like typing or assembly work.', 'Aching, tingling or weakness in forearm and hand.', 'Change the task set-up, take breaks, exercises, physiotherapy.', 'Ergonomic desk, varied tasks, frequent breaks.']] },
+
+{ id: 'core', layer: 'muscles', name: 'Core & abdominal muscles', systems: ['muscular'], where: 'Front and sides of the belly',
+  job: 'Brace and bend the trunk, protect the organs, and help with breathing out, coughing and pushing.',
+  summary: 'The rectus abdominis (the “six-pack”) runs down the front. The external and internal obliques wrap the sides, and the transversus abdominis wraps round like a belt. With the diaphragm, back muscles and pelvic floor they form a pressurised “can” that protects the spine.',
+  how: [
+    'Bracing the core before lifting stiffens the spine.',
+    'The obliques twist and bend the body sideways.',
+    'The abdominal wall squeezes when you cough, sneeze, laugh or push.',
+    'A six-pack is visible only when body fat is low — everyone has the muscle.'],
+  facts: ['The “six-pack” is one muscle divided by bands of tendon.', 'Core muscles switch on a split second before you move your arms or legs.', 'Weak spots in the abdominal wall are where hernias happen.'],
+  links: [['spine', 'Brace and protect the spine.'], ['pelvis', 'Attach to the pelvis.'], ['ribs', 'Attach to the lower ribs.'], ['lungs', 'Help push air out when breathing hard or coughing.'], ['backm', 'Work with the back muscles to keep you upright.'], ['smallint', 'The abdominal wall protects the intestines.']],
+  health: ['Do planks, side planks and carries rather than only sit-ups.', 'Brace your core when lifting.', 'After pregnancy, rebuild the core and pelvic floor gradually.'],
+  ills: [
+    ['Hernia', 'Part of the intestine or fat pushes through a weak spot in the belly wall, often in the groin or belly button.', 'A lump that may disappear when lying down; ache when lifting. A painful, hard lump with vomiting is an emergency.', 'See a doctor; many are repaired with a short operation.', 'Lift with good technique, avoid constipation and straining, healthy weight, stop smoking.', true],
+    ['Abdominal muscle strain', 'A pulled stomach muscle from twisting or sport.', 'Pain on moving, coughing or laughing.', 'Rest, ice, then gentle strengthening.', 'Warm up and build up training.'],
+    ['Diastasis recti', 'The two sides of the six-pack muscle separate, common after pregnancy.', 'A bulge or dip down the middle of the belly.', 'Targeted core exercises with a physiotherapist; it often improves.', 'Gradual return to exercise after pregnancy.']] },
+
+{ id: 'backm', layer: 'muscles', name: 'Back muscles', systems: ['muscular'], where: 'The back, from the pelvis to the neck',
+  job: 'Keep you upright, pull with the arms, and bend, straighten and twist the spine.',
+  summary: 'The broad latissimus dorsi (“lats”) sweep from the lower back to the upper arm and pull the arms down and back. The erector spinae run in two columns along the spine and straighten it. The rhomboids pull the shoulder blades together.',
+  how: [
+    'The erector spinae work non-stop to stop you tipping forwards.',
+    'The lats power pulling, climbing and swimming.',
+    'Deep small muscles steady each vertebra.',
+    'Back and core muscles work together like guy-ropes on a tent pole.'],
+  facts: ['The latissimus dorsi is the widest muscle in the body.', 'Back pain is one of the leading causes of disability worldwide.', 'Strong back muscles are linked to less back pain.'],
+  links: [['spine', 'Hold and move the spine.'], ['core', 'Work with the core to brace the trunk.'], ['shoulder', 'The rhomboids and lats move the shoulder blades and arms.'], ['pelvis', 'The erector spinae attach to the pelvis.'], ['glutes', 'Work with the glutes to lift and stand up straight.']],
+  health: ['Train your back with rows, pull-ups and hip hinges.', 'Get up and move every 30–60 minutes when sitting.', 'Lift with the hips and knees, keeping the back straight.', 'Stay active during back pain — rest in bed slows recovery.'],
+  ills: [
+    ['Back muscle strain', 'Overstretched or torn back muscle fibres.', 'Sudden pain and spasm after lifting or twisting.', 'Stay gently active, heat, pain relief; usually better in days to weeks.', 'Good lifting technique, strong back and core.'],
+    ['Posture-related back pain', 'Aching from long periods in one position.', 'Dull ache in the upper or lower back.', 'Movement breaks, adjusting your chair and screen, strengthening.', 'Change positions often and exercise regularly.'],
+    ['Muscle spasm', 'A sudden involuntary tightening of back muscles.', 'Sharp pain and a hard, tight muscle; hard to move.', 'Heat, gentle movement, pain relief; it eases in days.', 'Stretching, warm-ups, hydration.']] },
+
+{ id: 'glutes', layer: 'muscles', name: 'Buttock & hip muscles (glutes)', systems: ['muscular'], where: 'The buttocks and outer hips',
+  job: 'Straighten the hip for standing, climbing and running, and keep the pelvis level when you walk.',
+  summary: 'The gluteus maximus is the largest muscle in the body; it drives you up stairs and out of a chair. The gluteus medius and minimus on the side of the hip keep the pelvis level each time you stand on one leg.',
+  how: [
+    'The gluteus maximus straightens the hip — the power for sprinting and jumping.',
+    'The gluteus medius stops the opposite hip dropping with every step.',
+    'Weak glutes can let the knees cave inwards, straining the knees.',
+    'Long sitting leaves them switched off and tight in front.'],
+  facts: ['The gluteus maximus is the largest muscle in the body.', 'Strong glutes are one reason humans can run long distances upright.', 'The sciatic nerve runs under the piriformis, a small deep hip muscle.'],
+  links: [['pelvis', 'Attach to the pelvis and sacrum.'], ['femur', 'Pull on the thigh bone.'], ['thigh', 'Work with the hamstrings to straighten the hip.'], ['backm', 'Work with the back muscles to stand up and lift.'], ['nerves', 'The sciatic nerve passes beneath them.']],
+  health: ['Do squats, lunges, step-ups, bridges and side-lying leg raises.', 'Break up sitting time.', 'Climb stairs instead of lifts.'],
+  ills: [
+    ['Piriformis syndrome', 'A tight deep hip muscle irritates the sciatic nerve.', 'Deep buttock pain, sometimes tingling down the leg, worse sitting.', 'Stretches, massage, strengthening; physiotherapy.', 'Regular hip mobility and strength work.'],
+    ['Gluteal tendinopathy', 'Overloaded tendons on the side of the hip.', 'Pain on the outer hip, worse lying on that side or on stairs.', 'Load-management and strengthening exercises; avoid crossing legs and hanging on one hip.', 'Gradual training, strong hips, healthy weight.'],
+    ['Hamstring and glute weakness', 'Under-used buttock muscles from long sitting.', 'Tight hips, knee or back pain, poor balance.', 'Strengthening exercises such as bridges and squats.', 'Move regularly and train the glutes.']] },
+
+{ id: 'thigh', layer: 'muscles', name: 'Thigh muscles (quadriceps & hamstrings)', systems: ['muscular'], where: 'Front (quadriceps), back (hamstrings) and inside (adductors) of the thigh',
+  job: 'Straighten and bend the knee, move the hip, and absorb shock when you land.',
+  summary: 'The four-part quadriceps on the front straighten the knee and protect it. The three hamstrings on the back bend the knee and straighten the hip. The adductors on the inside pull the legs together.',
+  how: [
+    'The quadriceps join into one tendon that holds the kneecap and attaches to the shin.',
+    'When you walk downhill or land a jump, the quadriceps work while lengthening to brake.',
+    'The hamstrings cross both the hip and knee, so they are easily strained when sprinting.',
+    'Strong thighs take load off the knee joint.'],
+  facts: ['The quadriceps are among the strongest muscles in the body.', '“Hamstring” comes from butchers hanging hams by these tendons.', 'Hamstring strains are one of the most common sports injuries.'],
+  links: [['femur', 'Wrap around the thigh bone.'], ['patellar', 'The quadriceps pull through the kneecap and patellar tendon.'], ['glutes', 'Work with the glutes to straighten the hip.'], ['joints', 'Stabilise the knee.'], ['pelvis', 'The hamstrings and adductors start on the pelvis.']],
+  health: ['Do squats, lunges and hamstring curls or Nordic curls.', 'Warm up properly before sprinting.', 'Build strength after any knee injury.'],
+  ills: [
+    ['Hamstring strain', 'Torn fibres in the back of the thigh, usually while sprinting.', 'Sudden sharp pain at the back of the thigh, sometimes a pop and bruising.', 'Rest, ice, then a graded rehabilitation programme; return to sport only when strength is back.', 'Warm-ups and hamstring-strengthening exercises.'],
+    ['Dead leg (thigh contusion)', 'A bruise deep in the quadriceps from a knock.', 'Pain, swelling, stiffness bending the knee.', 'Rest with the knee bent, ice, gentle stretching; avoid massage and heat for the first days.', 'Thigh pads in contact sports.'],
+    ['Groin strain', 'A pulled adductor muscle on the inner thigh.', 'Pain in the groin when bringing the legs together or kicking.', 'Rest, ice, gradual strengthening.', 'Adductor-strengthening and warm-ups.']] },
+
+{ id: 'calf', layer: 'muscles', name: 'Calf & shin muscles', systems: ['muscular', 'circulatory'], where: 'Back (calf) and front (shin) of the lower leg',
+  job: 'Push you off the ground, lift the foot, and pump blood back up to the heart.',
+  summary: 'The gastrocnemius (the visible calf bulge) and the deeper soleus join into the Achilles tendon and lift the heel. The tibialis anterior on the front of the shin lifts the toes so you don’t trip. Squeezing calves act as a “second heart”, pushing blood up through the veins.',
+  how: [
+    'Every step, the calf muscles lift your body weight onto your toes.',
+    'The soleus works for standing and long walking; the gastrocnemius for jumping and sprinting.',
+    'Calf contractions squeeze the deep veins, and valves keep the blood moving upwards.',
+    'Weak shin muscles can cause foot drop and trips.'],
+  facts: ['The calf muscles can generate several times body weight when running.', 'Walking pumps blood from the legs — that is why moving on long flights matters.', 'The soleus keeps working while you stand, stopping you falling forwards.'],
+  links: [['achilles', 'Join into the Achilles tendon.'], ['foot', 'Lift the heel and move the foot.'], ['shin', 'Attach to the tibia and fibula.'], ['vessels', 'Pump blood back up the leg veins.'], ['heart', 'Help return blood to the heart.']],
+  health: ['Do calf raises and walk every day.', 'Move your ankles and walk around on long journeys.', 'Stretch calves after exercise.', 'Stay hydrated.'],
+  ills: [
+    ['Calf strain', 'Torn fibres in the calf, often in middle-aged sports players.', 'Sudden pain like a kick in the calf, can’t push off.', 'Rest, ice, a heel raise, then gradual strengthening.', 'Warm up, calf strength, gradual training.'],
+    ['Night leg cramps', 'Painful tightening of the calf, often at night.', 'Sudden hard, painful calf lasting seconds to minutes.', 'Stretch by pulling the toes up, massage, walk around.', 'Calf stretches before bed, stay hydrated.'],
+    ['Compartment syndrome', 'Swelling builds pressure inside a muscle compartment, cutting off blood flow — usually after an injury.', 'Severe pain out of proportion to the injury, tight leg, numbness.', 'Emergency surgery to release the pressure.', 'Seek help quickly for severe pain after leg injury.', true],
+    ['Calf pain from a blood clot', 'A deep vein thrombosis can feel like a calf strain.', 'Swollen, warm, painful calf, often in one leg, especially after travel, surgery or illness.', 'See a doctor the same day; sudden breathlessness is an emergency.', 'Move on long journeys, stay active after surgery.', true]] },
+
+// ----------------------------------------------------------------- tendons
+{ id: 'rotator', layer: 'muscles', name: 'Rotator cuff', systems: ['muscular', 'skeletal'], where: 'Deep in the shoulder, under the deltoid',
+  job: 'Four muscles and tendons that hold the arm bone in the shoulder socket and rotate it.',
+  summary: 'The rotator cuff (supraspinatus, infraspinatus, teres minor and subscapularis) starts on the shoulder blade and wraps its tendons around the ball of the arm bone like a cuff. It keeps the ball centred while bigger muscles move the arm.',
+  how: [
+    'The tendons press the ball into the shallow socket.',
+    'They turn the arm in and out — like throwing or reaching behind your back.',
+    'The supraspinatus tendon runs under a bony arch and can get pinched when you lift the arm.',
+    'Tendons get less blood supply with age, so tears become more common after 40.'],
+  facts: ['Tendons are made mostly of tough collagen fibres.', 'Many people over 60 have a rotator cuff tear without any pain.', 'Throwing athletes need very strong rotator cuffs.'],
+  links: [['shoulder', 'Starts on the shoulder blade.'], ['armbones', 'Grips the top of the upper arm bone.'], ['deltoid', 'Works with the deltoid to lift the arm.'], ['joints', 'Stabilises the shoulder joint.']],
+  health: ['Do rotator cuff exercises with a resistance band.', 'Build up overhead and throwing activities gradually.', 'Avoid sleeping with your arm overhead.'],
+  ills: [
+    ['Rotator cuff tear', 'A tear in one of the tendons, from injury or wear.', 'Shoulder pain, weakness lifting the arm, pain at night.', 'Physiotherapy, pain relief, injections; surgery for big or sudden tears in active people.', 'Shoulder strengthening, good technique.'],
+    ['Shoulder impingement', 'The tendons get pinched under the bony roof when lifting the arm.', 'Pain lifting the arm to the side or overhead.', 'Rest from overhead work, exercises, pain relief; most improve with physiotherapy.', 'Good posture and shoulder-blade strength.'],
+    ['Calcific tendinitis', 'Calcium deposits form in a rotator cuff tendon.', 'Sudden, severe shoulder pain.', 'Pain relief, physiotherapy, injections or procedures to break up the deposit.', 'No sure prevention.']] },
+
+{ id: 'wristtendons', layer: 'muscles', name: 'Wrist & hand tendons', systems: ['muscular', 'skeletal'], where: 'Across the wrist and along the fingers',
+  job: 'Long cords that carry the pull of the forearm muscles to the fingers and thumb.',
+  summary: 'Flexor tendons run on the palm side and bend the fingers; extensor tendons run on the back and straighten them. They glide inside slippery sheaths and are held close to the bones by pulleys, like a fishing rod’s line guides.',
+  how: [
+    'A muscle in the forearm contracts and its tendon slides, pulling a finger bone.',
+    'Sheaths filled with fluid let tendons glide thousands of times a day.',
+    'Pulleys keep the tendons close to the bones so the fingers curl smoothly.',
+    'Tendons heal slowly because they have little blood supply.'],
+  facts: ['There are no muscles inside your fingers — tendons do all the pulling.', 'Tendons are stronger than steel wire of the same thickness when pulled.', 'A cut tendon won’t heal on its own — the ends pull apart.'],
+  links: [['forearm', 'Come from the forearm muscles.'], ['hand', 'Attach to the finger and thumb bones.'], ['nerves', 'Run next to the median nerve in the carpal tunnel.'], ['joints', 'Move the finger joints.']],
+  health: ['Take breaks from phones, typing and repetitive gripping.', 'Use both thumbs, and prop the phone rather than gripping it hard.', 'Get any cut on the palm or fingers checked if you can’t bend a finger.'],
+  ills: [
+    ['De Quervain’s tenosynovitis', 'Swollen thumb tendons at the side of the wrist.', 'Pain on the thumb side of the wrist, worse gripping or lifting a baby.', 'A thumb splint, rest, pain relief, sometimes a steroid injection.', 'Vary your grip and take breaks.'],
+    ['Trigger finger', 'A thickened tendon catches in its pulley.', 'A finger clicks or locks bent, then snaps straight.', 'Splint, steroid injection, or a small operation to release the pulley.', 'More common with diabetes; control blood sugar.'],
+    ['Ganglion cyst', 'A harmless fluid-filled lump from a tendon sheath or joint.', 'A smooth lump, usually on the back of the wrist.', 'Often goes away by itself; can be drained or removed if painful.', 'No sure prevention.'],
+    ['Cut tendon', 'A tendon cut by glass, a knife or machinery.', 'Can’t bend or straighten a finger after a cut.', 'Needs surgical repair within days, then careful hand therapy.', 'Care with knives and glass; gloves for rough work.', true]] },
+
+{ id: 'patellar', layer: 'muscles', name: 'Knee tendons (quadriceps & patellar)', systems: ['muscular', 'skeletal'], where: 'Above and below the kneecap',
+  job: 'Carry the pull of the thigh muscles through the kneecap to the shin, straightening the knee.',
+  summary: 'The quadriceps tendon joins the thigh muscles to the top of the kneecap; the patellar tendon joins the bottom of the kneecap to a bump on the shin (the tibial tuberosity). Together they form the knee’s extension system, used in every step, jump and landing.',
+  how: [
+    'When the quadriceps contract, the pull passes through the kneecap to the shin.',
+    'Landing from jumps puts huge load through these tendons.',
+    'The tendon adapts and gets stronger with gradual loading.',
+    'Doctors tap the patellar tendon with a hammer to test the knee-jerk reflex.'],
+  facts: ['The knee-jerk reflex is handled by the spinal cord, not the brain.', 'The patellar tendon is technically a ligament, because it joins bone to bone.', 'Jumping sports like basketball and volleyball load it the most.'],
+  links: [['thigh', 'Carry the pull of the quadriceps.'], ['femur', 'Hold the kneecap in place over the femur.'], ['shin', 'Attach to the top of the tibia.'], ['nerves', 'Tapping it tests the spinal reflex.']],
+  health: ['Increase jumping and running load gradually.', 'Strengthen your thighs (squats, slow step-downs).', 'Land softly with bent knees.'],
+  ills: [
+    ['Jumper’s knee (patellar tendinopathy)', 'An overloaded patellar tendon.', 'Pain just below the kneecap when jumping, squatting or on stairs.', 'Reduce jumping for a while and do a tendon-loading exercise programme; improves over months.', 'Gradual training and strong thighs.'],
+    ['Osgood–Schlatter disease', 'In growing children, the tendon pulls on the growth area at the top of the shin.', 'A painful bump below the knee, worse with sport.', 'Reduce painful activities, ice, stretches; it settles when growth finishes.', 'Balance sport with rest during growth spurts.'],
+    ['Patellar or quadriceps tendon rupture', 'The tendon tears completely.', 'A pop, can’t straighten the knee or lift the leg.', 'Surgery to repair it, then rehabilitation.', 'Avoid steroid injections into tendons and sudden heavy loads.', true]] },
+
+{ id: 'achilles', layer: 'muscles', name: 'Achilles tendon', systems: ['muscular', 'skeletal'], where: 'The back of the ankle, from the calf to the heel',
+  job: 'The body’s strongest tendon: it transfers the calf’s pull to the heel so you can walk, run and jump.',
+  summary: 'The Achilles tendon joins the calf muscles to the heel bone. It stores and releases energy like a spring each time you run, and can carry several times your body weight.',
+  how: [
+    'The calf muscles pull on it to lift the heel.',
+    'While running it stretches on landing and recoils on push-off, saving energy.',
+    'It narrows just above the heel, where blood supply is poorest — the usual place for problems.'],
+  facts: ['It is named after the Greek hero Achilles, whose only weak spot was his heel.', 'It is the thickest and strongest tendon in the body.', 'Some antibiotics (fluoroquinolones) can weaken it.'],
+  links: [['calf', 'Carries the pull of the calf muscles.'], ['foot', 'Attaches to the heel bone.'], ['shin', 'Runs behind the lower leg bones.']],
+  health: ['Do calf raises, including slow lowering from a step.', 'Build up running and jumping gradually, especially hills.', 'Warm up before sprints and racquet sports.', 'Tell your doctor about heel pain if you take fluoroquinolone antibiotics.'],
+  ills: [
+    ['Achilles tendinopathy', 'Overloaded, irritated tendon.', 'Stiffness and pain at the back of the heel, worst in the morning.', 'Reduce running for a while and do a calf-loading exercise programme for 3 months; heel raises in shoes.', 'Gradual training, strong calves, good shoes.'],
+    ['Achilles tendon rupture', 'A complete tear, often in sport.', 'A snap like being kicked in the heel, can’t stand on tiptoe.', 'Go to hospital promptly; treated with a special boot or surgery, then months of rehabilitation.', 'Warm-ups, calf strengthening, gradual return to sport.', true],
+    ['Sever’s disease (heel pain in children)', 'The tendon pulls on the heel growth plate in active children.', 'Heel pain during and after sport.', 'Reduce painful activities, heel cushions, stretches; it goes away when growth finishes.', 'Balance sport with rest during growth spurts.']] },
+
+// ----------------------------------------------------------------- skin layers
+{ id: 'epidermis', layer: 'skin', name: 'Epidermis (outer skin layer)', systems: ['skin'], where: 'The top layer of the skin',
+  job: 'A waterproof, self-renewing barrier against germs, water loss and UV light.',
+  summary: 'The epidermis is thinner than a sheet of paper on the eyelids and a few millimetres thick on the soles. New cells are made at its base, fill with the tough protein keratin, and move up over about 4 weeks until they flake off as dead cells. Melanocytes make the pigment melanin.',
+  how: [
+    'Stem cells at the bottom divide constantly.',
+    'Cells flatten and fill with keratin as they rise, becoming a tough, dead outer layer.',
+    'Fats between the outer cells seal in water like mortar between bricks.',
+    'Melanin forms tiny umbrellas over cell nuclei to shield DNA from UV.',
+    'Immune cells (Langerhans cells) watch for invaders.'],
+  facts: ['It has no blood vessels — it is fed by the dermis beneath.', 'Everyone has about the same number of melanocytes; skin colour depends on how much melanin they make.', 'Much house dust contains shed skin cells.'],
+  links: [['dermis', 'Sits on the dermis, which feeds it.'], ['skin', 'The protective outer part of the skin.'], ['lymph', 'Its Langerhans cells alert the immune system.'], ['bones', 'Makes vitamin D in sunlight, which bones need.'], ['hair', 'Hair and nails are made of the same keratin.']],
+  health: ['Use sunscreen and avoid sunburn.', 'Moisturise after washing to protect the barrier.', 'Use lukewarm, not hot, water and mild soap.', 'Check moles and spots regularly.'],
+  ills: [
+    ['Dry skin (xerosis)', 'The barrier loses water and oils.', 'Rough, tight, flaky or itchy skin.', 'Moisturise several times a day, shorter lukewarm showers, soap-free washes.', 'Moisturiser, humidifier in dry weather.'],
+    ['Warts', 'Harmless growths caused by the HPV virus.', 'Rough bumps, often on hands or soles (verrucas).', 'Often go away by themselves; salicylic acid or freezing can help.', 'Don’t pick them; wear flip-flops in public showers.'],
+    ['Vitiligo', 'Melanocytes are lost, leaving white patches.', 'Pale or white patches of skin.', 'Creams, light therapy and newer tablets can restore some colour; sun protection for the patches.', 'Cannot be prevented; it is not contagious.'],
+    ['Calluses and corns', 'Thickened skin from repeated pressure or rubbing.', 'Hard, thick patches; corns can be painful.', 'Remove pressure, soak and file gently, padding; see a podiatrist. People with diabetes shouldn’t cut them themselves.', 'Well-fitting shoes, gloves for tools.']] },
+
+{ id: 'dermis', layer: 'skin', name: 'Dermis (middle layer)', systems: ['skin'], where: 'Under the epidermis',
+  job: 'Gives skin strength and stretch, and holds its blood vessels, nerves, glands and hair roots.',
+  summary: 'The dermis is a thick mesh of collagen (for strength) and elastin (for stretch) fibres. It contains blood vessels that feed the skin and control heat loss, nerve endings for touch, pressure, pain and temperature, sweat and oil glands, and hair follicles.',
+  how: [
+    'Collagen fibres make skin tough; elastin lets it spring back.',
+    'Blood vessels widen to lose heat (you look flushed) or narrow to save it (you look pale).',
+    'Different nerve endings sense light touch, vibration, pressure, heat, cold and pain.',
+    'Wounds that reach the dermis heal with a scar of new collagen.'],
+  facts: ['Fingertips have some of the most touch receptors in the body.', 'UV light breaks down collagen, causing most visible skin ageing.', 'Tattoo ink is placed in the dermis, which is why it lasts.'],
+  links: [['epidermis', 'Feeds and supports the epidermis.'], ['vessels', 'Its blood vessels control heat loss.'], ['nerves', 'Its nerve endings sense touch, heat and pain.'], ['sweat', 'Holds the sweat glands.'], ['sebaceous', 'Holds the oil glands.'], ['hair', 'Holds the hair follicles.']],
+  health: ['Protect from UV to preserve collagen.', 'Don’t smoke — it damages collagen and slows healing.', 'Eat enough protein and vitamin C for collagen.', 'Keep wounds clean and covered for better scars.'],
+  ills: [
+    ['Stretch marks', 'Tears in the dermis from rapid stretching (growth spurts, pregnancy, weight change).', 'Red or purple lines that fade to silver.', 'They fade with time; creams have little effect; laser can help.', 'Gradual weight change; they are very common and harmless.'],
+    ['Hives (urticaria)', 'Histamine makes small vessels leak, raising itchy welts.', 'Raised, itchy, pale or red welts that come and go. With swollen lips or trouble breathing, call an ambulance.', 'Antihistamines; find and avoid triggers.', 'Avoid known triggers.'],
+    ['Keloid scars', 'Scars that overgrow beyond the wound.', 'Raised, firm, shiny scar that keeps growing.', 'Silicone gel, steroid injections, pressure dressings.', 'Avoid unnecessary piercings or tattoos if you form keloids.'],
+    ['Sun ageing (photoageing)', 'UV damage to collagen and elastin.', 'Wrinkles, sagging, uneven colour, broken vessels.', 'Sunscreen daily; retinoid creams can improve it.', 'Sun protection from childhood; no sunbeds; don’t smoke.']] },
+
+{ id: 'subcut', layer: 'skin', name: 'Fat layer (hypodermis)', systems: ['skin'], where: 'The deepest layer, between the skin and the muscles',
+  job: 'Insulates, cushions and stores energy, and anchors the skin to the body.',
+  summary: 'The hypodermis (subcutaneous tissue) is mostly fat cells in pockets divided by bands of connective tissue. It keeps heat in, pads bones and muscles against knocks, and stores energy. Its thickness varies a lot around the body and between people.',
+  how: [
+    'Fat cells store energy as triglycerides and release fatty acids when you fast or exercise.',
+    'Fat conducts heat poorly, so it insulates.',
+    'It releases hormones such as leptin, which tells the brain about energy stores.',
+    'Large blood vessels and nerves pass through it to the skin.'],
+  facts: ['Injections like insulin are given into this layer.', 'Fat under the skin is healthier than deep belly fat around the organs.', 'Babies have special brown fat that makes heat.'],
+  links: [['dermis', 'Lies under the dermis.'], ['muscles', 'Separates the skin from the muscles.'], ['liver', 'Releases fatty acids that the liver can turn into ketones when fasting.'], ['brain', 'Its leptin hormone tells the brain about energy stores.'], ['pancreas', 'Insulin tells fat cells to store energy.']],
+  health: ['Stay active and eat a balanced diet to keep body fat healthy.', 'Change position often if you are bed-bound, to prevent pressure sores.', 'Rotate insulin injection sites.'],
+  ills: [
+    ['Lipoma', 'A soft, harmless lump of fat cells.', 'A soft, painless, movable lump under the skin.', 'Usually left alone; can be removed if large or bothersome. See a doctor about any lump that is hard, painful or growing fast.', 'No known prevention.'],
+    ['Cellulite', 'Fat pushing between connective bands, giving a dimpled look — normal, not a disease.', 'Dimpled skin on thighs and bottom.', 'Not necessary to treat; exercise may improve the look.', 'Very common, especially in women; it is not unhealthy.'],
+    ['Pressure sores (bedsores)', 'Skin and fat damaged by long pressure, mostly in people who can’t move.', 'Red patches that don’t fade, then blisters or open wounds over bony areas.', 'Relieve pressure, special mattresses, wound care, good nutrition.', 'Change position every few hours, keep skin clean and dry.'],
+    ['Lipohypertrophy', 'Fatty lumps from repeated injections in the same spot.', 'Rubbery lumps at injection sites.', 'Stop injecting there — it recovers over months.', 'Rotate injection sites.']] },
+
+{ id: 'hair', layer: 'skin', name: 'Hair & hair follicles', systems: ['skin'], where: 'Almost all skin, except palms, soles and lips',
+  job: 'Protects and warms the scalp, shields eyes and nose, and senses touch.',
+  summary: 'Each hair grows from a follicle, a pocket in the dermis. Cells at the root divide quickly and fill with keratin, pushing the dead hair shaft up. A tiny muscle (arrector pili) can pull the hair upright — goosebumps. Each follicle cycles through growing, resting and shedding.',
+  how: [
+    'Growth phase: scalp hair grows about 1 cm a month for 2–7 years.',
+    'Resting phase: the hair stops growing, then falls out and a new one starts.',
+    'Melanin from the follicle colours the hair; grey hair has little or none.',
+    'Nerves around the follicle make hair a sensitive touch detector.'],
+  facts: ['You have about 5 million hair follicles, around 100,000 on the scalp.', 'Losing 50–100 scalp hairs a day is normal.', 'Eyebrows and eyelashes keep sweat and dust out of your eyes.'],
+  links: [['dermis', 'Follicles sit in the dermis.'], ['sebaceous', 'Oil glands empty into each follicle.'], ['nerves', 'Nerve endings around the follicle sense touch.'], ['pituitary', 'Hormones affect hair growth and loss.'], ['epidermis', 'Made of keratin, like the outer skin.']],
+  health: ['Eat enough protein, iron and zinc.', 'Avoid very tight hairstyles and too much heat styling.', 'Use a gentle shampoo; don’t share combs during head lice outbreaks.'],
+  ills: [
+    ['Dandruff', 'Flaking of the scalp, linked to a yeast on the skin.', 'White or yellow flakes, itchy scalp.', 'Anti-dandruff shampoo (ketoconazole, zinc pyrithione, selenium) used regularly.', 'Wash hair regularly.'],
+    ['Head lice', 'Tiny insects living in scalp hair, common in children.', 'Itchy scalp, lice or eggs (nits) near the roots.', 'Wet combing with a fine comb every few days for 2 weeks, or lice treatment; treat everyone affected at once.', 'Avoid head-to-head contact; check children’s hair regularly.'],
+    ['Alopecia areata', 'The immune system attacks hair follicles.', 'Round, smooth bald patches.', 'Often regrows by itself; steroid creams or injections, and newer tablets for severe cases.', 'Cannot be prevented.'],
+    ['Ingrown hairs', 'Hair curls back into the skin after shaving.', 'Itchy or painful red bumps.', 'Stop shaving for a while, warm compresses, gentle exfoliation.', 'Shave with the grain using a sharp blade, or use clippers.']] },
+
+{ id: 'sweat', layer: 'skin', name: 'Sweat glands', systems: ['skin'], where: 'All over the skin, most on palms, soles, forehead and armpits',
+  job: 'Cool the body by making sweat that evaporates from the skin.',
+  summary: 'You have 2–4 million sweat glands. Eccrine glands, spread everywhere, release watery sweat to cool you. Apocrine glands in the armpits and groin start working at puberty and release a thicker sweat that bacteria turn into body odour.',
+  how: [
+    'The brain’s thermostat (the hypothalamus) senses you are too hot.',
+    'Nerves switch on the eccrine glands, which pump sweat up a coiled duct to a pore.',
+    'Evaporating sweat carries heat away from the skin.',
+    'Stress and fear also make palms and armpits sweat.',
+    'Sweat is mostly water with salt — replace both in long, hot exercise.'],
+  facts: ['In hot weather you can lose over a litre of sweat an hour during hard exercise.', 'Fresh sweat has almost no smell — bacteria cause the odour.', 'Humans are among the best-sweating animals, which helps us run long distances.'],
+  links: [['dermis', 'The coiled glands sit deep in the dermis.'], ['brain', 'The hypothalamus decides when to sweat.'], ['kidneys', 'Losing lots of sweat makes the kidneys save water.'], ['vessels', 'Works with widened skin vessels to lose heat.'], ['nerves', 'Nerves switch the glands on.']],
+  health: ['Drink more in heat and exercise.', 'Wear light, breathable clothes.', 'Wash daily and use antiperspirant if you like.', 'Rest in the shade on very hot days.'],
+  ills: [
+    ['Heat exhaustion and heatstroke', 'The body overheats when it can’t lose heat fast enough.', 'Heavy sweating, dizziness, headache, nausea; heatstroke brings confusion, fainting, a temperature over 40 °C and sometimes no sweating.', 'Move to a cool place, cool the skin with water and fanning, and sip water. Heatstroke is an emergency — call an ambulance.', 'Drink water, avoid midday heat, rest in shade, check on elderly people and babies.', true],
+    ['Excessive sweating (hyperhidrosis)', 'Glands make much more sweat than needed.', 'Sweating that drips from hands, feet or armpits and gets in the way of daily life.', 'Strong aluminium chloride antiperspirants, iontophoresis, medicines, Botox injections.', 'Not preventable; breathable clothing helps.'],
+    ['Body odour', 'Bacteria break down apocrine sweat.', 'Unpleasant smell from armpits or feet.', 'Wash daily, clean clothes, antiperspirant or deodorant.', 'Hygiene, breathable fabrics.'],
+    ['Prickly heat (miliaria)', 'Blocked sweat ducts trap sweat under the skin.', 'Tiny itchy or prickling red spots in hot, humid weather.', 'Cool down, loose clothes; it clears in a few days.', 'Stay cool, avoid heavy creams in heat.']] },
+
+{ id: 'sebaceous', layer: 'skin', name: 'Oil glands (sebaceous glands)', systems: ['skin'], where: 'Next to hair follicles, most on the face, scalp, chest and back',
+  job: 'Make sebum, an oil that keeps skin and hair soft and waterproof.',
+  summary: 'Sebaceous glands release sebum — a mix of fats and waxes — into the hair follicles. It softens skin, waterproofs it and has mild antibacterial effects. Hormones called androgens make the glands grow and pour out more oil at puberty.',
+  how: [
+    'Gland cells fill with oil and then burst, releasing sebum into the follicle.',
+    'Sebum flows out onto the skin and spreads over it and the hair.',
+    'At puberty, androgen hormones increase sebum production — one reason for teenage acne.',
+    'Oil production falls with age, so older skin tends to be drier.'],
+  facts: ['The face can have hundreds of oil glands per square centimetre.', 'Babies can get “cradle cap” from their mother’s hormones.', 'Palms and soles have no oil glands.'],
+  links: [['hair', 'Empty their oil into the hair follicles.'], ['dermis', 'Sit in the dermis.'], ['reproductive', 'Sex hormones control how much oil they make.'], ['skin', 'Keep the skin soft and waterproof.']],
+  health: ['Wash oily skin gently twice a day; don’t scrub.', 'Choose “non-comedogenic” products.', 'Don’t squeeze spots.'],
+  ills: [
+    ['Rosacea', 'A long-term condition of flushing and redness on the face.', 'Redness on cheeks and nose, visible vessels, spots, stinging.', 'Avoid triggers, sun protection, prescription creams or antibiotics, laser for vessels.', 'Avoid triggers such as sun, alcohol, spicy food and heat.'],
+    ['Seborrhoeic dermatitis', 'An inflammatory rash in oily areas, linked to a yeast.', 'Red, greasy, flaky patches on the scalp, eyebrows and sides of the nose; cradle cap in babies.', 'Antifungal shampoos and creams; mild steroid creams for flares.', 'Regular washing with medicated shampoo.'],
+    ['Epidermoid (sebaceous) cyst', 'A small sac of keratin under the skin.', 'A round lump, sometimes with a dark dot; can become red and painful if infected.', 'Usually left alone; removed if bothersome; see a doctor if infected.', 'Don’t squeeze it.']] },
+
+{ id: 'nails', layer: 'skin', name: 'Nails', systems: ['skin'], where: 'Tips of the fingers and toes',
+  job: 'Protect the fingertips and toe tips and help you pick up small things and scratch.',
+  summary: 'Nails are hard plates of keratin made by the nail matrix under the cuticle. The pink colour comes from blood vessels in the nail bed underneath. The pale half-moon (lunula) is the visible end of the matrix.',
+  how: [
+    'Cells in the matrix multiply and harden, pushing the nail forward.',
+    'Fingernails grow about 3 mm a month; toenails about a third as fast.',
+    'The nail gives the fingertip something to press against, sharpening touch.',
+    'Changes in nails can be a clue to illnesses elsewhere in the body.'],
+  facts: ['A lost fingernail takes about 6 months to regrow; a toenail up to 18 months.', 'Nails grow faster in summer and on the dominant hand.', 'White spots on nails are usually from small knocks, not lack of calcium.'],
+  links: [['hand', 'Protect the fingertips.'], ['foot', 'Protect the toe tips.'], ['vessels', 'The nail bed’s blood vessels give nails their pink colour.'], ['epidermis', 'Made of keratin, like the outer skin.']],
+  health: ['Cut toenails straight across, not too short.', 'Keep feet clean and dry; wear flip-flops in public showers.', 'Don’t bite or pick your nails.', 'Moisturise cuticles rather than cutting them.'],
+  ills: [
+    ['Fungal nail infection', 'Fungus grows under the nail, usually the toenail.', 'Thick, yellow or white, crumbly nails.', 'Antifungal nail paint for mild cases, tablets for severe ones; takes months.', 'Dry feet well, change socks daily, don’t share nail clippers.'],
+    ['Ingrown toenail', 'The nail edge grows into the skin.', 'Painful, red, swollen toe, sometimes infected.', 'Warm soaks, well-fitting shoes; a podiatrist can remove part of the nail.', 'Cut nails straight across, avoid tight shoes.'],
+    ['Paronychia', 'Infection of the skin fold around a nail.', 'Red, swollen, painful skin next to the nail, sometimes pus.', 'Warm soaks several times a day; see a doctor for pus, spreading redness or fever.', 'Don’t bite nails or cut cuticles; wear gloves for wet work.'],
+    ['Nail changes that need checking', 'Nails can show signs of other health problems.', 'A new dark streak, spoon-shaped nails (low iron), clubbing (lung or heart disease), pitting (psoriasis).', 'See a doctor, especially for a new dark streak, which can rarely be melanoma.', 'Look at your nails when you cut them.']] }
+);
+
+window.BODY_HABITS.push(
+  ['🧍', 'Took breaks from sitting and stretched', ['spine', 'backm', 'neckm', 'glutes']],
+  ['🥛', 'Ate calcium-rich food (dairy, tofu, leafy greens)', ['bones', 'skull', 'femur', 'spine']]
+);
