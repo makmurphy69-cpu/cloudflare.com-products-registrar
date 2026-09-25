@@ -52,6 +52,7 @@
     'idea-atlas.html':['Idea Atlas','search or click a philosophy or ideology on the connections map to read its history and key thinkers','Generate quiz','answer the questions against the clock, read each explanation and try to beat your best score'],
     'audio-forge.html':['Audio Forge','open an audio or video file, or record from your microphone','Keep selection','drag across the waveform to select a part, apply fades, volume or speed, then download MP3 or WAV'],
     'text-compare.html':['Text Compare','paste the original text on the left and the changed version on the right','Compare','review the highlighted additions, removals and changes, then download the report'],
+    'exam-checker.html':['Exam Checker','build the exam, choose the question types and tap the correct answers — or press Load demo exam to try it','Load demo exam','print the answer sheets, test the reader with a photo of the correct answers, add a photo of each student\'s sheet, then download the results'],
     'flashcard-forge.html':['Flashcard Forge','create a deck and add cards by typing, pasting a list or letting AI write them from your notes','Make cards','study the due cards, grade how well you remembered each one, then take a test'],
     '3d-cartoon.html':['3D Cartoon','press play to start the cel-shaded 3D cartoon scene','PLAY 3D CARTOON','watch the scene, then create your own story in Cartoon Forge'],
     'background-forge.html':['Background Forge','choose a photo with a clear subject','Remove background','check the cut-out edges and download the transparent PNG'],
