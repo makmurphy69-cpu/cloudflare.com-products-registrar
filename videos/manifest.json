@@ -272,6 +272,37 @@
    "kind": "html"
   }
  },
+ "chemistry-map.html": {
+  "title": "Chemistry Map",
+  "video": "videos/chemistry-map.mp4",
+  "poster": "videos/chemistry-map.jpg",
+  "duration": 229,
+  "transcript": [
+   "Welcome to Chemistry Map. Explore all one hundred and eighteen elements, see how they combine, and discover what materials they make.",
+   "Every element has its own square, coloured by its family. Hover over one for a quick summary.",
+   "Open an element, like carbon. You see its atom, with protons and neutrons in the nucleus and electrons in shells.",
+   "Then where it is found, what it is used for, and its different forms — carbon can be diamond, graphite or graphene.",
+   "It lists the compounds it makes and the materials made with it.",
+   "The colour buttons show patterns. Solid, liquid or gas shows each element at the temperature you choose. At room temperature only mercury and bromine are liquid.",
+   "Heat it to the surface of the Sun, and almost everything boils.",
+   "Electronegativity shows which atoms pull electrons hardest — fluorine, at the top right.",
+   "Now mix elements. With this box ticked, tapping the table puts elements in the bowl. Add sodium and chlorine.",
+   "The mixer explains the bond — sodium gives an electron to chlorine, an ionic bond — predicts the formula, NaCl, and shows the real compound: table salt.",
+   "Try a classic like calcium, carbon and oxygen, which make limestone, chalk and seashells.",
+   "Materials shows what the elements build. Tap one, like a lithium-ion battery, and its elements light up in the table.",
+   "The formula calculator works out molar mass and what share each element makes up. Here is glucose.",
+   "How atoms bond explains atoms, shells, and ionic, covalent and metallic bonds with diagrams.",
+   "Search for any use, like battery, to light up every element that is used in batteries.",
+   "Finally, test yourself. Choose the elements and question types, then press Generate quiz.",
+   "Pick an answer and you get an explanation, with a link to open that element.",
+   "Now it is your turn. Open Chemistry Map on MigaBuilder and try it yourself. It is free, and there is nothing to sign up for."
+  ],
+  "sample": {
+   "file": "samples/chemistry-map.html",
+   "label": "Printable quiz made in this video",
+   "kind": "html"
+  }
+ },
  "clip-forge.html": {
   "title": "Clip Forge",
   "video": "videos/clip-forge.mp4",
